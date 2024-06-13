@@ -64,7 +64,7 @@ Steps to Run
 
   	Description: Displays the sharing page.
   	
-            Functionality: This endpoint serves the sharing page, where users can share resources.
+  	Functionality: This endpoint serves the sharing page, where users can share resources.
 3.	GET /page3/: ("page3/", views.dpi_directory, name="dpi-directory")
 
   	Description: Displays the DPI directory.

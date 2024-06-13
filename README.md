@@ -65,6 +65,9 @@ Steps to Run
 7.	POST /shareresource/: ("shareresource/", views.ShareResources.as_view(), name='upload-resources')
   	Description: Shares a resource.
   	Functionality: This endpoint allows users to share a resource by sending a JSON object with the resource details. It saves the shared resource to the database and returns the shared resource with its assigned ID.
+
+
+   
 How to Access the Endpoints
 •	Home Page: Access it by navigating to the root URL /.
 •	Sharing Page: Access it by navigating to /sharingpage(page2)/.

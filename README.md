@@ -1,3 +1,7 @@
+IUDX-DATA TRUSTS
+
+This Django-based web application includes various endpoints to create, retrieve, update, and delete resources and lockers. It also includes endpoints to view specific pages within the application.
+
 api/: Contains the Django app responsible for the API.
 
 admin.py: Configuration for the Django admin interface for the API models.

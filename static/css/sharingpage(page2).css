@@ -1,0 +1,191 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    /* //background-color: whitesmoke; */
+    overflow: hidden; /* Ensure the container clears the floated items */
+    padding: 10px 0;
+}
+
+.nav-item {
+    color: black;
+    /* //float: left;
+    //padding: 14px 16px; */
+    /* text-align: center; */
+    text-decoration: none;
+   /* // width: 33.33%; 
+    //box-sizing: border-box;  */
+
+}
+#nav1{
+    width: 70%;
+    text-align: center;
+    float: left;
+    font-size: 50px;
+    font-weight: 600;
+    font-family: sans-serif;
+    /* // border: 1px solid red; */
+     margin-top: 100px;    
+}
+
+#nav2{
+    width: 14%;
+    text-align: left;
+    
+    float: right;
+    margin-left:20px;
+    /* //margin-top: 30px; */
+    
+
+}
+#nav3{
+    width: 14%;
+    float: right;
+    margin-top: 30px;
+    text-align: center;
+    font-size: 30px;
+}
+.nav-img{
+    height: 130px;
+    width: 130px;
+    text-align: right;
+}
+
+#nav-text{
+    display: inline-block;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 100px;
+}
+
+#nav2-1:hover {
+    background-color: #ddd;
+    color: red;
+}
+#nav3:hover {
+    background-color: #ddd;
+    color: red;
+    cursor: pointer;
+}
+#nav2-1{
+    font-size: 30px;
+    float: left;
+    margin-top: 30px;
+}
+#nav2-2
+{
+    margin-left: 20px;
+    
+
+}
+.container-2{
+    width: 100%;
+    
+    
+
+}
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.a{
+
+    width: 45%;
+    border: 1px solid blue ;
+    padding: 10px;
+    font-size: 24px;
+    float:left;
+    margin-left: 10px;
+    height: 380px;
+}
+.b{
+    margin-left: -100px;
+    width: 49%;
+    height: 380px;
+    border: 1px solid blue ;
+    padding: 10px;
+    margin-right: 10px;
+    float: right;
+    font-size: 24px;
+    
+
+}
+.locker-name{
+    font-size: 34px;
+    margin-left: 340px;
+}
+#documents{
+    text-decoration: underline;
+    color:blue;
+    
+}
+#documents:hover{
+    color: red;
+    cursor: pointer;
+}
+#button{
+    padding: 10px;
+    border-radius: 20px;
+    background-color: lightblue;
+    
+}
+#button:hover{
+    background-color: blue;
+    cursor: pointer;
+}
+.underline{
+    margin-left: 120px;
+    display: inline-block;
+    height: 5px;
+    width: 200px;
+    background-color: black;
+}
+/* #connections{
+background-color: lightblue;
+border-radius: 10px;
+color: black;
+font-weight: 500;
+padding: 10px;
+
+} */
+.deg{
+    text-decoration: underline;
+    color: blue;
+
+}
+.deg:hover{
+    color: red;
+    cursor: pointer;
+}
+.public-private{
+    display: inline-block;
+    margin-left: 320px;
+}
+.underlined-text{
+    margin-left: 200px;
+}
+.connectionss{
+    margin-bottom: 10px;
+    margin-top: 10px;
+    border: 1px solid black;
+    width: 70%;
+    
+}
+.mantri{
+    border: 1px solid black;
+    width: 70%;
+}
+.iiitb{
+    color: blue;
+    text-decoration: underline;
+
+
+}
+.iiitb:hover{
+    cursor: pointer;
+    color: red;
+}

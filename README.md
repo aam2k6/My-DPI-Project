@@ -32,18 +32,26 @@ manage.py: Command-line utility for managing the Django project.
 
 API Endpoints
 GET /api/primitives/: Retrieve a list of all DPI primitives.
+
 POST /api/primitives/: Create a new DPI primitive.
+
 GET /api/primitives/{id}/: Retrieve a specific DPI primitive by its ID.
+
 PUT /api/primitives/{id}/: Update a specific DPI primitive by its ID.
+
 DELETE /api/primitives/{id}/: Delete a specific DPI primitive by its ID.
 
 
 How to Run the Project
 Prerequisites
 •	Python 3.x
+
 •	Django
+
 •	SQLite (or another database, if configured)
+
 Steps to Run
+
 1.	Clone the repository (if applicable) or extract the provided zip file.
 2.	Navigate to the project directory:
             cd /path/to/DPI-Primitive-api-test

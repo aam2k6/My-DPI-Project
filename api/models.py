@@ -12,6 +12,7 @@ class User(models.Model):
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
+    creation_date = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE)        #user will be the one logged in 
 
     def __str__(self):
@@ -24,13 +25,21 @@ class Agreement(models.Model):
     signee1 = models.ForeignKey(User, on_delete= models.CASCADE, related_name='signee1')
     signee2 = models.ForeignKey(User, on_delete= models.CASCADE, related_name='signee2')
 
+    consent1 = models.BooleanField(default=False)
+    consent2 = models.BooleanField(default=False)
+    revoke1 = models.BooleanField(default=False)
+    revoke2 = models.BooleanField(default=False)
+
+    validity = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
         return self.agreement_text
 
 class Connection(models.Model):
     connection_id = models.AutoField(primary_key=True)
     connection_name = models.CharField(max_length=100)
-    connection_norm = models.ForeignKey(Agreement, on_delete=models.CASCADE)
+    #connection_norm = models.ForeignKey(Agreement, on_delete=models.CASCADE)
     access_norm = models.JSONField()
     access_token = models.CharField(max_length=20, unique=True, default=None)
     source_locker = models.ForeignKey(Locker, on_delete = models.CASCADE, related_name='source_locker')
@@ -44,15 +53,13 @@ class Connection(models.Model):
 class Resource(models.Model):
     PUBLIC = 'public'
     PRIVATE = 'private'
-    SHARED = 'shared'
     TYPE_CHOICES =[
         (PUBLIC,'Public'),
-        (PRIVATE,'Private'),
-        (SHARED, 'Shared'),
+        (PRIVATE,'Private')
     ]
     resource_id = models.AutoField(primary_key=True)
     document_name = models.CharField(max_length= 50)
-    i_node_pointer = models.CharField(max_length=20, default='none')
+    i_node_pointer = models.CharField(max_length=255, default='none')
     locker = models.ForeignKey(Locker, on_delete=models.CASCADE)
     version = models.CharField(max_length=20, default='none')
     connections = models.ManyToManyField(Connection, related_name='connection') 

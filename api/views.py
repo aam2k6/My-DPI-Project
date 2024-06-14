@@ -1,30 +1,69 @@
 from django.shortcuts import render
 
-# Create your views here.
 from rest_framework import generics, request, status
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.db import transaction
+import os
+from django.conf import settings
 from .models import Resource, Locker, User, Connection
-from .serializers import ResourceSerializer, LockerSerializer
+from .serializers import ResourceSerializer, LockerSerializer, ConnectionSerializer, UserSerializer
 
 class ResourceListCreate(generics.ListCreateAPIView):
-    rederer_class = [TemplateHTMLRenderer]
+    renderer_classes = [TemplateHTMLRenderer]
     template_name = 'createresource.html'
 
     queryset = Resource.objects.all()
     serializer_class = ResourceSerializer
-    
-    @transaction.atomic
+
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        serializer = self.get_serializer()
+        return Response({'serializer': serializer})
+        
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            document_name = serializer.validated_data.get('document_name')
+            locker = serializer.validated_data.get('locker')
+            version = serializer.validated_data.get('version')
+            connections = serializer.validated_data.get('connections')
+            owner = serializer.validated_data.get('owner')
+            type = serializer.validated_data.get('type')
+            file = request.FILES.get('document')
+
+            if file:
+                file_path = os.path.join(settings.MEDIA_ROOT, 'documents', file.name)
+
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+                with open(file_path, 'wb+') as destination:
+                    for chunk in file.chunks():
+                        destination.write(chunk)
+
+                Resource.objects.create(
+                    document_name=document_name,
+                    i_node_pointer=file_path,
+                    locker=locker,
+                    version=version,
+                    connections=connections,
+                    owner=owner,
+                    type=type,
+                )
+
+                return render(request, self.template_name, {'success': 'Resource Uploaded'})
+            else:
+                return render(request, self.template_name, {'error': 'No file provided'})
+
+        return render(request, self.template_name, {'serializer': serializer})                    
 
 class LockerListCreate(generics.ListCreateAPIView):
     queryset = Locker.objects.all()
     serializer_class = LockerSerializer
 
 class ShareResources(generics.RetrieveUpdateDestroyAPIView):
-    renderer_class = [TemplateHTMLRenderer]
+    renderer_classes = [TemplateHTMLRenderer]
     template_name = 'shareresource.html'
 
     queryset = Resource.objects.all()
@@ -45,15 +84,15 @@ class ShareResources(generics.RetrieveUpdateDestroyAPIView):
 
         if not resource_name and not new_owner_username:
             return render(request, self.template_name, {'error':'Incomplete information'})
-        
+            
         try: 
             resource = Resource.objects.get(document_name = resource_name)
-            old_owner = resource.owner
+            #old_owner = resource.owner
             print(f"Found resource: {resource}")
             print(f"Current owner of resource '{resource_name}': {resource.owner}")
         except Resource.DoesNotExist:
             return render(request, self.template_name, {'error':'Resource not found'})
-        
+            
         try:
             new_owner = User.objects.get(username = new_owner_username)
         except User.DoesNotExist:
@@ -79,6 +118,7 @@ class ShareResources(generics.RetrieveUpdateDestroyAPIView):
 
         return render(request, self.template_name, {'Success':'Resource Uploaded'})
     
+        
 def display_home(request):
     return render(request, 'page1.html')
 
@@ -86,7 +126,18 @@ def sharing_page(request):
     return render(request, 'sharingpage(page2).html')
 
 def dpi_directory(request):
-    return render(request, 'page3.html')
+    if request.method == 'POST':
+        users = User.objects.all()
+        context = {
+            'users': users,
+        }
+        return render(request, 'page3.html', context)
+    else:
+        users = User.objects.all()  # Make sure to fetch users for GET as well
+        context = {
+            'users': users,
+        }
+        return render(request, 'page3.html', context)
 
 #def view_connection(request):
 #    return render(request, 'viewconnection(page5).html')

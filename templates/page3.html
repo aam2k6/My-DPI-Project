@@ -29,11 +29,13 @@
             </form>
         </div>
         <div class="container">
-            <div class="card">
-                <h4>IIITB</h4>
-                <button id="btn-iiitb">Enter</button>
-            </div>
-            <div class="card">
+            {% for user in users %}
+                <div class="card">
+                    <h4>{{ user.username }}</h4>
+                    <button id="btn-iiitb">Enter</button>
+                </div>
+            {% endfor %}
+            {% comment %} <div class="card">
                 <h4>Locker 1</h4>
                 <button>Enter</button>
             </div>
@@ -52,11 +54,10 @@
             <div class="card">
                 <h4>Company 2</h4>
                 <button>Enter</button>
-            </div>
+            </div> {% endcomment %}
         </div>
      </div>
 
-    <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="{% static 'js/script(page3).js' %}"></script>
    

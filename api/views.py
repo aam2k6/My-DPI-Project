@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 from rest_framework import generics, request, status
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -8,6 +7,9 @@ import os
 from django.conf import settings
 from .models import Resource, Locker, User, Connection
 from .serializers import ResourceSerializer, LockerSerializer, ConnectionSerializer, UserSerializer
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
 
 class ResourceListCreate(generics.ListCreateAPIView):
     renderer_classes = [TemplateHTMLRenderer]
@@ -105,22 +107,33 @@ class ShareResources(generics.RetrieveUpdateDestroyAPIView):
         resource.save()
         print(f"Resource owner updated to: {resource.owner}")
 
-        #Connection.objects.create(
-        #   connection_name = old_owner + "<>" + new_owner,
-        #   connection_norm = "",
-        #    access_norm = "",
-        #    access_token = "",
-        #    source_locker = resource.locker,
-        #    target_locker = new_owner_locker,
-        #    source_user = old_owner,
-        #    target_user = new_owner_username,
-        #) 
-
         return render(request, self.template_name, {'Success':'Resource Uploaded'})
     
-        
+@csrf_exempt
+def add_locker(request):
+    print("add_locker view called")
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            locker_name = data.get('name')
+            print(f"Received locker_name: {locker_name}")
+            if locker_name:
+                user = request.user if request.user.is_authenticated else User.objects.first()
+                locker = Locker.objects.create(name=locker_name, user=user)
+                return JsonResponse({'success': True, 'name': locker.name})
+            return JsonResponse({'success': False, 'error': 'No locker name provided'})
+        except Exception as e:
+            print(f"Exception: {str(e)}")
+            return JsonResponse({'success': False, 'error': str(e)})
+    print("Invalid request method")
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
 def display_home(request):
-    return render(request, 'page1.html')
+    user = User.objects.first()  # Replace with the actual user, e.g., request.user
+    lockers = Locker.objects.filter(user=user)
+    return render(request, 'page1.html', {'lockers': lockers})
+
 
 def sharing_page(request):
     return render(request, 'sharingpage(page2).html')
@@ -138,9 +151,6 @@ def dpi_directory(request):
             'users': users,
         }
         return render(request, 'page3.html', context)
-
-#def view_connection(request):
-#    return render(request, 'viewconnection(page5).html')
 
 def iiitb_locker(request):
     return render(request, 'page4.html')

@@ -1,65 +1,62 @@
+/* page1.css */
+body {
+  font-family: Arial, sans-serif;
+}
+
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 5px;
-    padding: 0.5rem 1rem;
-  }
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
 
-  .navbar-brand{
-    font-weight:bolder;
-    margin-left: 2rem;
-  }
+.navbar-brand {
+  font-weight: bold;
+}
 
-  .navbar-links {
-    list-style: none;
-    display: flex;
-  }
+.navbar-links {
+  display: flex;
+  list-style-type: none;
+}
 
-  .navbar-links a {
-    color: black;
-    text-decoration: none;
-    font-weight:bolder;
-    margin: 0 2rem;
-  }
+.navbar-links li {
+  margin-left: 1rem;
+}
 
-  .navbar-links img{
-    height: 50px;
-    width: auto;
-  }
+.navbar-links img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
 
-  .hero-container{
-    margin-top: 8rem;
-    margin-left: 5rem;
-    width: 50%;
-  }
+.hero-container {
+  padding: 2rem;
+}
 
-  .new-locker{
-    display: flex;
-    justify-content:space-between;
-    align-items: center;
-  }
+.new-locker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
 
-  .new-locker button{
-    background-color: rgb(0, 140, 255);
-    color: white;
-    overflow: hidden;
-    border-radius: 12px;
-  }
+#lockerList .locker-box {
+  border: 2px solid #007bff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+#lockerList .locker-box h4 {
+  margin: 0;
+}
 
-  .docs, .education {
-    border: 2px solid rgb(107, 120, 231);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 5rem;
-  }
-
-  button{
-    font-weight:bolder;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-  }
+.openBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  cursor: pointer;
+}

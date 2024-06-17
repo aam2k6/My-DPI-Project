@@ -9,5 +9,5 @@ urlpatterns = [
     path("addlocker/", views.LockerListCreate.as_view(), name="resource-view-create"),
     path("addresource/", views.ResourceListCreate.as_view(), name="resource-view-create"),
     path("shareresource/", views.ShareResources.as_view(), name='upload-resources'),
-    path("create-locker/", views.add_locker, name="create-locker"),  # Ensure this is correct
+    path("create-locker/", views.add_locker, name="create-locker"),  
 ]

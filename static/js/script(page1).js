@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     newLockerBtn.addEventListener('click', () => {
         let lockerName = prompt("Enter the name of new locker");
         if (lockerName) {
-            fetch('/create-locker/', {  // Ensure the URL is correct
+            fetch('/create-locker/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -14,10 +14,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
-                }
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new TypeError("Oops, we haven't got JSON!");
                 }
                 return response.json();
             })

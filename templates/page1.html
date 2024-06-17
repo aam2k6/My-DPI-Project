@@ -24,14 +24,12 @@
         </div>
         
         <div id="lockerList">
+          {% for locker in lockers %}
           <div class="locker-box">
-            <h4>Docs</h4>
-            <button id="docsBtn" class="openBtn btn btn-secondary">Open</button>
+            <h4>{{ locker.name }}</h4>
+            <button class="openBtn btn btn-secondary">Open</button>
           </div>
-          <div class="locker-box">
-            <h4>Education</h4>
-            <button id="educationBtn" class="openBtn btn btn-secondary">Open</button>
-          </div>
+          {% endfor %}
           <!-- New lockers will be appended here -->
         </div>
      </div>
@@ -54,15 +52,14 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert(`New Locker '${lockerName}' created!`);
-                            // Add the new locker to the list
+                            alert(`New Locker '${data.name}' created!`);
                             const lockerList = document.getElementById('lockerList');
                             const newLocker = document.createElement('div');
                             newLocker.classList.add('locker-box');
                             newLocker.innerHTML = `<h4>${data.name}</h4><button class="openBtn btn btn-secondary">Open</button>`;
                             lockerList.appendChild(newLocker);
                         } else {
-                            alert('Error creating locker');
+                            alert('Error creating locker: ' + data.error);
                         }
                     })
                     .catch(error => {

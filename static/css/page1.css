@@ -1,4 +1,3 @@
-/* page1.css */
 body {
   font-family: Arial, sans-serif;
 }
@@ -46,12 +45,16 @@ body {
   margin-bottom: 1rem;
   border-radius: 5px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* Change to column layout */
+  align-items: flex-start; /* Align items to the start */
 }
 
 #lockerList .locker-box h4 {
-  margin: 0;
+  margin: 0 0 0.5rem 0; /* Add bottom margin */
+}
+
+#lockerList .locker-box p {
+  margin: 0 0 0.5rem 0; /* Add bottom margin */
 }
 
 .openBtn {

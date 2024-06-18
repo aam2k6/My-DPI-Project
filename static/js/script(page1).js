@@ -1,15 +1,18 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     const newLockerBtn = document.getElementById('newLockerBtn');
+
     newLockerBtn.addEventListener('click', () => {
-        let lockerName = prompt("Enter the name of new locker");
-        if (lockerName) {
+        let lockerName = prompt("Enter the name of the new locker");
+        let lockerDescription = prompt("Enter the description of the new locker");
+
+        if (lockerName && lockerDescription) {
             fetch('/create-locker/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken')
                 },
-                body: JSON.stringify({ name: lockerName })
+                body: JSON.stringify({ name: lockerName, description: lockerDescription })
             })
             .then(response => {
                 if (!response.ok) {
@@ -24,7 +27,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     const lockerList = document.getElementById('lockerList');
                     const newLocker = document.createElement('div');
                     newLocker.classList.add('locker-box');
-                    newLocker.innerHTML = `<h4>${data.name}</h4><button class="openBtn btn btn-secondary">Open</button>`;
+                    newLocker.innerHTML = `
+                        <h4>${data.name}</h4>
+                        <p>Description: ${data.description}</p>
+                        <p>Creation Date: ${data.creation_date}</p>
+                        <button class="openBtn btn btn-secondary">Open</button>
+                    `;
                     lockerList.appendChild(newLocker);
                 } else {
                     alert('Error creating locker: ' + data.error);
@@ -34,6 +42,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 console.error('Error:', error);
                 alert('Error creating locker');
             });
+        } else {
+            alert('Locker name and description are required.');
         }
     });
 });

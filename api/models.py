@@ -12,7 +12,8 @@ class User(models.Model):
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
-    creation_date = models.DateTimeField(default=timezone.now)
+    description = models.TextField(blank=True, null=True)  # Allow description to be optional
+    creation_date = models.DateField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE)        #user will be the one logged in 
 
     def __str__(self):

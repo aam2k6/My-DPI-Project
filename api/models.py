@@ -2,7 +2,9 @@ from django.db import models
 from django.utils import timezone
 
 # Create your models here.
-class User(models.Model):
+class User(models.Model
+
+):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=30)
 

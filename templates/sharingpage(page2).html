@@ -1,80 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title></title>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Education Documents</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/sharingpage(page2).css' %}" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="{% static 'css/sharingpage(page2).css' %}">
+</head>
+<body>
     <div class="navbar">
-      <span class="nav-item" id="nav1">My Education Documents</span>
-      <span class="nav-item" id="nav2">
-        <a href="page1.html" class="nav-item" id="nav2-1">Home</a>
-        <img
-          class="nav-img"
-          id="nav2-2"
-          src="{% static 'images/user_icon.png' %} "
-          alt=""
-        />
-      </span>
-
-      <a href="page3.html" class="nav-item" id="nav3">DPI Directory </a>
+        <span class="nav-item" id="nav1">My Education Documents</span>
+        <span class="nav-item" id="nav2">
+            <a href="page1.html" class="nav-item" id="nav2-1">Home</a>
+            <img
+                class="nav-img"
+                id="nav2-2"
+                src="{% static 'images/user_icon.png' %}"
+                alt="User Icon"
+            />
+        </span>
+        <a href="page3.html" class="nav-item" id="nav3">DPI Directory</a>
     </div>
-    <!-- <div class="underline"></div> -->
+
     <div class="container">
-      <div class="locker-name">
-        <!-- <br><br>
+        <div class="locker-name">
+            Owner: Rohith
             <br><br>
-            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
-
-            &nbsp; &nbsp;
-            &nbsp; &nbsp;
-            &nbsp; &nbsp;
-            &nbsp; &nbsp;
-            &nbsp; &nbsp;
-              -->
-        Owner: Rohith
-        <br /><br />
-        &lt;Description&gt;
-        <br />
-        <br />
-      </div>
-      <div class="container-2 clearfix">
-        <div class="a">
-          Resources
-          <br /><br /><br />
-          <span id="documents">Transcripts.pdf</span>
-          <span class="public-private">
-            &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Public/private</span
-          >
-          <br /><br />
-          <span id="documents">10thMarks-card.pdf</span>
-
-          <span class="public-private">Public/private</span>
-          <br /><br />
-          <br /><br />
-          <span id="button"> Share </span>
-          &nbsp;&nbsp;&nbsp;
-          <span id="button"> upload resource </span>
+            &lt;Description&gt;
+            <br><br>
         </div>
-        <div class="b">
-          Connections:&nbsp;&nbsp;&nbsp;&nbsp;
-          <div class="connectionss" >
-            IIITB &lt;&gt;Rohith
-            <p class="underlined-text">
-              Created On: <span class="underline"></span><br />
-              Valid Until: <span class="underline"></span> <br />
-              Connecting Locker: <a href="page4.html" class="iiitb">IIITB</a>
-            </p>
-          </div>
-          <p class="mantri">Mantri Builder Property</p>
+        <div class="container-2 clearfix">
+            <div class="a">
+                Resources
+                <br><br><br>
+                <span id="documents"><a href="https://docs.google.com/document/d/1B6IwUHLXe1_1vao95Rp2A-rg1KbxuoDo/edit?usp=sharing&ouid=100663808854007804404&rtpof=true&sd=true" target="_blank">Transcripts.pdf</a></span>
+                <span class="public-private">Public/private</span>
+                <br><br>
+                <span id="documents"><a href="https://docs.google.com/document/d/1knRJ3Xn5F-eXgK9bqhIweN4Obi9_Fkdw52yPUKhwPHc/edit?usp=sharing" target="_blank">10thMarks-card.pdf</a></span>
+                <span class="public-private">Public/private</span>
+                <br><br><br><br>
+                <span id="button"> Share </span>
+                &nbsp;&nbsp;&nbsp;
+                <span id="uploadButton" class="button" onclick="openUploadForm()">Upload Resource</span>
+            </div>
+            <div class="b">
+                Connections:&nbsp;&nbsp;&nbsp;&nbsp;
+                <div class="connectionss">
+                    IIITB &lt;&gt; Rohith
+                    <p class="underlined-text">
+                        Created On: <span class="underline"></span><br>
+                        Valid Until: <span class="underline"></span><br>
+                        Connecting Locker: <a href="page4.html" class="iiitb">IIITB</a>
+                    </p>
+                </div>
+                <p class="mantri">Mantri Builder Property</p>
+            </div>
         </div>
-      </div>
     </div>
-  </body>
+
+    <!-- Modal for Upload Resource -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUploadForm()">&times;</span>
+            <h2>Upload Resource</h2>
+            <form id="uploadResourceForm" enctype="multipart/form-data">
+                <label for="resourceName">Name of Resource:</label>
+                <input type="text" id="resourceName" name="resourceName" required />
+                <br><br>
+                <label for="fileInput">Choose File:</label>
+                <input type="file" id="fileInput" name="fileInput" required />
+                <br><br>
+                <label for="visibility">Visibility:</label>
+                <select id="visibility" name="visibility">
+                    <option value="private">Private</option>
+                    <option value="public">Public</option>
+                </select>
+                <br><br>
+                <button type="submit" class="button">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script(page2).js' %}"></script>
+</body>
 </html>
+

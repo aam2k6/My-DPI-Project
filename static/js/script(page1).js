@@ -1,35 +1,44 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     const newLockerBtn = document.getElementById('newLockerBtn');
+
+    
     newLockerBtn.addEventListener('click', () => {
-        let lockerName = prompt("Enter the name of new locker");
-        if (lockerName) {
-            fetch('/create-locker/', {  // Ensure the URL is correct
+        let lockerName = prompt("Enter the name of the new locker");
+        let lockerDescription = prompt("Enter the description of the new locker");
+
+        if (lockerName && lockerDescription) {
+            fetch('/create-locker/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken')
                 },
-                body: JSON.stringify({ name: lockerName })
+                body: JSON.stringify({ name: lockerName, description: lockerDescription })
             })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
-                }
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new TypeError("Oops, we haven't got JSON!");
                 }
                 return response.json();
             })
             .then(data => {
                 if (data.success) {
                     alert(`New Locker '${lockerName}' created!`);
-                    // Add the new locker to the list
+
                     const lockerList = document.getElementById('lockerList');
                     const newLocker = document.createElement('div');
                     newLocker.classList.add('locker-box');
-                    newLocker.innerHTML = `<h4>${data.name}</h4><button class="openBtn btn btn-secondary">Open</button>`;
+                    newLocker.innerHTML = `
+                        <h4>${data.name}</h4>
+                        <p>Description: ${data.description}</p>
+                        <p>Creation Date: ${data.creation_date}</p>
+                        <a href="{% url 'sharing-page' %}" class="openBtn btn btn-secondary">Open</a>
+                    `;
                     lockerList.appendChild(newLocker);
+
+                    // Attach event listener to the new "Open" button
+                    const openBtn = newLocker.querySelector('.openBtn');
+                    openBtn.addEventListener('click', redirectToEducation);
                 } else {
                     alert('Error creating locker: ' + data.error);
                 }
@@ -38,21 +47,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 console.error('Error:', error);
                 alert('Error creating locker');
             });
+        } else {
+            alert('Locker name and description are required.');
         }
     });
-});
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
+
+    // Function to redirect to education sharing page
+    function redirectToEducation() {
+        window.location.href = '../Page2/sharingpage.html';
+    }
+});

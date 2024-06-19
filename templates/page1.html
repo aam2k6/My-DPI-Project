@@ -29,7 +29,8 @@
                 <h4>{{ locker.name }}</h4>
                 <p>Description: {{ locker.description }}</p>
                 <p>Creation Date: {{ locker.creation_date }}</p>
-                <button class="openBtn btn btn-secondary">Open</button>
+                <a href="{% url 'sharing-page' %}" class="openBtn btn btn-secondary">Open</a>
+
             </div>
             {% endfor %}
             <!-- New lockers will be appended here -->
@@ -71,7 +72,7 @@
                                 <h4>${data.name}</h4>
                                 <p>Description: ${data.description}</p>
                                 <p>Creation Date: ${data.creation_date}</p>
-                                <button class="openBtn btn btn-secondary">Open</button>
+                                <button class="openBtn btn btn-secondary" onclick="redirectToEducation()">Open</button>
                             `;
                             lockerList.appendChild(newLocker);
                         } else {

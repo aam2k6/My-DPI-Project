@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     const newLockerBtn = document.getElementById('newLockerBtn');
 
+    
     newLockerBtn.addEventListener('click', () => {
         let lockerName = prompt("Enter the name of the new locker");
         let lockerDescription = prompt("Enter the description of the new locker");
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             .then(data => {
                 if (data.success) {
                     alert(`New Locker '${lockerName}' created!`);
-                    // Add the new locker to the list
+
                     const lockerList = document.getElementById('lockerList');
                     const newLocker = document.createElement('div');
                     newLocker.classList.add('locker-box');
@@ -31,9 +32,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         <h4>${data.name}</h4>
                         <p>Description: ${data.description}</p>
                         <p>Creation Date: ${data.creation_date}</p>
-                        <button class="openBtn btn btn-secondary">Open</button>
+                        <a href="{% url 'sharing-page' %}" class="openBtn btn btn-secondary">Open</a>
                     `;
                     lockerList.appendChild(newLocker);
+
+                    // Attach event listener to the new "Open" button
+                    const openBtn = newLocker.querySelector('.openBtn');
+                    openBtn.addEventListener('click', redirectToEducation);
                 } else {
                     alert('Error creating locker: ' + data.error);
                 }
@@ -46,19 +51,25 @@ document.addEventListener('DOMContentLoaded', (event) => {
             alert('Locker name and description are required.');
         }
     });
-});
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
+
+    // Function to redirect to education sharing page
+    function redirectToEducation() {
+        window.location.href = '../Page2/sharingpage.html';
+    }
+});

@@ -4,6 +4,7 @@ from django.utils import timezone
 # Create your models here.
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
+    description = models.CharField(max_length=200, default=None)
     username = models.CharField(max_length=30)
 
     def __str__(self):

@@ -3,13 +3,22 @@ from rest_framework import generics, request, status
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.db import transaction
+from rest_framework.views import APIView
 import os
+from django.db.models import Q
+#import requests
+import json
+#from django.views import View
+#from django.urls import reverse
 from django.conf import settings
 from .models import Resource, Locker, User, Connection
 from .serializers import ResourceSerializer, LockerSerializer, ConnectionSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-import json
+#from django.core.serializers import serialize
+#from django.views.generic import TemplateView
+#from django.core.serializers.json import DjangoJSONEncoder
+#from django.utils.decorators import method_decorator
 
 class ResourceListCreate(generics.ListCreateAPIView):
     renderer_classes = [TemplateHTMLRenderer]
@@ -130,27 +139,26 @@ def add_locker(request):
 
 
 def display_home(request):
-    user = User.objects.first()  # Replace with the actual user, e.g., request.user
+    user = User.objects.first()
     lockers = Locker.objects.filter(user=user)
     return render(request, 'page1.html', {'lockers': lockers})
-
 
 def sharing_page(request):
     return render(request, 'sharingpage(page2).html')
 
-def dpi_directory(request):
-    if request.method == 'POST':
-        users = User.objects.all()
-        context = {
-            'users': users,
-        }
-        return render(request, 'page3.html', context)
-    else:
-        users = User.objects.all()  # Make sure to fetch users for GET as well
-        context = {
-            'users': users,
-        }
-        return render(request, 'page3.html', context)
+class DpiDirectoryView(APIView):
+    def get(self, request):
+        query = request.GET.get('search', '')
+        if query:
+            users = User.objects.filter(Q(username__icontains=query))
+        else:
+            users = User.objects.all()
 
+        return render(request, 'partials/user_list.html', {'users': users})
+
+    def get_page(self, request):
+        users = User.objects.all()
+        return render(request, 'page3.html', {'users': users})
+    
 def iiitb_locker(request):
     return render(request, 'page4.html')

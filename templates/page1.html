@@ -20,7 +20,7 @@
     <div class="hero-container">
         <div class="new-locker">
             <h3>My Lockers</h3>
-            <button id="newLockerBtn" class="btn btn-primary">Create New Locker</button>
+            <button id="newLockerBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newLockerModal">Create New Locker</button>
         </div>
         
         <div id="lockerList">
@@ -30,21 +30,65 @@
                 <p>Description: {{ locker.description }}</p>
                 <p>Creation Date: {{ locker.creation_date }}</p>
                 <a href="{% url 'sharing-page' %}" class="openBtn btn btn-secondary">Open</a>
-
             </div>
             {% endfor %}
             <!-- New lockers will be appended here -->
         </div>
     </div>
 
+    <!-- New Locker Modal -->
+    <div class="modal fade" id="newLockerModal" tabindex="-1" aria-labelledby="newLockerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newLockerModalLabel">Create New Locker</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newLockerForm">
+                        <div class="mb-3">
+                            <label for="lockerName" class="form-label">Locker Name</label>
+                            <input type="text" class="form-control" id="lockerName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lockerDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="lockerDescription" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Success</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    New Locker created successfully!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            const newLockerBtn = document.getElementById('newLockerBtn');
+            const newLockerForm = document.getElementById('newLockerForm');
 
-            newLockerBtn.addEventListener('click', () => {
-                let lockerName = prompt("Enter the name of the new locker");
-                let lockerDescription = prompt("Enter the description of the new locker");
+            newLockerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                let lockerName = document.getElementById('lockerName').value;
+                let lockerDescription = document.getElementById('lockerDescription').value;
 
                 if (lockerName && lockerDescription) {
                     fetch('/create-locker/', {
@@ -63,8 +107,6 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            alert(`New Locker '${lockerName}' created!`);
-                            // Add the new locker to the list
                             const lockerList = document.getElementById('lockerList');
                             const newLocker = document.createElement('div');
                             newLocker.classList.add('locker-box');
@@ -72,9 +114,21 @@
                                 <h4>${data.name}</h4>
                                 <p>Description: ${data.description}</p>
                                 <p>Creation Date: ${data.creation_date}</p>
-                                <button class="openBtn btn btn-secondary" onclick="redirectToEducation()">Open</button>
+                                <a href="{% url 'sharing-page' %}" class="openBtn btn btn-secondary">Open</a>
                             `;
                             lockerList.appendChild(newLocker);
+
+                            const openBtn = newLocker.querySelector('.openBtn');
+                            openBtn.addEventListener('click', redirectToEducation);
+
+                            // Reset the form and close the modal
+                            newLockerForm.reset();
+                            var modal = bootstrap.Modal.getInstance(document.getElementById('newLockerModal'));
+                            modal.hide();
+
+                            // Show success modal
+                            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                            successModal.show();
                         } else {
                             alert('Error creating locker: ' + data.error);
                         }
@@ -102,6 +156,11 @@
                 }
             }
             return cookieValue;
+        }
+
+        // Function to redirect to education sharing page
+        function redirectToEducation() {
+            window.location.href = '../Page2/sharingpage.html';
         }
     </script>
 </body>

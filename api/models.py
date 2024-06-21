@@ -14,7 +14,7 @@ class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True)  # Allow description to be optional
-    creation_date = models.CharField(max_length=100)    
+    #creation_date = models.CharField(max_length=100)    
     user = models.ForeignKey(User, on_delete=models.CASCADE)        #user will be the one logged in 
 
     def __str__(self):

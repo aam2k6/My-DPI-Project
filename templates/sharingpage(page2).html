@@ -11,7 +11,7 @@
     <div class="navbar">
         <span class="nav-item" id="nav1">My Education Documents</span>
         <span class="nav-item" id="nav2">
-            <a href="page1.html" class="nav-item" id="nav2-1">Home</a>
+            <a href="{% url 'page1' %}" class="nav-item" id="nav2-1">Home</a>
             <img
                 class="nav-img"
                 id="nav2-2"
@@ -19,7 +19,7 @@
                 alt="User Icon"
             />
         </span>
-        <a href="page3.html" class="nav-item" id="nav3">DPI Directory</a>
+        <a href="{% url 'dpi-directory' %}" class="nav-item" id="nav3">DPI Directory</a>
     </div>
 
     <div class="container">
@@ -84,4 +84,3 @@
     <script src="{% static 'js/script(page2).js' %}"></script>
 </body>
 </html>
-

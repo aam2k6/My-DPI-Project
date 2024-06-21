@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     newLocker.innerHTML = `
                         <h4>${data.name}</h4>
                         <p>Description: ${data.description}</p>
-                        <p>Creation Date: ${data.creation_date}</p>
                         <a href="{% url 'sharing-page' %}" class="openBtn btn btn-secondary">Open</a>
                     `;
                     lockerList.appendChild(newLocker);
@@ -68,7 +67,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         return cookieValue;
     }
 
-    // Function to redirect to education sharing page
     function redirectToEducation() {
         window.location.href = '../Page2/sharingpage.html';
     }

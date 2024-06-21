@@ -119,7 +119,7 @@ def add_locker(request):
             if locker_name and description:
                 user = request.user if request.user.is_authenticated else User.objects.first()
                 locker = Locker.objects.create(name=locker_name, description=description, user=user)
-                return JsonResponse({'success': True, 'name': locker.name, 'description': locker.description, 'creation_date': locker.creation_date.strftime('%Y-%m-%d')})
+                return JsonResponse({'success': True, 'name': locker.name, 'description': locker.description})
             return JsonResponse({'success': False, 'error': 'Name and description are required'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})

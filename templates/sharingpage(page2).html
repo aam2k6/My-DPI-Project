@@ -12,32 +12,30 @@
         <span class="nav-item" id="nav1">My Education Documents</span>
         <span class="nav-item" id="nav2">
             <a href="{% url 'page1' %}" class="nav-item" id="nav2-1">Home</a>
-            <img
-                class="nav-img"
-                id="nav2-2"
-                src="{% static 'images/user_icon.png' %}"
-                alt="User Icon"
-            />
+            <img class="nav-img" id="nav2-2" src="{% static 'images/user_icon.png' %}" alt="User Icon" />
         </span>
         <a href="{% url 'dpi-directory' %}" class="nav-item" id="nav3">DPI Directory</a>
     </div>
 
     <div class="container">
         <div class="locker-name">
-            Owner: Rohith
+            Owner: {{ user.username }}
             <br><br>
-            &lt;Description&gt;
+            {{ locker.description }}
             <br><br>
         </div>
         <div class="container-2 clearfix">
             <div class="a">
                 Resources
                 <br><br><br>
-                <span id="documents"><a href="https://drive.google.com/file/d/1pe4_gNDPW9rEsgqjPrDGO9Ch1DkkkkhD/view?usp=sharing" target="_blank">Transcripts.pdf</a></span>
-                <span class="public-private">Public/private</span>
-                <br><br>
-                <span id="documents"><a href="https://drive.google.com/file/d/119LrNa1_dNeplN6BiBwHqurAU6mn_vQN/view?usp=sharing" target="_blank">10thMarks-card.pdf</a></span>
-                <span class="public-private">Public/private</span>
+                <div id="resources-list">
+                    <!-- Example existing resources -->
+                    <span id="documents"><a href="https://drive.google.com/file/d/1pe4_gNDPW9rEsgqjPrDGO9Ch1DkkkkhD/view?usp=sharing" target="_blank">Transcripts.pdf</a></span>
+                    <span class="public-private">Public/private</span>
+                    <br><br>
+                    <span id="documents"><a href="https://drive.google.com/file/d/119LrNa1_dNeplN6BiBwHqurAU6mn_vQN/view?usp=sharing" target="_blank">10thMarks-card.pdf</a></span>
+                    <span class="public-private">Public/private</span>
+                </div>
                 <br><br><br><br>
                 <span id="button"> Share </span>
                 &nbsp;&nbsp;&nbsp;
@@ -63,24 +61,82 @@
         <div class="modal-content">
             <span class="close" onclick="closeUploadForm()">&times;</span>
             <h2>Upload Resource</h2>
-            <form id="uploadResourceForm" enctype="multipart/form-data">
+            <form id="uploadResourceForm" enctype="multipart/form-data" method="post" action="{% url 'upload_resource' %}">
+                {% csrf_token %}
                 <label for="resourceName">Name of Resource:</label>
-                <input type="text" id="resourceName" name="resourceName" required />
+                <input type="text" id="resourceName" name="resource_name" required />
                 <br><br>
                 <label for="fileInput">Choose File:</label>
-                <input type="file" id="fileInput" name="fileInput" required />
+                <input type="file" id="fileInput" name="document" required />
                 <br><br>
                 <label for="visibility">Visibility:</label>
-                <select id="visibility" name="visibility">
+                <select id="visibility" name="type">
                     <option value="private">Private</option>
                     <option value="public">Public</option>
                 </select>
                 <br><br>
+                <input type="hidden" name="locker_id" value="{{ locker.id }}">
+                <input type="hidden" name="owner_id" value="{{ user.id }}">
                 <button type="submit" class="button">Upload</button>
             </form>
         </div>
     </div>
 
-    <script src="{% static 'js/script(page2).js' %}"></script>
+    <script>
+        // Function to open the upload form modal
+        function openUploadForm() {
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+
+        // Function to close the upload form modal
+        function closeUploadForm() {
+            document.getElementById('uploadModal').style.display = 'none';
+        }
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('uploadModal');
+            if (event.target == modal) {
+                closeUploadForm();
+            }
+        };
+
+        // Event listener for the upload button
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadButton = document.getElementById('uploadButton');
+            if (uploadButton) {
+                uploadButton.addEventListener('click', openUploadForm);
+            }
+
+            const uploadForm = document.getElementById('uploadResourceForm');
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = new FormData(uploadForm);
+                    fetch(uploadForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const resourcesList = document.getElementById('resources-list');
+                            const newResource = document.createElement('div');
+                            newResource.innerHTML = `<span id="documents"><a href="${data.resource_url}" target="_blank">${data.document_name}</a></span>
+                                                     <span class="public-private">${data.type}</span><br><br>`;
+                            resourcesList.appendChild(newResource);
+                            closeUploadForm();
+                        } else {
+                            alert(data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            }
+        });
+    </script>
 </body>
 </html>

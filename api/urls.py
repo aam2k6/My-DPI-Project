@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views  
 from django.views.generic import TemplateView
-from .views import DpiDirectoryView
+from .views import DpiDirectoryView, sharing_page, upload_resource
 
 urlpatterns = [
     path("", views.display_home, name="page1"),
@@ -12,4 +12,6 @@ urlpatterns = [
     path("addresource/", views.ResourceListCreate.as_view(), name="resource-view-create"),
     path("shareresource/", views.ShareResources.as_view(), name='upload-resources'),
     path("create-locker/", views.add_locker, name="create-locker"),
+    path('upload-resource/', upload_resource, name='upload_resource'),
+    path('sharing-page/', sharing_page, name='sharing_page'),
 ]

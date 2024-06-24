@@ -1,6 +1,7 @@
 {% for user in users %}
     <div class="card">
         <h4>{{ user.username }}</h4>
+        <h4>{{ user.description }}</h4>
         <button class="enter-btn" data-userid="{{ user.id }}">Enter</button>
     </div>
 {% empty %}

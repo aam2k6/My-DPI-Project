@@ -1,5 +1,8 @@
 IUDX-DATA TRUSTS
 
+API Documentation link:
+https://app.swaggerhub.com/apis/CHITNISKANIKA/Locker/1.0.0#/
+
 This Django-based web application includes various endpoints to create, retrieve, update, and delete resources and lockers. It also includes endpoints to view specific pages within the application.
 
 api/: Contains the Django app responsible for the API.

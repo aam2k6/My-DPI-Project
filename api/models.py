@@ -2,9 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 # Create your models here.
-class User(models.Model
-
-):
+class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=200, default=None)
     username = models.CharField(max_length=30)
@@ -16,7 +14,7 @@ class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True)  # Allow description to be optional
-    creation_date = models.DateField(default=timezone.now)
+    #creation_date = models.CharField(max_length=100)    
     user = models.ForeignKey(User, on_delete=models.CASCADE)        #user will be the one logged in 
 
     def __str__(self):
@@ -34,8 +32,8 @@ class Agreement(models.Model):
     revoke1 = models.BooleanField(default=False)
     revoke2 = models.BooleanField(default=False)
 
-    validity = models.DateTimeField(default=timezone.now)
-    created = models.DateTimeField(default=timezone.now)
+    #validity = models.DateTimeField(default=timezone.now)
+    #created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.agreement_text

@@ -79,8 +79,6 @@ class Migration(migrations.Migration):
                 ('consent2', models.BooleanField(default=False)),
                 ('revoke1', models.BooleanField(default=False)),
                 ('revoke2', models.BooleanField(default=False)),
-                ('validity', models.DateTimeField(default=django.utils.timezone.now)),
-                ('created', models.DateTimeField(default=django.utils.timezone.now)),
                 ('signee1', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='signee1', to='api.user')),
                 ('signee2', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='signee2', to='api.user')),
             ],

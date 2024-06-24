@@ -32,8 +32,8 @@ class Agreement(models.Model):
     revoke1 = models.BooleanField(default=False)
     revoke2 = models.BooleanField(default=False)
 
-    validity = models.DateTimeField(default=timezone.now)
-    created = models.DateTimeField(default=timezone.now)
+    #validity = models.DateTimeField(default=timezone.now)
+    #created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.agreement_text

@@ -32,8 +32,8 @@ class Agreement(models.Model):
     revoke1 = models.BooleanField(default=False)
     revoke2 = models.BooleanField(default=False)
 
-    #validity = models.DateTimeField(default=timezone.now)
-    #created = models.DateTimeField(default=timezone.now)
+    validity = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.agreement_text
@@ -41,8 +41,8 @@ class Agreement(models.Model):
 class Connection(models.Model):
     connection_id = models.AutoField(primary_key=True)
     connection_name = models.CharField(max_length=100)
-    #connection_norm = models.ForeignKey(Agreement, on_delete=models.CASCADE)
-    access_norm = models.JSONField()
+    access_norm = models.ForeignKey(Agreement, on_delete=models.CASCADE)
+    #connection_norm = models.JSONField()
     access_token = models.CharField(max_length=20, unique=True, default=None)
     source_locker = models.ForeignKey(Locker, on_delete = models.CASCADE, related_name='source_locker')
     target_locker = models.ForeignKey(Locker, on_delete = models.CASCADE, related_name='target_locker')

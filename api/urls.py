@@ -16,4 +16,5 @@ urlpatterns = [
     path('sharing-page/', sharing_page, name='sharing_page'),
     path('api/connections/', views.iiitb_locker, name='api-connections'),
     path('api/user-connections/', views.get_user_connection, name='api-user-connections'),
+    path('add-locker/', views.add_locker, name='add-locker'),  
 ]

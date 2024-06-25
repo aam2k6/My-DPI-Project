@@ -169,12 +169,12 @@ def add_locker(request):
             if locker_name and description:
                 user = request.user if request.user.is_authenticated else User.objects.first()
                 locker = Locker.objects.create(name=locker_name, description=description, user=user)
-                print(locker)
                 return JsonResponse({'success': True, 'name': locker.name, 'description': locker.description})
             return JsonResponse({'success': False, 'error': 'Name and description are required'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    return render(request, 'add_locker.html')
+
        
 def display_home(request):
     user = request.user if request.user.is_authenticated else User.objects.first()

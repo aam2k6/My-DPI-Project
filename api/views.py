@@ -184,8 +184,8 @@ def display_home(request):
 def sharing_page(request):
     user = request.user if request.user.is_authenticated else User.objects.first()
     locker = Locker.objects.filter(user=user).first()
-    return render(request, 'sharingpage(page2).html', {'locker': locker, 'user': user})
-
+    # return render(request, 'sharingpage(page2).html', {'locker': locker, 'user': user})
+    return render(request, 'sharingpage.html', {'locker': locker, 'user': user})
 class DpiDirectoryView(APIView):
     def get(self, request):
         query = request.GET.get('search', '')

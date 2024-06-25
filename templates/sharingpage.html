@@ -27,23 +27,24 @@
         <div class="container-2 clearfix">
             <div class="a">
                 <div class="res">Resources</div> 
-                <div class="container-3 clearfix">
-                    <div class="aa">
+                <div class="container-3" id="resources-list">
+                    <div id="aa">
                         <!-- Existing resources -->
                         <span id="documents"><a href="https://drive.google.com/file/d/1pe4_gNDPW9rEsgqjPrDGO9Ch1DkkkkhD/view?usp=sharing" target="_blank">Transcripts.pdf</a></span>
                         <br><br>
                         <span id="documents"><a href="https://drive.google.com/file/d/119LrNa1_dNeplN6BiBwHqurAU6mn_vQN/view?usp=sharing" target="_blank">10thMarks-card.pdf</a></span>
                     </div>
                     
-                    <div class="bb">
+                    <div id="bb">
                         <div class="public-private">Public/private</div>
                         <div class="public-private">Public/private</div>
                     </div>
                 </div>
-          
-                <button class="button" id="shareBtn">Share</button>
-                &nbsp;&nbsp;&nbsp;
-                <button class="button" id="uploadResourceBtn" data-bs-toggle="modal" data-bs-target="#uploadModal">Upload</button>
+            <div class="buttons">
+                        <button class="button" id="shareBtn">Share</button>
+                        &nbsp;&nbsp;&nbsp;
+                        <button class="button" id="uploadResourceBtn" data-bs-toggle="modal" data-bs-target="#uploadModal">Upload</button>
+            </div>
                 
             </div>
             
@@ -118,11 +119,24 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const resourcesList = document.getElementById('resources-list');
-                        const newResource = document.createElement('div');
-                        newResource.innerHTML = `<span id="documents"><a href="${data.resource_url}" target="_blank">${data.document_name}</a></span>
-                                                 <span class="public-private">${data.type}</span><br><br>`;
-                        resourcesList.appendChild(newResource);
+                        {#const resourcesList = document.getElementById('resources-list');#}
+                        const resourceList = document.getElementById('aa');
+                        const visibilityList = document.getElementById('bb');
+                        
+                        const newDocument = document.createElement('div');
+                        newDocument.innerHTML += `<br><span id="documents"><a href="${data.resource_url}" target="_blank">${data.document_name}</a></span>`
+                        resourceList.appendChild(newDocument);
+                        
+                        const visibility = document.createElement('div');
+                        visibility.innerHTML += `<span class="public-private">${data.type}</span><br><br>`
+                        visibilityList.appendChild(visibility);
+                        {#const newResource = `<span id="documents"><a href="${data.resource_url}" target="_blank">${data.document_name}</a></span> <br><br>`#}
+                        {#visibilityList.innerHTML += `<span class="public-private">${data.type}</span><br><br>`#}
+                        {#const newResource = document.createElement('div');#}
+                        
+                        {#newResource.innerHTML = `<span id="documents"><a href="${data.resource_url}" target="_blank">${data.document_name}</a></span>#}
+                        {#                         <span class="public-private">${data.type}</span><br><br>`;#}
+                        
                         // Close the modal after successful upload
                         var modal = new bootstrap.Modal(document.getElementById('uploadModal'));
                         modal.hide();

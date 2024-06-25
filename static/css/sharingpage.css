@@ -37,23 +37,27 @@
     margin-bottom: 1.5rem;
 }
 .container-3{
-    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
-.clearfix::after {
-    content: "";
-    display: table;
-    clear: both;
-}
-.a{
 
+.buttons {
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 1rem;
+}
+
+.a{
     width: 45%;
     border: 1px solid blue ;
-    
     /* font-size: 2rem; */
     float:left;
     margin-left: 2rem;
     height: 30rem;
     font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 .b{
     margin-right: 5rem;
@@ -68,11 +72,11 @@
 
 }
 
-.aa{
+#aa{
     width: 45%;
     float: left;
 }
-.bb{
+#bb{
     width: 45%;
     float: right;
 }
@@ -92,9 +96,8 @@
 }
 .res{
     margin-left: 2rem;
-
     font-weight: bolder;
-    margin-bottom: 3rem;
+    /*margin-bottom: 3rem;*/
     margin-top: 2rem;
 }
 button{
@@ -103,8 +106,9 @@ button{
 }
 .button{
     font-weight: bolder;
-    margin-left: 2rem;
-    margin-top: 6rem;
+    /*margin-left: 2rem;*/
+    /*margin-top: 13rem;*/
+    /*!*padding-left: 2rem;*!*/
 }
 
  #documents:hover{

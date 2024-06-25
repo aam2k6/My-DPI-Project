@@ -11,7 +11,7 @@ import json
 #from django.views import View
 #from django.urls import reverse
 from django.conf import settings
-from .models import Resource, Locker, User
+from .models import Resource, Locker, User, Connection
 from .serializers import ResourceSerializer, LockerSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -200,4 +200,10 @@ class DpiDirectoryView(APIView):
             return render(request, 'page3.html', {'users': users})
 
 def iiitb_locker(request):
-    return render(request, 'page4.html')
+    #def connection_list_view(request):
+    connections = Connection.objects.all()
+    return render(request, 'page4.html', {'connections': connections})
+
+def get_user_connection(request):
+    connections = Connection.objects.all()
+    return render(request, 'sharingpage(page2).html', {'connections': connections})

@@ -22,13 +22,13 @@
             <h3>My Lockers</h3>
             <button id="newLockerBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newLockerModal">Create New Locker</button>
         </div>
+        <br>
         
         <div id="lockerList">
             {% for locker in lockers %}
             <div class="locker-box">
                 <h4>{{ locker.name }}</h4>
                 <p>Description: {{ locker.description }}</p>
-<!--                 <p>Creation Date: {{ locker.creation_date }}</p> -->
                 <a href="{% url 'sharing-page' %}" class="openBtn btn btn-secondary">Open</a>
             </div>
             {% endfor %}
@@ -159,7 +159,7 @@
 
         // Function to redirect 
         function redirectToEducation() {
-            window.location.href = '../Page2/sharingpage.html';
+            window.location.href = '../sharingpage.html';
         }
     </script>
 </body>

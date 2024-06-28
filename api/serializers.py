@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 class LockerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Locker
-        fields = ["locker_id","name","user"]
+        fields = ["locker_id","name","description","user"]
 
 class AgreementSerializer(serializers.ModelSerializer):
     class Meta:

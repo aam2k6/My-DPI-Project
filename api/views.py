@@ -199,11 +199,12 @@ class DpiDirectoryView(APIView):
         else:
             return render(request, 'page3.html', {'users': users})
 
-def iiitb_locker(request):
-    #def connection_list_view(request):
-    connections = Connection.objects.all()
-    return render(request, 'page4.html', {'connections': connections})
+# def iiitb_locker(request):
+#     def connection_list_view(request):
+#     connections = Connection.objects.all()
+#     return render(request, 'page4.html', {'connections': connections})
 
-def get_user_connection(request):
-    connections = Connection.objects.all()
-    return render(request, 'sharingpage(page2).html', {'connections': connections})
+# def get_user_connection(request):
+#     connections = Connection.objects.all()
+#     return render(request, 'sharingpage(page2).html', {'connections': connections})\
+

@@ -75,3 +75,20 @@ class Resource(models.Model):
 
     def __str__(self):
         return self.document_name
+
+class ConnectionTerms(models.Model):
+    MODALITY_CHOICES = [
+        ('obligatory', 'Obligatory'),
+        ('permissive', 'Permissive'),
+        ('forbidden', 'Forbidden')
+    ]
+    terms_id=models.AutoField(primary_key=True)
+    conn_type=models.ForeignKey(ConnectionType,on_delete=models.CASCADE)
+    modality=models.CharField(max_length=50,choices=MODALITY_CHOICES)
+    data_element_name=models.CharField(max_length=50)
+    data_type=models.CharField(max_length=50)
+    sharing_type=models.CharField(max_length=50)
+    description=models.TextField(blank=True,null=True)
+
+    def __str__(self):
+        return f"{self.modality} - {self.data_element_name}"

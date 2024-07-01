@@ -10,7 +10,6 @@ class User(models.Model):
     username = models.CharField(max_length=30)
     password = models.CharField(max_length=150)
 
-
     def __str__(self):
         return self.username
 
@@ -25,18 +24,17 @@ class Locker(models.Model):
         return self.name
 
 
+def default_validity_time():
+    return timezone.now() + timedelta(days=7)
+
+
 class ConnectionType(models.Model):
     connection_type_id = models.AutoField(primary_key=True)
     connection_type_name = models.CharField(max_length=50)
     connection_description = models.TextField(blank=True, null=True)
     owner_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_user')
     owner_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='owner_locker')
-    validity_time = models.DateTimeField(default=lambda: timezone.now() + timedelta(days=7))
     created_time = models.DateTimeField(auto_now_add=True)
-
-    def default_validity_time():
-        return timezone.now() + timedelta(days=7)
-
     validity_time = models.DateTimeField(default=default_validity_time)
 
     def __str__(self):
@@ -55,14 +53,13 @@ class Connection(models.Model):
     requester_consent = models.BooleanField(default=False)
     revoke_source = models.BooleanField(default=False)
     revoke_target = models.BooleanField(default=False)
-    def default_validity_time():
-        return timezone.now() + timedelta(days=7)
 
     validity_time = models.DateTimeField(default=default_validity_time)
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.connection_name
+
 
 class Resource(models.Model):
     PUBLIC = 'public'
@@ -83,22 +80,24 @@ class Resource(models.Model):
     def __str__(self):
         return self.document_name
 
+
 class ConnectionTerms(models.Model):
     MODALITY_CHOICES = [
         ('obligatory', 'Obligatory'),
         ('permissive', 'Permissive'),
         ('forbidden', 'Forbidden')
     ]
-    terms_id=models.AutoField(primary_key=True)
-    conn_type=models.ForeignKey(ConnectionType,on_delete=models.CASCADE)
-    modality=models.CharField(max_length=50,choices=MODALITY_CHOICES)
-    data_element_name=models.CharField(max_length=50)
-    data_type=models.CharField(max_length=50)
-    sharing_type=models.CharField(max_length=50)
-    description=models.TextField(blank=True,null=True)
+    terms_id = models.AutoField(primary_key=True)
+    conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE)
+    modality = models.CharField(max_length=50, choices=MODALITY_CHOICES)
+    data_element_name = models.CharField(max_length=50)
+    data_type = models.CharField(max_length=50)
+    sharing_type = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.modality} - {self.data_element_name}"
+
 
 class Vnode(models.Model):
     vnode_id = models.AutoField(primary_key=True)
@@ -110,7 +109,8 @@ class Vnode(models.Model):
 
     def __str__(self):
         return self.vnode_id
-    
+
+
 class Snode(models.Model):
     snode_id = models.AutoField(primary_key=True)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
@@ -120,5 +120,3 @@ class Snode(models.Model):
 
     def __str__(self):
         return self.snode_id
-        
-

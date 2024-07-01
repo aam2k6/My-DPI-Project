@@ -8,7 +8,7 @@ class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=200, default=None)
     username = models.CharField(max_length=30)
-    password = models.CharField(max_length=150)
+    #password = models.CharField(max_length=150)
 
     def __str__(self):
         return self.username

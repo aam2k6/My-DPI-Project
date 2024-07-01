@@ -8,6 +8,8 @@ class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=200, default=None)
     username = models.CharField(max_length=30)
+    password = models.CharField(max_length=150)
+
 
     def __str__(self):
         return self.username
@@ -92,3 +94,25 @@ class ConnectionTerms(models.Model):
 
     def __str__(self):
         return f"{self.modality} - {self.data_element_name}"
+
+class Vnode(models.Model):
+    vnode_id = models.AutoField(primary_key=True)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+    target_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_target_locker')
+    source_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_source_locker')
+    connection = models.ForeignKey(Connection, on_delete=models.CASCADE)
+    operator_constraints = models.JSONField(default=dict)
+
+    def __str__(self):
+        return self.vnode_id
+    
+class Snode(models.Model):
+    snode_id = models.AutoField(primary_key=True)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+    source_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_source_locker')
+    target_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_target_locker')
+    operator_constraints = models.JSONField(default=dict)
+
+    def __str__(self):
+        return self.snode_id
+        

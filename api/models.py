@@ -31,9 +31,13 @@ class ConnectionType(models.Model):
     connection_description = models.TextField(blank=True, null=True)
     owner_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_user')
     owner_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='owner_locker')
-    validity_time = models.DateTimeField(
-        default=lambda: timezone.now() + timedelta(days=7))  # Validity is set for 7 days from now by default.
+    validity_time = models.DateTimeField(default=lambda: timezone.now() + timedelta(days=7))
     created_time = models.DateTimeField(auto_now_add=True)
+
+    def default_validity_time():
+        return timezone.now() + timedelta(days=7)
+
+    validity_time = models.DateTimeField(default=default_validity_time)
 
     def __str__(self):
         return self.connection_type_name
@@ -51,13 +55,14 @@ class Connection(models.Model):
     requester_consent = models.BooleanField(default=False)
     revoke_source = models.BooleanField(default=False)
     revoke_target = models.BooleanField(default=False)
-    validity_time = models.DateTimeField(
-        default=lambda: timezone.now() + timedelta(days=7))  # Validity is set for 7 days from now by default.
+    def default_validity_time():
+        return timezone.now() + timedelta(days=7)
+
+    validity_time = models.DateTimeField(default=default_validity_time)
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.connection_name
-
 
 class Resource(models.Model):
     PUBLIC = 'public'
@@ -116,3 +121,4 @@ class Snode(models.Model):
     def __str__(self):
         return self.snode_id
         
+

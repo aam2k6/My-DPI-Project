@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import User, Locker, Connection, Resource, Connection_type
-from .models import User, Locker, Connection, Resource, ConnectionType, ConnectionTerms\
+from .models import User, Locker, Connection, Resource, ConnectionType, ConnectionTerms, Snode, Vnode
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,12 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
 class LockerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Locker
-        fields = ["locker_id","name","description","user"]
-
-# class AgreementSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Agreement
-#         fields = ["agreement_id","agreement_text","signee1","signee2"]
         fields = ["locker_id", "name", "description", "user"]
 
 
@@ -34,21 +27,18 @@ class ResourceSerializer(serializers.ModelSerializer):
         model = Resource
         fields = ["resource_id", "document_name", "i_node_pointer", "locker", "version", "connections", "owner", "type"]
 
-# class SnodeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Snode
-#         fields = ["resource","source_locker","target_locker","operator_constraints"]
 
-# class VnodeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Snode
-#         fields = ["resource_id","source_locker","target_locker","connection","operator_constraints"]
-
-class ConnectionTypeSerializer(serializers.ModelSerializer):
-    
+class SnodeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Connection_type
-        fields = ["type_id","name", "description", "owner", "locker", "validity", "created"]
+        model = Snode
+        fields = ["resource", "source_locker", "target_locker", "operator_constraints"]
+
+
+class VnodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vnode
+        fields = ["resource_id", "source_locker", "target_locker", "connection", "operator_constraints"]
+
 
 class ConnectionTypeSerializer(serializers.ModelSerializer):
     class Meta:

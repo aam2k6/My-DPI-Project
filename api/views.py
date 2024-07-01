@@ -1,7 +1,9 @@
 import os
 from django.conf import settings
-from .models import Resource, Locker, User, Connection, Connection_type
+from .models import Resource, Locker, User, Connection, ConnectionType
 from .serializers import ResourceSerializer, ConnectionTypeSerializer
+from .models import Resource, Locker, User, Connection
+from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -209,6 +211,8 @@ def create_locker(request):
 
 # @csrf_exempt
 # def get_lockers_user(request):
+@csrf_exempt
+def get_lockers_user(request):
     """
         Retrieve lockers associated with a specific user or the authenticated user.
 
@@ -223,7 +227,7 @@ def create_locker(request):
 
 # def get_user_connection(request):
 #     connections = Connection.objects.all()
-#     return render(request, 'sharingpage(page2).html', {'connections': connections})\
+#     return render(request, 'sharingpage(page2).html', {'connections': connections})
 """
 
 @csrf_exempt
@@ -249,7 +253,7 @@ def get_connection_type(request):
     if request.method == 'GET':
         try:
             user = request.user
-            connection_types = Connection_type.objects.all()
+            connection_types = ConnectionType.objects.all()
 
             user_connection_type = connection_types.filter(owner=user)
 
@@ -264,4 +268,87 @@ def get_connection_type(request):
         
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+"""
 
+        Parameters:
+        - request: HttpRequest object containing metadata about the request.
+
+        Query Parameters:
+        - username (optional): The username of the user whose lockers are to be fetched.
+
+        Returns:
+        - JsonResponse: A JSON object containing a list of lockers or an error message.
+
+        Response Codes:
+        - 200: Successful retrieval of lockers.
+        - 401: User is not authenticated.
+        - 404: Specified user not found.
+        - 405: Request method not allowed (if not GET).
+        
+"""
+
+        
+    # if request.method == 'GET':
+    #     try:
+    #         username = request.GET.get('username')
+    #         if username:
+    #             try:
+    #                 user = User.objects.get(username=username)  # Fetch user by username
+    #             except User.DoesNotExist:
+    #                 return JsonResponse({'error': 'User not found'}, status=404)
+    #         else:
+    #             if request.user.is_authenticated:
+    #                 user = request.user  # Use the authenticated user
+    #             else:
+    #                 return JsonResponse({'error': 'User not authenticated'}, status=401)
+    #         lockers = Locker.objects.filter(user=user)
+
+    #         # If the current user does not have any existing lockers.
+    #         if not lockers.exists():
+    #             return JsonResponse({'success': False, 'message': 'No lockers found for this user'}, status=404)
+
+    #         serializer = LockerSerializer(lockers, many=True)
+    #         return JsonResponse({'success': True, 'lockers': serializer.data}, status=200)
+    #     except Exception as e:
+    #         return JsonResponse({'success': False, 'error': str(e)})
+    # return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def dpi_directory(request):
+ """
+         Retrieve all users present in the DPI Directory.
+
+        Parameters:
+        - request: HttpRequest object containing metadata about the request.
+
+        Returns:
+        - JsonResponse: A JSON object containing a list of all users or an error message.
+
+        Response Codes:
+        - 200: Successful retrieval of users.
+        - 404: No users are found.
+        - 405: Request method not allowed (if not GET).
+
+ """   
+
+
+    # if request.method == 'GET':
+    #     users = User.objects.all()
+    #     if not users.exists():
+    #         return JsonResponse({'success': False, 'message': 'No Users are present.'}, status=404)
+
+    #     serializer = UserSerializer(users, many=True)
+    #     return JsonResponse({'success': True, 'users': serializer.data}, status=200)
+    # return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+# GET Request - Get all connections wrt IIITB (NOT YET IMPLEMENTED)
+# def iiitb_locker(request):
+#     #def connection_list_view(request):
+#     connections = Connection.objects.all()
+#     return render(request, 'page4.html', {'connections': connections})
+
+# GET Request - Get all connections of a particular user (NOT YET IMPLEMENTED)
+# def get_user_connection(request):
+#     connections = Connection.objects.all()
+#     return render(request, 'sharingpage(page2).html', {'connections': connections})

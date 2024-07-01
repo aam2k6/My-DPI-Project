@@ -4,10 +4,12 @@ from django.urls import path
 from . import views
 from django.views.generic import TemplateView
 from .views import upload_resource #, get_lockers_user
+from .views import upload_resource, get_lockers_user
 
 urlpatterns = [
     # path("", views.display_home, name="page1"),
     # path("sharingpage/", views.sharing_page, name="sharing-page"),
+    path('dpi-directory/', views.dpi_directory, name='dpi-directory'),
     # path("iiitb-locker/", views.iiitb_locker, name='iiitb-locker'),
     # path("addlocker/", views.LockerListCreate.as_view(), name="resource-view-create"),
     # path("addresource/", views.ResourceListCreate.as_view(), name="resource-view-create"),
@@ -20,10 +22,7 @@ urlpatterns = [
     path('create-locker/', views.create_locker, name='create-locker'),
     path('get-public-resources/', views.get_public_resources, name='get-public-resources'),
 
-    
-    #path('get-lockers-user/', views.get_lockers_user, name='get-lockers-user'),
-    #path('dpi-directory/', views.dpi_directory, name='dpi-directory'),
-    
+    path('get-lockers-user/', views.get_lockers_user, name='get-lockers-user'),
 ]
 
 if settings.DEBUG:

@@ -13,41 +13,39 @@ class User(models.Model):
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
-    description = models.TextField(blank=True, null=True)  # Allow description to be optional
+    description = models.TextField(blank=True, null=True, default=None)  # Allow description to be optional
     #creation_date = models.CharField(max_length=100)    
     user = models.ForeignKey(User, on_delete=models.CASCADE)        #user will be the one logged in 
 
     def __str__(self):
         return self.name
-
-class Agreement(models.Model):
-    agreement_id = models.AutoField(primary_key=True)
-    agreement_text = models.JSONField()
     
-    signee1 = models.ForeignKey(User, on_delete= models.CASCADE, related_name='signee1')
-    signee2 = models.ForeignKey(User, on_delete= models.CASCADE, related_name='signee2')
-
-    consent1 = models.BooleanField(default=False)
-    consent2 = models.BooleanField(default=False)
-    revoke1 = models.BooleanField(default=False)
-    revoke2 = models.BooleanField(default=False)
-
-    validity = models.DateTimeField(default=timezone.now)
-    created = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.agreement_text
+class Connection_type(models.Model):
+    type_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=100)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='connection_type_owner')
+    locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='connection_type_locker')
+    validity = models.CharField(max_length=30)
+    created =  models.CharField(max_length=30)
 
 class Connection(models.Model):
     connection_id = models.AutoField(primary_key=True)
     connection_name = models.CharField(max_length=100)
-    access_norm = models.ForeignKey(Agreement, on_delete=models.CASCADE, related_name='access_norm', default=None)
+    conn_type_id = models.ForeignKey(Connection_type, on_delete=models.CASCADE, related_name='connection_type', default=None)
+    #access_norm = models.ForeignKey(Agreement, on_delete=models.CASCADE, related_name='access_norm', default=None)
     #connection_norm = models.JSONField()
-    access_token = models.CharField(max_length=20, unique=True, default=None)
+    #access_token = models.CharField(max_length=20, unique=True, default=None)
     source_locker = models.ForeignKey(Locker, on_delete = models.CASCADE, related_name='source_locker')
     target_locker = models.ForeignKey(Locker, on_delete = models.CASCADE, related_name='target_locker')
     source_user = models.ForeignKey(User, on_delete = models.CASCADE, related_name='source_user')
     target_user = models.ForeignKey(User, on_delete = models.CASCADE, related_name='target_user')
+    conn_desc = models.CharField(max_length=100)
+    requester_consent = models.BooleanField(default=True)
+    revoke1 = models.BooleanField(default=True)
+    revoke2 = models.BooleanField(default=True)
+    validity = models.CharField(max_length=30, default=None)
+    created =  models.CharField(max_length=30, default=None)
 
     def __str__(self):
         return self.connection_name
@@ -70,24 +68,3 @@ class Resource(models.Model):
 
     def __str__(self):
         return self.document_name
-
-class Snode(models.Model):
-    snode_name = models.CharField(max_length=30, default='test')
-    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
-    source_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_source_locker')
-    target_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_target_locker')
-    operator_constraints = models.JSONField()
-
-    def __str__(self):
-        return self.snode_name
-
-class Vnode(models.Model):
-    vnode_name = models.CharField(max_length=30, default='test')
-    resource_id = models.ForeignKey(Resource, on_delete=models.CASCADE)
-    source_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_source_locker')
-    target_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_target_locker')
-    connection = models.ManyToManyField(Connection, related_name='vnode_connection')  
-    operator_constraints = models.JSONField()
-
-    def __str__(self):
-        return self.vnode_name

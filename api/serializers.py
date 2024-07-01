@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Locker, Agreement, Connection, Resource, Snode
+from .models import User, Locker, Connection, Resource, Connection_type
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,12 +9,12 @@ class UserSerializer(serializers.ModelSerializer):
 class LockerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Locker
-        fields = ["locker_id","name","user"]
+        fields = ["locker_id","name","description","user"]
 
-class AgreementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Agreement
-        fields = ["agreement_id","agreement_text","signee1","signee2"]
+# class AgreementSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Agreement
+#         fields = ["agreement_id","agreement_text","signee1","signee2"]
 
 class ConnectionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,12 +27,18 @@ class ResourceSerializer(serializers.ModelSerializer):
         model = Resource
         fields = ["resource_id", "document_name", "i_node_pointer", "locker", "version", "connections", "owner", "type"] 
 
-class SnodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Snode
-        fields = ["resource","source_locker","target_locker","operator_constraints"]
+# class SnodeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Snode
+#         fields = ["resource","source_locker","target_locker","operator_constraints"]
 
-class VnodeSerializer(serializers.ModelSerializer):
+# class VnodeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Snode
+#         fields = ["resource_id","source_locker","target_locker","connection","operator_constraints"]
+
+class ConnectionTypeSerializer(serializers.ModelSerializer):
+    
     class Meta:
-        model = Snode
-        fields = ["resource_id","source_locker","target_locker","connection","operator_constraints"]
+        model = Connection_type
+        fields = ["type_id","name", "description", "owner", "locker", "validity", "created"]

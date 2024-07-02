@@ -39,7 +39,7 @@ new_user_four.save()
 
 # Verifying if the records are inserted properly or not. THIS IS A CHECK.
 for user in User.objects.all():
-    print(f"User ID: {user.user_id}, Username: {user.username}, Description: {user.description}")
+    print(f"User ID: {user.user_id}, Username: {user.username}, Description: {user.description}, Password: {user.password}")
 
 # ------------ LOCKER TABLE INSERTION ----------------------
 

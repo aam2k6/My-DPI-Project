@@ -13,24 +13,28 @@ new_user_one = User(
     description="Student at IIITB",
     username="rohith",
 )
+new_user_one.set_password('rohith')
 new_user_one.save()
 
 new_user_two = User(
     description="Student at PES University.",
     username="hemant",
 )
+new_user_two.set_password('hemant')
 new_user_two.save()
 
 new_user_three = User(
     description="Deemed University",
     username="iiitb",
 )
+new_user_three.set_password('iiitb')
 new_user_three.save()
 
 new_user_four = User(
     description="Deemed University",
     username="pes",
 )
+new_user_four.set_password('pes')
 new_user_four.save()
 
 # Verifying if the records are inserted properly or not. THIS IS A CHECK.

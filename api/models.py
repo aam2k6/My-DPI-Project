@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password, check_password
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
@@ -8,22 +9,31 @@ class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=200, default=None)
     username = models.CharField(max_length=30)
-    #password = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)
 
     def __str__(self):
         return self.username
+
+    def set_password(self, raw_password):
+        """Set the user's password by hashing it."""
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        """Check if the provided password matches the stored hashed password."""
+        return check_password(raw_password, self.password)
 
 
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True, default=None)  # Allow description to be optional
-    #creation_date = models.CharField(max_length=100)    
-    user = models.ForeignKey(User, on_delete=models.CASCADE)        #user will be the one logged in 
+    # creation_date = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # user will be the one logged in
 
     def __str__(self):
         return self.name
- 
+
+
 def default_validity_time():
     return timezone.now() + timedelta(days=7)
 
@@ -64,10 +74,7 @@ class Connection(models.Model):
 class Resource(models.Model):
     PUBLIC = 'public'
     PRIVATE = 'private'
-    TYPE_CHOICES = [
-        (PUBLIC, 'Public'),
-        (PRIVATE, 'Private')
-    ]
+    TYPE_CHOICES = [(PUBLIC, 'Public'), (PRIVATE, 'Private')]
     resource_id = models.AutoField(primary_key=True)
     document_name = models.CharField(max_length=50)
     i_node_pointer = models.CharField(max_length=255, default='none')
@@ -82,11 +89,7 @@ class Resource(models.Model):
 
 
 class ConnectionTerms(models.Model):
-    MODALITY_CHOICES = [
-        ('obligatory', 'Obligatory'),
-        ('permissive', 'Permissive'),
-        ('forbidden', 'Forbidden')
-    ]
+    MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
     terms_id = models.AutoField(primary_key=True)
     conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE)
     modality = models.CharField(max_length=50, choices=MODALITY_CHOICES)

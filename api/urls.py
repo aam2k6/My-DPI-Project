@@ -4,7 +4,7 @@ from django.urls import path
 from . import views
 from django.views.generic import TemplateView
 from .views import upload_resource #, get_lockers_user
-from .views import upload_resource, get_lockers_user
+from .views import upload_resource, get_lockers_user,GetConxnTypeByLockerByUser,create_new_connection
 
 urlpatterns = [
     # path("", views.display_home, name="page1"),
@@ -24,6 +24,10 @@ urlpatterns = [
     path('get-connection-type/', views.get_connection_type, name= 'get-connection-type'),
     path('get-lockers-user/', views.get_lockers_user, name='get-lockers-user'),
     path('get-other-connections/<int:target_user_id>/<int:target_locker_id>/', views.get_other_connections, name='get-other-connections'),
+    path('connection_types/', GetConxnTypeByLockerByUser, name='get_connection_types'),
+     path('create_new_connection/', create_new_connection, name='create_new_connection'),
+
+
 ]
 
 if settings.DEBUG:

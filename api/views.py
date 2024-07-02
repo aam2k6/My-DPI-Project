@@ -1,12 +1,14 @@
 import os
 from django.conf import settings
 from .models import Resource, Locker, User, Connection, ConnectionType
-from .serializers import ResourceSerializer, ConnectionTypeSerializer
+from .serializers import ResourceSerializer, ConnectionTypeSerializer,ConnectionSerializer
 from .models import Resource, Locker, User, Connection
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.db import models
+from rest_framework.parsers import JSONParser
+
 
 
 @csrf_exempt
@@ -259,4 +261,89 @@ def get_other_connections(request, target_user_id, target_locker_id):
         # Return a JSON response with status
         return JsonResponse({'success': True, 'connection_types': serializer.data}, status=200)
 
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def GetConxnTypeByLockerByUser(request):
+    """
+    Retrieve connection types by locker and user.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Query Parameters:
+    - username: The username of the user.
+    - locker_id: The ID of the locker.
+
+    Returns:
+    - JsonResponse: A JSON object containing a list of connection types or an error message.
+
+    Response Codes:
+    - 200: Successful retrieval of connection types.
+    - 404: Specified user or locker not found.
+    - 405: Request method not allowed (if not GET).
+    - 400: Bad request (missing parameters).
+    """
+    if request.method == 'GET':
+        username = request.GET.get('username')
+        locker_id = request.GET.get('locker_id')
+
+        if not username or not locker_id:
+            return JsonResponse({'success': False, 'error': 'Username and Locker ID are required'}, status=400)
+
+        try:
+            user = User.objects.get(username=username)
+            locker = Locker.objects.get(locker_id=locker_id, user=user)
+            connection_types = ConnectionType.objects.filter(owner_user=user, owner_locker=locker)
+
+            if not connection_types.exists():
+                return JsonResponse({'success': False, 'message': 'No connection types found for this user and locker'}, status=404)
+
+            serializer = ConnectionTypeSerializer(connection_types, many=True)
+            return JsonResponse({'success': True, 'connection_types': serializer.data}, status=200)
+
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def create_new_connection(request):
+    """
+    Create a new connection.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Form Parameters:
+    - connection_name: The name of the connection.
+    - connection_type_id: The ID of the connection type.
+    - source_locker: The ID of the source locker.
+    - target_locker: The ID of the target locker.
+    - source_user: The ID of the source user.
+    - target_user: The ID of the target user.
+    - connection_description: The description of the connection.
+    - requester_consent: Boolean indicating if the requester has consented.
+    - revoke_source: Boolean indicating if the source can revoke.
+    - revoke_target: Boolean indicating if the target can revoke.
+
+    Returns:
+    - JsonResponse: A JSON object containing the created connection or an error message.
+
+    Response Codes:
+    - 201: Successful creation of the connection.
+    - 400: Bad request (if data is invalid).
+    - 405: Request method not allowed (if not POST).
+    """
+    if request.method == 'POST':
+        data = request.POST  
+        serializer = ConnectionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'success': True, 'connection': serializer.data}, status=201)
+        return JsonResponse({'success': False, 'error': serializer.errors}, status=400)
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

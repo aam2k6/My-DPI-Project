@@ -1,0 +1,371 @@
+# Steps to create the database from scratch : Execute the below commands in order :
+1.) Delete db.sqlite3 file and all the files in the migrate folder
+2.) python manage.py makemigrations --empty api
+3.) python manage.py makemigrations
+4.) python manage.py migrate
+
+# ------------ USER TABLE INSERTION ---------------------------
+
+from api.models import User, Locker, ConnectionType, Connection, Resource, ConnectionTerms
+
+# Adding 4 Users :
+new_user_one = User(
+    description="Student at IIITB",
+    username="rohith",
+)
+new_user_one.save()
+
+new_user_two = User(
+    description="Student at PES University.",
+    username="hemant",
+)
+new_user_two.save()
+
+new_user_three = User(
+    description="Deemed University",
+    username="iiitb",
+)
+new_user_three.save()
+
+new_user_four = User(
+    description="Deemed University",
+    username="pes",
+)
+new_user_four.save()
+
+# Verifying if the records are inserted properly or not. THIS IS A CHECK.
+for user in User.objects.all():
+    print(f"User ID: {user.user_id}, Username: {user.username}, Description: {user.description}")
+
+# ------------ LOCKER TABLE INSERTION ----------------------
+
+rohith = User.objects.get(username="rohith")
+hemant = User.objects.get(username="hemant")
+iiitb = User.objects.get(username="iiitb")
+pes = User.objects.get(username="pes")
+
+locker_rohith = Locker(
+    name="Education",
+    description="This locker consists of my education documents",
+    user=rohith
+)
+locker_rohith.save()
+
+locker_hemant = Locker(
+    name="Education",
+    description="This locker consists of my education documents",
+    user=hemant
+)
+locker_hemant.save()
+
+locker_iiitb_one = Locker(
+    name="Transcripts",
+    description="This locker consists of transcripts of different students associated with IIITB",
+    user=iiitb
+)
+locker_iiitb_one.save()
+
+locker_iiitb_two = Locker(
+    name="Admissions",
+    description="This locker consists of all the admission documents pertaining to different applicants",
+    user=iiitb
+)
+locker_iiitb_two.save()
+
+locker_pes_one = Locker(
+    name="Transcripts",
+    description="This locker consists of transcripts of different students associated with PES University",
+    user=pes
+)
+locker_pes_one.save()
+
+# Verifying if the records are inserted properly or not. THIS IS A CHECK.
+for locker in Locker.objects.all():
+    print(f"Locker ID: {locker.locker_id}, Name: {locker.name}, Description: {locker.description}, User: {locker.user.username}")
+
+# ------------ CONNECTION TYPE TABLE INSERTION -------------
+
+user_iiitb = User.objects.get(username='iiitb')
+transcripts_locker = Locker.objects.get(user=user_iiitb, name='Transcripts')
+
+new_connection_type_one = ConnectionType(
+    connection_type_name="MTech 2024 Transcripts",
+    connection_description="A Connection Type that holds different connections between students of IIITB and IIITB",
+    owner_user=user_iiitb,
+    owner_locker=transcripts_locker
+)
+new_connection_type_one.save()
+
+user_iiitb = User.objects.get(username='iiitb')
+admissions_locker = Locker.objects.get(user=user_iiitb, name='Admissions')
+
+new_connection_type_two = ConnectionType(
+    connection_type_name="MTech 2024 Admissions",
+    connection_description="A Connection Type that holds different connections between applicants and IIITB",
+    owner_user=user_iiitb,
+    owner_locker=admissions_locker
+)
+new_connection_type_two.save()
+
+
+user_pes = User.objects.get(username='pes')
+transcripts_locker_pes = Locker.objects.get(user=user_pes, name='Transcripts')
+
+new_connection_type_three = ConnectionType(
+    connection_type_name="BTech 2024 Transcripts",
+    connection_description="A Connection Type that holds different connections between students of PES and PES",
+    owner_user=user_pes,
+    owner_locker=transcripts_locker_pes
+)
+new_connection_type_three.save()
+
+connection_types = ConnectionType.objects.all()
+
+# Iterate over each ConnectionType object
+for connection_type in connection_types:
+    print(f"Connection Type ID: {connection_type.connection_type_id}, "
+          f"Name: {connection_type.connection_type_name}, "
+          f"Description: {connection_type.connection_description}, "
+          f"Owner User: {connection_type.owner_user.username}, "
+          f"Owner Locker ID: {connection_type.owner_locker.locker_id}, "
+          f"Created Time: {connection_type.created_time}, "
+          f"Validity Time: {connection_type.validity_time}")
+
+# We basically have 2 connection types using which different students can initiate a connection with IIITB's locker.
+# One for Transcripts and another for Admissions.
+
+# ------------ CONNECTION TABLE INSERTION ------------------
+
+# With the existing connection types - MT2024 Transcripts , MT2024 Admissions, BTech 2024 Transcripts
+# Connection #1 = the source locker is IIITB's Transcripts , target locker is Rohith's Education -- MTech 2024 Transcripts
+# Connection #2 = the source locker is PES's Transcripts , target locker is Hemant's Education. -- BTech 2024 Transcripts
+# Connection #3 = the source locker is IIITB's Admissions , target locker is Hemant's Education. -- MTech 2024 Admissions
+
+# For each associated user and its connecting locker, we get the connection type. Get this connection type's validity time
+# Based on that we select the target user and target locker
+
+# For implementing Connection 1 : IIITB: Transcripts <> Rohith: Education
+
+source_user = User.objects.get(username='iiitb')
+source_locker = Locker.objects.get(user=source_user, name='Transcripts')
+connection_type_one = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
+connection_one_validity_time = connection_type_one.validity_time
+
+target_user = User.objects.get(username='rohith')
+target_locker = Locker.objects.get(user=target_user, name='Education')
+
+new_connection_one = Connection.objects.create(
+    connection_name='Connection 1',
+    connection_type_id=connection_type_one,
+    source_locker=source_locker,
+    target_locker=target_locker,
+    source_user=source_user,
+    target_user=target_user,
+    connection_description='This is a sample connection.',
+    requester_consent=True,
+    revoke_source=False,
+    revoke_target=False,
+    validity_time=connection_one_validity_time
+)
+new_connection_one.save()
+
+# For implementing Connection 2 : PES: Transcripts  <> Hemant: Education
+
+source_user = User.objects.get(username='pes')
+source_locker = Locker.objects.get(user=source_user, name='Transcripts')
+connection_type_two = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
+connection_two_validity_time = connection_type_two.validity_time
+
+target_user = User.objects.get(username='hemant')
+target_locker = Locker.objects.get(user=target_user, name='Education')
+
+new_connection_two = Connection.objects.create(
+    connection_name='Connection 2',
+    connection_type_id=connection_type_two,
+    source_locker=source_locker,
+    target_locker=target_locker,
+    source_user=source_user,
+    target_user=target_user,
+    connection_description='This is a sample connection.',
+    requester_consent=True,
+    revoke_source=False,
+    revoke_target=False,
+    validity_time=connection_two_validity_time
+)
+new_connection_two.save()
+
+# For implementing Connection 3 : IIITB: Admissions <> Hemant: Education
+
+source_user = User.objects.get(username='iiitb')
+source_locker = Locker.objects.get(user=source_user, name='Admissions')
+connection_type_three = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
+connection_three_validity_time = connection_type_three.validity_time
+
+target_user = User.objects.get(username='hemant')
+target_locker = Locker.objects.get(user=target_user, name='Education')
+
+new_connection_three = Connection.objects.create(
+    connection_name='Connection 3',
+    connection_type_id=connection_type_three,
+    source_locker=source_locker,
+    target_locker=target_locker,
+    source_user=source_user,
+    target_user=target_user,
+    connection_description='This is a sample connection.',
+    requester_consent=True,
+    revoke_source=False,
+    revoke_target=False,
+    validity_time=connection_three_validity_time
+)
+new_connection_three.save()
+
+# Fetch all Connection records
+connections = Connection.objects.all()
+
+# Iterate and print each Connection's fields
+for connection in connections:
+    print(f"Connection ID: {connection.connection_id}")
+    print(f"Connection Name: {connection.connection_name}")
+    print(f"Connection Type: {connection.connection_type_id.connection_type_name}")  # Access related field
+    print(f"Source Locker: {connection.source_locker.locker_id}, {connection.source_locker.name}")
+    print(f"Target Locker: {connection.target_locker.locker_id}, {connection.target_locker.name}")
+    print(f"Source User: {connection.source_user.username}")
+    print(f"Target User: {connection.target_user.username}")
+    print(f"Description: {connection.connection_description}")
+    print(f"Requester Consent: {connection.requester_consent}")
+    print(f"Revoke Source: {connection.revoke_source}")
+    print(f"Revoke Target: {connection.revoke_target}")
+    print(f"Validity Time: {connection.validity_time}")
+    print(f"Created Time: {connection.created_time}")
+    print('-' * 40)
+
+# ------------ RESOURCE TABLE INSERTION --------------------
+
+
+user_hemant = User.objects.get(username='hemant')
+user_hemant_locker = Locker.objects.get(user=user_hemant, name='Education')
+
+# Creating a resource "hk_admissions.pdf"
+
+resource_one = Resource(
+    document_name='Offer Letter',
+    i_node_pointer='documents/hk_admissions.pdf',
+    locker=user_hemant_locker,
+    version='1.0',
+    owner=user_hemant,
+    type=Resource.PRIVATE  # or Resource.PUBLIC
+)
+
+# Save changes (optional, as add() might already handle it)
+resource_one.save()
+
+# Adding connections to the resource
+resource_one.connections.add(new_connection_three)
+
+
+# Creating a resource "hk_transcripts.pdf"
+
+resource_two = Resource(
+    document_name='End Terms Paper',
+    i_node_pointer='documents/hk_transcripts.pdf',
+    locker=user_hemant_locker,
+    version='1.0',
+    owner=user_hemant,
+    type=Resource.PRIVATE  # or Resource.PUBLIC
+)
+
+# Save changes (optional, as add() might already handle it)
+resource_two.save()
+
+# Adding connections to the resource
+resource_two.connections.add(new_connection_two)
+
+
+
+
+# Creating a resource "rohith_transcripts.pdf"
+
+user_rohith = User.objects.get(username='rohith')
+user_rohith_locker = Locker.objects.get(user=user_rohith, name='Education')
+
+resource_three = Resource(
+    document_name='End Terms Paper',
+    i_node_pointer='documents/rohith_transcripts.pdf',
+    locker=user_rohith_locker,
+    version='1.0',
+    owner=user_rohith,
+    type=Resource.PRIVATE  # or Resource.PUBLIC
+)
+
+# Save changes (optional, as add() might already handle it)
+resource_three.save()
+
+# Adding connections to the resource
+resource_three.connections.add(new_connection_one)
+
+
+
+
+
+# Creating a public resource "iiitb_public_transcripts.pdf"
+
+user_iiitb = User.objects.get(username='iiitb')
+user_iiitb_locker = Locker.objects.get(user=user_iiitb, name='Transcripts')
+
+resource_four = Resource(
+    document_name='Transcript Rules',
+    i_node_pointer='documents/iiitb_public_transcripts.pdf',
+    locker=user_iiitb_locker,
+    version='1.0',
+    owner=user_iiitb,
+    type=Resource.PUBLIC  # or Resource.PUBLIC
+)
+
+# Save changes (optional, as add() might already handle it)
+resource_four.save()
+
+
+# Creating a public resource "iiitb_public_admissions.pdf"
+
+resource_five = Resource(
+    document_name='Admissions Rules',
+    i_node_pointer='documents/iiitb_public_admissions.pdf',
+    locker=user_iiitb_locker,
+    version='1.0',
+    owner=user_iiitb,
+    type=Resource.PUBLIC  # or Resource.PUBLIC
+)
+
+# Save changes (optional, as add() might already handle it)
+resource_five.save()
+
+
+
+# Creating a public resource "pes_public_transcripts.pdf"
+
+user_pes = User.objects.get(username='pes')
+user_pes_locker = Locker.objects.get(user=user_pes, name='Transcripts')
+
+resource_six = Resource(
+    document_name='Transcript Rules',
+    i_node_pointer='documents/pes_public_transcripts.pdf',
+    locker=user_pes_locker,
+    version='1.0',
+    owner=user_pes,
+    type=Resource.PUBLIC  # or Resource.PUBLIC
+)
+
+# Save changes (optional, as add() might already handle it)
+resource_six.save()
+
+
+
+
+
+
+
+
+
+
+
+

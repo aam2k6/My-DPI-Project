@@ -6,6 +6,7 @@ from .models import Resource, Locker, User, Connection
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.db import models
 
 
 @csrf_exempt
@@ -224,4 +225,38 @@ def dpi_directory(request):
 
         serializer = UserSerializer(users, many=True)
         return JsonResponse({'success': True, 'users': serializer.data}, status=200)
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def get_other_connections(request, target_user_id, target_locker_id):
+    if request.method == 'GET':
+        current_user = request.user
+        try:
+            target_user = User.objects.get(pk=target_user_id)
+            target_locker = User.objects.get(pk=target_locker_id)
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'message':'User not found' }, status=400)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success':False , 'message':'Locker not found'}, status=400)
+        
+        all_connection_types = ConnectionType.objects.filter(owner_user=target_user)
+
+        existing_connections = Connection.objects.filter(
+            (models.Q(source_user=current_user) | models.Q(target_user=current_user)) &
+            (models.Q(source_locker=target_locker) | models.Q(target_locker=target_locker)
+        ))
+
+        available_connection_types = all_connection_types.exclude(connection_type_id__in=existing_connection_type_ids)
+
+        existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
+
+        if not available_connection_types.exists():
+            return JsonResponse({'success': False, 'message': 'No available connection types found'}, status=400)
+
+        # Serialize the connection types
+        serializer = ConnectionTypeSerializer(available_connection_types, many=True)
+
+        # Return a JSON response with status
+        return JsonResponse({'success': True, 'connection_types': serializer.data}, status=200)
+
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

@@ -20,9 +20,10 @@ urlpatterns = [
     # path('api/connections/', views.iiitb_locker, name='api-connections'),
     # path('api/user-connections/', views.get_user_connection, name='api-user-connections'),
     path('create-locker/', views.create_locker, name='create-locker'),
-    path('get-public-resources/', views.get_public_resources, name='get-public-resources'),
-
+    path('get-public-resources/<int:user_id>', views.get_public_resources, name='get-public-resources'),
+    path('get-connection-type/', views.get_connection_type, name= 'get-connection-type'),
     path('get-lockers-user/', views.get_lockers_user, name='get-lockers-user'),
+    path('get-other-connections/<int:target_user_id>/<int:target_locker_id>/', views.get_other_connections, name='get-other-connections'),
 ]
 
 if settings.DEBUG:

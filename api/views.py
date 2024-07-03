@@ -167,23 +167,55 @@ def get_lockers_user(request):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-def get_public_resources(request, user_id):
+def get_public_resources(request, user_id, locker_id):
+    
+    """ 
+        Retrieve all public resources of the target_user and target_locker the logged user views.
+
+        This view uses GET request to fetch all resources of target_user under a specific target_locker
+        whose visibility is marked as "public". Every user should get access to other user's lockers only
+        if the current user is authenticated 
+
+        Parameters:
+            - request: HttpRequest object containing metadata about the request.
+
+        Query Parameters:
+            - user_id : user_id of the target_user that the authenticated user is viewing
+            - locker_id : locker_id of the viewed user's locker
+
+        
+        Returns:
+            - JsonResponse: A JSON object containing a list of lockers or an error message.
+
+        
+        Response Codes:
+            - 200: Successful retrieval of public resources.
+            - 400: Speciifed user or locker not found.
+            - 404: No public resources found.
+            - 405: Request method not allowed (if not GET).
+            
+    """
+    
     if request.method == 'GET':
         try:
             user = User.objects.get(pk=user_id)
-
-        except user.DoesNotExist:
+        except User.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
 
-        public_resources = Resource.objects.filter(owner=user, visibility='public')
+        try:
+            locker = Locker.objects.get(pk=locker_id, owner=user)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Locker not found or does not belong to the user'}, status=400)
+
+        public_resources = Resource.objects.filter(owner=user, visibility='public', locker=locker)
         if not public_resources.exists():
-            return JsonResponse({'success': False, 'message': 'No public resources found'}, status=400)
+            return JsonResponse({'success': False, 'message': 'No public resources found'}, status=404)
 
         serializer = ResourceSerializer(public_resources, many=True)
         return JsonResponse({'success': True, 'resources': serializer.data}, status=200)
 
-    return JsonResponse({'success': False, 'error': 'Invalid request'}, stutus=405)
-
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=405)
+    
 @csrf_exempt
 def get_connection_type(request):
     if request.method == 'GET':

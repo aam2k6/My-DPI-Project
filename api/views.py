@@ -315,7 +315,7 @@ def get_other_connections(request, target_user_id, target_locker_id):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-def GetConxnTypeByLockerByUser(request):
+def Get_connectiontype_byuser_bylocker(request):
     """
     Retrieve connection types by locker and user.
 

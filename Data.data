@@ -9,28 +9,28 @@
 from api.models import User, Locker, ConnectionType, Connection, Resource, ConnectionTerms
 
 # Adding 4 Users :
-new_user_one = User(
+new_user_one = CustomUser(
     description="Student at IIITB",
     username="rohith",
 )
 new_user_one.set_password('rohith')
 new_user_one.save()
 
-new_user_two = User(
+new_user_two = CustomUser(
     description="Student at PES University.",
     username="hemant",
 )
 new_user_two.set_password('hemant')
 new_user_two.save()
 
-new_user_three = User(
+new_user_three = CustomUser(
     description="Deemed University",
     username="iiitb",
 )
 new_user_three.set_password('iiitb')
 new_user_three.save()
 
-new_user_four = User(
+new_user_four = CustomUser(
     description="Deemed University",
     username="pes",
 )
@@ -38,15 +38,15 @@ new_user_four.set_password('pes')
 new_user_four.save()
 
 # Verifying if the records are inserted properly or not. THIS IS A CHECK.
-for user in User.objects.all():
+for user in CustomUser.objects.all():
     print(f"User ID: {user.user_id}, Username: {user.username}, Description: {user.description}, Password: {user.password}")
 
 # ------------ LOCKER TABLE INSERTION ----------------------
 
-rohith = User.objects.get(username="rohith")
-hemant = User.objects.get(username="hemant")
-iiitb = User.objects.get(username="iiitb")
-pes = User.objects.get(username="pes")
+rohith = CustomUser.objects.get(username="rohith")
+hemant = CustomUser.objects.get(username="hemant")
+iiitb = CustomUser.objects.get(username="iiitb")
+pes = CustomUser.objects.get(username="pes")
 
 locker_rohith = Locker(
     name="Education",
@@ -89,7 +89,7 @@ for locker in Locker.objects.all():
 
 # ------------ CONNECTION TYPE TABLE INSERTION -------------
 
-user_iiitb = User.objects.get(username='iiitb')
+user_iiitb = CustomUser.objects.get(username='iiitb')
 transcripts_locker = Locker.objects.get(user=user_iiitb, name='Transcripts')
 
 new_connection_type_one = ConnectionType(
@@ -100,7 +100,7 @@ new_connection_type_one = ConnectionType(
 )
 new_connection_type_one.save()
 
-user_iiitb = User.objects.get(username='iiitb')
+user_iiitb = CustomUser.objects.get(username='iiitb')
 admissions_locker = Locker.objects.get(user=user_iiitb, name='Admissions')
 
 new_connection_type_two = ConnectionType(
@@ -112,7 +112,7 @@ new_connection_type_two = ConnectionType(
 new_connection_type_two.save()
 
 
-user_pes = User.objects.get(username='pes')
+user_pes = CustomUser.objects.get(username='pes')
 transcripts_locker_pes = Locker.objects.get(user=user_pes, name='Transcripts')
 
 new_connection_type_three = ConnectionType(
@@ -150,12 +150,12 @@ for connection_type in connection_types:
 
 # For implementing Connection 1 : IIITB: Transcripts <> Rohith: Education
 
-source_user = User.objects.get(username='iiitb')
+source_user = CustomUser.objects.get(username='iiitb')
 source_locker = Locker.objects.get(user=source_user, name='Transcripts')
 connection_type_one = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
 connection_one_validity_time = connection_type_one.validity_time
 
-target_user = User.objects.get(username='rohith')
+target_user = CustomUser.objects.get(username='rohith')
 target_locker = Locker.objects.get(user=target_user, name='Education')
 
 new_connection_one = Connection.objects.create(
@@ -175,12 +175,12 @@ new_connection_one.save()
 
 # For implementing Connection 2 : PES: Transcripts  <> Hemant: Education
 
-source_user = User.objects.get(username='pes')
+source_user = CustomUser.objects.get(username='pes')
 source_locker = Locker.objects.get(user=source_user, name='Transcripts')
 connection_type_two = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
 connection_two_validity_time = connection_type_two.validity_time
 
-target_user = User.objects.get(username='hemant')
+target_user = CustomUser.objects.get(username='hemant')
 target_locker = Locker.objects.get(user=target_user, name='Education')
 
 new_connection_two = Connection.objects.create(
@@ -200,12 +200,12 @@ new_connection_two.save()
 
 # For implementing Connection 3 : IIITB: Admissions <> Hemant: Education
 
-source_user = User.objects.get(username='iiitb')
+source_user = CustomUser.objects.get(username='iiitb')
 source_locker = Locker.objects.get(user=source_user, name='Admissions')
 connection_type_three = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
 connection_three_validity_time = connection_type_three.validity_time
 
-target_user = User.objects.get(username='hemant')
+target_user = CustomUser.objects.get(username='hemant')
 target_locker = Locker.objects.get(user=target_user, name='Education')
 
 new_connection_three = Connection.objects.create(
@@ -246,7 +246,7 @@ for connection in connections:
 # ------------ RESOURCE TABLE INSERTION --------------------
 
 
-user_hemant = User.objects.get(username='hemant')
+user_hemant = CustomUser.objects.get(username='hemant')
 user_hemant_locker = Locker.objects.get(user=user_hemant, name='Education')
 
 # Creating a resource "hk_admissions.pdf"
@@ -289,7 +289,7 @@ resource_two.connections.add(new_connection_two)
 
 # Creating a resource "rohith_transcripts.pdf"
 
-user_rohith = User.objects.get(username='rohith')
+user_rohith = CustomUser.objects.get(username='rohith')
 user_rohith_locker = Locker.objects.get(user=user_rohith, name='Education')
 
 resource_three = Resource(
@@ -313,7 +313,7 @@ resource_three.connections.add(new_connection_one)
 
 # Creating a public resource "iiitb_public_transcripts.pdf"
 
-user_iiitb = User.objects.get(username='iiitb')
+user_iiitb = CustomUser.objects.get(username='iiitb')
 user_iiitb_locker = Locker.objects.get(user=user_iiitb, name='Transcripts')
 
 resource_four = Resource(
@@ -347,7 +347,7 @@ resource_five.save()
 
 # Creating a public resource "pes_public_transcripts.pdf"
 
-user_pes = User.objects.get(username='pes')
+user_pes = CustomUser.objects.get(username='pes')
 user_pes_locker = Locker.objects.get(user=user_pes, name='Transcripts')
 
 resource_six = Resource(
@@ -361,15 +361,3 @@ resource_six = Resource(
 
 # Save changes (optional, as add() might already handle it)
 resource_six.save()
-
-
-
-
-
-
-
-
-
-
-
-

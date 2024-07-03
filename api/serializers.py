@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import User, Locker, Connection, Resource, ConnectionType, ConnectionTerms, Snode, Vnode
+from .models import CustomUser, Locker, Connection, Resource, ConnectionType, ConnectionTerms, Snode, Vnode
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["user_id", "username", "description"]
 
 

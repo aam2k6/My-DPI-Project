@@ -1,14 +1,16 @@
 import os
 from django.conf import settings
-from .models import Resource, Locker, User, Connection, ConnectionType
-from .serializers import ResourceSerializer, ConnectionTypeSerializer,ConnectionSerializer
-from .models import Resource, Locker, User, Connection
+from django.contrib.auth import login, authenticate
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType
+from .models import Resource, Locker, CustomUser, Connection
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.db import models
-from rest_framework.parsers import JSONParser
-
 
 
 @csrf_exempt
@@ -52,7 +54,7 @@ def upload_resource(request):
                 return JsonResponse({'success': False, 'error': 'Locker ID and Owner ID must be integers'}, status=400)
 
             locker = Locker.objects.get(pk=locker_id)
-            owner = User.objects.get(pk=owner_id)
+            owner = CustomUser.objects.get(pk=owner_id)
 
             if file:
                 file_path = os.path.join(settings.MEDIA_ROOT, 'documents', file.name)
@@ -61,13 +63,8 @@ def upload_resource(request):
                     for chunk in file.chunks():
                         destination.write(chunk)
 
-                resource = Resource.objects.create(
-                    document_name=document_name,
-                    i_node_pointer=file_path,
-                    locker=locker,
-                    owner=owner,
-                    type=resource_type,
-                )
+                resource = Resource.objects.create(document_name=document_name, i_node_pointer=file_path, locker=locker,
+                    owner=owner, type=resource_type, )
                 resource_url = os.path.join(settings.MEDIA_URL, 'documents', file.name)
                 return JsonResponse({'success': True, 'document_name': document_name, 'type': resource_type,
                                      'resource_url': resource_url}, status=201)
@@ -75,11 +72,12 @@ def upload_resource(request):
                 return JsonResponse({'success': False, 'error': 'No file provided'}, status=400)
         except Locker.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Locker not found'}, status=400)
-        except User.DoesNotExist:
+        except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Owner not found'}, status=400)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 def create_locker(request):
@@ -106,7 +104,7 @@ def create_locker(request):
             locker_name = request.POST.get('name')
             description = request.POST.get('description', '')
             if locker_name:
-                user = request.user if request.user.is_authenticated else User.objects.first()
+                user = request.user if request.user.is_authenticated else CustomUser.objects.first()
                 locker = Locker.objects.create(name=locker_name, description=description, user=user)
                 return JsonResponse(
                     {'success': True, 'id': locker.locker_id, 'name': locker.name, 'description': locker.description},
@@ -116,6 +114,7 @@ def create_locker(request):
             return JsonResponse({'success': False, 'error': str(e)})
     # return render(request, 'add_locker.html')
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 def get_lockers_user(request):
@@ -146,8 +145,8 @@ def get_lockers_user(request):
             username = request.GET.get('username')
             if username:
                 try:
-                    user = User.objects.get(username=username)  # Fetch user by username
-                except User.DoesNotExist:
+                    user = CustomUser.objects.get(username=username)  # Fetch user by username
+                except CustomUser.DoesNotExist:
                     return JsonResponse({'error': 'User not found'}, status=404)
             else:
                 if request.user.is_authenticated:
@@ -166,10 +165,10 @@ def get_lockers_user(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
 def get_public_resources(request, user_id, locker_id):
-    
-    """ 
+    """
         Retrieve all public resources of the target_user and target_locker the logged user views.
 
         This view uses GET request to fetch all resources of target_user under a specific target_locker
@@ -192,17 +191,18 @@ def get_public_resources(request, user_id, locker_id):
             - 404: No public resources found.
             - 405: Request method not allowed (if not GET).    
     """
-    
+
     if request.method == 'GET':
         try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+            user = CustomUser.objects.get(pk=user_id)
+        except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
 
         try:
             locker = Locker.objects.get(pk=locker_id, owner=user)
         except Locker.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Locker not found or does not belong to the user'}, status=400)
+            return JsonResponse({'success': False, 'message': 'Locker not found or does not belong to the user'},
+                                status=400)
 
         public_resources = Resource.objects.filter(owner=user, visibility='public', locker=locker)
         if not public_resources.exists():
@@ -212,10 +212,10 @@ def get_public_resources(request, user_id, locker_id):
         return JsonResponse({'success': True, 'resources': serializer.data}, status=200)
 
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=405)
-    
+
+
 @csrf_exempt
 def get_connection_type(request):
-
     """
         Retrieve all connection types of the authenticated user.
 
@@ -236,7 +236,7 @@ def get_connection_type(request):
             - 404: No connection types found.
             - 405: Request method not allowed (if not GET).
     """
-    
+
     if request.method == 'GET':
         try:
             user = request.user
@@ -255,6 +255,7 @@ def get_connection_type(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
 def dpi_directory(request):
     """"
@@ -272,7 +273,7 @@ def dpi_directory(request):
            - 405: Request method not allowed (if not GET).
     """
     if request.method == 'GET':
-        users = User.objects.all()
+        users = CustomUser.objects.all()
         if not users.exists():
             return JsonResponse({'success': False, 'message': 'No Users are present.'}, status=404)
 
@@ -280,10 +281,10 @@ def dpi_directory(request):
         return JsonResponse({'success': True, 'users': serializer.data}, status=200)
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
 def get_other_connections(request, target_user_id, target_locker_id):
-
-    """ 
+    """
         Retrieve all the connection types of target_locker of the target_user that the authenticated user
         does not have a connection with.
 
@@ -311,19 +312,18 @@ def get_other_connections(request, target_user_id, target_locker_id):
     if request.method == 'GET':
         current_user = request.user
         try:
-            target_user = User.objects.get(pk=target_user_id)
-            target_locker = User.objects.get(pk=target_locker_id)
-        except User.DoesNotExist:
-            return JsonResponse({'success': False, 'message':'User not found' }, status=400)
+            target_user = CustomUser.objects.get(pk=target_user_id)
+            target_locker = CustomUser.objects.get(pk=target_locker_id)
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
         except Locker.DoesNotExist:
-            return JsonResponse({'success':False , 'message':'Locker not found'}, status=400)
-        
+            return JsonResponse({'success': False, 'message': 'Locker not found'}, status=400)
+
         all_connection_types = ConnectionType.objects.filter(owner_user=target_user)
 
         existing_connections = Connection.objects.filter(
-            (models.Q(source_user=current_user) | models.Q(target_user=current_user)) &
-            (models.Q(source_locker=target_locker) | models.Q(target_locker=target_locker)
-        ))
+            (models.Q(source_user=current_user) | models.Q(target_user=current_user)) & (
+                        models.Q(source_locker=target_locker) | models.Q(target_locker=target_locker)))
 
         existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
 
@@ -340,8 +340,9 @@ def get_other_connections(request, target_user_id, target_locker_id):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
-def Get_connectiontype_byuser_bylocker(request):
+def get_connectiontype_by_user_by_locker(request):
     """
     Retrieve connection types by locker and user.
 
@@ -369,24 +370,26 @@ def Get_connectiontype_byuser_bylocker(request):
             return JsonResponse({'success': False, 'error': 'Username and Locker ID are required'}, status=400)
 
         try:
-            user = User.objects.get(username=username)
+            user = CustomUser.objects.get(username=username)
             locker = Locker.objects.get(locker_id=locker_id, user=user)
             connection_types = ConnectionType.objects.filter(owner_user=user, owner_locker=locker)
 
             if not connection_types.exists():
-                return JsonResponse({'success': False, 'message': 'No connection types found for this user and locker'}, status=404)
+                return JsonResponse({'success': False, 'message': 'No connection types found for this user and locker'},
+                                    status=404)
 
             serializer = ConnectionTypeSerializer(connection_types, many=True)
             return JsonResponse({'success': True, 'connection_types': serializer.data}, status=200)
 
-        except User.DoesNotExist:
+        except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
         except Locker.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
+
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 def create_new_connection(request):
@@ -417,10 +420,31 @@ def create_new_connection(request):
     - 405: Request method not allowed (if not POST).
     """
     if request.method == 'POST':
-        data = request.POST  
+        data = request.POST
         serializer = ConnectionSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({'success': True, 'connection': serializer.data}, status=201)
         return JsonResponse({'success': False, 'error': serializer.errors}, status=400)
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if not username or not password:
+            return Response({'success': False, 'error': 'Username and password are required'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            login(request, user)  # Log the user in
+            user_serializer = UserSerializer(user)
+            return Response({'success': True, 'user': user_serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,26 +1,43 @@
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 
+class CustomUserManager(BaseUserManager):
+    def create_user(self, username, password=None, **extra_fields):
+        """
+        Creates and saves a User with the given email and password.
+        """
+        if not username:
+            raise ValueError('The username field must be set')
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-# Create your models here.
-class User(models.Model):
+    def create_superuser(self, username, password=None, **extra_fields):
+        """
+        Creates and saves a superuser with the given username and password.
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(username, password, **extra_fields)
+
+
+class CustomUser(AbstractBaseUser):
     user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=200, default=None)
-    username = models.CharField(max_length=30)
-    password = models.CharField(max_length=128)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    last_login = models.DateTimeField(blank=True, null=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'username'
 
     def __str__(self):
         return self.username
-
-    def set_password(self, raw_password):
-        """Set the user's password by hashing it."""
-        self.password = make_password(raw_password)
-
-    def check_password(self, raw_password):
-        """Check if the provided password matches the stored hashed password."""
-        return check_password(raw_password, self.password)
 
 
 class Locker(models.Model):
@@ -28,7 +45,7 @@ class Locker(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True, default=None)  # Allow description to be optional
     # creation_date = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # user will be the one logged in
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # user will be the one logged in
 
     def __str__(self):
         return self.name
@@ -42,7 +59,7 @@ class ConnectionType(models.Model):
     connection_type_id = models.AutoField(primary_key=True)
     connection_type_name = models.CharField(max_length=50)
     connection_description = models.TextField(blank=True, null=True)
-    owner_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_user')
+    owner_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='owner_user')
     owner_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='owner_locker')
     created_time = models.DateTimeField(auto_now_add=True)
     validity_time = models.DateTimeField(default=default_validity_time)
@@ -57,8 +74,8 @@ class Connection(models.Model):
     connection_type_id = models.ForeignKey(ConnectionType, on_delete=models.CASCADE, related_name='connection_type')
     source_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='source_locker')
     target_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='target_locker')
-    source_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='source_user')
-    target_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='target_user')
+    source_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='source_user')
+    target_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='target_user')
     connection_description = models.TextField(blank=True, null=True)
     requester_consent = models.BooleanField(default=False)
     revoke_source = models.BooleanField(default=False)
@@ -81,7 +98,7 @@ class Resource(models.Model):
     locker = models.ForeignKey(Locker, on_delete=models.CASCADE)
     version = models.CharField(max_length=20, default='none')
     connections = models.ManyToManyField(Connection, related_name='connection')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     type = models.CharField(max_length=7, choices=TYPE_CHOICES, default=PRIVATE)
 
     def __str__(self):

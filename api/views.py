@@ -282,6 +282,32 @@ def dpi_directory(request):
 
 @csrf_exempt
 def get_other_connections(request, target_user_id, target_locker_id):
+
+    """ 
+        Retrieve all the connection types of target_locker of the target_user that the authenticated user
+        does not have a connection with.
+
+        This view uses GET request to fetch all connection types of the current user 
+        (refering to the target_user_id and target_locker_id). Further, the values of target_user/source_user 
+        and target_locker/source_locker is compared with target_user_id and target_locker_id, each. If a match is found, 
+        that connection gets fetched.
+
+        Parameters:
+           - request: HttpRequest object containing metadata about the request.
+
+        Query Parameters:
+            - target_user_id
+            - target_locker_id
+
+       Returns:
+           - JsonResponse: A JSON object containing a list of all users or an error message.
+
+       Response Codes:
+           - 200: Successful connetion_types of users.
+           - 400: No connectiont types are found.
+           - 405: Request method not allowed (if not GET).
+    """
+
     if request.method == 'GET':
         current_user = request.user
         try:

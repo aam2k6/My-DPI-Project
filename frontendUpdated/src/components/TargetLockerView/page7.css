@@ -17,6 +17,19 @@
     /* align-items: center;     Align items vertically in the center */
     align-items: center;
   }
+
+  .new-connection-btn{
+    background-color: #007bff;
+    color: #fff;
+    /* width: auto; */
+    border: none;
+    padding: 1rem 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: bolder;
+    /* padding: 0.5rem 0.25rem;  */
+    max-width: 200px;
+  }
   
   .descriptionpage7 {
     margin-right: 48rem; /* Add some space between the text and the button */

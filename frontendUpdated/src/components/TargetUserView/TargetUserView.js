@@ -24,11 +24,6 @@ export const TargetUserView = () => {
     navigate('/target-locker-view');
   };
 
-  const handleEducationClick = () => {
-    console.log("Open Education button clicked");
-    navigate('/view-locker');
-  };
-
   const handleLogout = () =>{
     navigate('/');
   }
@@ -88,7 +83,7 @@ export const TargetUserView = () => {
 
           <div className="page6-locker">
             <h4>Statutory Documents </h4>
-            <button id="educationBtn" onClick={handleEducationClick}>
+            <button id="educationBtn" >
               Open
             </button>
           </div>

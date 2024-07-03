@@ -95,7 +95,7 @@ export const CreateConnectionType = () => {
                 <div className="page12paragraph">
 
                     Use this connection to apply for {selectedOption}. For this process, you will need to fulfill the following obligations:
-                    <button onClick={handleClick}> Next </button>
+                    <button onClick={handleClick} className="next-btn"> Next </button>
                 </div>
 
             }

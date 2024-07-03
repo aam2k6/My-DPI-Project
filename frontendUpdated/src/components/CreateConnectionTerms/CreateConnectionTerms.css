@@ -57,11 +57,32 @@
  .page13iagree0button{
     width: 20rem;
     font-size: 1.25rem;
+
+    background-color: #007bff;
+    color: #fff;
+    /* width: auto; */
+    border: none;
+    padding: 1rem 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: bolder;
+    /* padding: 0.5rem 0.25rem;  */
+    /* max-width: 200px; */
 }
 
 .page13iagree1button{
     width: 20rem;
     font-size: 1.25rem;
+    background-color: #007bff;
+    color: #fff;
+    /* width: auto; */
+    border: none;
+    padding: 1rem 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: bolder;
+    /* padding: 0.5rem 0.25rem;  */
+    /* max-width: 200px; */
 }
 .page13consent{
     font-size: 1.25rem;

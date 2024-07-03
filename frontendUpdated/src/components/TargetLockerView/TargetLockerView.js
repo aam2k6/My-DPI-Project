@@ -65,7 +65,7 @@ export const TargetLockerView=()=>  {
       </nav>
       <div className="page7description">  
       <div className="descriptionpage7">This locker stores students transcripts</div>
-      <button onClick={handleClick}>Create New Connection</button>
+      <button onClick={handleClick} className="new-connection-btn">Create New Connection</button>
          </div>
       
       <div className="page7container">

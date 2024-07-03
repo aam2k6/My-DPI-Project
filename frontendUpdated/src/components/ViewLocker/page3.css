@@ -1,0 +1,193 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  padding: 0.5rem 1rem;
+}
+
+.navbarBrand {
+  font-weight: bolder;
+  font-size: 1.5625rem;
+  margin-left: 2rem;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.description3 {
+  font-size: 1.195rem; /* Slightly smaller font size for the description */
+  color: rgb(44, 41, 41); /* Different color to distinguish from the name */
+  margin-left: 3.5rem;
+}
+
+.desc {
+  font-size: 1.195rem;
+}
+
+.navbarLinks {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.navbarFirstLink {
+  list-style: none;
+  display: flex;
+}
+
+.navbarSecondLink {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.navbarThirdLink {
+  list-style: none;
+  display: flex;
+}
+
+.navbarFirstLink a {
+  color: black;
+  text-decoration: none;
+  font-weight: bolder;
+  margin: 0 2rem;
+
+  font-size: 1.25rem;
+}
+
+.navbarSecondLink li {
+  margin-bottom: 2rem; /* Add space between the Home and Admin links */
+}
+
+.navbarSecondLink a {
+  color: black;
+  text-decoration: none;
+  font-weight: bolder;
+  margin: 0 2rem;
+  font-size: 1.25rem;
+}
+
+.navbarThirdLink a {
+  color: black;
+  text-decoration: none;
+  font-weight: bolder;
+  margin: 0 2rem;
+  font-size: 1.25rem;
+}
+
+.navbarLinks img {
+  height: 3rem;
+  width: 3rem;
+}
+.container-2 {
+  width: 100%;
+}
+.loc {
+  margin-bottom: 1.5rem;
+}
+.container-3 {
+  width: 100%;
+}
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.a {
+  height: 27rem; /* Set a max height for scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  width: 45%;
+  border: 2px solid rgb(107, 120, 231);
+  padding: 0.5rem;
+
+  /* font-size: 2rem; */
+  float: left;
+  margin-left: 2rem;
+}
+.b {
+  max-height: 27rem; /* Set a max height for scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin-right: 5rem;
+  width: 45%;
+  /* height: 30rem; */
+  float: right;
+  border: 2px solid rgb(107, 120, 231);
+  padding: 0.5rem;
+
+  /* font-size: 2rem; */
+}
+
+.aa {
+  width: 45%;
+  float: left;
+}
+.bb {
+  width: 45%;
+  float: right;
+}
+.locker-name {
+  font-size: 1.45rem;
+  margin-bottom: 3rem;
+  margin-left: 4rem;
+}
+#documents {
+  text-decoration: underline;
+  color: blue;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  font-size: 1.25rem;
+}
+.res {
+  margin-left: 2rem;
+  font-size: 1.45rem;
+  /* font-weight: bolder; */
+  margin-bottom: 3rem;
+  margin-top: 2rem;
+}
+.page3button {
+  background-color: #007bff;
+  color: #fff;
+  width: auto;
+  border: none;
+  padding: 1rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: bolder;
+  /* padding: 0.5rem 0.25rem;  */
+  max-width: 200px;
+  margin-left: 2rem;
+  margin-top: 2rem;
+}
+
+#documents:hover {
+  color: red;
+  cursor: pointer;
+}
+
+.public-private {
+  margin-left: 3rem;
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+}
+.conn {
+  border: 2px solid rgb(107, 120, 231);
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+#conntent {
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+}
+#mycon {
+  margin-left: 2rem;
+  font-size: 1.45rem;
+}

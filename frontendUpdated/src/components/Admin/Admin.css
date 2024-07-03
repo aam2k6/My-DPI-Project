@@ -1,0 +1,29 @@
+.page8connections{
+    border: 2px solid rgb(107, 120, 231);
+    height: 3rem;
+    width: auto;
+    width:15rem;
+      padding: 1rem;
+      margin-left: 3rem;
+      margin-top: 5rem;
+      overflow-x: auto;
+      max-width: 15rem;
+      font-weight: 100;
+      font-size: 1.25;
+      color:blue;
+      text-decoration: underline;
+      font-size: 1.25rem;
+      
+  }
+  
+  .page8parent{
+    height: 40rem;
+    
+    width: auto;  
+    max-height: 40rem;
+    overflow-y: auto;
+  }
+  .page8connections:hover{
+      color: red;
+      cursor: pointer;
+  }

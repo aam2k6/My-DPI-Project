@@ -248,9 +248,9 @@ def get_other_connections(request, target_user_id, target_locker_id):
             (models.Q(source_locker=target_locker) | models.Q(target_locker=target_locker)
         ))
 
-        available_connection_types = all_connection_types.exclude(connection_type_id__in=existing_connection_type_ids)
-
         existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
+
+        available_connection_types = all_connection_types.exclude(connection_type_id__in=existing_connection_type_ids)
 
         if not available_connection_types.exists():
             return JsonResponse({'success': False, 'message': 'No available connection types found'}, status=400)

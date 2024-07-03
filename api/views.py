@@ -182,18 +182,15 @@ def get_public_resources(request, user_id, locker_id):
         Query Parameters:
             - user_id : user_id of the target_user that the authenticated user is viewing
             - locker_id : locker_id of the viewed user's locker
-
         
         Returns:
             - JsonResponse: A JSON object containing a list of lockers or an error message.
-
         
         Response Codes:
             - 200: Successful retrieval of public resources.
             - 400: Speciifed user or locker not found.
             - 404: No public resources found.
-            - 405: Request method not allowed (if not GET).
-            
+            - 405: Request method not allowed (if not GET).    
     """
     
     if request.method == 'GET':
@@ -218,6 +215,28 @@ def get_public_resources(request, user_id, locker_id):
     
 @csrf_exempt
 def get_connection_type(request):
+
+    """
+        Retrieve all connection types of the authenticated user.
+
+        This view uses the GET method through which exisitng connection types of the authenticated user is seen.
+        Connection types are listed out in the admin view of the user.
+
+         Parameters:
+            - request: HttpRequest object containing metadata about the request.
+
+        Query Parameters:
+            - username of the authenticated user.
+
+        Returns:
+            - JsonResponse: A JSON object containing a list of lockers or an error message.
+
+        Response Codes:
+            - 200: Successful retrieval of connection types.
+            - 404: No connection types found.
+            - 405: Request method not allowed (if not GET).
+    """
+    
     if request.method == 'GET':
         try:
             user = request.user

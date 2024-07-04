@@ -4,13 +4,15 @@ from django.contrib.auth import login, authenticate
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType
-from .models import Resource, Locker, CustomUser, Connection
+from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType,ConnectionTermsSerializer
+from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.db import models
+from rest_framework.parsers import JSONParser
+from django.views.decorators.http import require_POST
+from django.core.exceptions import ObjectDoesNotExist
 
 
 @csrf_exempt
@@ -448,3 +450,123 @@ def login_view(request):
             return Response({'success': True, 'user': user_serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+    
+@csrf_exempt
+def show_terms(request):
+    if request.method == 'GET':
+        username = request.GET.get('username')
+        print(f"Username received: {username}")  
+
+        if not username:
+            return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+
+        try:
+            user = CustomUser.objects.get(username=username)
+            connection_types = ConnectionType.objects.filter(owner_user=user)
+            terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
+
+            if not terms.exists():
+                return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
+
+            serializer = ConnectionTermsSerializer(terms, many=True)
+            filtered_data = [
+                {
+                    'description': term['description'],
+                    'modality': term['modality']
+                } for term in serializer.data
+            ]
+            return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
+
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+@csrf_exempt
+@require_POST
+def give_consent(request):
+    """
+    Give consent for a connection.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Form Parameters:
+    - connection_id: The ID of the connection.
+    - consent: Boolean indicating the consent status.
+
+    Returns:
+    - JsonResponse: A JSON object containing a success message or an error message.
+
+    Response Codes:
+    - 200: Successful update of the consent status.
+    - 400: Bad request (if data is invalid or connection not found).
+    - 405: Request method not allowed (if not POST).
+    """
+    connection_id = request.POST.get('connection_id')
+    consent = request.POST.get('consent')
+
+    if connection_id is None or consent is None:
+        return JsonResponse({'success': False, 'error': 'Connection ID and consent status are required'}, status=400)
+
+    try:
+        connection = Connection.objects.get(connection_id=connection_id)
+        connection.requester_consent = consent.lower() in ['true', '1', 't', 'y', 'yes']
+        connection.save()
+        return JsonResponse({'success': True, 'message': 'Consent status updated successfully'}, status=200)
+    except Connection.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Connection not found'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+@csrf_exempt
+def revoke_consent(request):
+    """
+    Revoke consent for a connection.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Body Parameters:
+    - connection_id: The ID of the connection.
+    - revoke_source: Boolean indicating if the source user is revoking consent.
+    - revoke_target: Boolean indicating if the target user is revoking consent.
+
+    Returns:
+    - JsonResponse: A JSON object indicating the success or failure of the operation.
+
+    Response Codes:
+    - 200: Successful revocation of consent.
+    - 400: Bad request (if data is invalid).
+    - 404: Connection not found.
+    - 405: Request method not allowed (if not POST).
+    """
+    if request.method == 'POST':
+        try:
+            connection_id = request.POST.get('connection_id')
+            revoke_source = request.POST.get('revoke_source', 'false').lower() == 'true'
+            revoke_target = request.POST.get('revoke_target', 'false').lower() == 'true'
+
+            if not connection_id:
+                return JsonResponse({'success': False, 'error': 'Connection ID is required'}, status=400)
+
+            try:
+                connection = Connection.objects.get(connection_id=connection_id)
+            except ObjectDoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
+
+            if revoke_source:
+                connection.revoke_source = True
+
+            if revoke_target:
+                connection.revoke_target = True
+
+            connection.save()
+
+            return JsonResponse({'success': True, 'message': 'Consent revoked successfully'}, status=200)
+        
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

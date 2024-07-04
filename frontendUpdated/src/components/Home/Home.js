@@ -12,7 +12,7 @@ export const Home = () => {
 
   useEffect(() => {
     // Fetch lockers for the specified user
-    fetch(`http://127.0.0.1:8000/get-lockers-user/?username=${username}`)
+    fetch(`http://172.16.192.201:8000/get-lockers-user/?username=${username}`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {

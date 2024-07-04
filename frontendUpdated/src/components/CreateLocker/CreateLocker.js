@@ -16,7 +16,7 @@ export const CreateLocker = () => {
     data.append('description', description);
 
     // Send data to the backend
-    fetch('http://127.0.0.1:8000/create-locker/', {
+    fetch('http://172.16.192.201:8000/create-locker/', {
       method: 'POST',
       body: data,
     })

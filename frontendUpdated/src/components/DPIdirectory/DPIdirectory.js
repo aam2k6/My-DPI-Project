@@ -28,7 +28,7 @@ export const DPIdirectory = () => {
 
   useEffect(() => {
     // Fetch all users from the backend
-    fetch('http://127.0.0.1:8000/dpi-directory/')
+    fetch('http://172.16.192.201:8000/dpi-directory/')
       .then(response => response.json())
       .then(data => {
         if (data.success) {

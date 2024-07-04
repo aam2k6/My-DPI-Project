@@ -4,7 +4,8 @@ from django.contrib.auth import login, authenticate
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType,ConnectionTermsSerializer
+from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType, \
+    ConnectionTermsSerializer
 from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -66,7 +67,7 @@ def upload_resource(request):
                         destination.write(chunk)
 
                 resource = Resource.objects.create(document_name=document_name, i_node_pointer=file_path, locker=locker,
-                    owner=owner, type=resource_type, )
+                                                   owner=owner, type=resource_type, )
                 resource_url = os.path.join(settings.MEDIA_URL, 'documents', file.name)
                 return JsonResponse({'success': True, 'document_name': document_name, 'type': resource_type,
                                      'resource_url': resource_url}, status=201)
@@ -325,7 +326,7 @@ def get_other_connections(request, target_user_id, target_locker_id):
 
         existing_connections = Connection.objects.filter(
             (models.Q(source_user=current_user) | models.Q(target_user=current_user)) & (
-                        models.Q(source_locker=target_locker) | models.Q(target_locker=target_locker)))
+                    models.Q(source_locker=target_locker) | models.Q(target_locker=target_locker)))
 
         existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
 
@@ -450,12 +451,13 @@ def login_view(request):
             return Response({'success': True, 'user': user_serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 @csrf_exempt
 def show_terms(request):
     if request.method == 'GET':
         username = request.GET.get('username')
-        print(f"Username received: {username}")  
+        print(f"Username received: {username}")
 
         if not username:
             return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
@@ -469,12 +471,8 @@ def show_terms(request):
                 return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
 
             serializer = ConnectionTermsSerializer(terms, many=True)
-            filtered_data = [
-                {
-                    'description': term['description'],
-                    'modality': term['modality']
-                } for term in serializer.data
-            ]
+            filtered_data = [{'description': term['description'], 'modality': term['modality']} for term in
+                serializer.data]
             return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
 
         except CustomUser.DoesNotExist:
@@ -483,6 +481,8 @@ def show_terms(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
 @csrf_exempt
 @require_POST
 def give_consent(request):
@@ -519,7 +519,8 @@ def give_consent(request):
         return JsonResponse({'success': False, 'error': 'Connection not found'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
+
+
 @csrf_exempt
 def revoke_consent(request):
     """
@@ -565,8 +566,75 @@ def revoke_consent(request):
             connection.save()
 
             return JsonResponse({'success': True, 'message': 'Consent revoked successfully'}, status=200)
-        
+
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+def get_connection_by_user_by_locker(request):
+    """
+        Retrieves all the connections of the logged-in user and the associated locker.
+
+        Parameters:
+            - request: HttpRequest object containing metadata about the request.
+
+        Query Parameters:
+            - locker_name : The name of the locker of the currently logged-in user whose connections have to be fetched.
+
+        Returns:
+            - JsonResponse: A JSON object containing a list of lockers or an error message.
+
+        Response Codes:
+            - 200: Successful retrieval of connections.
+            - 401: User is not authenticated.
+            - 404: Specified locker not found.
+            - 405: Request method not allowed (if not GET).
+    """
+    if request.method == 'GET':
+        try:
+            locker_name = request.GET.get('locker_name')
+            if request.user.is_authenticated:
+                user = request.user
+            else:
+                return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+            locker = Locker.objects.filter(user=user, name=locker_name)
+
+            # If the current user does not have the given locker with "locker_name"
+            if not locker.exists():
+                return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
+
+            connections = Connection.objects.filter(target_user=user, target_locker=locker)
+            serializer = ConnectionSerializer(connections, many=True)
+
+            return JsonResponse({'success': True, 'resources': serializer.data}, status=200)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+def get_resource_by_user_by_locker(request):
+    """
+        Retrieves all the resources of a particular locker of the logged-in user.
+
+        Parameters:
+            - request: HttpRequest object containing metadata about the request.
+
+        Query Parameters:
+            - username : The username of the logged-in user.
+            - locker_name : The name of the locker whose resources have to be fetched.
+
+        Returns:
+            - JsonResponse: A JSON object containing a list of lockers or an error message.
+
+        Response Codes:
+            - 200: Successful retrieval of resources.
+            - 401: User is not authenticated.
+            - 404: Specified user not found, Specified locker not found.
+            - 405: Request method not allowed (if not GET).
+    """
+    pass

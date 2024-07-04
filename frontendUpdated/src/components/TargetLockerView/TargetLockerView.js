@@ -15,7 +15,7 @@ export const TargetLockerView=()=>  {
   };
 
   const handleClick = () => {
-    navigate('/connection');
+    navigate('/create-connection-terms');
   };
   
   const handleLogoutClick = () => {

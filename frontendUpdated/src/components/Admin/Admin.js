@@ -24,7 +24,7 @@ export const Admin = () => {
 
     const gotopage12createconnection = () => {
         console.log("Admin button clicked");
-        navigate('/create-connection-type');
+        navigate('/connection');
     };
 
 

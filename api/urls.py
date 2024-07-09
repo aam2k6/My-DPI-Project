@@ -18,6 +18,8 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
     path('show_terms/',show_terms,name='show_terms'),
     path('give_consent', views.give_consent, name='give_consent'),
     path('revoke_consent/', revoke_consent, name='revoke_consent'),
+    path('create_connection_type/',views.create_connection_type,name='create_connection_type')
+
  ]
 
 if settings.DEBUG:

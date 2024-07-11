@@ -1,3 +1,4 @@
+import base64
 import os
 from django.conf import settings
 from django.contrib.auth import login, authenticate
@@ -16,8 +17,6 @@ from rest_framework.parsers import JSONParser
 from django.views.decorators.http import require_POST
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_datetime
-
-
 
 
 @csrf_exempt
@@ -337,7 +336,7 @@ def get_other_connections(request, guest_user_id, guest_locker_id):
 
         existing_connections = Connection.objects.filter(
             (models.Q(source_user=current_user) | models.Q(target_user=current_user)) & (
-                        models.Q(source_locker=guest_locker) | models.Q(target_locker=guest_locker)))
+                    models.Q(source_locker=guest_locker) | models.Q(target_locker=guest_locker)))
 
         existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
 
@@ -353,6 +352,7 @@ def get_other_connections(request, guest_user_id, guest_locker_id):
         return JsonResponse({'success': True, 'connection_types': serializer.data}, status=200)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @permission_classes([IsAuthenticated])
@@ -403,7 +403,8 @@ def get_connectiontype_by_user_by_locker(request):
             connection_types = ConnectionType.objects.filter(owner_user=user, owner_locker=locker)
 
             if not connection_types.exists():
-                return JsonResponse({'success': False, 'message': 'No connection types found for this user and locker'}, status=404)
+                return JsonResponse({'success': False, 'message': 'No connection types found for this user and locker'},
+                                    status=404)
 
             serializer = ConnectionTypeSerializer(connection_types, many=True)
             return JsonResponse({'success': True, 'connection_types': serializer.data}, status=200)
@@ -412,6 +413,7 @@ def get_connectiontype_by_user_by_locker(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @permission_classes([IsAuthenticated])
@@ -457,12 +459,10 @@ def create_new_connection(request):
 @permission_classes([AllowAny])
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
 
-        if not username or not password:
-            return Response({'success': False, 'error': 'Username and password are required'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        auth = request.META['HTTP_AUTHORIZATION'].split()
+        auth_decoded = base64.b64decode(auth[1]).decode('utf-8')
+        username, password = auth_decoded.split(':')
 
         user = authenticate(username=username, password=password)
 
@@ -472,6 +472,7 @@ def login_view(request):
             return Response({'success': True, 'user': user_serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @csrf_exempt
 @permission_classes([IsAuthenticated])
@@ -521,7 +522,8 @@ def show_terms(request):
                 return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
 
             serializer = ConnectionTermsSerializer(terms, many=True)
-            filtered_data = [{'description': term['description'], 'modality': term['modality']} for term in serializer.data]
+            filtered_data = [{'description': term['description'], 'modality': term['modality']} for term in
+                             serializer.data]
             return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
 
         except CustomUser.DoesNotExist:
@@ -530,6 +532,7 @@ def show_terms(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @require_POST
@@ -725,27 +728,16 @@ def create_connection_type(request):
             if validity_time is None:
                 raise ValueError("Invalid date format")
 
-            connection_type = ConnectionType(
-                connection_type_name=connection_type_name,
-                connection_description=connection_description,
-                owner_user=owner_user,
-                owner_locker=owner_locker,
-                validity_time=validity_time
-            )
+            connection_type = ConnectionType(connection_type_name=connection_type_name,
+                connection_description=connection_description, owner_user=owner_user, owner_locker=owner_locker,
+                validity_time=validity_time)
             connection_type.save()
 
-            return JsonResponse({
-                'success': True,
-                'connection_type': {
-                    'id': connection_type.connection_type_id,
-                    'name': connection_type.connection_type_name,
-                    'description': connection_type.connection_description,
-                    'owner_user': connection_type.owner_user.username,
-                    'owner_locker': connection_type.owner_locker.locker_id,
-                    'validity_time': connection_type.validity_time,
-                    'created_time': connection_type.created_time
-                }
-            }, status=201)
+            return JsonResponse({'success': True, 'connection_type': {'id': connection_type.connection_type_id,
+                'name': connection_type.connection_type_name, 'description': connection_type.connection_description,
+                'owner_user': connection_type.owner_user.username,
+                'owner_locker': connection_type.owner_locker.locker_id, 'validity_time': connection_type.validity_time,
+                'created_time': connection_type.created_time}}, status=201)
 
         except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)
@@ -757,5 +749,3 @@ def create_connection_type(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-    
-

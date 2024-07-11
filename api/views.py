@@ -335,9 +335,9 @@ def get_other_connections(request, guest_user_id, guest_locker_id):
 
         all_connection_types = ConnectionType.objects.filter(owner_user=guest_user)
 
-        existing_connections = Connection.objects.filter(
-            (models.Q(host_user=current_user) | models.Q(guest_user=current_user)) & (
-                    models.Q(host_locker=host_locker) | models.Q(guest_locker=host_locker)))
+         existing_connections = Connection.objects.filter(
+            (models.Q(source_user=current_user) | models.Q(target_user=current_user)) & (
+                        models.Q(source_locker=guest_locker) | models.Q(target_locker=guest_locker)))
 
         existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
 

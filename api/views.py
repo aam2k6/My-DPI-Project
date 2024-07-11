@@ -175,9 +175,9 @@ def get_lockers_user(request):
 @csrf_exempt
 def get_public_resources(request, user_id, locker_id):
     """
-        Retrieve all public resources of the target_user and target_locker the logged user views.
+        Retrieve all public resources of the guest_user and guest_locker the logged user views.
 
-        This view uses GET request to fetch all resources of target_user under a specific target_locker
+        This view uses GET request to fetch all resources of guest_user under a specific guest_locker
         whose visibility is marked as "public". Every user should get access to other user's lockers only
         if the current user is authenticated 
 
@@ -291,20 +291,20 @@ def dpi_directory(request):
 @csrf_exempt
 def get_other_connections(request, guest_user_id, guest_locker_id):
     """
-        Retrieve all the connection types of target_locker of the target_user that the authenticated user
+        Retrieve all the connection types of guest_locker of the guest_user that the authenticated user
         does not have a connection with.
 
         This view uses GET request to fetch all connection types of the current user 
-        (refering to the target_user_id and target_locker_id). Further, the values of target_user/source_user 
-        and target_locker/source_locker is compared with target_user_id and target_locker_id, each. If a match is found, 
+        (refering to the guest_user_id and guest_locker_id). Further, the values of guest_user/host_user 
+        and guest_locker/host_locker is compared with guest_user_id and guest_locker_id, each. If a match is found, 
         that connection gets fetched.
 
         Parameters:
            - request: HttpRequest object containing metadata about the request.
 
         Query Parameters:
-            - target_user_id
-            - target_locker_id
+            - guest_user_id
+            - guest_locker_id
 
        Returns:
            - JsonResponse: A JSON object containing a list of all users or an error message.
@@ -421,8 +421,8 @@ def create_new_connection(request):
     - guest_user: The ID of the target user.
     - connection_description: The description of the connection.
     - requester_consent: Boolean indicating if the requester has consented.
-    - revoke_source: Boolean indicating if the source can revoke.
-    - revoke_target: Boolean indicating if the target can revoke.
+    - revoke_host: Boolean indicating if the source can revoke.
+    - revoke_guest: Boolean indicating if the target can revoke.
 
     Returns:
     - JsonResponse: A JSON object containing the created connection or an error message.
@@ -567,8 +567,8 @@ def revoke_consent(request):
 
     Body Parameters:
     - connection_id: The ID of the connection.
-    - revoke_source: Boolean indicating if the source user is revoking consent.
-    - revoke_target: Boolean indicating if the target user is revoking consent.
+    - revoke_host: Boolean indicating if the source user is revoking consent.
+    - revoke_guest: Boolean indicating if the target user is revoking consent.
 
     Returns:
     - JsonResponse: A JSON object indicating the success or failure of the operation.

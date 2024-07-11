@@ -289,7 +289,7 @@ def dpi_directory(request):
 
 
 @csrf_exempt
-def get_other_connections(request, target_user_id, target_locker_id):
+def get_other_connections(request, guest_user_id, guest_locker_id):
     """
         Retrieve all the connection types of target_locker of the target_user that the authenticated user
         does not have a connection with.
@@ -318,18 +318,18 @@ def get_other_connections(request, target_user_id, target_locker_id):
     if request.method == 'GET':
         current_user = request.user
         try:
-            target_user = CustomUser.objects.get(pk=target_user_id)
-            target_locker = CustomUser.objects.get(pk=target_locker_id)
+            guest_user = CustomUser.objects.get(pk=guest_user_id)
+            guest_locker = CustomUser.objects.get(pk=guest_locker_id)
         except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
         except Locker.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Locker not found'}, status=400)
 
-        all_connection_types = ConnectionType.objects.filter(owner_user=target_user)
+        all_connection_types = ConnectionType.objects.filter(owner_user=guest_user)
 
         existing_connections = Connection.objects.filter(
-            (models.Q(source_user=current_user) | models.Q(target_user=current_user)) & (
-                    models.Q(source_locker=target_locker) | models.Q(target_locker=target_locker)))
+            (models.Q(host_user=current_user) | models.Q(guest_user=current_user)) & (
+                    models.Q(host_locker=host_locker) | models.Q(guest_locker=host_locker)))
 
         existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
 
@@ -582,8 +582,8 @@ def revoke_consent(request):
     if request.method == 'POST':
         try:
             connection_id = request.POST.get('connection_id')
-            revoke_source = request.POST.get('revoke_source', 'false').lower() == 'true'
-            revoke_target = request.POST.get('revoke_target', 'false').lower() == 'true'
+            revoke_host = request.POST.get('revoke_host', 'false').lower() == 'true'
+            revoke_guest = request.POST.get('revoke_guest', 'false').lower() == 'true'
 
             if not connection_id:
                 return JsonResponse({'success': False, 'error': 'Connection ID is required'}, status=400)
@@ -593,11 +593,11 @@ def revoke_consent(request):
             except ObjectDoesNotExist:
                 return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
 
-            if revoke_source:
-                connection.revoke_source = True
+            if revoke_host:
+                connection.revoke_host = True
 
-            if revoke_target:
-                connection.revoke_target = True
+            if revoke_guest:
+                connection.revoke_guest = True
 
             connection.save()
 
@@ -643,7 +643,7 @@ def get_connection_by_user_by_locker(request):
             if not locker.exists():
                 return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
 
-            connections = Connection.objects.filter(target_user=user, target_locker=locker)
+            connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
             serializer = ConnectionSerializer(connections, many=True)
 
             return JsonResponse({'success': True, 'resources': serializer.data}, status=200)

@@ -18,8 +18,9 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
     path('show_terms/',show_terms,name='show_terms'),
     path('give_consent', views.give_consent, name='give_consent'),
     path('revoke_consent/', revoke_consent, name='revoke_consent'),
-    path('create_connection_type/',views.create_connection_type,name='create_connection_type')
-
+    path('create_connection_type/',views.create_connection_type,name='create_connection_type'),
+    path('get-connections-user-locker/', views.get_connection_by_user_by_locker, name='get-connections-user-locker'),
+    path('get-resources-user-locker/', views.get_resource_by_user_by_locker, name='get-resources-user-locker'),
  ]
 
 if settings.DEBUG:

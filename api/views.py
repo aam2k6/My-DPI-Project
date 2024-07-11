@@ -636,6 +636,8 @@ def revoke_consent(request):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_connection_by_user_by_locker(request):
     """
@@ -664,16 +666,16 @@ def get_connection_by_user_by_locker(request):
             else:
                 return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-            locker = Locker.objects.filter(user=user, name=locker_name)
+            locker = Locker.objects.filter(user=user, name=locker_name).first()
 
             # If the current user does not have the given locker with "locker_name"
-            if not locker.exists():
+            if not locker:
                 return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
 
             connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
             serializer = ConnectionSerializer(connections, many=True)
 
-            return JsonResponse({'success': True, 'resources': serializer.data}, status=200)
+            return JsonResponse({'success': True, 'connections': serializer.data}, status=200)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
@@ -701,7 +703,6 @@ def get_resource_by_user_by_locker(request):
             - 404: Specified user not found, Specified locker not found.
             - 405: Request method not allowed (if not GET).
     """
-    pass
 
 
 @csrf_exempt
@@ -738,15 +739,18 @@ def create_connection_type(request):
                 raise ValueError("Invalid date format")
 
             connection_type = ConnectionType(connection_type_name=connection_type_name,
-                connection_description=connection_description, owner_user=owner_user, owner_locker=owner_locker,
-                validity_time=validity_time)
+                                             connection_description=connection_description, owner_user=owner_user,
+                                             owner_locker=owner_locker, validity_time=validity_time)
             connection_type.save()
 
             return JsonResponse({'success': True, 'connection_type': {'id': connection_type.connection_type_id,
-                'name': connection_type.connection_type_name, 'description': connection_type.connection_description,
-                'owner_user': connection_type.owner_user.username,
-                'owner_locker': connection_type.owner_locker.locker_id, 'validity_time': connection_type.validity_time,
-                'created_time': connection_type.created_time}}, status=201)
+                                                                      'name': connection_type.connection_type_name,
+                                                                      'description': connection_type.connection_description,
+                                                                      'owner_user': connection_type.owner_user.username,
+                                                                      'owner_locker': connection_type.owner_locker.locker_id,
+                                                                      'validity_time': connection_type.validity_time,
+                                                                      'created_time': connection_type.created_time}},
+                                status=201)
 
         except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)

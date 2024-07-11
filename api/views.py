@@ -3,7 +3,8 @@ import os
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType, \
@@ -20,6 +21,8 @@ from django.utils.dateparse import parse_datetime
 
 
 @csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def upload_resource(request):
     """
@@ -87,6 +90,8 @@ def upload_resource(request):
 
 
 @csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def create_locker(request):
     """
@@ -125,6 +130,8 @@ def create_locker(request):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_lockers_user(request):
     """
@@ -268,6 +275,8 @@ def get_connection_type(request):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def dpi_directory(request):
     """"

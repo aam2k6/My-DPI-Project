@@ -72,14 +72,14 @@ class Connection(models.Model):
     connection_id = models.AutoField(primary_key=True)
     connection_name = models.CharField(max_length=100)
     connection_type_id = models.ForeignKey(ConnectionType, on_delete=models.CASCADE, related_name='connection_type')
-    host_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='source_locker')
-    guest_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='target_locker')
-    host_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='source_user')
-    guest_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='target_user')
+    host_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='host_locker')
+    guest_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='guest_locker')
+    host_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='host_user')
+    guest_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='guest_user')
     connection_description = models.TextField(blank=True, null=True)
     requester_consent = models.BooleanField(default=False)
-    revoke_source = models.BooleanField(default=False)
-    revoke_target = models.BooleanField(default=False)
+    revoke_host = models.BooleanField(default=False)
+    revoke_guest = models.BooleanField(default=False)
 
     validity_time = models.DateTimeField(default=default_validity_time)
     created_time = models.DateTimeField(auto_now_add=True)
@@ -122,8 +122,8 @@ class ConnectionTerms(models.Model):
 class Vnode(models.Model):
     vnode_id = models.AutoField(primary_key=True)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
-    target_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_target_locker')
-    source_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_source_locker')
+    guest_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_guest_locker')
+    host_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='vnode_host_locker')
     connection = models.ForeignKey(Connection, on_delete=models.CASCADE)
     operator_constraints = models.JSONField(default=dict)
 
@@ -134,8 +134,8 @@ class Vnode(models.Model):
 class Snode(models.Model):
     snode_id = models.AutoField(primary_key=True)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
-    source_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_source_locker')
-    target_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_target_locker')
+    host_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_host_locker')
+    guest_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='snode_guest_locker')
     operator_constraints = models.JSONField(default=dict)
 
     def __str__(self):

@@ -17,8 +17,8 @@ class LockerSerializer(serializers.ModelSerializer):
 class ConnectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Connection
-        fields = ["connection_id", "connection_name", "connection_type_id", "source_locker", "target_locker",
-                  "source_user", "target_user", "connection_description", "requester_consent", "revoke_source",
+        fields = ["connection_id", "connection_name", "connection_type_id", "host_locker", "guest_locker",
+                  "host_user", "guest_user", "connection_description", "requester_consent", "revoke_source",
                   "revoke_target", "validity_time", "created_time"]
 
 

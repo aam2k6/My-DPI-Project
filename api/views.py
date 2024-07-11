@@ -415,10 +415,10 @@ def create_new_connection(request):
     Form Parameters:
     - connection_name: The name of the connection.
     - connection_type_id: The ID of the connection type.
-    - source_locker: The ID of the source locker.
-    - target_locker: The ID of the target locker.
-    - source_user: The ID of the source user.
-    - target_user: The ID of the target user.
+    - host_locker: The ID of the source locker.
+    - guest_locker: The ID of the target locker.
+    - host_user: The ID of the source user.
+    - guest_user: The ID of the target user.
     - connection_description: The description of the connection.
     - requester_consent: Boolean indicating if the requester has consented.
     - revoke_source: Boolean indicating if the source can revoke.

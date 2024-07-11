@@ -2,7 +2,8 @@ import os
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType, \
     ConnectionTermsSerializer
@@ -20,6 +21,7 @@ from django.utils.dateparse import parse_datetime
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def upload_resource(request):
     """
         Creates a resource (file) for a particular locker of the authenticated user.
@@ -86,6 +88,7 @@ def upload_resource(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def create_locker(request):
     """
         Creates a locker associated with the logged-in user.
@@ -123,6 +126,7 @@ def create_locker(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_lockers_user(request):
     """
         Retrieve lockers associated with a specific user or the authenticated user.
@@ -173,6 +177,7 @@ def get_lockers_user(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_public_resources(request, user_id, locker_id):
     """
         Retrieve all public resources of the guest_user and guest_locker the logged user views.
@@ -221,6 +226,7 @@ def get_public_resources(request, user_id, locker_id):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_connection_type(request):
     """
         Retrieve all connection types of the authenticated user.
@@ -263,6 +269,7 @@ def get_connection_type(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def dpi_directory(request):
     """"
         Retrieve all users present in the DPI Directory.
@@ -289,6 +296,7 @@ def dpi_directory(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_other_connections(request, guest_user_id, guest_locker_id):
     """
         Retrieve all the connection types of guest_locker of the guest_user that the authenticated user
@@ -347,6 +355,7 @@ def get_other_connections(request, guest_user_id, guest_locker_id):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_connectiontype_by_user_by_locker(request):
     """
     Retrieve connection types by locker and user.
@@ -405,6 +414,7 @@ def get_connectiontype_by_user_by_locker(request):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def create_new_connection(request):
     """
     Create a new connection.
@@ -444,6 +454,7 @@ def create_new_connection(request):
 
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -463,6 +474,7 @@ def login_view(request):
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def show_terms(request):
     """
     Retrieve terms associated with a specific user.
@@ -521,6 +533,7 @@ def show_terms(request):
 
 @csrf_exempt
 @require_POST
+@permission_classes([IsAuthenticated])
 def give_consent(request):
     """
     Give consent for a connection.
@@ -558,6 +571,7 @@ def give_consent(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def revoke_consent(request):
     """
     Revoke consent for a connection.
@@ -610,6 +624,7 @@ def revoke_consent(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_connection_by_user_by_locker(request):
     """
         Retrieves all the connections of the logged-in user and the associated locker.
@@ -653,6 +668,7 @@ def get_connection_by_user_by_locker(request):
 
 
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_resource_by_user_by_locker(request):
     """
         Retrieves all the resources of a particular locker of the logged-in user.
@@ -674,7 +690,10 @@ def get_resource_by_user_by_locker(request):
             - 405: Request method not allowed (if not GET).
     """
     pass
+
+
 @csrf_exempt
+@permission_classes([IsAuthenticated])
 def create_connection_type(request):
     """
     Create a new connection type.

@@ -18,8 +18,8 @@ class ConnectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Connection
         fields = ["connection_id", "connection_name", "connection_type_id", "host_locker", "guest_locker",
-                  "host_user", "guest_user", "connection_description", "requester_consent", "revoke_source",
-                  "revoke_target", "validity_time", "created_time"]
+                  "host_user", "guest_user", "connection_description", "requester_consent", "revoke_host",
+                  "revoke_guest", "validity_time", "created_time"]
 
 
 class ResourceSerializer(serializers.ModelSerializer):
@@ -31,13 +31,13 @@ class ResourceSerializer(serializers.ModelSerializer):
 class SnodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snode
-        fields = ["resource", "source_locker", "target_locker", "operator_constraints"]
+        fields = ["resource", "host_locker", "guest_locker", "operator_constraints"]
 
 
 class VnodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vnode
-        fields = ["resource_id", "source_locker", "target_locker", "connection", "operator_constraints"]
+        fields = ["resource_id", "host_locker", "guest_locker", "connection", "operator_constraints"]
 
 
 class ConnectionTypeSerializer(serializers.ModelSerializer):

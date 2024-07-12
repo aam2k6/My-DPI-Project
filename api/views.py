@@ -33,8 +33,7 @@ def upload_resource(request):
 
         Request Body:
         - name : The name of the resource.
-        - locker_id : The ID of the locker.
-        - owner_id : The ID of the user who owns the resource.
+        - locker_name : Name of the locker
         - type : Visibility of the resource (Either Public or Private).
         - document : The file that contains the resource.
 
@@ -44,27 +43,22 @@ def upload_resource(request):
         Response Codes:
         - 201: Successfully created a resource(here locker) at the backend.
         - 400: The data sent in the request is invalid, missing or malformed.
+        - 401: User is not authenticated.
         - 405: Request method not allowed (if not GET).
     """
     if request.method == 'POST':
         try:
             document_name = request.POST.get('resource_name')
-            locker_id = request.POST.get('locker_id')
-            owner_id = request.POST.get('owner_id')
+            locker_name = request.POST.get('locker_name')
             resource_type = request.POST.get('type')
             file = request.FILES.get('document')
 
-            if not locker_id or not owner_id:
-                return JsonResponse({'success': False, 'error': 'Locker ID and Owner ID are required'}, status=400)
+            if request.user.is_authenticated:
+                user = request.user
+            else:
+                return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-            try:
-                locker_id = int(locker_id)
-                owner_id = int(owner_id)
-            except ValueError:
-                return JsonResponse({'success': False, 'error': 'Locker ID and Owner ID must be integers'}, status=400)
-
-            locker = Locker.objects.get(pk=locker_id)
-            owner = CustomUser.objects.get(pk=owner_id)
+            locker = Locker.objects.get(user=user, name=locker_name)
 
             if file:
                 file_path = os.path.join(settings.MEDIA_ROOT, 'documents', file.name)
@@ -74,7 +68,7 @@ def upload_resource(request):
                         destination.write(chunk)
 
                 resource = Resource.objects.create(document_name=document_name, i_node_pointer=file_path, locker=locker,
-                                                   owner=owner, type=resource_type, )
+                                                   owner=user, type=resource_type, )
                 resource_url = os.path.join(settings.MEDIA_URL, 'documents', file.name)
                 return JsonResponse({'success': True, 'document_name': document_name, 'type': resource_type,
                                      'resource_url': resource_url}, status=201)
@@ -204,7 +198,7 @@ def get_public_resources(request, user_id, locker_id):
         
         Response Codes:
             - 200: Successful retrieval of public resources.
-            - 400: Speciifed user or locker not found.
+            - 400: Specifed user or locker not found.
             - 404: No public resources found.
             - 405: Request method not allowed (if not GET).    
     """
@@ -693,7 +687,6 @@ def get_resource_by_user_by_locker(request):
             - request: HttpRequest object containing metadata about the request.
 
         Query Parameters:
-            - username : The username of the logged-in user.
             - locker_name : The name of the locker whose resources have to be fetched.
 
         Returns:

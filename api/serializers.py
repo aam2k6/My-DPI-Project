@@ -22,7 +22,6 @@ class ConnectionSerializer(serializers.ModelSerializer):
                   "host_user", "guest_user", "connection_description", "requester_consent", "revoke_host",
                   "revoke_guest", "validity_time", "created_time"]
 
-
 class ResourceSerializer(serializers.ModelSerializer):
     connections = ConnectionSerializer(many=True, read_only=True)
     class Meta:

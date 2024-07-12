@@ -111,7 +111,11 @@ def create_locker(request):
             locker_name = request.POST.get('name')
             description = request.POST.get('description', '')
             if locker_name:
-                user = request.user if request.user.is_authenticated else CustomUser.objects.first()
+                if request.user.is_authenticated:
+                    user = request.user
+                else:
+                    return JsonResponse({'error': 'User not authenticated'}, status=401)
+
                 locker = Locker.objects.create(name=locker_name, description=description, user=user)
                 return JsonResponse(
                     {'success': True, 'id': locker.locker_id, 'name': locker.name, 'description': locker.description},

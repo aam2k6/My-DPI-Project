@@ -682,6 +682,8 @@ def get_connection_by_user_by_locker(request):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_resource_by_user_by_locker(request):
     """
@@ -703,7 +705,27 @@ def get_resource_by_user_by_locker(request):
             - 404: Specified user not found, Specified locker not found.
             - 405: Request method not allowed (if not GET).
     """
+    if request.method == 'GET':
+        try:
+            locker_name = request.GET.get('locker_name')
+            if request.user.is_authenticated:
+                user = request.user
+            else:
+                return JsonResponse({'error': 'User not authenticated'}, status=401)
 
+            locker = Locker.objects.filter(user=user, name=locker_name).first()
+
+            # If the current user does not have the given locker with "locker_name"
+            if not locker:
+                return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
+
+            resources = Resource.objects.filter(locker=locker)
+            serializer = ResourceSerializer(resources, many=True)
+
+            return JsonResponse({'success': True, 'resources': serializer.data}, status=200)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 @permission_classes([IsAuthenticated])

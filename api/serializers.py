@@ -15,6 +15,7 @@ class LockerSerializer(serializers.ModelSerializer):
 
 
 class ConnectionSerializer(serializers.ModelSerializer):
+    host_user = UserSerializer(many=False, read_only=True)
     class Meta:
         model = Connection
         fields = ["connection_id", "connection_name", "connection_type_id", "host_locker", "guest_locker",
@@ -23,6 +24,7 @@ class ConnectionSerializer(serializers.ModelSerializer):
 
 
 class ResourceSerializer(serializers.ModelSerializer):
+    connections = ConnectionSerializer(many=True, read_only=True)
     class Meta:
         model = Resource
         fields = ["resource_id", "document_name", "i_node_pointer", "locker", "version", "connections", "owner", "type"]

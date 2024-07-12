@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import userImage from "../Assets/user_icon.png"; 
 import "./page2.css";
 
 export const CreateLocker = () => {
   const navigate = useNavigate();
   const [lockerName, setLockerName] = useState("");
   const [description, setDescription] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const token = Cookies.get('authToken');
 
     // Prepare data to send
     const data = new FormData();
@@ -16,8 +21,11 @@ export const CreateLocker = () => {
     data.append('description', description);
 
     // Send data to the backend
-    fetch('http://172.16.192.201:8000/create-locker/', {
+    fetch('http://127.0.0.1:8000/create-locker/', {
       method: 'POST',
+      headers: {
+        'Authorization': `Basic ${token}`, // Add token to the headers
+      },
       body: data,
     })
       .then(response => response.json())
@@ -56,6 +64,9 @@ export const CreateLocker = () => {
     navigate('/admin');
   }
 
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  }
 
   return (
     <div>
@@ -81,12 +92,26 @@ export const CreateLocker = () => {
             </li>
           </ul>
 
-          <ul className="navbarThirdLink">
+          {/* <ul className="navbarThirdLink">
             <li>
               <img src="" alt="User Icon" />
             </li>
             <li>
               <a href="#" onClick={handleLogout}>Logout</a>
+            </li>
+          </ul> */}
+
+
+          <ul className="navbarThirdLink">
+            <li>
+              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  {/* <button onClick={() => navigate('/profile')}>Profile</button> */}
+                  <button onClick={handleAdmin}>Admin</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
             </li>
           </ul>
         </div>

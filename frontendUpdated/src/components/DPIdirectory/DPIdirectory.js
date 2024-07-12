@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './page5.css';
+import Cookies from "js-cookie";
 // import searchicon from '../../assets/searchicon.jpg';
 import { useNavigate } from 'react-router-dom';
+import userImage from "../Assets/user_icon.png"; 
 
 
 export const DPIdirectory = () => {
@@ -9,6 +11,8 @@ export const DPIdirectory = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
   const handleHomeClick = () => {
     navigate('/home');
@@ -28,7 +32,16 @@ export const DPIdirectory = () => {
 
   useEffect(() => {
     // Fetch all users from the backend
-    fetch('http://172.16.192.201:8000/dpi-directory/')
+    const token = Cookies.get('authToken');
+
+    fetch('http://127.0.0.1:8000/dpi-directory/',{
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${token}`,
+        'Content-Type': 'application/json'
+      }
+
+    })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
@@ -51,6 +64,10 @@ export const DPIdirectory = () => {
     setUsers(filteredUsers);
   };
 
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  }
+
 
 
   return (
@@ -72,12 +89,26 @@ export const DPIdirectory = () => {
             </li>
           </ul>
 
-          <ul className="navbarThirdLink">
+          {/* <ul className="navbarThirdLink">
             <li>
               <img src="" alt="User Icon" />
             </li>
             <li>
               <a href="#" onClick={handleLogout}>Logout</a>
+            </li>
+          </ul> */}
+
+
+          <ul className="navbarThirdLink">
+            <li>
+              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  {/* <button onClick={() => navigate('/profile')}>Profile</button> */}
+                  <button onClick={handleAdmin}>Admin</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
             </li>
           </ul>
         </div>

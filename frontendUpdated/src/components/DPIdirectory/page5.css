@@ -39,6 +39,42 @@ h4{
     position: relative;
 }
 
+.dropdownImage {
+    cursor: pointer;
+    width: 40px; /* Adjust the size as needed */
+    height: 40px; /* Adjust the size as needed */
+    border-radius: 50%;
+  
+  }
+  
+  .dropdownContent {
+    position: absolute;
+    top: 100%; /* Position the dropdown below the image */
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dropdownContent button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+  
+  .dropdownContent button:hover {
+    background-color: #f1f1f1;
+  }
+
 .inputContainer input {
     width: 18.75rem; /* 300px */
     height: 2.5rem; /* 40px */

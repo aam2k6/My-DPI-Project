@@ -16,6 +16,10 @@ class LockerSerializer(serializers.ModelSerializer):
 
 class ConnectionSerializer(serializers.ModelSerializer):
     host_user = UserSerializer(many=False, read_only=True)
+    guest_user = UserSerializer(many=False, read_only=True)
+    host_locker = LockerSerializer(many=False, read_only=True)
+    guest_locker = LockerSerializer(many=False, read_only=True)
+
     class Meta:
         model = Connection
         fields = ["connection_id", "connection_name", "connection_type_id", "host_locker", "guest_locker",

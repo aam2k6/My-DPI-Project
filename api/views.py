@@ -670,10 +670,20 @@ def get_connection_by_user_by_locker(request):
             if not locker:
                 return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
 
-            connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
-            serializer = ConnectionSerializer(connections, many=True)
+            # Fetch incoming connections
+            incoming_connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
+            incoming_serializer = ConnectionSerializer(incoming_connections, many=True)
 
-            return JsonResponse({'success': True, 'connections': serializer.data}, status=200)
+            # Fetch outgoing connections
+            outgoing_connections = Connection.objects.filter(host_user=user, host_locker=locker)
+            outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
+
+            connections = {
+                'incoming_connections': incoming_serializer.data,
+                'outgoing_connections': outgoing_serializer.data
+            }
+
+            return JsonResponse({'success': True, 'connections': connections}, status=200)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

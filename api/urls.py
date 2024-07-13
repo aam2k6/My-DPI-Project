@@ -21,6 +21,7 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
     path('create_connection_type/',views.create_connection_type,name='create_connection_type'),
     path('get-connections-user-locker/', views.get_connection_by_user_by_locker, name='get-connections-user-locker'),
     path('get-resources-user-locker/', views.get_resource_by_user_by_locker, name='get-resources-user-locker'),
+    path('signup-user/', views.signup_user, name='signup_user'),
  ]
 
 if settings.DEBUG:

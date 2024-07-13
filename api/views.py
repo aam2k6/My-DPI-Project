@@ -11,7 +11,7 @@ from .serializers import ResourceSerializer, ConnectionTypeSerializer, Connectio
     ConnectionTermsSerializer
 from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.http import JsonResponse
 from django.db import models
 from rest_framework.parsers import JSONParser
@@ -724,6 +724,7 @@ def get_resource_by_user_by_locker(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def create_connection_type(request):
@@ -780,4 +781,36 @@ def create_connection_type(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def signup_user(request):
+    if request.method == 'POST':
+        try:
+            username = request.POST.get('username')
+            description = request.POST.get('description')
+            password = request.POST.get('password')
+            if not username:
+                return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+            if not description:
+                return JsonResponse({'success': False, 'error': 'Description is required'}, status=400)
+            if not password:
+                return JsonResponse({'success': False, 'error': 'Password is required'}, status=400)
+
+                # Check if username already exists
+            if CustomUser.objects.filter(username=username).exists():
+                return JsonResponse({'success': False, 'error': 'Username already taken'}, status=400)
+
+            new_user = CustomUser(description=description, username=username)
+            new_user.set_password(password)
+            new_user.save()
+
+            return JsonResponse({'success': True, 'id': new_user.user_id, 'username': new_user.username,
+                                 'description': new_user.description}, status=201)
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

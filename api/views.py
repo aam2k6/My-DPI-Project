@@ -380,7 +380,7 @@ def get_connectiontype_by_user_by_locker(request):
 
     Query Parameters:
     - username: The username of the user.
-    - locker_id: The ID of the locker.
+    - locker_name: The name of the locker.
 
     Returns:
     - JsonResponse: A JSON object containing a list of connection types or an error message.
@@ -393,10 +393,10 @@ def get_connectiontype_by_user_by_locker(request):
     """
     if request.method == 'GET':
         username = request.GET.get('username')
-        locker_id = request.GET.get('locker_id')
+        locker_name = request.GET.get('locker_name')
 
-        if not locker_id:
-            return JsonResponse({'success': False, 'error': 'Locker ID is required'}, status=400)
+        if not locker_name:
+            return JsonResponse({'success': False, 'error': 'Locker name is required'}, status=400)
 
         try:
             if username:
@@ -411,7 +411,7 @@ def get_connectiontype_by_user_by_locker(request):
                     return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
             try:
-                locker = Locker.objects.get(locker_id=locker_id, user=user)
+                locker = Locker.objects.get(name=locker_name, user=user)
             except Locker.DoesNotExist:
                 return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
 
@@ -462,6 +462,9 @@ def create_new_connection(request):
     - 405: Request method not allowed (if not POST).
     """
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
+        
         data = request.POST
         serializer = ConnectionSerializer(data=data)
         if serializer.is_valid():
@@ -576,6 +579,12 @@ def give_consent(request):
     - 400: Bad request (if data is invalid or connection not found).
     - 405: Request method not allowed (if not POST).
     """
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+    
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
+
     connection_id = request.POST.get('connection_id')
     consent = request.POST.get('consent')
 
@@ -618,36 +627,38 @@ def revoke_consent(request):
     - 404: Connection not found.
     - 405: Request method not allowed (if not POST).
     """
-    if request.method == 'POST':
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
+
+    try:
+        connection_id = request.POST.get('connection_id')
+        revoke_host = request.POST.get('revoke_host', 'false').lower() == 'true'
+        revoke_guest = request.POST.get('revoke_guest', 'false').lower() == 'true'
+
+        if not connection_id:
+            return JsonResponse({'success': False, 'error': 'Connection ID is required'}, status=400)
+
         try:
-            connection_id = request.POST.get('connection_id')
-            revoke_host = request.POST.get('revoke_host', 'false').lower() == 'true'
-            revoke_guest = request.POST.get('revoke_guest', 'false').lower() == 'true'
+            connection = Connection.objects.get(connection_id=connection_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
 
-            if not connection_id:
-                return JsonResponse({'success': False, 'error': 'Connection ID is required'}, status=400)
+        if revoke_host:
+            connection.revoke_host = True
 
-            try:
-                connection = Connection.objects.get(connection_id=connection_id)
-            except ObjectDoesNotExist:
-                return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
+        if revoke_guest:
+            connection.revoke_guest = True
 
-            if revoke_host:
-                connection.revoke_host = True
+        connection.save()
 
-            if revoke_guest:
-                connection.revoke_guest = True
+        return JsonResponse({'success': True, 'message': 'Consent revoked successfully'}, status=200)
 
-            connection.save()
-
-            return JsonResponse({'success': True, 'message': 'Consent revoked successfully'}, status=200)
-
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
-
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
-
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
 @csrf_exempt
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
@@ -768,48 +779,58 @@ def create_connection_type(request):
     Returns:
     - JsonResponse: A JSON object containing the created connection type or an error message.
     """
-    if request.method == 'POST':
-        connection_type_name = request.POST.get('connection_type_name')
-        connection_description = request.POST.get('connection_description')
-        owner_user_username = request.POST.get('owner_user')
-        owner_locker_id = request.POST.get('owner_locker')
-        validity_time_str = request.POST.get('validity_time')
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-        if not all([connection_type_name, owner_user_username, owner_locker_id, validity_time_str]):
-            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
-        try:
-            owner_user = CustomUser.objects.get(username=owner_user_username)
-            owner_locker = Locker.objects.get(locker_id=owner_locker_id)
-            validity_time = parse_datetime(validity_time_str)
-            if validity_time is None:
-                raise ValueError("Invalid date format")
+    connection_type_name = request.POST.get('connection_type_name')
+    connection_description = request.POST.get('connection_description')
+    owner_user_username = request.POST.get('owner_user')
+    owner_locker_id = request.POST.get('owner_locker')
+    validity_time_str = request.POST.get('validity_time')
 
-            connection_type = ConnectionType(connection_type_name=connection_type_name,
-                                             connection_description=connection_description, owner_user=owner_user,
-                                             owner_locker=owner_locker, validity_time=validity_time)
-            connection_type.save()
+    if not all([connection_type_name, owner_user_username, owner_locker_id, validity_time_str]):
+        return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
-            return JsonResponse({'success': True, 'connection_type': {'id': connection_type.connection_type_id,
-                                                                      'name': connection_type.connection_type_name,
-                                                                      'description': connection_type.connection_description,
-                                                                      'owner_user': connection_type.owner_user.username,
-                                                                      'owner_locker': connection_type.owner_locker.locker_id,
-                                                                      'validity_time': connection_type.validity_time,
-                                                                      'created_time': connection_type.created_time}},
-                                status=201)
+    try:
+        owner_user = CustomUser.objects.get(username=owner_user_username)
+        owner_locker = Locker.objects.get(locker_id=owner_locker_id)
+        validity_time = parse_datetime(validity_time_str)
+        if validity_time is None:
+            raise ValueError("Invalid date format")
 
-        except CustomUser.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)
-        except Locker.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Owner locker not found'}, status=404)
-        except ValueError as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        connection_type = ConnectionType(
+            connection_type_name=connection_type_name,
+            connection_description=connection_description,
+            owner_user=owner_user,
+            owner_locker=owner_locker,
+            validity_time=validity_time
+        )
+        connection_type.save()
 
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+        return JsonResponse({
+            'success': True,
+            'connection_type': {
+                'id': connection_type.connection_type_id,
+                'name': connection_type.connection_type_name,
+                'description': connection_type.connection_description,
+                'owner_user': connection_type.owner_user.username,
+                'owner_locker': connection_type.owner_locker.locker_id,
+                'validity_time': connection_type.validity_time,
+                'created_time': connection_type.created_time
+            }
+        }, status=201)
 
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)
+    except Locker.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Owner locker not found'}, status=404)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 @csrf_exempt
 @api_view(['POST'])

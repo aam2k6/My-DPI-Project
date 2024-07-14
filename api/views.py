@@ -181,6 +181,8 @@ def get_lockers_user(request):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_public_resources(request, user_id, locker_id):
     """
@@ -230,6 +232,8 @@ def get_public_resources(request, user_id, locker_id):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_connection_type(request):
     """
@@ -302,6 +306,8 @@ def dpi_directory(request):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_other_connections(request, guest_user_id, guest_locker_id):
     """
@@ -362,6 +368,8 @@ def get_other_connections(request, guest_user_id, guest_locker_id):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_connectiontype_by_user_by_locker(request):
     """
@@ -423,6 +431,8 @@ def get_connectiontype_by_user_by_locker(request):
 
 
 @csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def create_new_connection(request):
     """
@@ -482,6 +492,8 @@ def login_view(request):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def show_terms(request):
     """
@@ -542,7 +554,8 @@ def show_terms(request):
 
 
 @csrf_exempt
-@require_POST
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def give_consent(request):
     """
@@ -581,6 +594,8 @@ def give_consent(request):
 
 
 @csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def revoke_consent(request):
     """
@@ -736,6 +751,8 @@ def get_resource_by_user_by_locker(request):
 
 
 @csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def create_connection_type(request):
     """

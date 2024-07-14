@@ -1,105 +1,67 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useContext } from 'react';
+import Cookies from 'js-cookie';
 import './login.css';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { usercontext } from '../../usercontext';
 
 export const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [description, setDescription] = useState(""); // Added for signup
     const [message, setMessage] = useState('');
-    const navigate = useNavigate(); // useNavigate hook for redirecting
+    const [isSignup, setIsSignup] = useState(false); // To toggle between login and signup
+    const navigate = useNavigate();
+    const { setUser } = useContext(usercontext);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
         const data = new FormData();
-        data.append('username',username);
+        data.append('username', username);
         data.append('password', password);
-   
-        // try {
-        //     const response = await axios.post('http://localhost:8005/login-user', {
-        //         username: username,
-        //         password: password
-        //     }, {
-        //         headers: {
-        //             'Content-Type':'application/json'
-                
-        //           },
-        //           body: JSON.stringify(response)
-        //     });
 
-        //     if (response.data.success) {
-        //         setMessage('Login successful!');
-        //         console.log('User data:', response.data.user);
-        //         navigate('/dashboard'); // Redirect to dashboard or another page
-        //     } else {
-        //         setMessage(response.data.error);
-        //     }
-        // } catch (error) {
-        //     if (error.response) {
-        //         setMessage(error.response.data.error);
-        //     } else {
-        //         setMessage('An erronavigate('/home');r occurred. Please try again.');
-        //     }
-        // }
+        if (isSignup) {
+            data.append('description', description);
+        }
 
+        // Log form values to ensure they're being set correctly
+        console.log("Form Values: ", { username, password, description });
 
+        const url = isSignup ? 'http://localhost:8000/signup-user/' : 'http://localhost:8000/login-user/';
+        const headers = {};
 
+        if (!isSignup) {
+            headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
+        }
 
-      // fetch('http://localhost:8005/login-user/',{
-      //   method: 'POST',
-      //   header: {
-      //     'Content-Type' : 'application/json'
-      //   },
-      //   body : JSON.stringify(data)
-      // })
-      // .then(response => response.json())
-      // .then((data) => {
-      //   if(data.status === 200){
-      //     console.log("status 200")
-      //   }
-      // })
-
-    
-        // Send data to the backend
-        fetch('http://localhost:8000/login-user/', {
-          method: 'POST',
-          body: data,
+        fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: data,
         })
-          .then(response => response.json())
-          .then(data => {
+        .then(response => response.json())
+        .then(data => {
             if (data.success) {
-              console.log("Locker created:", data);
-              // Redirect to another page or show success message
-              navigate('/home');
+                console.log(isSignup ? "Signup successful:" : "Login successful:", data);
+                if (isSignup) {
+                    setIsSignup(false); // Switch to login form after successful signup
+                    alert("Signup successful. Please log in.");
+                } else {
+                    Cookies.set('authToken', btoa(`${username}:${password}`));
+                    setUser(data.user);
+                    localStorage.setItem('curruser', JSON.stringify(data.user));
+                    navigate('/home');
+                }
             } else {
-              console.error("Error:", data.error);
-              // Show error message
-              alert(data.error);
+                console.error("Error:", data.error);
+                alert(data.error);
             }
-          })
-          .catch(error => {
+        })
+        .catch(error => {
             console.error("Error:", error);
-            // Show error message
-            alert("An error occurred while creating the locker");
-          });
- 
-
+            alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
+        });
     };
-
-    // const getCookie = (name) => {
-    //     let cookieValue = null;
-    //     if (document.cookie && document.cookie !== '') {
-    //         const cookies = document.cookie.split(';');
-    //         for (let i = 0; i < cookies.length; i++) {
-    //             const cookie = cookies[i].trim();
-    //             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-    //                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     return cookieValue;
-    // };
 
     return (
         <div className='loginpage'>
@@ -112,10 +74,10 @@ export const Login = () => {
             <div className="containerlogin">
                 <form className="signup-form" onSubmit={handleSubmit} autoComplete="off">
                     <div className="form-headers">
-                        <h1><u>SIGN IN</u></h1>
+                        <h1><u>{isSignup ? 'SIGN UP' : 'SIGN IN'}</u></h1>
                     </div>
                     {message && <div className="error-message" style={{ color: 'red' }}>{message}</div>}
-                    <div className="form-input">
+                    <div className="form-input" id='form-inplogin1'>
                         <label>USERNAME :</label>
                         <input
                             type="text"
@@ -125,7 +87,7 @@ export const Login = () => {
                             required
                         />
                     </div>
-                    <div className="form-input">
+                    <div className="form-input" id='form-inplogin2'>
                         <label>PASSWORD :</label>
                         <input
                             type="password"
@@ -135,7 +97,26 @@ export const Login = () => {
                             required
                         />
                     </div>
-                    <button className="submit-btn" type="submit">LOGIN</button>
+                    {isSignup && (
+                        <div className="form-input" id='form-inplogin3'>
+                            <label>DESCRIPTION :</label>
+                            <input
+                                type="text"
+                                id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                required
+                            />
+                        </div>
+                    )}
+                    <button className="submit-btnlogin1" type="submit">{isSignup ? 'SIGN UP' : 'LOGIN'}</button>
+                    <button
+                        className="submit-btnlogin2"
+                        type="button"
+                        onClick={() => setIsSignup(!isSignup)}
+                    >
+                        {isSignup ? 'LOGIN' : 'SIGNUP'}
+                    </button>
                 </form>
             </div>
         </div>

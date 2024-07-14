@@ -32,8 +32,8 @@ export const Admin = () => {
         <div>
             <nav className="navbar">
                 <div className="wrap">
-                    <div className="navbarBrand">Locker:Transcripts</div>
-                    <div className="description7">Owner:<u>IIITB</u></div>
+                    <div className="navbarBrand"></div>
+                    <div className="description7"><u></u></div>
                 </div>
 
                 <div className="navbarLinks">

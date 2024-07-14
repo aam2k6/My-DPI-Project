@@ -103,6 +103,7 @@
   .navbarThirdLink {
     list-style: none;
     display: flex;
+    position: relative;
   }
   
   .navbarFirstLink a {
@@ -136,6 +137,7 @@
   .navbarLinks img {
     height: 50px;
     width: auto;
+    margin-right: 3rem;
   }
   
   /* Hero Container */
@@ -214,4 +216,54 @@
       margin-top: 1rem;
     }
   }
+  .dropdownImage {
+    cursor: pointer;
+    width: 40px; /* Adjust the size as needed */
+    height: 40px; /* Adjust the size as needed */
+    border-radius: 50%;
+    display: block;
+    position: relative; /* Ensure the image is positioned relatively */
+  }
   
+  .dropdownContent {
+    position: absolute;
+    top: calc(100% - 4rem); /* Position the dropdown slightly above to avoid extra space */
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0; /* Ensure no margin-top */
+    padding-top: 4px; /* Adjust padding if needed to ensure no overlap */
+  }
+  
+  .dropdownContent button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+  
+  .dropdownContent button:hover {
+    background-color: #f1f1f1;
+  }
+  .currusername {
+    text-align: center; /* Center the username text */
+    width: 100%; /* Ensure it takes the full width of the container */
+    font-size: large;
+    font-weight: bold;
+  }
+  .curruserdesc {
+    text-align: center; /* Center the username text */
+    width: 100%; /* Ensure it takes the full width of the container */
+    font-size: 0.75rem;
+    font-weight: 200;
+    
+  }

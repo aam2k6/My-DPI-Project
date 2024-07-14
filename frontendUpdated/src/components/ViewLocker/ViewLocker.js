@@ -1,10 +1,65 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+
 import './page3.css';
 import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+import { useParams, useLocation } from 'react-router-dom';
+import { usercontext } from "../../usercontext";
+
+
+
+
 
 
 export const ViewLocker = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const locker = location.state ? location.state.locker : null;
+
+  const { curruser, setUser } = useContext(usercontext);
+  const [resources, setResources] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!curruser) {
+        navigate('/');
+        return;
+    }},[]);
+
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const params = new URLSearchParams({ locker_name: locker.name });
+
+        const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Basic ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch resources');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setResources(data.resources);
+        } else {
+          setError(data.message || 'Failed to fetch resources');
+        }
+      } catch (error) {
+        console.error('Error fetching resources:', error);
+        setError('An error occurred while fetching resources');
+      }
+    };
+    if (locker) {
+      fetchResources();
+    }
+  }, [locker]);
 
   const handleNewLockerClick = () => {
     //console.log("Create New Locker button clicked");
@@ -29,14 +84,21 @@ export const ViewLocker = () => {
   };
 
   const handleUploadResource = () => {
-    navigate('/upload-resource')
+    navigate('/upload-resource',{state: {locker}});
   }
 
-  const handleAdmin = () =>{
+  const handleAdmin = () => {
     navigate('/admin');
   }
 
-  const handleLogout = () =>{
+  const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
     navigate('/');
   }
 
@@ -45,8 +107,8 @@ export const ViewLocker = () => {
     <div>
       <nav className="navbar">
         <div className="wrap">
-          <div className="navbarBrand">Locker:Education</div>
-          <div className="description3">Owner:Rohith</div>
+          <div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div>
+          {/* <div className="description3">{locker ? `Description: ${locker.description}` : 'Description'}</div> */}
         </div>
 
         <div className="navbarLinks">
@@ -78,19 +140,58 @@ export const ViewLocker = () => {
 
       <div className="container">
         <div className="locker-name">
-          <div className="loc"><span className='desc'>This locker consists of my Education documents</span></div>
+          <div className="loc"><span className='desc'>{locker ? ` ${locker.description}` : 'Description'}</span></div>
         </div>
         <div className="container-2 clearfix">
           <div className="a">
             <div className="res"><h3>Resources</h3></div>
             <div className="container-3 clearfix">
-              <div className="aa">
+              {/* <div className="aa">
                 <div id="documents">Transcripts.pdf</div>
                 <div id="documents">10thMarks-card.pdf</div>
               </div>
               <div className="bb">
                 <div className="public-private">Public/private</div>
                 <div className="public-private">Public/private</div>
+              </div> */}
+
+              {/* {resources.length > 0 ? (
+                resources.map(resource => (
+                  <div key={resource.resource_id} className="aa">
+                    <div id="documents">{resource.document_name}</div>
+                    <div className="public-private">{resource.type === 'public' ? 'Public' : `Private shared with ${resource.}` }</div>
+                  </div>
+                ))
+              ) : (
+                <p>No resources found.</p>
+              )} */}
+
+              <div className='aa'>
+                {resources.length > 0 ? (
+                  resources.map(resource => (
+                    <div key={resource.resource_id} className="resource-item">
+                      <div id="documents">{resource.document_name}</div>
+                      {/* <div className="public-private"> */}
+                        {resource.type === 'private' ? (
+                          <>
+                            Private - Shared with:
+                            {resource.connections.map((connection, index) => (
+                              <span key={connection.connection_id}>
+                                {connection.host_user.username}
+                                {index < resource.connections.length - 1 ? ', ' : ''}
+                              </span>
+                            ))}
+                          </>
+                        ) : (
+                          'Public'
+                        )}
+                      </div>
+                    // </div>
+                  ))
+                ) : (
+                  <p>No resources found.</p>
+                )}
+
               </div>
             </div>
             <button className="page3button">Share</button>
@@ -117,4 +218,3 @@ export const ViewLocker = () => {
     </div>
   );
 }
-

@@ -89,7 +89,7 @@
      .containerlogin{
          margin-top: 10rem;
          border-radius: 5rem;
-         border: 2rem solid gray;
+         border: 2rem solid rgba(23, 22, 75);
          height: 30rem;
          width: 40rem;
          /* display: flex;
@@ -102,11 +102,26 @@
          margin-top:2rem;
      }
      .form-input{
-      
+         font-size: large;
         margin-bottom: 2rem;
          margin-left: 8rem;
      }
-     .submit-btn{
+     .submit-btnlogin1{
          margin-left: 14rem;
+         margin-right: 3rem;
+         padding: 0.5rem;
+         
+     }
+     .submit-btnlogin2{
+        padding:0.5rem;
+     }
+     #form-inplogin1 input{
+         margin-left: 1.75rem;
      }
  
+     #form-inplogin2 input{
+        margin-left: 1.45rem;
+     }
+     #form-inplogin3 input{
+        margin-left: 0.65rem;
+     }

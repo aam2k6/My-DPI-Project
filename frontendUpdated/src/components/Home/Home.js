@@ -1,38 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import Cookies from 'js-cookie';
 import "./page1.css";
 import { useNavigate } from "react-router-dom";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+import { usercontext } from "../../usercontext";
 
 export const Home = () => {
   const navigate = useNavigate();
   const [lockers, setLockers] = useState([]);
   const [error, setError] = useState(null);
-
-  // This should be dynamically obtained, hardcoded here for demonstration
-  const username = "iiitb";
+  const [isOpen, setIsOpen] = useState(false);
+  const { curruser,setUser } = useContext(usercontext);
 
   useEffect(() => {
-    // Fetch lockers for the specified user
-      //fetch(`http://172.16.192.201:8000/get-lockers-user/?username=${username}`)
-      fetch(`http://127.0.0.1:8005/get-lockers-user/?username=${username}`)
+    if (!curruser) {
+        navigate('/');
+        return;
+    }},[]);
 
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          setLockers(data.lockers);
-        } else {
-          setError(data.message || data.error);
-        }
-      })
-      .catch(error => {
-        setError("An error occurred while fetching lockers.");
-        console.error("Error:", error);
-      });
-  }, [username]);
+  useEffect(() => {
 
 
+    const token = Cookies.get('authToken');
+
+    fetch('http://localhost:8000/get-lockers-user/', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        setLockers(data.lockers);
+      } else {
+        setError(data.message || data.error);
+      }
+    })
+    .catch(error => {
+      setError("An error occurred while fetching lockers.");
+      console.error("Error:", error);
+    });
+  }, [curruser]);
 
   const handleNewLockerClick = () => {
-    //console.log("Create New Locker button clicked");
     navigate('/create-locker');
   };
 
@@ -45,23 +57,33 @@ export const Home = () => {
   };
 
   const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
     navigate('/');
   }
-
-  const handleClick = () => {
-    navigate('/view-locker');
+  const handleClick = (locker) => {
+    navigate('/view-locker', { state: { locker } });
   };
 
-  const handleAdmin = () =>{
+  const handleAdmin = () => {
     navigate('/admin');
+  }
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
   }
 
   return (
     <div>
       <nav className="navbar">
         <div className="wrap">
-          <div className="navbarBrand">Rohith</div>
-          <div className="description">MS Student at IIIT Bangalore</div>
+          <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
+          <div className="description">{curruser ? curruser.description : 'None'}</div>
         </div>
 
         <div className="navbarLinks">
@@ -76,16 +98,22 @@ export const Home = () => {
               <a href="#" onClick={handleHomeClick}>Home</a>
             </li>
             <li>
-              <a href="#" onClick={handleAdmin}>Admin</a>
+              <a href="#" onClick={handleAdmin}></a>
             </li>
           </ul>
 
           <ul className="navbarThirdLink">
             <li>
-              <img src="" alt="User Icon" />
-            </li>
-            <li>
-              <a href="#" onClick={handleLogout}>Logout</a>
+              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
             </li>
           </ul>
         </div>
@@ -99,29 +127,12 @@ export const Home = () => {
           </button>
         </div>
 
-        {/* {error && <div className="error">{error}</div>} */}
-
         <div className="allLockers">
-          {/* <div className="docs">
-            <h4>Docs</h4>
-            <button id="docsBtn" onClick={handleDocsClick}>
-              Open
-            </button>
-          </div>
-
-          <div className="education">
-            <h4>Education</h4>
-            <button id="educationBtn" onClick={handleEducationClick}>
-              Open
-            </button>
-          </div> */}
-
           {lockers.length > 0 ? (
             lockers.map(locker => (
               <div key={locker.id} className="page1-locker">
                 <h4>{locker.name}</h4>
-                {/* <p>{locker.description}</p> */}
-                <button id="openLockerBtn" onClick={handleClick}>Open</button>
+                <button id="openLockerBtn" onClick={() => handleClick(locker)}>Open</button>
               </div>
             ))
           ) : (

@@ -2,6 +2,7 @@ import base64
 import os
 from django.conf import settings
 from django.contrib.auth import login, authenticate
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -12,7 +13,7 @@ from .serializers import ResourceSerializer, ConnectionTypeSerializer, Connectio
 from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.db import models
 from rest_framework.parsers import JSONParser
 from django.views.decorators.http import require_POST
@@ -61,17 +62,27 @@ def upload_resource(request):
             locker = Locker.objects.get(user=user, name=locker_name)
 
             if file:
-                file_path = os.path.join(settings.MEDIA_ROOT, 'documents', file.name)
+                relative_path = os.path.join('documents', file.name)
+                file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 with open(file_path, 'wb+') as destination:
                     for chunk in file.chunks():
                         destination.write(chunk)
 
-                resource = Resource.objects.create(document_name=document_name, i_node_pointer=file_path, locker=locker,
-                                                   owner=user, type=resource_type, )
-                resource_url = os.path.join(settings.MEDIA_URL, 'documents', file.name)
-                return JsonResponse({'success': True, 'document_name': document_name, 'type': resource_type,
-                                     'resource_url': resource_url}, status=201)
+                resource = Resource.objects.create(
+                    document_name=document_name,
+                    i_node_pointer=relative_path,
+                    locker=locker,
+                    owner=user,
+                    type=resource_type
+                )
+                resource_url = os.path.join(settings.MEDIA_URL, relative_path)
+                return JsonResponse({
+                    'success': True,
+                    'document_name': document_name,
+                    'type': resource_type,
+                    'resource_url': resource_url
+                }, status=201)
             else:
                 return JsonResponse({'success': False, 'error': 'No file provided'}, status=400)
         except Locker.DoesNotExist:
@@ -81,6 +92,40 @@ def upload_resource(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def download_resource(request, resource_id):
+    """
+    View to download a resource by its ID.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+    - resource_id: ID of the resource to be downloaded.
+
+    Returns:
+    - FileResponse: The file to be downloaded.
+    - JsonResponse: A JSON object with an error message if the resource is not found or not accessible.
+    """
+    try:
+        resource = get_object_or_404(Resource, resource_id=resource_id)
+
+        # Assume resource.i_node_pointer stores the relative path, e.g., 'documents/hk_admissions.pdf'
+        relative_path = resource.i_node_pointer
+        file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+        print(f"Trying to access file at: {file_path}")
+
+        if os.path.exists(file_path):
+            response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=os.path.basename(file_path))
+            return response
+        else:
+            print(f"File not found at: {file_path}")
+            return JsonResponse({'error': 'File not found.'}, status=404)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=400)
 
 
 @csrf_exempt

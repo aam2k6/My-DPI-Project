@@ -429,7 +429,6 @@ def get_connectiontype_by_user_by_locker(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -444,10 +443,10 @@ def create_new_connection(request):
     Form Parameters:
     - connection_name: The name of the connection.
     - connection_type_id: The ID of the connection type.
-    - host_locker: The ID of the source locker.
-    - guest_locker: The ID of the target locker.
-    - host_user: The ID of the source user.
-    - guest_user: The ID of the target user.
+    - host_locker: The name of the source locker.
+    - guest_locker: The name of the target locker.
+    - host_user: The username of the source user.
+    - guest_user: The username of the target user.
     - connection_description: The description of the connection.
     - requester_consent: Boolean indicating if the requester has consented.
     - revoke_host: Boolean indicating if the source can revoke.
@@ -465,14 +464,71 @@ def create_new_connection(request):
         if not request.user.is_authenticated:
             return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
         
-        data = request.POST
-        serializer = ConnectionSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'success': True, 'connection': serializer.data}, status=201)
-        return JsonResponse({'success': False, 'error': serializer.errors}, status=400)
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+        data = request.POST.copy()
 
+        connection_type_id = data.get('connection_type_id')
+        host_locker_name = data.get('host_locker')
+        guest_locker_name = data.get('guest_locker')
+        host_user_username = data.get('host_user')
+        guest_user_username = data.get('guest_user')
+        
+        if not all([connection_type_id, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
+        try:
+            connection_type = ConnectionType.objects.get(pk=connection_type_id)
+            host_user = CustomUser.objects.get(username=host_user_username)
+            guest_user = CustomUser.objects.get(username=guest_user_username)
+
+            host_locker = Locker.objects.filter(name=host_locker_name, user=host_user)
+            guest_locker = Locker.objects.filter(name=guest_locker_name, user=guest_user)
+
+            if host_locker.count() != 1:
+                return JsonResponse({'success': False, 'error': 'Host locker not found or multiple lockers found with the same name for the host user'}, status=400)
+            if guest_locker.count() != 1:
+                return JsonResponse({'success': False, 'error': 'Guest locker not found or multiple lockers found with the same name for the guest user'}, status=400)
+
+            host_locker = host_locker.first()
+            guest_locker = guest_locker.first()
+
+        except ConnectionType.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection type not found'}, status=400)
+        except CustomUser.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
+
+        connection = Connection(
+            connection_name=data.get('connection_name'),
+            connection_type_id=connection_type,
+            host_locker=host_locker,
+            guest_locker=guest_locker,
+            host_user=host_user,
+            guest_user=guest_user,
+            connection_description=data.get('connection_description', ''),
+            requester_consent=data.get('requester_consent', 'false').lower() == 'true',
+            revoke_host=data.get('revoke_host', 'false').lower() == 'true',
+            revoke_guest=data.get('revoke_guest', 'false').lower() == 'true'
+        )
+
+        try:
+            connection.save()
+            return JsonResponse({'success': True, 'connection': {
+                'id': connection.connection_id,
+                'name': connection.connection_name,
+                'description': connection.connection_description,
+                'host_user': connection.host_user.username,
+                'guest_user': connection.guest_user.username,
+                'host_locker': connection.host_locker.name,
+                'guest_locker': connection.guest_locker.name,
+                'requester_consent': connection.requester_consent,
+                'revoke_host': connection.revoke_host,
+                'revoke_guest': connection.revoke_guest,
+                'created_time': connection.created_time,
+                'validity_time': connection.validity_time
+            }}, status=201)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 @api_view(['POST'])
@@ -493,7 +549,6 @@ def login_view(request):
         else:
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
-
 @csrf_exempt
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
@@ -503,13 +558,14 @@ def show_terms(request):
     Retrieve terms associated with a specific user.
 
     This view handles GET requests to fetch terms for a specific user,
-    identified by a 'username' query parameter.
+    identified by a 'username' query parameter, and optionally filtered by 'term_id'.
 
     Parameters:
         - request: HttpRequest object containing metadata about the request.
 
     Query Parameters:
         - username: The username of the user whose terms are to be fetched.
+        - term_id: Optional. The ID of the specific term to be fetched.
 
     Returns:
         - JsonResponse: A JSON object containing a list of terms or an error message.
@@ -517,14 +573,14 @@ def show_terms(request):
     Response Codes:
         - 200: Successful retrieval of terms.
         - 401: User is not authenticated.
-        - 404: Specified user not found.
+        - 404: Specified user not found or no terms found.
         - 405: Request method not allowed (if not GET).
-        - 400: Bad request (missing parameters).
+        - 400: Bad request (missing parameters or other errors).
     """
     if request.method == 'GET':
         username = request.GET.get('username')
-        print(f"Username received: {username}")
-
+        terms_id = request.GET.get('term_id')
+        
         try:
             if username:
                 try:
@@ -538,14 +594,26 @@ def show_terms(request):
                     return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
             connection_types = ConnectionType.objects.filter(owner_user=user)
-            terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
+            
+            if terms_id:
+                terms = ConnectionTerms.objects.filter(conn_type__in=connection_types, terms_id=terms_id)
+            else:
+                terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
 
             if not terms.exists():
                 return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
 
             serializer = ConnectionTermsSerializer(terms, many=True)
-            filtered_data = [{'description': term['description'], 'modality': term['modality']} for term in
-                             serializer.data]
+            filtered_data = [
+                {
+                    'description': term['description'],
+                    'modality': term['modality'],
+                    'data_element_name': term['data_element_name'],
+                    'data_type': term['data_type'],
+                    'sharing_type': term['sharing_type']
+                }
+                for term in serializer.data
+            ]
             return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
 
         except CustomUser.DoesNotExist:
@@ -773,7 +841,7 @@ def create_connection_type(request):
     - connection_type_name: Name of the connection type.
     - connection_description: Description of the connection type.
     - owner_user: Username of the owner user.
-    - owner_locker: ID of the owner locker.
+    - owner_locker: Name of the owner locker.
     - validity_time: Validity time of the connection type.
 
     Returns:
@@ -788,15 +856,18 @@ def create_connection_type(request):
     connection_type_name = request.POST.get('connection_type_name')
     connection_description = request.POST.get('connection_description')
     owner_user_username = request.POST.get('owner_user')
-    owner_locker_id = request.POST.get('owner_locker')
+    owner_locker_name = request.POST.get('owner_locker')
     validity_time_str = request.POST.get('validity_time')
 
-    if not all([connection_type_name, owner_user_username, owner_locker_id, validity_time_str]):
+    if not all([connection_type_name, owner_user_username, owner_locker_name, validity_time_str]):
         return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
     try:
         owner_user = CustomUser.objects.get(username=owner_user_username)
-        owner_locker = Locker.objects.get(locker_id=owner_locker_id)
+        owner_locker = Locker.objects.filter(name=owner_locker_name, user=owner_user).first()
+        if not owner_locker:
+            return JsonResponse({'success': False, 'error': 'Owner locker not found'}, status=404)
+
         validity_time = parse_datetime(validity_time_str)
         if validity_time is None:
             raise ValueError("Invalid date format")
@@ -817,7 +888,7 @@ def create_connection_type(request):
                 'name': connection_type.connection_type_name,
                 'description': connection_type.connection_description,
                 'owner_user': connection_type.owner_user.username,
-                'owner_locker': connection_type.owner_locker.locker_id,
+                'owner_locker': connection_type.owner_locker.name,
                 'validity_time': connection_type.validity_time,
                 'created_time': connection_type.created_time
             }
@@ -825,8 +896,6 @@ def create_connection_type(request):
 
     except CustomUser.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)
-    except Locker.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Owner locker not found'}, status=404)
     except ValueError as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
     except Exception as e:

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 
 import './page3.css';
 import { useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ export const ViewLocker = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const locker = location.state ? location.state.locker : null;
+  const [isOpen, setIsOpen] = useState(false);
 
   const { curruser, setUser } = useContext(usercontext);
   const [resources, setResources] = useState([]);
@@ -102,6 +104,10 @@ export const ViewLocker = () => {
     navigate('/');
   }
 
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  }
+
 
   return (
     <div>
@@ -123,16 +129,22 @@ export const ViewLocker = () => {
               <a href="#" onClick={handleHomeClick}>Home</a>
             </li>
             <li>
-              <a href="#" onClick={handleAdmin}>Admin</a>
+              <a href="#" onClick={handleAdmin}></a>
             </li>
           </ul>
 
           <ul className="navbarThirdLink">
             <li>
-              <img src="" alt="User Icon" />
-            </li>
-            <li>
-              <a href="#" onClick={handleLogout}>Logout</a>
+            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
             </li>
           </ul>
         </div>

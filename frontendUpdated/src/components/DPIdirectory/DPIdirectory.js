@@ -3,6 +3,7 @@ import './page5.css';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 
 export const DPIdirectory = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export const DPIdirectory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const { curruser, setUser } = useContext(usercontext);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleHomeClick = () => {
     navigate('/home');
@@ -22,6 +24,9 @@ export const DPIdirectory = () => {
 
   const handleAdmin = () => {
     navigate('/admin');
+  }
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
   }
 
   const handleLogout = () => {
@@ -92,16 +97,22 @@ export const DPIdirectory = () => {
               <a href="#" onClick={handleHomeClick}>Home</a>
             </li>
             <li>
-              <a href="#" onClick={handleAdmin}>Admin</a>
+              <a href="#" onClick={handleAdmin}></a>
             </li>
           </ul>
 
           <ul className="navbarThirdLink">
             <li>
-              <img src="" alt="User Icon" />
-            </li>
-            <li>
-              <a href="#" onClick={handleLogout}>Logout</a>
+            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
             </li>
           </ul>
         </div>

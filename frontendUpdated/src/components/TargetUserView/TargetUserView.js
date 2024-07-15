@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./page6.css";
 import Cookies from "js-cookie";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+import { usercontext } from "../../usercontext";
+
 
 export const TargetUserView = () => {
   const navigate = useNavigate();
@@ -9,6 +12,16 @@ export const TargetUserView = () => {
   const user = location.state ? location.state.user : null;
   const [allLockers, setLockers] = useState([]);
   const [error, setError] = useState(null);
+   const [isOpen, setIsOpen] = useState(false);
+   const { curruser,setUser } = useContext(usercontext);
+
+
+
+  useEffect(() => {
+    if (!curruser) {
+        navigate('/');
+        return;
+    }},[]);
 
   const handleNewLockerClick = () => {
     navigate('/create-locker');
@@ -27,7 +40,17 @@ export const TargetUserView = () => {
   }
    
   const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
     navigate('/');
+  }
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
   }
 
   const handleAdmin = () => {
@@ -100,16 +123,22 @@ export const TargetUserView = () => {
               <a href="#" onClick={handleHomeClick}>Home</a>
             </li>
             <li>
-              <a href="#" onClick={handleAdmin}>Admin</a>
+              <a href="#" onClick={handleAdmin}></a>
             </li>
           </ul>
 
           <ul className="navbarThirdLink">
             <li>
-              <img src="" alt="User Icon" />
-            </li>
-            <li>
-              <a href="#" onClick={handleLogout}>Logout</a>
+            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
             </li>
           </ul>
         </div>

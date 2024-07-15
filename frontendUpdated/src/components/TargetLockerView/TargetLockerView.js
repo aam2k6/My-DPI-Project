@@ -3,16 +3,22 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import "./page7.css";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+
 
 export const TargetLockerView = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { curruser } = useContext(usercontext);
+  // const { curruser } = useContext(usercontext);
+  const { curruser,setUser } = useContext(usercontext);
+
   const [parentUser, setParentUser] = useState(location.state ? location.state.user : null);
   const [resources, setResources] = useState([]);
   const [locker, setLocker] = useState(location.state ? location.state.locker : null);
   const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
+  
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -43,6 +49,9 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching resources");
     }
   };
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  }
 
   const handleDPIDirectory = () => {
     navigate('/dpi-directory');
@@ -56,12 +65,17 @@ export const TargetLockerView = () => {
     navigate('/create-connection-terms');
   };
 
-  const handleLogoutClick = () => {
-    console.log("Logout button clicked");
+  const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
     navigate('/');
-  };
-
-  const handleAdminClick = () => {
+  }
+  const handleAdmin = () => {
     console.log("Admin button clicked");
     navigate('/admin');
   };
@@ -79,11 +93,22 @@ export const TargetLockerView = () => {
           </ul>
           <ul className="navbarSecondLink">
             <li><a href="#" onClick={handleHomeClick}>Home</a></li>
-            <li><a href="#" onClick={handleAdminClick}>Admin</a></li>
+            <li><a href="#" ></a></li>
           </ul>
           <ul className="navbarThirdLink">
-            <li><img src="" alt="User Icon" /></li>
-            <li><a href="#" onClick={handleLogoutClick}>Logout</a></li>
+
+             <li>
+              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
+            </li>
           </ul>
         </div>
       </nav>

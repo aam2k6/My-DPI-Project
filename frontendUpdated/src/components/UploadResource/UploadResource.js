@@ -3,6 +3,8 @@ import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import "./page4.css";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+
 
 export const UploadResource = () => {
   const location = useLocation();
@@ -10,6 +12,8 @@ export const UploadResource = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resourceName, setResourceName] = useState("");
   const [document, setDocument] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+
   const [visibility, setVisibility] = useState("Public"); // Default value set to Public
   const navigate = useNavigate();
 
@@ -54,6 +58,40 @@ export const UploadResource = () => {
     });
   };
 
+
+
+  const handleDPIDirectory = () => {
+    navigate('/dpi-directory');
+  };
+
+  const handleHomeClick = () => {
+    navigate('/home');
+  };
+
+  const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
+    navigate('/');
+  }
+  const handleClick = (locker) => {
+    navigate('/view-locker', { state: { locker } });
+  };
+
+  const handleAdmin = () => {
+    navigate('/admin');
+  }
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  }
+
+
+
   return (
     <div>
       <nav className="navbar">
@@ -63,15 +101,25 @@ export const UploadResource = () => {
         </div>
         <div className="navbarLinks">
           <ul className="navbarFirstLink">
-            <li><a href="#" onClick={() => navigate('/dpi-directory')}>DPI Directory</a></li>
+            <li><a href="#" onClick={handleDPIDirectory}>DPI Directory</a></li>
           </ul>
           <ul className="navbarSecondLink">
-            <li><a href="#" onClick={() => navigate('/home')}>Home</a></li>
-            <li><a href="#" onClick={() => navigate('/admin')}>Admin</a></li>
+            <li><a href="#" onClick={handleHomeClick}>Home</a></li>
+            <li><a href="#"></a></li>
           </ul>
           <ul className="navbarThirdLink">
-            <li><a href="#" onClick={() => navigate('/')}>Logout</a></li>
-          </ul>
+            <li> <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
+              </li>
+              </ul>
         </div>
       </nav>
 

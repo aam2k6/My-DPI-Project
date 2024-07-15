@@ -35,7 +35,7 @@ export const ViewLocker = () => {
         const token = Cookies.get('authToken');
         const params = new URLSearchParams({ locker_name: locker.name });
 
-        const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
+        const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?${params}`, {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,

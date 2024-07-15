@@ -32,7 +32,7 @@ export const TargetLockerView = () => {
   const fetchResources = async () => {
     const token = Cookies.get('authToken');
     try {
-      const response = await fetch(`http://localhost:8000/get-public-resources/${parentUser.user_id}/${locker.locker_id}/`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-public-resources/${parentUser.user_id}/${locker.locker_id}/`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,

@@ -44,7 +44,7 @@ export const DPIdirectory = () => {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://127.0.0.1:8000/dpi-directory/', {
+    fetch('http://172.16.192.201:8000/dpi-directory/', {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,

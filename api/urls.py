@@ -8,7 +8,7 @@ from .views import show_terms,revoke_consent
 urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory'),
     path('upload-resource/', views.upload_resource, name='upload_resource'),
     path('create-locker/', views.create_locker, name='create-locker'),
-    path('get-public-resources/<int:user_id>', views.get_public_resources, name='get-public-resources'),
+    path('get-public-resources/', views.get_public_resources, name='get-public-resources'),
     path('get-connection-type/', views.get_connection_type, name='get-connection-type'),
     path('get-lockers-user/', views.get_lockers_user, name='get-lockers-user'),
     path('get-other-connections/<int:target_user_id>/<int:target_locker_id>/', views.get_other_connections, name='get-other-connections'),

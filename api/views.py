@@ -184,7 +184,7 @@ def get_lockers_user(request):
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def get_public_resources(request, user_id, locker_id):
+def get_public_resources(request):
     """
         Retrieve all public resources of the guest_user and guest_locker the logged user views.
 
@@ -196,38 +196,45 @@ def get_public_resources(request, user_id, locker_id):
             - request: HttpRequest object containing metadata about the request.
 
         Query Parameters:
-            - user_id : user_id of the target_user that the authenticated user is viewing
-            - locker_id : locker_id of the viewed user's locker
+            - username : username of the target_user that the authenticated user is viewing
+            - locker_name : locker_name of the viewed user's locker
         
         Returns:
             - JsonResponse: A JSON object containing a list of lockers or an error message.
         
         Response Codes:
             - 200: Successful retrieval of public resources.
-            - 400: Specifed user or locker not found.
+            - 400: Specified user or locker not found.
             - 404: No public resources found.
             - 405: Request method not allowed (if not GET).    
     """
 
     if request.method == 'GET':
         try:
-            user = CustomUser.objects.get(pk=user_id)
-        except CustomUser.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
+            username = request.GET.get('username')
+            locker_name = request.GET.get('locker_name')
+            if not username:
+                return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+            if not locker_name:
+                return JsonResponse({'success': False, 'error': 'Locker Name is required'}, status=400)
 
-        try:
-            locker = Locker.objects.get(pk=locker_id, owner=user)
-        except Locker.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Locker not found or does not belong to the user'},
-                                status=400)
+            try:
+                random_user = CustomUser.objects.get(username=username)
+            except CustomUser.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
 
-        public_resources = Resource.objects.filter(owner=user, visibility='public', locker=locker)
-        if not public_resources.exists():
-            return JsonResponse({'success': False, 'message': 'No public resources found'}, status=404)
+            try:
+                random_user_locker = Locker.objects.get(user=random_user, name=locker_name)
+            except Locker.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Locker not found for the given username'}, status=404)
 
-        serializer = ResourceSerializer(public_resources, many=True)
-        return JsonResponse({'success': True, 'resources': serializer.data}, status=200)
-
+            public_resources = Resource.objects.filter(owner=random_user, type='public', locker=random_user_locker)
+            if not public_resources.exists():
+                return JsonResponse({'success': False, 'message': 'No public resources found'}, status=404)
+            serializer = ResourceSerializer(public_resources, many=True)
+            return JsonResponse({'success': True, 'resources': serializer.data}, status=200)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=405)
 
 

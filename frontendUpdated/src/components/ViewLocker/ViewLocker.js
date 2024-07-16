@@ -93,6 +93,11 @@ export const ViewLocker = () => {
     navigate('/admin');
   }
 
+  const handleResourceClick = (resourceId) => {
+    const url = `http://172.16.192.201:8000/download-resource/${resourceId}`;
+    window.open(url, "_blank");
+  };
+
   const handleLogout = () => {
     // Clear cookies
     Cookies.remove('authToken');
@@ -182,8 +187,8 @@ export const ViewLocker = () => {
                 {resources.length > 0 ? (
                   resources.map(resource => (
                     <div key={resource.resource_id} className="resource-item">
-                      <div id="documents">{resource.document_name}</div>
-                      {/* <div className="public-private"> */}
+                      <div id="documents"    onClick={() => handleResourceClick(resource.resource_id)}>{resource.document_name}</div>
+                      <div className="public-private"> 
                         {resource.type === 'private' ? (
                           <>
                             Private - Shared with:
@@ -198,7 +203,7 @@ export const ViewLocker = () => {
                           'Public'
                         )}
                       </div>
-                    // </div>
+                     </div>
                   ))
                 ) : (
                   <p>No resources found.</p>

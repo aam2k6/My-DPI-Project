@@ -125,7 +125,9 @@
 
 .aa {
   width: 45%;
-  float: left;
+  /* float: left; */
+  /* display: flex; */
+  
 }
 .bb {
   width: 45%;

@@ -60,6 +60,7 @@ export const UploadResource = () => {
 
 
 
+
   const handleDPIDirectory = () => {
     navigate('/dpi-directory');
   };

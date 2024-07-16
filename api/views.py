@@ -817,11 +817,11 @@ def get_connection_by_user_by_locker(request):
                 return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
 
             # Fetch incoming connections
-            incoming_connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
+            incoming_connections = Connection.objects.filter(host_user=user, host_locker=locker)
             incoming_serializer = ConnectionSerializer(incoming_connections, many=True)
 
             # Fetch outgoing connections
-            outgoing_connections = Connection.objects.filter(host_user=user, host_locker=locker)
+            outgoing_connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
             outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
 
             connections = {

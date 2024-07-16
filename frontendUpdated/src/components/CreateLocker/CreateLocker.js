@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import userImage from "../Assets/user_icon.png"; 
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import "./page2.css";
 
 export const CreateLocker = () => {
@@ -21,7 +21,7 @@ export const CreateLocker = () => {
     data.append('description', description);
 
     // Send data to the backend
-    fetch('http://127.0.0.1:8000/create-locker/', {
+    fetch('http://localhost:8000/create-locker/', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`, // Add token to the headers

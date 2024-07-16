@@ -1,109 +1,123 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { usercontext } from "../../usercontext";
 import "./page4.css";
 
 export const UploadResource = () => {
-    const navigate = useNavigate();
+  const location = useLocation();
+  const locker = location.state ? location.state.locker : null;
+  const { curruser, setUser } = useContext(usercontext);
+  const [resourceName, setResourceName] = useState("");
+  const [document, setDocument] = useState(null);
+  const [visibility, setVisibility] = useState("Public"); // Default value set to Public
+  const navigate = useNavigate();
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log("Form submitted");
-        navigate("/view-locker");
-    };
-
-    const handleHomeClick = () => {
-        navigate("/home");
-    };
-
-    const handleDPIDirectory = () => {
-        navigate('/dpi-directory');
-    };
-
-    const handleLogout = () => {
-        navigate('/');
+  useEffect(() => {
+    if (!curruser) {
+      navigate('/');
+      return;
     }
+  }, [curruser, navigate]);
 
-    const handleAdmin = () => {
-        navigate('/admin');
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-    return (
-        <div>
-            <nav className="navbar">
-                <div className="wrap">
-                    <div className="navbarLockerName">Locker : Education</div>
-                    <div className="navbarLockerOwner">Owner : Rohith</div>
-                </div>
+    const data = new FormData();
+    data.append('locker_name', locker.name);
+    data.append('resource_name', resourceName);
+    data.append('type', visibility);
+    data.append('document', document);
 
-                <div className="navbarLinks">
-                    <ul className="navbarFirstLink">
-                        <li>
-                            <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-                        </li>
-                    </ul>
+    const token = Cookies.get('authToken');
 
-                    <ul className="navbarSecondLink">
-                        <li>
-                            <a href="#" onClick={handleHomeClick}>
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleAdmin}>Admin</a>
-                        </li>
-                    </ul>
+    fetch('http://localhost:8000/upload-resource/', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${token}`
+      },
+      body: data,
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        console.log("Resource uploaded:", data);
+        navigate("/view-locker",{state: {locker}});
+      } else {
+        console.error("Error:", data.error);
+        alert(data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("An error occurred while uploading the resource");
+    });
+  };
 
-                    <ul className="navbarThirdLink">
-                        <li>
-                            <img src="" alt="User Icon" />
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleLogout}>Logout</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <div className="descriptionLocker">
-                <p>This Locker consists of my Education Documents</p>
-            </div>
-
-            <div className="page4heroContainer">
-
-
-                <div className="page4resourceHeading">Resources</div>
-
-
-                <div className="page4lockerForm">
-                    <form className="page4lockerForm" onSubmit={handleSubmit}>
-                        <label>
-                            <span>Name</span>
-                            <input type="text" name="lockerName" placeholder="Resource Name" />
-                        </label>
-
-                        <label>
-                            <span>Select File </span>
-                            <input
-                                type="text"
-                                name="lockerDescription"
-                                placeholder="Upload File(pdf)"
-                            />
-                        </label>
-
-                        <label>
-                            <span>Visibility </span>
-                            <input
-                                type="text"
-                                name="lockerDescription"
-                                placeholder="--Select-- (Public/Private)"
-                            />
-                        </label>
-
-                        <button type="submit">Submit</button>
-                    </form>
-                </div>
-            </div>
-
+  return (
+    <div>
+      <nav className="navbar">
+        <div className="wrap">
+          <div className="navbarLockerName">Locker: {locker.name}</div>
+          <div className="navbarLockerOwner">Owner: {curruser.username}</div>
         </div>
-    );
+        <div className="navbarLinks">
+          <ul className="navbarFirstLink">
+            <li><a href="#" onClick={() => navigate('/dpi-directory')}>DPI Directory</a></li>
+          </ul>
+          <ul className="navbarSecondLink">
+            <li><a href="#" onClick={() => navigate('/home')}>Home</a></li>
+            <li><a href="#" onClick={() => navigate('/admin')}>Admin</a></li>
+          </ul>
+          <ul className="navbarThirdLink">
+            <li><a href="#" onClick={() => navigate('/')}>Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div className="descriptionLocker">
+        <p>{locker.description}</p>
+      </div>
+
+      <div className="page4heroContainer">
+        <div className="page4resourceHeading">Resources</div>
+        <div className="page4lockerForm">
+          <form onSubmit={handleSubmit}>
+            <label>
+              <span>Name</span>
+              <input
+                type="text"
+                name="resourceName"
+                placeholder="Resource Name"
+                onChange={(e) => setResourceName(e.target.value)}
+                required
+              />
+            </label>
+            <label>
+              <span>Select File</span>
+              <input
+                type="file"
+                name="document"
+                onChange={(e) => setDocument(e.target.files[0])}
+                required
+              />
+            </label>
+            <label>
+              <span>Visibility</span>
+              <select
+                name="visibility"
+                value={visibility}
+                onChange={(e) => setVisibility(e.target.value)}
+                required
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </label>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 };

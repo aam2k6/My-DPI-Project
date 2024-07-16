@@ -1,12 +1,14 @@
 import "./CreateConnectionTerms.css";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
+import Cookies from 'js-cookie';
 
 
 export const CreateConnectionTerms = () => {
   const navigate = useNavigate();
 
   const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
+  const [message, setMessage] = useState("");
 
   const handleDPIDirectory = () => {
     navigate('/dpi-directory');
@@ -25,13 +27,43 @@ export const CreateConnectionTerms = () => {
     console.log("Admin button clicked");
     navigate('/admin');
   };
-  
-  const handleIagreebutton = () => {
- // Step 3: Update the state variable on change
-    setIagree(1);  
-};
 
-  
+  const handleIagreebutton = async() => {
+    
+    const token = Cookies.get('authToken');
+    const consent = true; // Consent is given
+    const id = 1;
+    const data = new FormData();
+    data.append('connection_id', id);
+    data.append('consent', consent);
+
+
+
+    // fetch('http://localhost:8000/give_consent/', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Basic ${token}`, // Add token to the headers
+    //   },
+    //   body: data,
+    // })
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     if (data.success) {
+    //       console.log(data.message);
+    //       setIagree("1");
+    //       setMessage(data.message);
+    //     } else {
+    //       console.error("Error:", data.error);
+    //       setMessage(data.error);
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.error("Error:", error);
+    //     alert("An error occurred while agreeing to the terms and conditions");
+    //   });
+  };
+
+
 
   return (
     <div>
@@ -42,30 +74,30 @@ export const CreateConnectionTerms = () => {
         </div>
 
         <div className="navbarLinks">
-        <ul className="navbarFirstLink">
-          <li>
-            <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-          </li>
-        </ul>
+          <ul className="navbarFirstLink">
+            <li>
+              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
+            </li>
+          </ul>
 
-        <ul className="navbarSecondLink">
-          <li>
-          <a href="#" onClick={handleHomeClick}>Home</a>
-          </li>
-          <li>
-          <a href="" onClick={handleAdminClick}>Admin</a>
-          </li>
-        </ul>
+          <ul className="navbarSecondLink">
+            <li>
+              <a href="#" onClick={handleHomeClick}>Home</a>
+            </li>
+            <li>
+              <a href="" onClick={handleAdminClick}>Admin</a>
+            </li>
+          </ul>
 
-        <ul className="navbarThirdLink">
-          <li>
-            <img src="" alt="User Icon" />
-          </li>
-          <li>
-          <a href="#"onClick={handleLogoutClick}>Logout</a>
-            
-          </li>
-        </ul>
+          <ul className="navbarThirdLink">
+            <li>
+              <img src="" alt="User Icon" />
+            </li>
+            <li>
+              <a href="#" onClick={handleLogoutClick}>Logout</a>
+
+            </li>
+          </ul>
         </div>
       </nav>
 
@@ -80,48 +112,53 @@ export const CreateConnectionTerms = () => {
         <div className="page13requestor">Locker : Education</div>
 
       </div>
-   <div className="page13container">
+      <div className="page13container">
 
 
-    <p><u>Terms of connection</u></p>
-    
-    <div className="page13subparent"> 
-    <div className="page13headterms">Your Obligations </div>
-        <div className="page13lowerterms">1) Share Eng.marks card
-        <br />  2) Share Gate score </div>
-        
+        <p><u>Terms of connection</u></p>
 
-        
-        <div className="page13headterms">Your Rights </div>
-        <div className="page13lowerterms">1) Can share any other files</div>
+        <div className="page13subparent">
+          <div className="page13headterms">Your Obligations </div>
+          <div className="page13lowerterms">1) Share Eng.marks card
+            <br />  2) Share Gate score </div>
 
-       
-        
-        <div className="page13headterms">Your Prohibitions </div>
-        <div className="page13lowerterms">1) Can't Unilateraly close the connection</div>
 
-</div>
-</div>
-       
 
-{Iagree=="0"&&
-    <div >
-    <div className="page13button"> <button className="page13iagree0button" onClick={handleIagreebutton}> I  Agree </button></div>
-    
-   </div>}
+          <div className="page13headterms">Your Rights </div>
+          <div className="page13lowerterms">1) Can share any other files</div>
 
-   {Iagree=="1"&&
-    <div className="page13parent13state1" >
-        <div className="page13consent">consent Given on :&lt;june 20,2024,5:34pm&gt;
-        <br />
-        Valid Until &lt; March 2028 &gt; 
+
+
+          <div className="page13headterms">Your Prohibitions </div>
+          <div className="page13lowerterms">1) Can't Unilateraly close the connection</div>
+
         </div>
-    <div className="page13button"> <button className="page13iagree1button" onClick={handleIagreebutton}> Revoke </button></div>
-    
-   </div>}
+      </div>
 
 
-</div>
+      {Iagree == "0" &&
+        <div >
+          <div className="page13button"> <button className="page13iagree0button" onClick={handleIagreebutton}> I  Agree </button></div>
+          <div>
+            {message && <div className="message">{message}</div>}
+          </div>
+        </div>
+      }
+
+      {
+        Iagree == "1" &&
+        <div className="page13parent13state1" >
+          <div className="page13consent">consent Given on :&lt;june 20,2024,5:34pm&gt;
+            <br />
+            Valid Until &lt; March 2028 &gt;
+          </div>
+          <div className="page13button"> <button className="page13iagree1button" onClick={handleIagreebutton}> Revoke </button></div>
+
+        </div>
+      }
+
+
+    </div >
 
   );
 }

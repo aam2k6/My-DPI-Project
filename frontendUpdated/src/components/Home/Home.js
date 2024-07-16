@@ -1,26 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import "./page1.css";
-import { useNavigate, useLocation } from "react-router-dom";
-import userImage from "../Assets/user_icon.png"; 
+import { useNavigate } from "react-router-dom";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+import { usercontext } from "../../usercontext";
 
 export const Home = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [lockers, setLockers] = useState([]);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const user = location.state ? location.state.user:null;
-
-  // This should be dynamically obtained, hardcoded here for demonstration
-  const username = "iiitb";
+  const { curruser,setUser } = useContext(usercontext);
 
   useEffect(() => {
-    // Retrieve the token from cookies
+    if (!curruser) {
+        navigate('/');
+        return;
+    }},[]);
+
+  useEffect(() => {
+
+
     const token = Cookies.get('authToken');
 
-    // Fetch lockers for the specified user
-    fetch(`http://127.0.0.1:8000/get-lockers-user/`, {
+    fetch('http://localhost:8000/get-lockers-user/', {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -39,7 +42,7 @@ export const Home = () => {
       setError("An error occurred while fetching lockers.");
       console.error("Error:", error);
     });
-  }, [username]);
+  }, [curruser]);
 
   const handleNewLockerClick = () => {
     navigate('/create-locker');
@@ -54,9 +57,15 @@ export const Home = () => {
   };
 
   const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
     navigate('/');
   }
-
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   };
@@ -73,8 +82,8 @@ export const Home = () => {
     <div>
       <nav className="navbar">
         <div className="wrap">
-          <div className="navbarBrand">{user ? `${user.username}` : 'None'}</div>
-          <div className="description">{user ? `${user.description}` : 'None'}</div>
+          <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
+          <div className="description">{curruser ? curruser.description : 'None'}</div>
         </div>
 
         <div className="navbarLinks">
@@ -89,28 +98,19 @@ export const Home = () => {
               <a href="#" onClick={handleHomeClick}>Home</a>
             </li>
             <li>
-              <a href="#" onClick={handleAdmin}>Admin</a>
+              <a href="#" onClick={handleAdmin}></a>
             </li>
           </ul>
-
-          {/* <ul className="navbarThirdLink">
-            <li>
-              <img src="" alt="User Icon" /> 
-            </li>
-            <li>
-              <a href="#" onClick={handleLogout}>Logout</a>
-            </li>
-          </ul> */}
-
-
 
           <ul className="navbarThirdLink">
             <li>
               <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
               {isOpen && (
                 <div className="dropdownContent">
-                  {/* <button onClick={() => navigate('/profile')}>Profile</button> */}
-                  <button onClick={handleAdmin}>Admin</button>
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
               )}

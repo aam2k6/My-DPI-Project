@@ -1,14 +1,16 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./page6.css";
-
-
+import Cookies from "js-cookie";
 
 export const TargetUserView = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const user = location.state ? location.state.user : null;
+  const [allLockers, setLockers] = useState([]);
+  const [error, setError] = useState(null);
 
   const handleNewLockerClick = () => {
-    //console.log("Create New Locker button clicked");
     navigate('/create-locker');
   };
 
@@ -20,23 +22,70 @@ export const TargetUserView = () => {
     navigate('/home');
   };
 
-  const handleTranscriptsClick = () => {
-    navigate('/target-locker-view');
-  };
-
-  const handleLogout = () =>{
+  const handleLockersClick = (lockers) => {
+    navigate('/target-locker-view', { state: { locker:lockers, user:user } });
+  }
+   
+  const handleLogout = () => {
     navigate('/');
   }
 
-  const handleAdmin = () =>{
+  const handleAdmin = () => {
     navigate('/admin');
   }
+
+  useEffect(() => {
+    const fetchLockers = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const params = new URLSearchParams({ username: user ? user.username : '' });
+
+        console.log('Fetching lockers with token:', token);
+        console.log('Fetching lockers with params:', params.toString());
+        console.log('User object:', user);
+
+        const response = await fetch(`http://127.0.0.1:8000/get-lockers-user/?${params}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Basic ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          setError(errorData.error || 'Failed to fetch lockers');
+          console.error('Error fetching lockers:', errorData);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (data.success) {
+          setLockers(data.lockers || []);
+        } else {
+          setError(data.message || data.error);
+        }
+      } catch (error) {
+        setError("An error occurred while fetching this user's lockers.");
+        console.error("Error:", error);
+      }
+    };
+
+    if (user) {
+      fetchLockers();
+    }
+  }, [user]);
+
   return (
     <div>
       <nav className="navbar">
         <div className="wrap">
-          <div className="navbarBrand" id="deem">IIITB</div>
-          <div className="description" id="deem">&lt;Deemed University&gt;</div>
+          <div className="navbarBrand">{user ? user.username : 'None'}</div>
+          <div className="description">{user ? user.description : 'None'}</div>
         </div>
 
         <div className="navbarLinks">
@@ -68,29 +117,27 @@ export const TargetUserView = () => {
 
       <div className="heroContainer">
         <div className="newLocker">
-          <h3>IIITB Lockers</h3>
+          <h3></h3>
           {/* <button id="newLockerBtn" onClick={handleNewLockerClick}>
             Create New Locker
           </button> */}
         </div>
         <div className="page6-allLockers">
-          <div className="page6-locker">
-            <h4>Transcripts </h4>
-            <button id="docsBtn" onClick={handleTranscriptsClick}>
-              Open
-            </button>
-          </div>
-
-          <div className="page6-locker">
-            <h4>Statutory Documents </h4>
-            <button id="educationBtn" >
-              Open
-            </button>
-          </div>
+          {error && <div className="error">{error}</div>}
+          {Array.isArray(allLockers) && allLockers.length > 0 ? (
+            allLockers.map(lockers => (
+              <div key={lockers.locker_id} className="page6-locker">
+                <h4>{lockers.name}</h4>
+                <button id="docsBtn" onClick={() => handleLockersClick(lockers)}>
+                  Open
+                </button>
+              </div>
+            ))
+          ) : (
+            <div>No lockers found.</div>
+          )}
         </div>
       </div>
     </div>
   );
 }
-
-

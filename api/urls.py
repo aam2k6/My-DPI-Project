@@ -24,7 +24,9 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
     path('signup-user/', views.signup_user, name='signup_user'),
     path('download-resource/<int:resource_id>/', views.download_resource, name='download_resource'),
     path('update_locker_info/<int:locker_id/', views.update_locker, name="update-locker"),
-    path('update_conn_type/<int:connection_type_id>/', views.update_connection_type, name="update-connection-type")
+    path('update_conn_type/<int:connection_type_id>/', views.update_connection_type, name="update-connection-type"),
+    path('freeze_locker/', views.freeze_locker, name='freeze_locker'),
+    path('freeze_connection/', views.freeze_connection, name='freeze_connection')
  ]
 
 if settings.DEBUG:

@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 class LockerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Locker
-        fields = ["locker_id", "name", "description", "user"]
+        fields = ["locker_id", "name", "description", "user","is_frozen"]
 
 
 class ConnectionSerializer(serializers.ModelSerializer):
@@ -24,7 +24,7 @@ class ConnectionSerializer(serializers.ModelSerializer):
         model = Connection
         fields = ["connection_id", "connection_name", "connection_type_id", "host_locker", "guest_locker",
                   "host_user", "guest_user", "connection_description", "requester_consent", "revoke_host",
-                  "revoke_guest", "validity_time", "created_time"]
+                  "revoke_guest", "validity_time", "created_time","is_frozen"]
 
 class ResourceSerializer(serializers.ModelSerializer):
     connections = ConnectionSerializer(many=True, read_only=True)

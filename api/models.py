@@ -46,6 +46,8 @@ class Locker(models.Model):
     description = models.TextField(blank=True, null=True, default=None)  # Allow description to be optional
     # creation_date = models.CharField(max_length=100)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # user will be the one logged in
+    is_frozen = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.name
@@ -80,6 +82,8 @@ class Connection(models.Model):
     requester_consent = models.BooleanField(default=False)
     revoke_host = models.BooleanField(default=False)
     revoke_guest = models.BooleanField(default=False)
+    is_frozen = models.BooleanField(default=False)
+
 
     validity_time = models.DateTimeField(default=default_validity_time)
     created_time = models.DateTimeField(auto_now_add=True)

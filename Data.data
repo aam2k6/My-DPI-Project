@@ -6,7 +6,7 @@
 
 # ------------ USER TABLE INSERTION ---------------------------
 
-from api.models import User, Locker, ConnectionType, Connection, Resource, ConnectionTerms
+from api.models import CustomUser, Locker, ConnectionType, Connection, Resource, ConnectionTerms
 
 # Adding 4 Users :
 new_user_one = CustomUser(
@@ -150,75 +150,75 @@ for connection_type in connection_types:
 
 # For implementing Connection 1 : IIITB: Transcripts <> Rohith: Education
 
-source_user = CustomUser.objects.get(username='iiitb')
-source_locker = Locker.objects.get(user=source_user, name='Transcripts')
-connection_type_one = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
+host_user = CustomUser.objects.get(username='iiitb')
+host_locker = Locker.objects.get(user=host_user, name='Transcripts')
+connection_type_one = ConnectionType.objects.get(owner_user=host_user, owner_locker=host_locker)
 connection_one_validity_time = connection_type_one.validity_time
 
-target_user = CustomUser.objects.get(username='rohith')
-target_locker = Locker.objects.get(user=target_user, name='Education')
+guest_user = CustomUser.objects.get(username='rohith')
+guest_locker = Locker.objects.get(user=guest_user, name='Education')
 
 new_connection_one = Connection.objects.create(
     connection_name='Connection 1',
     connection_type_id=connection_type_one,
-    source_locker=source_locker,
-    target_locker=target_locker,
-    source_user=source_user,
-    target_user=target_user,
+    host_locker=host_locker,
+    guest_locker=guest_locker,
+    host_user=host_user,
+    guest_user=guest_user,
     connection_description='This is a sample connection.',
     requester_consent=True,
-    revoke_source=False,
-    revoke_target=False,
+    revoke_host=False,
+    revoke_guest=False,
     validity_time=connection_one_validity_time
 )
 new_connection_one.save()
 
 # For implementing Connection 2 : PES: Transcripts  <> Hemant: Education
 
-source_user = CustomUser.objects.get(username='pes')
-source_locker = Locker.objects.get(user=source_user, name='Transcripts')
-connection_type_two = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
+host_user = CustomUser.objects.get(username='pes')
+host_locker = Locker.objects.get(user=host_user, name='Transcripts')
+connection_type_two = ConnectionType.objects.get(owner_user=host_user, owner_locker=host_locker)
 connection_two_validity_time = connection_type_two.validity_time
 
-target_user = CustomUser.objects.get(username='hemant')
-target_locker = Locker.objects.get(user=target_user, name='Education')
+guest_user = CustomUser.objects.get(username='hemant')
+guest_locker = Locker.objects.get(user=guest_user, name='Education')
 
 new_connection_two = Connection.objects.create(
     connection_name='Connection 2',
     connection_type_id=connection_type_two,
-    source_locker=source_locker,
-    target_locker=target_locker,
-    source_user=source_user,
-    target_user=target_user,
+    host_locker=host_locker,
+    guest_locker=guest_locker,
+    host_user=host_user,
+    guest_user=guest_user,
     connection_description='This is a sample connection.',
     requester_consent=True,
-    revoke_source=False,
-    revoke_target=False,
+    revoke_host=False,
+    revoke_guest=False,
     validity_time=connection_two_validity_time
 )
 new_connection_two.save()
 
 # For implementing Connection 3 : IIITB: Admissions <> Hemant: Education
 
-source_user = CustomUser.objects.get(username='iiitb')
-source_locker = Locker.objects.get(user=source_user, name='Admissions')
-connection_type_three = ConnectionType.objects.get(owner_user=source_user, owner_locker=source_locker)
+host_user = CustomUser.objects.get(username='iiitb')
+host_locker = Locker.objects.get(user=host_user, name='Admissions')
+connection_type_three = ConnectionType.objects.get(owner_user=host_user, owner_locker=host_locker)
 connection_three_validity_time = connection_type_three.validity_time
 
-target_user = CustomUser.objects.get(username='hemant')
-target_locker = Locker.objects.get(user=target_user, name='Education')
+guest_user = CustomUser.objects.get(username='hemant')
+guest_locker = Locker.objects.get(user=guest_user, name='Education')
 
 new_connection_three = Connection.objects.create(
     connection_name='Connection 3',
     connection_type_id=connection_type_three,
-    source_locker=source_locker,
-    target_locker=target_locker,
-    source_user=source_user,
-    target_user=target_user,
+    host_locker=host_locker,
+    guest_locker=guest_locker,
+    host_user=host_user,
+    guest_user=guest_user,
     connection_description='This is a sample connection.',
     requester_consent=True,
-    revoke_source=False,
-    revoke_target=False,
+    revoke_host=False,
+    revoke_guest=False,
     validity_time=connection_three_validity_time
 )
 new_connection_three.save()
@@ -231,14 +231,14 @@ for connection in connections:
     print(f"Connection ID: {connection.connection_id}")
     print(f"Connection Name: {connection.connection_name}")
     print(f"Connection Type: {connection.connection_type_id.connection_type_name}")  # Access related field
-    print(f"Source Locker: {connection.source_locker.locker_id}, {connection.source_locker.name}")
-    print(f"Target Locker: {connection.target_locker.locker_id}, {connection.target_locker.name}")
-    print(f"Source User: {connection.source_user.username}")
-    print(f"Target User: {connection.target_user.username}")
+    print(f"Host Locker: {connection.host_locker.locker_id}, {connection.host_locker.name}")
+    print(f"Guest Locker: {connection.Guest_locker.locker_id}, {connection.Guest_locker.name}")
+    print(f"Host User: {connection.host_user.username}")
+    print(f"Guest User: {connection.guest_user.username}")
     print(f"Description: {connection.connection_description}")
     print(f"Requester Consent: {connection.requester_consent}")
-    print(f"Revoke Source: {connection.revoke_source}")
-    print(f"Revoke Target: {connection.revoke_target}")
+    print(f"Revoke Host: {connection.revoke_host}")
+    print(f"Revoke Guest: {connection.revoke_guest}")
     print(f"Validity Time: {connection.validity_time}")
     print(f"Created Time: {connection.created_time}")
     print('-' * 40)
@@ -361,3 +361,41 @@ resource_six = Resource(
 
 # Save changes (optional, as add() might already handle it)
 resource_six.save()
+
+# ------------ CONNECTION TYPE TABLE INSERTION -------------
+# Fetch the ConnectionType objects to use for the ConnectionTerms
+mtech_admissions = ConnectionType.objects.get(connection_type_name="MTech 2024 Admissions")
+btech_admissions = ConnectionType.objects.get(connection_type_name="BTech 2024 Transcripts")
+
+# Create and save new ConnectionTerms instances
+new_connection_term_one = ConnectionTerms(
+    conn_type=mtech_admissions,
+    modality='obligatory',
+    data_element_name='Marks card',
+    data_type='Pdf',
+    sharing_type='Confer',
+    description='The marks card of the student.'
+)
+new_connection_term_one.save()
+
+new_connection_term_two = ConnectionTerms(
+    conn_type=btech_admissions,
+    modality='permissive',
+    data_element_name='Applicant Email',
+    data_type='text',
+    sharing_type='Email',
+    description='The email address of the applicant applying for BTech 2024.'
+)
+new_connection_term_two.save()
+
+# Fetch and print all ConnectionTerms objects
+connection_terms = ConnectionTerms.objects.all()
+
+for connection_term in connection_terms:
+    print(f"Terms ID: {connection_term.terms_id}, "
+          f"Connection Type: {connection_term.conn_type.connection_type_name}, "
+          f"Modality: {connection_term.modality}, "
+          f"Data Element Name: {connection_term.data_element_name}, "
+          f"Data Type: {connection_term.data_type}, "
+          f"Sharing Type: {connection_term.sharing_type}, "
+          f"Description: {connection_term.description}")

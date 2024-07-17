@@ -1060,3 +1060,107 @@ def update_locker(request, locker_id):
         return JsonResponse({'success': False, 'errors': serializer.errors}, status=400)
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])  # Allow access without authentication
+def freeze_locker(request):
+    """
+    Freeze a locker.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Request Data (POST):
+    - username: The username of the user.
+    - locker_name: The name of the locker.
+
+    Returns:
+    - JsonResponse: A JSON object indicating success or failure.
+
+    Response Codes:
+    - 200: Successful freezing of the locker.
+    - 404: Specified user or locker not found.
+    - 400: Bad request (missing parameters).
+    """
+    if request.method == 'POST':
+        username = request.data.get('username')
+        locker_name = request.data.get('locker_name')
+
+        if not username or not locker_name:
+            return JsonResponse({'success': False, 'error': 'Username and locker name are required'}, status=400)
+
+        try:
+            user = CustomUser.objects.get(username=username)
+            locker = Locker.objects.get(name=locker_name, user=user)
+
+            if locker.is_frozen:
+                return JsonResponse({'success': False, 'message': 'This locker is already frozen'}, status=200)
+            else:
+                locker.is_frozen = True
+                locker.save()
+                return JsonResponse({'success': True, 'message': 'Locker has been frozen successfully'}, status=200)
+
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])  # Allow access without authentication
+def freeze_connection(request):
+    """
+    Freeze a connection.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Request Data (POST):
+    - username: The username of the user.
+    - locker_name: The name of the locker.
+    - connection_id: The ID of the connection to freeze.
+
+    Returns:
+    - JsonResponse: A JSON object indicating success or failure.
+
+    Response Codes:
+    - 200: Successful freezing of the connection.
+    - 404: Specified user, locker, or connection not found.
+    - 400: Bad request (missing parameters).
+    """
+    if request.method == 'POST':
+        username = request.data.get('username')
+        locker_name = request.data.get('locker_name')
+        connection_id = request.data.get('connection_id')
+
+        if not username or not locker_name or not connection_id:
+            return JsonResponse({'success': False, 'error': 'Username, locker name, and connection ID are required'}, status=400)
+
+        try:
+            user = CustomUser.objects.get(username=username)
+            locker = Locker.objects.get(name=locker_name, user=user)
+            connection = Connection.objects.get(pk=connection_id, host_locker=locker)
+
+            if connection.is_frozen:
+                return JsonResponse({'success': False, 'message': 'This connection is already frozen'}, status=200)
+            else:
+                connection.is_frozen = True
+                connection.save()
+                return JsonResponse({'success': True, 'message': 'Connection has been frozen successfully'}, status=200)
+
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
+        except Connection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection not found for the specified locker'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

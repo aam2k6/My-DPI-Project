@@ -1,5 +1,6 @@
 import base64
 import os
+import json
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.shortcuts import get_object_or_404
@@ -982,4 +983,80 @@ def signup_user(request):
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@api_view(['PATCH'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def update_connection_type(request, connection_type_id):
+    """
+    Update an existing ConnectionType.
+
+    Parameters:
+       - request: HttpRequest object containing metadata about the request.
+       - connection_type_id: ID of the ConnectionType to be updated.
+
+    Returns:
+       - JsonResponse: A JSON object containing the updated ConnectionType or an error message.
+
+    Response Codes:
+       - 200: Successful update of the ConnectionType.
+       - 400: Bad request due to invalid data.
+       - 404: ConnectionType not found.
+       - 405: Request method not allowed (if not PATCH).
+    """
+    if request.method == 'PATCH':
+        try:
+            connection_type = ConnectionType.objects.get(pk=connection_type_id)
+        except ConnectionType.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'ConnectionType not found.'}, status=404)
+
+        data = json.loads(request.body)
+        serializer = ConnectionTypeSerializer(connection_type, data=data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'success': True, 'connection_type': serializer.data}, status=200)
+        
+        return JsonResponse({'success': False, 'errors': serializer.errors}, status=400)
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@api_view(['PATCH'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def update_locker(request, locker_id):
+    """
+    Update an existing Locker.
+
+    Parameters:
+       - request: HttpRequest object containing metadata about the request.
+       - locker_id: ID of the Locker to be updated.
+
+    Returns:
+       - JsonResponse: A JSON object containing the updated Locker or an error message.
+
+    Response Codes:
+       - 200: Successful update of the Locker.
+       - 400: Bad request due to invalid data.
+       - 404: Locker not found.
+       - 405: Request method not allowed (if not PATCH).
+    """
+    if request.method == 'PATCH':
+        try:
+            locker = Locker.objects.get(pk=locker_id)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Locker not found.'}, status=404)
+
+        data = json.loads(request.body)
+        serializer = LockerSerializer(locker, data=data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'success': True, 'locker': serializer.data}, status=200)
+        
+        return JsonResponse({'success': False, 'errors': serializer.errors}, status=400)
+    
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

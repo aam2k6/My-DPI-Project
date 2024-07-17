@@ -124,7 +124,7 @@ export const CreateLocker = () => {
                  
                   <div className="currusername">{curruser.username}</div>
                   <div className="curruserdesc">{curruser.description}</div>
-                  <button onClick={handleAdmin}>Admin</button>
+                  <button onClick={handleAdmin}>Settings</button>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
               )}

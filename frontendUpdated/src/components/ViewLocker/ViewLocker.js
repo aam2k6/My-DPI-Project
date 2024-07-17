@@ -222,9 +222,11 @@ export const ViewLocker = () => {
               )} */}
 
               <div className='aa'>
+                
                 {resources.length > 0 ? (
                   resources.map(resource => (
                     <div key={resource.resource_id} className="resource-item">
+                           <div className="resource-details">
                       <div id="documents"    onClick={() => handleResourceClick(resource.i_node_pointer)}>{resource.document_name}</div>
                       <div className="public-private"> 
                         {resource.type === 'private' ? (
@@ -240,6 +242,7 @@ export const ViewLocker = () => {
                         ) : (
                           'Public'
                         )}
+                        </div>
                       </div>
                      </div>
                   ))

@@ -22,6 +22,8 @@ export const ViewLocker = () => {
   const [resources, setResources] = useState([]);
   const [error, setError] = useState(null);
 
+  const [connections, setConnections] = useState({ incoming_connections: [], outgoing_connections: [] });
+
   useEffect(() => {
     if (!curruser) {
         navigate('/');
@@ -29,39 +31,70 @@ export const ViewLocker = () => {
     }},[]);
 
 
-  useEffect(() => {
-    const fetchResources = async () => {
-      try {
-        const token = Cookies.get('authToken');
-        const params = new URLSearchParams({ locker_name: locker.name });
-
-        const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?${params}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Basic ${token}`,
-            'Content-Type': 'application/json'
+    useEffect(() => {
+      const fetchConnections = async () => {
+        try {
+          const token = Cookies.get('authToken');
+          const params = new URLSearchParams({ locker_name: locker.name });
+    
+          const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Basic ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+    
+          if (!response.ok) {
+            throw new Error('Failed to fetch connections');
           }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch resources');
+    
+          const data = await response.json();
+          if (data.success) {
+            setConnections(data.connections);
+          } else {
+            setError(data.message || 'Failed to fetch connections');
+          }
+        } catch (error) {
+          console.error('Error fetching connections:', error);
+          setError('An error occurred while fetching connections');
         }
-
-        const data = await response.json();
-        if (data.success) {
-          setResources(data.resources);
-        } else {
-          setError(data.message || 'Failed to fetch resources');
+      };
+  
+      const fetchResources = async () => {
+        try {
+          const token = Cookies.get('authToken');
+          const params = new URLSearchParams({ locker_name: locker.name });
+  
+          const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Basic ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to fetch resources');
+          }
+  
+          const data = await response.json();
+          if (data.success) {
+            setResources(data.resources);
+          } else {
+            setError(data.message || 'Failed to fetch resources');
+          }
+        } catch (error) {
+          console.error('Error fetching resources:', error);
+          setError('An error occurred while fetching resources');
         }
-      } catch (error) {
-        console.error('Error fetching resources:', error);
-        setError('An error occurred while fetching resources');
+      };
+  
+      if (locker) {
+        fetchResources();
+        fetchConnections();
       }
-    };
-    if (locker) {
-      fetchResources();
-    }
-  }, [locker]);
+    }, [locker]);
 
   const handleNewLockerClick = () => {
     //console.log("Create New Locker button clicked");
@@ -93,8 +126,9 @@ export const ViewLocker = () => {
     navigate('/admin');
   }
 
-  const handleResourceClick = (resourceId) => {
-    const url = `http://172.16.192.201:8000/download-resource/${resourceId}`;
+  const handleResourceClick = (filePath) => {
+    // const url = `http://localhost:8000/download-resource/${resourceId}`;
+    const url = `http://localhost:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 
@@ -113,6 +147,10 @@ export const ViewLocker = () => {
     setIsOpen(!isOpen);
   }
 
+
+
+
+  
 
   return (
     <div>
@@ -187,7 +225,7 @@ export const ViewLocker = () => {
                 {resources.length > 0 ? (
                   resources.map(resource => (
                     <div key={resource.resource_id} className="resource-item">
-                      <div id="documents"    onClick={() => handleResourceClick(resource.resource_id)}>{resource.document_name}</div>
+                      <div id="documents"    onClick={() => handleResourceClick(resource.i_node_pointer)}>{resource.document_name}</div>
                       <div className="public-private"> 
                         {resource.type === 'private' ? (
                           <>
@@ -216,22 +254,40 @@ export const ViewLocker = () => {
             <button className="page3button" onClick={handleUploadResource}>Upload resource</button>
           </div>
           <div className="b">
-            <h3 id="mycon">My Connections:</h3>
+        <h3 id="mycon">My Connections:</h3>
             <div className="conn">
-              <div id="conntent"><h3>Btech Admission</h3></div>
-              <div id="conntent">IIITb Transcripts&lt;&gt;Rohith:Education</div>
-              <div id="conntent">Created On:</div>
-              <div id="conntent">Valid Until:</div>
+              <h4>Incoming Connections</h4>
+              {connections.incoming_connections.length > 0 ? (
+                connections.incoming_connections.map(connection => (
+                  <div key={connection.connection_id}>
+                    <div id="conntent"><h3>{connection.connection_name}</h3></div>
+                    <div id="conntent">{connection.host_locker.name} &lt;&gt; {connection.guest_user.username}: {connection.guest_locker.name}</div>
+                    <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
+                    <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
+                  </div>
+                ))
+              ) : (
+                <p>No incoming connections found.</p>
+              )}
             </div>
             <div className="conn">
-              <div id="conntent"> <h3>Real Estate</h3></div>
-              <div id="conntent">Mantri Builder Property&lt;&gt;Rohith:Education</div>
-              <div id="conntent">Created On:</div>
-              <div id="conntent">Valid Until:</div>
+              <h4>Outgoing Connections</h4>
+              {connections.outgoing_connections.length > 0 ? (
+                connections.outgoing_connections.map(connection => (
+                  <div key={connection.connection_id}>
+                    <div id="conntent"><h3>{connection.connection_name}</h3></div>
+                    <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
+                    <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
+                    <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
+                  </div>
+                ))
+              ) : (
+                <p>No outgoing connections found.</p>
+              )}
             </div>
-          </div>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

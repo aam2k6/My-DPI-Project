@@ -14,7 +14,7 @@ export const UploadResource = () => {
   const [document, setDocument] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const [visibility, setVisibility] = useState("Public"); // Default value set to Public
+  const [visibility, setVisibility] = useState("public"); // Default value set to Public
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export const UploadResource = () => {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://172.16.192.201:8000/upload-resource/', {
+    fetch('http://localhost:8000/upload-resource/', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`

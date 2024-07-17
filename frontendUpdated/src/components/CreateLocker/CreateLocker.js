@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState,useEffect,useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { usercontext } from "../../usercontext";
+
 import Cookies from "js-cookie";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import "./page2.css";
@@ -9,6 +11,8 @@ export const CreateLocker = () => {
   const [lockerName, setLockerName] = useState("");
   const [description, setDescription] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const { curruser, setUser } = useContext(usercontext);
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -21,7 +25,7 @@ export const CreateLocker = () => {
     data.append('description', description);
 
     // Send data to the backend
-    fetch('http://172.16.192.201:8000/create-locker/', {
+    fetch('http://localhost:8000/create-locker/', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`, // Add token to the headers
@@ -55,11 +59,12 @@ export const CreateLocker = () => {
   const handleHomeClick = () => {
     navigate('/home');
   };
-
-  const handleLogout = () =>{
+  const handleLogout = () => {
+    Cookies.remove('authToken');
+    localStorage.removeItem('curruser');
+    setUser(null);
     navigate('/');
   }
-
   const handleAdmin = () =>{
     navigate('/admin');
   }
@@ -68,12 +73,19 @@ export const CreateLocker = () => {
     setIsOpen(!isOpen);
   }
 
+  useEffect(() => {
+    if (!curruser) {
+        navigate('/');
+        return;
+    }
+  },[]);
+
   return (
     <div>
       <nav className="navbar">
         <div className="wrap">
-          <div className="navbarBrand">Rohith</div>
-          <div className="description">MS Student at IIIT Bangalore</div>
+          <div className="navbarBrand"></div>
+          <div className="description"></div>
         </div>
 
         <div className="navbarLinks">
@@ -88,7 +100,7 @@ export const CreateLocker = () => {
               <a href="#" onClick={handleHomeClick}>Home</a>
             </li>
             <li>
-              <a href="#" onClick={handleAdmin}>Admin</a>
+              <a href="#" onClick={handleAdmin}></a>
             </li>
           </ul>
 
@@ -108,6 +120,10 @@ export const CreateLocker = () => {
               {isOpen && (
                 <div className="dropdownContent">
                   {/* <button onClick={() => navigate('/profile')}>Profile</button> */}
+                 
+                 
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
                   <button onClick={handleAdmin}>Admin</button>
                   <button onClick={handleLogout}>Logout</button>
                 </div>

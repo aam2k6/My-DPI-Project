@@ -5,12 +5,10 @@ import Cookies from "js-cookie";
 import "./page7.css";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 
-
 export const TargetLockerView = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // const { curruser } = useContext(usercontext);
-  const { curruser,setUser } = useContext(usercontext);
+  const { curruser, setUser } = useContext(usercontext);
 
   const [parentUser, setParentUser] = useState(location.state ? location.state.user : null);
   const [resources, setResources] = useState([]);
@@ -18,7 +16,6 @@ export const TargetLockerView = () => {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -30,9 +27,11 @@ export const TargetLockerView = () => {
   }, [curruser, navigate, parentUser, locker]);
 
   const fetchResources = async () => {
-    const token = Cookies.get('authToken');
     try {
-      const response = await fetch(`http://172.16.192.201:8000/get-public-resources/${parentUser.user_id}/${locker.locker_id}/`, {
+      const token = Cookies.get('authToken');
+      const params = new URLSearchParams({ locker_name: locker.name, username: parentUser.username });
+
+      const response = await fetch(`http://localhost:8000/get-public-resources?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -49,6 +48,7 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching resources");
     }
   };
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   }
@@ -65,6 +65,12 @@ export const TargetLockerView = () => {
     navigate('/create-connection-terms');
   };
 
+  const handleResourceClick = (filePath) => {
+    // const url = `http://localhost:8000/download-resource/${resourceId}`;
+    const url = `http://localhost:8000/media/${filePath}`;
+    window.open(url, "_blank");
+  };
+
   const handleLogout = () => {
     // Clear cookies
     Cookies.remove('authToken');
@@ -75,8 +81,8 @@ export const TargetLockerView = () => {
     // Redirect to login page
     navigate('/');
   }
+
   const handleAdmin = () => {
-    console.log("Admin button clicked");
     navigate('/admin');
   };
 
@@ -93,17 +99,14 @@ export const TargetLockerView = () => {
           </ul>
           <ul className="navbarSecondLink">
             <li><a href="#" onClick={handleHomeClick}>Home</a></li>
-            <li><a href="#" ></a></li>
           </ul>
           <ul className="navbarThirdLink">
-
-             <li>
+            <li>
               <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
               {isOpen && (
                 <div className="dropdownContent">
                   <div className="currusername">{curruser.username}</div>
                   <div className="curruserdesc">{curruser.description}</div>
-
                   <button onClick={handleAdmin}>Settings</button>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
@@ -120,14 +123,22 @@ export const TargetLockerView = () => {
         <div className="notvisible">
           <div className="page7publicresources">
             <p>Public resources: Resources for all</p>
-            {resources.map(resource => (
-              <div className="page7resource" key={resource.id}>
-                <u>{resource.name}</u>
-              </div>
-            ))}
+            {resources.length > 0 ? (
+              resources.map(resource => (
+                <div className="page7resource" key={resource.id}>
+                  {/* <u>{resource.document_name}</u> */}
+                  <div id="documentspage7" onClick={() => handleResourceClick(resource.i_node_pointer)}>
+                    {resource.document_name}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p id="page7nores">No resources found.</p>
+            )}
           </div>
+
           <div className="page7publicresources">
-            <p>Other Resources</p>
+            <p>Other Connections</p>
             {/* Additional resources can be displayed here */}
           </div>
         </div>

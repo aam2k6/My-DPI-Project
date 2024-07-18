@@ -1062,7 +1062,7 @@ def update_locker(request, locker_id):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-@api_view(['POST'])
+@api_view(['PUT'])
 @permission_classes([AllowAny])  # Allow access without authentication
 def freeze_locker(request):
     """
@@ -1071,7 +1071,7 @@ def freeze_locker(request):
     Parameters:
     - request: HttpRequest object containing metadata about the request.
 
-    Request Data (POST):
+    Request Data (PUT):
     - locker_name: The name of the locker.
 
     Returns:
@@ -1082,7 +1082,7 @@ def freeze_locker(request):
     - 404: Specified locker not found.
     - 400: Bad request (missing parameters).
     """
-    if request.method == 'POST':
+    if request.method == 'PUT':
         locker_name = request.data.get('locker_name')
 
         if not locker_name:
@@ -1094,24 +1094,18 @@ def freeze_locker(request):
             if not lockers.exists():
                 return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
 
-            frozen_lockers = []
-            already_frozen_lockers = []
+            frozen_lockers = 0
+            already_frozen_lockers = 0
 
             for locker in lockers:
                 if locker.is_frozen:
-                    already_frozen_lockers.append(locker.name)
+                    already_frozen_lockers += 1
                 else:
                     locker.is_frozen = True
                     locker.save()
-                    frozen_lockers.append(locker.name)
+                    frozen_lockers += 1
 
-            if frozen_lockers:
-                message = 'Lockers have been frozen successfully: ' + ', '.join(frozen_lockers)
-            else:
-                message = 'No lockers were frozen.'
-
-            if already_frozen_lockers:
-                message += ' Already frozen lockers: ' + ', '.join(already_frozen_lockers)
+            message = f"Lockers frozen: {frozen_lockers}. Already frozen: {already_frozen_lockers}."
 
             return JsonResponse({'success': True, 'message': message}, status=200)
 
@@ -1120,9 +1114,14 @@ def freeze_locker(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from django.http import JsonResponse
+from .models import Connection
 
 @csrf_exempt
-@api_view(['POST'])
+@api_view(['PUT'])
 @permission_classes([AllowAny])  # Allow access without authentication
 def freeze_connection(request):
     """
@@ -1131,7 +1130,7 @@ def freeze_connection(request):
     Parameters:
     - request: HttpRequest object containing metadata about the request.
 
-    Request Data (POST):
+    Request Data (PUT):
     - connection_name: The name of the connection.
 
     Returns:
@@ -1142,7 +1141,7 @@ def freeze_connection(request):
     - 404: Specified connection not found.
     - 400: Bad request (missing parameters).
     """
-    if request.method == 'POST':
+    if request.method == 'PUT':
         connection_name = request.data.get('connection_name')
 
         if not connection_name:
@@ -1154,24 +1153,18 @@ def freeze_connection(request):
             if not connections.exists():
                 return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
 
-            frozen_connections = []
-            already_frozen_connections = []
+            frozen_count = 0
+            already_frozen_count = 0
 
             for connection in connections:
                 if connection.is_frozen:
-                    already_frozen_connections.append(connection.connection_name)
+                    already_frozen_count += 1
                 else:
                     connection.is_frozen = True
                     connection.save()
-                    frozen_connections.append(connection.connection_name)
+                    frozen_count += 1
 
-            if frozen_connections:
-                message = 'Connections have been frozen successfully: ' + ', '.join(frozen_connections)
-            else:
-                message = 'No connections were frozen.'
-
-            if already_frozen_connections:
-                message += ' Already frozen connections: ' + ', '.join(already_frozen_connections)
+            message = f'{frozen_count} connections frozen, {already_frozen_count} already frozen.'
 
             return JsonResponse({'success': True, 'message': message}, status=200)
 

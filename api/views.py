@@ -1114,12 +1114,6 @@ def freeze_locker(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-from django.http import JsonResponse
-from .models import Connection
-
 @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])  # Allow access without authentication

@@ -101,6 +101,8 @@ export const TargetLockerView = () => {
           </ul>
           <ul className="navbarSecondLink">
             <li><a href="#" onClick={handleHomeClick}>Home</a></li>
+            <li><a href="#" ></a></li>
+
           </ul>
           <ul className="navbarThirdLink">
             <li>

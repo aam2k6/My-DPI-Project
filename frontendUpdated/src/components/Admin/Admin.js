@@ -97,10 +97,15 @@ const toggleDropdown = () => {
                     <ul className="navbarSecondLink">
                         <li>
                             <a href="#" onClick={handleHomeClick}>Home</a>
+                           
+
                         </li>
+                        
                         <li>
-                            
+                            <a href="#" onClick={handleAdmin}></a>
                         </li>
+
+                        
                     </ul>
 
                   <ul className="navbarThirdLink">

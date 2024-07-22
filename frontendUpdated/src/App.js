@@ -58,8 +58,8 @@ function App() {
                         <Route path="/connectionTerms" element={<ProtectedRoute><ConnectionTerms /></ProtectedRoute>} />
                         <Route path="/target-locker-view" element={<ProtectedRoute><TargetLockerView /></ProtectedRoute>} />
                         <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-                        <Route path="/create-connection-type" element={<ProtectedRoute><CreateConnectionType /></ProtectedRoute>} />
-                        <Route path="/create-connection-terms" element={<ProtectedRoute><CreateConnectionTerms /></ProtectedRoute>} />
+                        <Route path="/make-connection" element={<ProtectedRoute><CreateConnectionType /></ProtectedRoute>} />
+                        <Route path="/show-connection-terms" element={<ProtectedRoute><CreateConnectionTerms /></ProtectedRoute>} />
                         <Route path="*" element={<h1>Page Not Found</h1>} />
                     </Routes>
                 </usercontext.Provider>

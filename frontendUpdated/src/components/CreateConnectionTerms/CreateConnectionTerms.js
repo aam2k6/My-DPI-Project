@@ -1,12 +1,33 @@
 import "./CreateConnectionTerms.css";
-import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
 
+import React, { useContext, useEffect, useState } from "react";
+import Cookies from 'js-cookie';
+import { useNavigate, useLocation } from "react-router-dom";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+import { usercontext } from "../../usercontext";
 
 export const CreateConnectionTerms = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { curruser, setUser } = useContext(usercontext);
+  const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+useEffect(() => {
+    if (!curruser) {
+        navigate('/');
+        return;
+    }
+}, []);
+
+
 
   const handleDPIDirectory = () => {
     navigate('/dpi-directory');
@@ -16,15 +37,24 @@ export const CreateConnectionTerms = () => {
     navigate('/home');
   };
 
-  const handleLogoutClick = () => {
-    console.log("Logout button clicked");
-    navigate('/');
-  };
-
-  const handleAdminClick = () => {
-    console.log("Admin button clicked");
+  const handleAdmin = () => {
     navigate('/admin');
-  };
+};
+
+const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
+    navigate('/');
+};
+
+const toggleDropdown = () => {
+  setIsOpen(!isOpen);
+};
   
   const handleIagreebutton = () => {
  // Step 3: Update the state variable on change
@@ -53,18 +83,23 @@ export const CreateConnectionTerms = () => {
           <a href="#" onClick={handleHomeClick}>Home</a>
           </li>
           <li>
-          <a href="" onClick={handleAdminClick}>Admin</a>
+          <a href="" ></a>
           </li>
         </ul>
 
         <ul className="navbarThirdLink">
-          <li>
-            <img src="" alt="User Icon" />
-          </li>
-          <li>
-          <a href="#"onClick={handleLogoutClick}>Logout</a>
-            
-          </li>
+        <li>
+                            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+                            {isOpen && (
+                                <div className="dropdownContent">
+                                    <div className="currusername">{capitalizeFirstLetter(curruser.username)}</div>
+                                    <div className="curruserdesc">{curruser.description}</div>
+
+                                    <button onClick={handleAdmin}>Settings</button>
+                                    <button onClick={handleLogout}>Logout</button>
+                                </div>
+                            )}
+                        </li>
         </ul>
         </div>
       </nav>

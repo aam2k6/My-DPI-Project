@@ -1,31 +1,62 @@
 .page8connections{
-    border: 2px solid rgb(107, 120, 231);
-    height: 3rem;
-    width: auto;
-    width:15rem;
+    /* border: 2px solid rgb(107, 120, 231); */
+    height: 4rem;
+    
+    width:20rem;
       padding: 1rem;
-      margin-left: 3rem;
-      margin-top: 5rem;
-      overflow-x: auto;
-      max-width: 15rem;
-      font-weight: 100;
-      font-size: 1.25;
-      color:blue;
+      margin-left: 1rem;
+      margin-top: 1rem;
+      /* overflow-x: auto; */
+      /* overflow-y: auto; */
+      max-width: 20rem;
+      font-weight: 400;
+      
+      color:black;
       text-decoration: underline;
       font-size: 1.25rem;
+      display: flex;
+      align-items: baseline;
       
   }
+  .page8connections h4{
+    margin-right: 2rem;
+    font-weight: 400;
+  }
+  .page8connections button{
+    height: fit-content;
+
+  }
+
+ .descriptionadmin{
+  font-size: 1.45rem;
+  font-weight: bold;
+  text-align: center;
+ }
   
+ .adminbuttonpar{
+  width: 80rem;
+  margin-left: 80rem;
+ }
+
   .page8parent{
-    height: 40rem;
+    padding: 1rem;
+    height: 17rem;
+    border: 2px solid rgb(107, 120, 231);
+    margin: 2rem;
+    width: 40rem;  
     
-    width: auto;  
-    max-height: 40rem;
+    max-height: 17rem;
+    /* overflow-y: auto; */
+    overflow-x: auto;
     overflow-y: auto;
   }
-  .page8connections:hover{
-      color: red;
+  .page8connections button:hover{
+      color: darkblue;
       cursor: pointer;
+  }
+  .page8connections h4{
+    /* border: 1px solid red; */
+    width: 40rem;
   }
 
   .admin-btn{
@@ -38,5 +69,96 @@
     cursor: pointer;
     font-weight: bolder;
     /* padding: 0.5rem 0.25rem;  */
-    max-width: 200px;
+    max-width: 20rem;
+    /* margin-top: 4rem; */
+    /* margin-left: 90rem; */
+    margin-left: 85rem;
+  }
+
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem 0 1rem;
+
+  }
+  
+  .navbarBrand {
+    font-weight: bolder;
+    font-size: 1.5625rem;
+    margin-left: 2rem;
+  }
+
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .description {
+    font-size: 0.995rem; /* Slightly smaller font size for the description */
+    color: rgb(44, 41, 41); /* Different color to distinguish from the name */
+    margin-left: 2rem;
+  }
+
+ .navbarLinks{
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+    
+ }
+  
+  .navbarFirstLink {
+    list-style: none;
+    display: flex;
+    
+  }
+
+  .navbarSecondLink {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbarThirdLink {
+    list-style: none;
+    display: flex;
+    position: relative;
+  }
+  
+  .navbarFirstLink a {
+    color: black;
+    text-decoration: none;
+    font-weight: bolder;
+    margin: 0 2rem;
+    font-size: 1.25rem;
+  }
+
+  .navbarSecondLink li {
+    margin-bottom: 2rem; /* Add space between the Home and Admin links */
+  }
+
+  .navbarSecondLink a {
+    color: black;
+    text-decoration: none;
+    font-weight: bolder;
+    margin: 0 2rem;
+    font-size: 1.25rem;
+  }
+
+  .navbarThirdLink a {
+    color: black;
+    text-decoration: none;
+    font-weight: bolder;
+    margin: 0 2rem;
+    font-size: 1.25rem;
+  }
+  
+  .navbarLinks img {
+    height: 50px;
+    width: auto;
+    margin-right: 3rem;
   }

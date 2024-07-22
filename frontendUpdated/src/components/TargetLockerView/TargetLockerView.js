@@ -31,7 +31,7 @@ export const TargetLockerView = () => {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name, username: parentUser.username });
 
-      const response = await fetch(`http://172.16.192.201:8000/get-public-resources?${params}`, {
+      const response = await fetch(`http://localhost:8000/get-public-resources?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -62,12 +62,14 @@ export const TargetLockerView = () => {
   };
 
   const handleClick = () => {
-    navigate('/create-connection-terms');
+    // navigate('/create-connection-terms');
+    navigate('/make-connection',{state:{hostuser:parentUser,hostlocker:locker}});
+
   };
 
   const handleResourceClick = (filePath) => {
     // const url = `http://localhost:8000/download-resource/${resourceId}`;
-    const url = `http://172.16.192.201:8000/media/${filePath}`;
+    const url = `http://localhost:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 

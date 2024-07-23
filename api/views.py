@@ -306,7 +306,7 @@ def get_connection_type(request):
             user = request.user
             connection_types = ConnectionType.objects.all()
 
-            user_connection_type = connection_types.filter(owner=user)
+            user_connection_type = connection_types.filter(owner_user=user)
 
             if not user_connection_type.exists():
                 return JsonResponse({'success': False, 'message': 'No connection types'}, status=404)

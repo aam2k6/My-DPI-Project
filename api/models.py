@@ -49,7 +49,6 @@ class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True, default=None)  # Allow description to be optional
-    # creation_date = models.CharField(max_length=100)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # user will be the one logged in
     is_frozen = models.BooleanField(default=False)
 

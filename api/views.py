@@ -70,20 +70,11 @@ def upload_resource(request):
                     for chunk in file.chunks():
                         destination.write(chunk)
 
-                resource = Resource.objects.create(
-                    document_name=document_name,
-                    i_node_pointer=relative_path,
-                    locker=locker,
-                    owner=user,
-                    type=resource_type
-                )
+                resource = Resource.objects.create(document_name=document_name, i_node_pointer=relative_path,
+                    locker=locker, owner=user, type=resource_type)
                 resource_url = os.path.join(settings.MEDIA_URL, relative_path)
-                return JsonResponse({
-                    'success': True,
-                    'document_name': document_name,
-                    'type': resource_type,
-                    'resource_url': resource_url
-                }, status=201)
+                return JsonResponse({'success': True, 'document_name': document_name, 'type': resource_type,
+                    'resource_url': resource_url}, status=201)
             else:
                 return JsonResponse({'success': False, 'error': 'No file provided'}, status=400)
         except Locker.DoesNotExist:
@@ -362,61 +353,84 @@ def dpi_directory(request):
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def get_other_connections(request, guest_user_id, guest_locker_id):
+def get_other_connections(request):
     """
         Retrieve all the connection types of guest_locker of the guest_user that the authenticated user
         does not have a connection with.
 
-        This view uses GET request to fetch all connection types of the current user 
-        (refering to the guest_user_id and guest_locker_id). Further, the values of guest_user/host_user 
-        and guest_locker/host_locker is compared with guest_user_id and guest_locker_id, each. If a match is found, 
+        This view uses GET request to fetch all connection types of the current user
+        (refering to the guest_user_id and guest_locker_id). Further, the values of guest_user/host_user
+        and guest_locker/host_locker is compared with guest_user_id and guest_locker_id, each. If a match is found,
         that connection gets fetched.
 
         Parameters:
            - request: HttpRequest object containing metadata about the request.
 
         Query Parameters:
-            - guest_user_id
-            - guest_locker_id
+            - guest_username
+            - guest_locker_name
 
-       Returns:
+        Returns:
            - JsonResponse: A JSON object containing a list of all users or an error message.
 
-       Response Codes:
+        Response Codes:
            - 200: Successful connetion_types of users.
-           - 400: No connectiont types are found.
+           - 400: No connections types are found.
+           - 404: User not found / Locker not found.
            - 405: Request method not allowed (if not GET).
     """
 
     if request.method == 'GET':
-        current_user = request.user
+
+        if request.user.is_authenticated:
+            current_user = request.user  # Use the authenticated user
+        else:
+            return JsonResponse({'error': 'User not authenticated'}, status=401)
+
         try:
-            guest_user = CustomUser.objects.get(pk=guest_user_id)
-            guest_locker = CustomUser.objects.get(pk=guest_locker_id)
+            guest_username = request.GET.get('guest_username')
+            guest_locker_name = request.GET.get('guest_locker_name')
+            guest_user = CustomUser.objects.get(username=guest_username)  # Fetch user by username
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)  # Fetch locker by lockername
         except CustomUser.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
+            return JsonResponse({'success': False, 'message': 'User not found'}, status=404)
         except Locker.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Locker not found'}, status=400)
+            return JsonResponse({'success': False, 'message': 'Locker not found for the specified username'},
+                                status=404)
 
-        all_connection_types = ConnectionType.objects.filter(owner_user=guest_user)
+        # This is for Rohith viewing IIITB's Transcripts Locker. Fetch all the connection types of
+        # IIITB's Transcripts Locker. Fetch, these connection types' connection ids.
 
-        existing_connections = Connection.objects.filter(
-            (models.Q(source_user=current_user) | models.Q(target_user=current_user)) & (
-                    models.Q(source_locker=guest_locker) | models.Q(target_locker=guest_locker)))
+        connection_types_iiitb_transcripts_ids = ConnectionType.objects.filter(owner_user=guest_user,
+                                                                               owner_locker=guest_locker).values_list(
+            'connection_type_id', flat=True)
 
-        existing_connection_type_ids = existing_connections.values_list('connection_type_id', flat=True)
+        if not connection_types_iiitb_transcripts_ids:
+            return JsonResponse({'success': False, 'message': 'No connection types found'}, status=404)
 
-        available_connection_types = all_connection_types.exclude(connection_type_id__in=existing_connection_type_ids)
+        # Now fetch, all the connections where Rohith is either the host_user or guest_user. (Or more formally, it
+        # would be the current authenticated user)
 
-        if not available_connection_types.exists():
-            return JsonResponse({'success': False, 'message': 'No available connection types found'}, status=400)
+        rohith_connections = Connection.objects.filter(
+            models.Q(host_user=current_user) | models.Q(guest_user=current_user))
 
-        # Serialize the connection types
-        serializer = ConnectionTypeSerializer(available_connection_types, many=True)
+        rohith_connection_type_ids = rohith_connections.values_list('connection_type_id', flat=True).distinct()
 
-        # Return a JSON response with status
+        # Converting QuerySets to sets, for finding easy set difference.
+        rohith_connection_type_ids_set = set(rohith_connection_type_ids)
+        connection_types_iiitb_transcripts_set = set(connection_types_iiitb_transcripts_ids)
+
+        # So finally, the list of connection type ids that Rohith has not yet initiated a connection to, with
+        # IIITB's Transcripts locker are :
+        difference_ids_set = connection_types_iiitb_transcripts_set - rohith_connection_type_ids_set
+
+        if not difference_ids_set:
+            return JsonResponse({'success': False, 'message': 'No other connection types to connect to.'}, status=404)
+
+        difference_connection_types = ConnectionType.objects.filter(connection_type_id__in=difference_ids_set)
+        serializer = ConnectionTypeSerializer(difference_connection_types, many=True)
+
         return JsonResponse({'success': True, 'connection_types': serializer.data}, status=200)
-
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
@@ -482,6 +496,7 @@ def get_connectiontype_by_user_by_locker(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -516,7 +531,7 @@ def create_new_connection(request):
     if request.method == 'POST':
         if not request.user.is_authenticated:
             return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
-        
+
         data = request.POST.copy()
 
         connection_type_id = data.get('connection_type_id')
@@ -524,7 +539,7 @@ def create_new_connection(request):
         guest_locker_name = data.get('guest_locker')
         host_user_username = data.get('host_user')
         guest_user_username = data.get('guest_user')
-        
+
         if not all([connection_type_id, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
             return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
@@ -537,9 +552,13 @@ def create_new_connection(request):
             guest_locker = Locker.objects.filter(name=guest_locker_name, user=guest_user)
 
             if host_locker.count() != 1:
-                return JsonResponse({'success': False, 'error': 'Host locker not found or multiple lockers found with the same name for the host user'}, status=400)
+                return JsonResponse({'success': False,
+                                     'error': 'Host locker not found or multiple lockers found with the same name for the host user'},
+                                    status=400)
             if guest_locker.count() != 1:
-                return JsonResponse({'success': False, 'error': 'Guest locker not found or multiple lockers found with the same name for the guest user'}, status=400)
+                return JsonResponse({'success': False,
+                                     'error': 'Guest locker not found or multiple lockers found with the same name for the guest user'},
+                                    status=400)
 
             host_locker = host_locker.first()
             guest_locker = guest_locker.first()
@@ -549,39 +568,31 @@ def create_new_connection(request):
         except CustomUser.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
 
-        connection = Connection(
-            connection_name=data.get('connection_name'),
-            connection_type_id=connection_type,
-            host_locker=host_locker,
-            guest_locker=guest_locker,
-            host_user=host_user,
-            guest_user=guest_user,
+        connection = Connection(connection_name=data.get('connection_name'), connection_type_id=connection_type,
+            host_locker=host_locker, guest_locker=guest_locker, host_user=host_user, guest_user=guest_user,
             connection_description=data.get('connection_description', ''),
             requester_consent=data.get('requester_consent', 'false').lower() == 'true',
             revoke_host=data.get('revoke_host', 'false').lower() == 'true',
-            revoke_guest=data.get('revoke_guest', 'false').lower() == 'true'
-        )
+            revoke_guest=data.get('revoke_guest', 'false').lower() == 'true')
 
         try:
             connection.save()
-            return JsonResponse({'success': True, 'connection': {
-                'id': connection.connection_id,
-                'name': connection.connection_name,
-                'description': connection.connection_description,
-                'host_user': connection.host_user.username,
-                'guest_user': connection.guest_user.username,
-                'host_locker': connection.host_locker.name,
-                'guest_locker': connection.guest_locker.name,
-                'requester_consent': connection.requester_consent,
-                'revoke_host': connection.revoke_host,
-                'revoke_guest': connection.revoke_guest,
-                'created_time': connection.created_time,
-                'validity_time': connection.validity_time
-            }}, status=201)
+            return JsonResponse({'success': True,
+                                 'connection': {'id': connection.connection_id, 'name': connection.connection_name,
+                                     'description': connection.connection_description,
+                                     'host_user': connection.host_user.username,
+                                     'guest_user': connection.guest_user.username,
+                                     'host_locker': connection.host_locker.name,
+                                     'guest_locker': connection.guest_locker.name,
+                                     'requester_consent': connection.requester_consent,
+                                     'revoke_host': connection.revoke_host, 'revoke_guest': connection.revoke_guest,
+                                     'created_time': connection.created_time,
+                                     'validity_time': connection.validity_time}}, status=201)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
+
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @api_view(['POST'])
@@ -601,6 +612,7 @@ def login_view(request):
             return Response({'success': True, 'user': user_serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @csrf_exempt
 @api_view(['GET'])
@@ -633,7 +645,7 @@ def show_terms(request):
     if request.method == 'GET':
         username = request.GET.get('username')
         terms_id = request.GET.get('term_id')
-        
+
         try:
             if username:
                 try:
@@ -647,7 +659,7 @@ def show_terms(request):
                     return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
             connection_types = ConnectionType.objects.filter(owner_user=user)
-            
+
             if terms_id:
                 terms = ConnectionTerms.objects.filter(conn_type__in=connection_types, terms_id=terms_id)
             else:
@@ -657,16 +669,9 @@ def show_terms(request):
                 return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
 
             serializer = ConnectionTermsSerializer(terms, many=True)
-            filtered_data = [
-                {
-                    'description': term['description'],
-                    'modality': term['modality'],
-                    'data_element_name': term['data_element_name'],
-                    'data_type': term['data_type'],
-                    'sharing_type': term['sharing_type']
-                }
-                for term in serializer.data
-            ]
+            filtered_data = [{'description': term['description'], 'modality': term['modality'],
+                'data_element_name': term['data_element_name'], 'data_type': term['data_type'],
+                'sharing_type': term['sharing_type']} for term in serializer.data]
             return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
 
         except CustomUser.DoesNotExist:
@@ -702,7 +707,7 @@ def give_consent(request):
     """
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-    
+
     if not request.user.is_authenticated:
         return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
@@ -779,7 +784,8 @@ def revoke_consent(request):
 
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
+
+
 @csrf_exempt
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
@@ -825,10 +831,8 @@ def get_connection_by_user_by_locker(request):
             outgoing_connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
             outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
 
-            connections = {
-                'incoming_connections': incoming_serializer.data,
-                'outgoing_connections': outgoing_serializer.data
-            }
+            connections = {'incoming_connections': incoming_serializer.data,
+                'outgoing_connections': outgoing_serializer.data}
 
             return JsonResponse({'success': True, 'connections': connections}, status=200)
         except Exception as e:
@@ -925,27 +929,17 @@ def create_connection_type(request):
         if validity_time is None:
             raise ValueError("Invalid date format")
 
-        connection_type = ConnectionType(
-            connection_type_name=connection_type_name,
-            connection_description=connection_description,
-            owner_user=owner_user,
-            owner_locker=owner_locker,
-            validity_time=validity_time
-        )
+        connection_type = ConnectionType(connection_type_name=connection_type_name,
+            connection_description=connection_description, owner_user=owner_user, owner_locker=owner_locker,
+            validity_time=validity_time)
         connection_type.save()
 
-        return JsonResponse({
-            'success': True,
-            'connection_type': {
-                'id': connection_type.connection_type_id,
-                'name': connection_type.connection_type_name,
+        return JsonResponse({'success': True,
+            'connection_type': {'id': connection_type.connection_type_id, 'name': connection_type.connection_type_name,
                 'description': connection_type.connection_description,
-                'owner_user': connection_type.owner_user.username,
-                'owner_locker': connection_type.owner_locker.name,
-                'validity_time': connection_type.validity_time,
-                'created_time': connection_type.created_time
-            }
-        }, status=201)
+                'owner_user': connection_type.owner_user.username, 'owner_locker': connection_type.owner_locker.name,
+                'validity_time': connection_type.validity_time, 'created_time': connection_type.created_time}},
+            status=201)
 
     except CustomUser.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)
@@ -953,6 +947,7 @@ def create_connection_type(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
 
 @csrf_exempt
 @api_view(['POST'])
@@ -985,6 +980,7 @@ def signup_user(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
 @api_view(['PATCH'])
 @authentication_classes([BasicAuthentication])
@@ -1014,14 +1010,15 @@ def update_connection_type(request, connection_type_id):
 
         data = json.loads(request.body)
         serializer = ConnectionTypeSerializer(connection_type, data=data, partial=True)
-        
+
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({'success': True, 'connection_type': serializer.data}, status=200)
-        
+
         return JsonResponse({'success': False, 'errors': serializer.errors}, status=400)
-    
+
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @api_view(['PATCH'])
@@ -1052,14 +1049,15 @@ def update_locker(request, locker_id):
 
         data = json.loads(request.body)
         serializer = LockerSerializer(locker, data=data, partial=True)
-        
+
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({'success': True, 'locker': serializer.data}, status=200)
-        
+
         return JsonResponse({'success': False, 'errors': serializer.errors}, status=400)
-    
+
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @api_view(['PUT'])
@@ -1114,6 +1112,7 @@ def freeze_locker(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+
 @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])  # Allow access without authentication
@@ -1166,3 +1165,123 @@ def freeze_connection(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def create_connection_type_and_connection_terms(request):
+    """
+    Create a new connection type and connection terms associated with this connection type.
+
+    Request Body :
+    - connection_type_name: Name of the connection type.
+    - connection_description: Description of the connection type.
+    - owner_locker: Locker name of the currently logged-in user.
+    - validity_time: Validity time of the connection type.
+    - connections_terms : Array of connection terms.
+
+    Returns:
+    - JsonResponse: A JSON object containing the created connection type or an error message.
+
+    Response Codes:
+        - 201: Successful creation of connection type and connection terms.
+        - 400: Malformed Request
+        - 401: Request User not authenticated.
+        - 404: Specified locker not found.
+        - 405: Request method not allowed (if not POST).
+
+    Sample Data - Connection Terms :
+    [
+        "obligations":[
+        {
+            "label": "Label 1",
+            "type_of_action": "Add Value",
+            "type_of_sharing": "Share",
+            "description": "Sample description 1",
+            "host_permissions": ["Reshare", "Download"],
+        },
+        {
+            "label": "Label 2",
+            "type_of_action": "Add Date",
+            "type_of_sharing": "Transfer",
+            "description": "Sample description 2",
+            "host_permissions": ["Aggregate"],
+        },
+        {
+            "label": "Label 3",
+            "type_of_action": "Upload File",
+            "type_of_sharing": "Confer",
+            "description": "Sample description 3",
+            "host_permissions": ["Reshare"],
+        },
+        {
+            "label": "Label 4",
+            "type_of_action": "Add Value",
+            "type_of_sharing": "Create",
+            "description": "Sample description 4",
+            "host_permissions": ["Download"],
+        },
+        {
+            "label": "Label 5",
+            "type_of_action": "Add Date",
+            "type_of_sharing": "Collateral",
+            "description": "Sample description 5",
+            "host_permissions": ["Aggregate", "Reshare"],
+        }],
+        "permissions": {
+            "can_share_more_data": False,
+            "can_download_data": False
+        }
+    ]
+    """
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+    if request.user.is_authenticated:
+        current_user = request.user  # Use the authenticated user
+    else:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+    connection_type_name = request.POST.get('connection_type_name')
+    connection_description = request.POST.get('connection_description')
+    owner_locker_name = request.POST.get('owner_locker')
+    validity_time_str = request.POST.get('validity_time')
+    connection_terms = request.POST.get('connection_terms')
+
+    if not all([connection_type_name, owner_locker_name, validity_time_str]):
+        return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
+    try:
+        owner_user = CustomUser.objects.get(username=current_user)
+        owner_locker = Locker.objects.filter(name=owner_locker_name, user=owner_user).first()
+        if not owner_locker:
+            return JsonResponse({'success': False, 'error': 'Owner locker not found'}, status=404)
+
+        validity_time = parse_datetime(validity_time_str)
+        if validity_time is None:
+            raise ValueError("Invalid date format")
+
+        new_connection_type = ConnectionType(connection_type_name=connection_type_name,
+                                             connection_description=connection_description, owner_user=owner_user,
+                                             owner_locker=owner_locker, validity_time=validity_time)
+        new_connection_type.save()
+
+        for obligation in connection_terms:
+            ConnectionTerms.objects.create(conn_type=new_connection_type, modality='obligatory',
+                                           data_element_name=obligation['label'],
+                                           data_type=obligation['type_of_action'],
+                                           sharing_type=obligation['type_of_sharing'],
+                                           description=obligation['description'],
+                                           host_permissions=obligation['host_permissions'])
+
+        return JsonResponse({'success': True, 'connection_type_message': 'Connection Type successfully created',
+                             'connection_terms_message': 'Connection Terms successfully created'}, status=201)
+
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)

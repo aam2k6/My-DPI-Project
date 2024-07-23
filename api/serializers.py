@@ -5,7 +5,7 @@ from .models import CustomUser, Locker, Connection, Resource, ConnectionType, Co
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["user_id", "username", "description"]
+        fields = ["user_id", "username", "description", "user_type"]
 
 
 class LockerSerializer(serializers.ModelSerializer):

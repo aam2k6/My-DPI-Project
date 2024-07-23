@@ -25,9 +25,14 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser):
+    SYS_ADMIN = 'system_admin'
+    MODERATOR = 'moderator'
+    USER = 'user'
+    TYPE_CHOICES = [(SYS_ADMIN, 'System Admin'), (MODERATOR, 'Moderator'), (USER, 'User')]
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=200, default=None)
+    user_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=USER)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     last_login = models.DateTimeField(blank=True, null=True)
@@ -113,8 +118,9 @@ class ConnectionTerms(models.Model):
     MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
     terms_id = models.AutoField(primary_key=True)
     conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE)
-    modality = models.CharField(max_length=50, choices=MODALITY_CHOICES)
+    modality = models.CharField(max_length=50, choices=MODALITY_CHOICES, default='obligatory')
     data_element_name = models.CharField(max_length=50)
+    host_permissions = models.JSONField(default=list)
     data_type = models.CharField(max_length=50)
     sharing_type = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)

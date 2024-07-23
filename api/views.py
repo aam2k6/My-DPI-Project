@@ -1193,48 +1193,28 @@ def create_connection_type_and_connection_terms(request):
         - 405: Request method not allowed (if not POST).
 
     Sample Data - Connection Terms :
-    [
-        "obligations":[
+    {
+        "connection_type_name": "Alumni Networks",
+        "connection_description": "Connection type that establishes communication between alumni.",
+        "owner_locker": "Transcripts",
+        "connection_terms":
         {
-            "label": "Label 1",
-            "type_of_action": "Add Value",
-            "type_of_sharing": "Share",
-            "description": "Sample description 1",
-            "host_permissions": ["Reshare", "Download"],
+            "obligations":
+            [{
+                "label": "Graduation Batch",
+                "type_of_action": "Add Value",
+                "type_of_sharing": "Share",
+                "description": "It is obligatory to submit your graduation batch in order to accept the terms of this connection",
+                "host_permissions": ["Re-share", "Download"]
+            }],
+            "permissions":
+            {
+                "can_share_more_data": true,
+                "can_download_data": false
+            }
         },
-        {
-            "label": "Label 2",
-            "type_of_action": "Add Date",
-            "type_of_sharing": "Transfer",
-            "description": "Sample description 2",
-            "host_permissions": ["Aggregate"],
-        },
-        {
-            "label": "Label 3",
-            "type_of_action": "Upload File",
-            "type_of_sharing": "Confer",
-            "description": "Sample description 3",
-            "host_permissions": ["Reshare"],
-        },
-        {
-            "label": "Label 4",
-            "type_of_action": "Add Value",
-            "type_of_sharing": "Create",
-            "description": "Sample description 4",
-            "host_permissions": ["Download"],
-        },
-        {
-            "label": "Label 5",
-            "type_of_action": "Add Date",
-            "type_of_sharing": "Collateral",
-            "description": "Sample description 5",
-            "host_permissions": ["Aggregate", "Reshare"],
-        }],
-        "permissions": {
-            "can_share_more_data": False,
-            "can_download_data": False
-        }
-    ]
+        "validity_time": "2024-12-31T23:59:59Z"
+    }
     """
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
@@ -1244,11 +1224,16 @@ def create_connection_type_and_connection_terms(request):
     else:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-    connection_type_name = request.POST.get('connection_type_name')
-    connection_description = request.POST.get('connection_description')
-    owner_locker_name = request.POST.get('owner_locker')
-    validity_time_str = request.POST.get('validity_time')
-    connection_terms = request.POST.get('connection_terms')
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(data={'error': 'Invalid JSON'}, status=400)
+
+    connection_type_name = data.get('connection_type_name')
+    connection_description = data.get('connection_description')
+    owner_locker_name = data.get('owner_locker')
+    validity_time_str = data.get('validity_time')
+    connection_terms = data.get('connection_terms')
 
     if not all([connection_type_name, owner_locker_name, validity_time_str]):
         return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
@@ -1268,13 +1253,29 @@ def create_connection_type_and_connection_terms(request):
                                              owner_locker=owner_locker, validity_time=validity_time)
         new_connection_type.save()
 
-        for obligation in connection_terms:
-            ConnectionTerms.objects.create(conn_type=new_connection_type, modality='obligatory',
-                                           data_element_name=obligation['label'],
-                                           data_type=obligation['type_of_action'],
-                                           sharing_type=obligation['type_of_sharing'],
-                                           description=obligation['description'],
-                                           host_permissions=obligation['host_permissions'])
+        for obligation in connection_terms['obligations']:
+            ConnectionTerms.objects.create(
+                conn_type=new_connection_type,
+                modality='obligatory',
+                data_element_name=obligation['label'],
+                data_type=obligation['type_of_action'],
+                sharing_type=obligation['type_of_sharing'],
+                description=obligation['description'],
+                host_permissions=obligation['host_permissions']
+            )
+
+        permissions = connection_terms['permissions']
+        can_share_more_data = permissions['can_share_more_data']
+        can_download_data = permissions['can_download_data']
+
+        if can_share_more_data:
+            ConnectionTerms.objects.create(conn_type=new_connection_type,
+                                           modality='permissive',
+                                           description='They can share more data.')
+        if can_download_data:
+            ConnectionTerms.objects.create(conn_type=new_connection_type,
+                                           modality='permissive',
+                                           description='They can download data.')
 
         return JsonResponse({'success': True, 'connection_type_message': 'Connection Type successfully created',
                              'connection_terms_message': 'Connection Terms successfully created'}, status=201)

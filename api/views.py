@@ -353,7 +353,7 @@ def dpi_directory(request):
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def get_other_connections(request):
+def get_other_connection_types(request):
     """
         Retrieve all the connection types of guest_locker of the guest_user that the authenticated user
         does not have a connection with.

@@ -798,7 +798,10 @@ def get_connection_by_user_by_locker(request):
             - request: HttpRequest object containing metadata about the request.
 
         Query Parameters:
-            - locker_name : The name of the locker of the currently logged-in user whose connections have to be fetched.
+            - locker_name : The name of the locker of the currently logged-in user whose incoming and
+                        outgoing connections have to be fetched / The name of the locker that is owned by some other
+                        user that the logged-in user is currently viewing.
+            - username : The username of the user whose locker the current logged-in user is currently viewing.
 
         Returns:
             - JsonResponse: A JSON object containing a list of lockers or an error message.
@@ -812,29 +815,44 @@ def get_connection_by_user_by_locker(request):
     if request.method == 'GET':
         try:
             locker_name = request.GET.get('locker_name')
+            username = request.GET.get('username')
+
             if request.user.is_authenticated:
                 user = request.user
             else:
                 return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-            locker = Locker.objects.filter(user=user, name=locker_name).first()
+            if not username:
+                locker = Locker.objects.filter(user=user, name=locker_name).first()
 
-            # If the current user does not have the given locker with "locker_name"
-            if not locker:
-                return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
+                # If the current user does not have the given locker with "locker_name"
+                if not locker:
+                    return JsonResponse({'success': False, 'message': 'No such locker found for this user'}, status=404)
 
-            # Fetch incoming connections
-            incoming_connections = Connection.objects.filter(host_user=user, host_locker=locker)
-            incoming_serializer = ConnectionSerializer(incoming_connections, many=True)
+                # Fetch incoming connections
+                incoming_connections = Connection.objects.filter(host_user=user, host_locker=locker)
+                incoming_serializer = ConnectionSerializer(incoming_connections, many=True)
 
-            # Fetch outgoing connections
-            outgoing_connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
-            outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
+                # Fetch outgoing connections
+                outgoing_connections = Connection.objects.filter(guest_user=user, guest_locker=locker)
+                outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
 
-            connections = {'incoming_connections': incoming_serializer.data,
-                'outgoing_connections': outgoing_serializer.data}
+                connections = {'incoming_connections': incoming_serializer.data,
+                               'outgoing_connections': outgoing_serializer.data}
 
-            return JsonResponse({'success': True, 'connections': connections}, status=200)
+                return JsonResponse({'success': True, 'connections': connections}, status=200)
+
+            if username:
+                other_user = CustomUser.objects.get(username=username)
+                other_locker = Locker.objects.filter(user=other_user, name=locker_name).first()
+
+                # Fetch only the outgoing connections
+                outgoing_connections = Connection.objects.filter(host_user=other_user, host_locker=other_locker,
+                                                                 guest_user=user)
+                outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
+                connections = outgoing_serializer.data
+                return JsonResponse({'success': True, 'connections': connections}, status=200)
+
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

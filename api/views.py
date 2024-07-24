@@ -888,69 +888,6 @@ def get_resource_by_user_by_locker(request):
 
 @csrf_exempt
 @api_view(['POST'])
-@authentication_classes([BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def create_connection_type(request):
-    """
-    Create a new connection type.
-    
-    Parameters:
-    - connection_type_name: Name of the connection type.
-    - connection_description: Description of the connection type.
-    - owner_user: Username of the owner user.
-    - owner_locker: Name of the owner locker.
-    - validity_time: Validity time of the connection type.
-
-    Returns:
-    - JsonResponse: A JSON object containing the created connection type or an error message.
-    """
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
-    if not request.user.is_authenticated:
-        return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
-
-    connection_type_name = request.POST.get('connection_type_name')
-    connection_description = request.POST.get('connection_description')
-    owner_user_username = request.POST.get('owner_user')
-    owner_locker_name = request.POST.get('owner_locker')
-    validity_time_str = request.POST.get('validity_time')
-
-    if not all([connection_type_name, owner_user_username, owner_locker_name, validity_time_str]):
-        return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
-
-    try:
-        owner_user = CustomUser.objects.get(username=owner_user_username)
-        owner_locker = Locker.objects.filter(name=owner_locker_name, user=owner_user).first()
-        if not owner_locker:
-            return JsonResponse({'success': False, 'error': 'Owner locker not found'}, status=404)
-
-        validity_time = parse_datetime(validity_time_str)
-        if validity_time is None:
-            raise ValueError("Invalid date format")
-
-        connection_type = ConnectionType(connection_type_name=connection_type_name,
-            connection_description=connection_description, owner_user=owner_user, owner_locker=owner_locker,
-            validity_time=validity_time)
-        connection_type.save()
-
-        return JsonResponse({'success': True,
-            'connection_type': {'id': connection_type.connection_type_id, 'name': connection_type.connection_type_name,
-                'description': connection_type.connection_description,
-                'owner_user': connection_type.owner_user.username, 'owner_locker': connection_type.owner_locker.name,
-                'validity_time': connection_type.validity_time, 'created_time': connection_type.created_time}},
-            status=201)
-
-    except CustomUser.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Owner user not found'}, status=404)
-    except ValueError as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
-
-
-@csrf_exempt
-@api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_user(request):
     if request.method == 'POST':

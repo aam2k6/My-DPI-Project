@@ -12,6 +12,7 @@ export const TargetLockerView = () => {
 
   const [parentUser, setParentUser] = useState(location.state ? location.state.user : null);
   const [resources, setResources] = useState([]);
+  const [otherConnections, setOtherConnections] = useState([]); // State for other connections
   const [locker, setLocker] = useState(location.state ? location.state.locker : null);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,7 @@ export const TargetLockerView = () => {
     }
     if (parentUser && locker) {
       fetchResources();
+      fetchOtherConnections(); // Fetch other connections when component mounts
     }
   }, [curruser, navigate, parentUser, locker]);
 
@@ -49,6 +51,29 @@ export const TargetLockerView = () => {
     }
   };
 
+  const fetchOtherConnections = async () => {
+    try {
+      const token = Cookies.get('authToken');
+      const params = new URLSearchParams({ guest_username: parentUser.username, guest_locker_name: locker.name });
+      
+      const response = await fetch(`http://localhost:8000/get-other-connections/?${params}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setOtherConnections(data.connection_types); // Updated to match the new response structure
+      } else {
+        setError(data.message);
+      }
+    } catch (error) {
+      setError("An error occurred while fetching other connections");
+    }
+  };
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   }
@@ -62,25 +87,18 @@ export const TargetLockerView = () => {
   };
 
   const handleClick = () => {
-    // navigate('/create-connection-terms');
     navigate('/make-connection',{state:{hostuser:parentUser,hostlocker:locker}});
-
   };
 
   const handleResourceClick = (filePath) => {
-    // const url = `http://localhost:8000/download-resource/${resourceId}`;
     const url = `http://localhost:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 
   const handleLogout = () => {
-    // Clear cookies
     Cookies.remove('authToken');
-    // Clear local storage
     localStorage.removeItem('curruser');
-    // Set user context to null
     setUser(null);
-    // Redirect to login page
     navigate('/');
   }
 
@@ -130,7 +148,6 @@ export const TargetLockerView = () => {
             {resources.length > 0 ? (
               resources.map(resource => (
                 <div className="page7resource" key={resource.id}>
-                  {/* <u>{resource.document_name}</u> */}
                   <div id="documentspage7" onClick={() => handleResourceClick(resource.i_node_pointer)}>
                     {resource.document_name}
                   </div>
@@ -143,7 +160,19 @@ export const TargetLockerView = () => {
 
           <div className="page7publicresources">
             <p>Other Connections</p>
-            {/* Additional resources can be displayed here */}
+            {otherConnections.length > 0 ? (
+              otherConnections.map(connection => (
+                <div className="page7connection" key={connection.connection_type_id}>
+                  <div id="connectionpage7">
+                    <strong>{connection.connection_type_name}</strong>: {connection.connection_description}
+                    <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
+                    <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p id="page7noconn">No other connections found.</p>
+            )}
           </div>
         </div>
         <div className="page7containerB">

@@ -19,7 +19,7 @@ export const ConnectionTerms = () => {
         typeOfAction: "share",
         typeOfSharing: "text",
         labelDescription: "",
-        hostPermissions: "read",
+        hostPermissions: [],
     };
 
     const capitalizeFirstLetter = (string) => {
@@ -91,23 +91,30 @@ export const ConnectionTerms = () => {
     };
 
     const handleHostPermissionsChange = (event) => {
+
+
         const { value, checked } = event.target;
+
         setFormData((prevFormData) => {
-            // Use the current state of hostPermissions to make changes
             let updatedPermissions = prevFormData.hostPermissions;
-    
+
             if (checked) {
-                // If the checkbox is checked, add the permission value
-                updatedPermissions = [...updatedPermissions, value];
+                // Add the permission only if it's not already present
+                if (!updatedPermissions.includes(value)) {
+                    updatedPermissions = [...updatedPermissions, value];
+                }
             } else {
-                // If the checkbox is unchecked, remove the permission value
+                // Remove the unchecked permission
                 updatedPermissions = updatedPermissions.filter(permission => permission !== value);
             }
-    
-            // Return the updated state
+
+            // Ensure only valid permission values are kept
+            const validPermissions = ["reshare", "download", "aggregate"];
+            updatedPermissions = updatedPermissions.filter(permission => validPermissions.includes(permission));
+
             return {
-                ...prevFormData, // spread the previous state
-                hostPermissions: updatedPermissions, // update the specific field
+                ...prevFormData,
+                hostPermissions: updatedPermissions,
             };
         });
     };
@@ -236,10 +243,14 @@ export const ConnectionTerms = () => {
 
                                     </select>
                                     <span className="tooltip">?
-                                        <span className="tooltiptext">Share -- The owner of an artifact ("a") in system "s" sets up a way for someone in system "t" to access it.
-                                            Transfer -- The owner of an artifact ("a") moves the ownership completely from one system ("s") to another system ("t"). After this, the new owner in system "t" has full rights over the artifact.
-                                            Confer -- The owner of an artifact ("a") in system "s" gives ownership to someone in system "t" with certain conditions ("c"). The new owner in "t" has rights over the artifact as specified in "c", but the original owner in "s" still retains some rights over it.
-                                            Collateral -- The owner of an artifact ("a") temporarily gives ownership to system "t" as a guarantee until certain obligations ("o") are met.
+                                        <span className="tooltiptext">
+                                            <span>Transfer: You are transferring ownership of this resource. You will no longer have access to this resource after this operation.</span><br></br>
+
+                                            <span>Confer: You are going to transfer ownership of the resource, but the recipient cannot modify the contents of what you have conferred. You still have rights over this resource.</span><br></br>
+
+                                            <span>Share: You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.</span><br></br>
+
+                                            <span>Collateral: You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource and can use this as agreed with the recipient.</span><br></br>
                                         </span>
                                     </span>
                                 </label>
@@ -257,39 +268,39 @@ export const ConnectionTerms = () => {
                                 <label className="obligation-label">
                                     <span >Host Permissions</span>
                                     {/* <select className="Title" name="hostPermissions" value={formData.hostPermissions} onChange={handleInputChange}> */}
-                                        {/* <option value="read">Reshare</option>
+                                    {/* <option value="read">Reshare</option>
                                         <option value="write">Download</option>
                                         <option value="execute">Aggregate</option> */}
 
-                                        <div className="multiselect-container">
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    value="reshare"
-                                                    checked={formData.hostPermissions.includes("reshare")}
-                                                    onChange={handleHostPermissionsChange}
-                                                />
-                                                Reshare
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    value="download"
-                                                    checked={formData.hostPermissions.includes("download")}
-                                                    onChange={handleHostPermissionsChange}
-                                                />
-                                                Download
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    value="aggregate"
-                                                    checked={formData.hostPermissions.includes("aggregate")}
-                                                    onChange={handleHostPermissionsChange}
-                                                />
-                                                Aggregate
-                                            </label>
-                                        </div>
+                                    <div className="multiselect-container">
+                                        <label key="reshare">
+                                            <input
+                                                type="checkbox"
+                                                value="reshare"
+                                                checked={formData.hostPermissions.includes("reshare")}
+                                                onChange={handleHostPermissionsChange}
+                                            />
+                                            Reshare
+                                        </label>
+                                        <label key="download">
+                                            <input
+                                                type="checkbox"
+                                                value="download"
+                                                checked={formData.hostPermissions.includes("download")}
+                                                onChange={handleHostPermissionsChange}
+                                            />
+                                            Download
+                                        </label>
+                                        <label key="aggregate">
+                                            <input
+                                                type="checkbox"
+                                                value="aggregate"
+                                                checked={formData.hostPermissions.includes("aggregate")}
+                                                onChange={handleHostPermissionsChange}
+                                            />
+                                            Aggregate
+                                        </label>
+                                    </div>
 
 
                                     {/* </select> */}
@@ -301,14 +312,14 @@ export const ConnectionTerms = () => {
 
 
                                 <h2>Permissions</h2>
-                                <label className="permission-label">
+                                <label className="permission-label" key="canShareMore">
                                     <span className="permission-labels">Can the guest share more data</span>
                                     <input type="checkbox" name="canShareMore" checked={formData.canShareMore} onChange={(handleCheckboxChange)} />
                                 </label>
 
-                                <label className="permission-label">
+                                <label className="permission-label" key="canDownload">
                                     <span className="permission-labels">Can they download the data</span>
-                                    <input type="checkbox" name="canDownload" checked={formData.canDownload} onChange={(handleCheckboxChange)}/>
+                                    <input type="checkbox" name="canDownload" checked={formData.canDownload} onChange={(handleCheckboxChange)} />
                                 </label>
 
 

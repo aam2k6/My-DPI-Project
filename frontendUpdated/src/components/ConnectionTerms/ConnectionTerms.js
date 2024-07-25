@@ -42,6 +42,14 @@ export const ConnectionTerms = () => {
         });
     };
 
+    const handleCheckboxChange = (event) => {
+        const { name, checked } = event.target;
+        setFormData({
+            ...formData,
+            [name]: checked,
+        });
+    };
+
     const handleAddObligation = () => {
         if (formData.labelName.trim() !== "") {
             setObligations({
@@ -58,11 +66,55 @@ export const ConnectionTerms = () => {
         setFormData(obligations[key]);
     };
 
+
+
+
+
+
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        const connectionTermsData = {
+            ...location.state.connectionData,
+            obligations: obligations,
+            permissions: {
+                canShareMoreData: formData.canShareMore,
+                canDownloadData: formData.canDownload,
+            }
+        };
+
+        console.log(connectionTermsData);
+
+
         console.log("Form submitted");
         navigate("/admin");
     };
+
+    const handleHostPermissionsChange = (event) => {
+        const { value, checked } = event.target;
+        setFormData((prevFormData) => {
+            // Use the current state of hostPermissions to make changes
+            let updatedPermissions = prevFormData.hostPermissions;
+    
+            if (checked) {
+                // If the checkbox is checked, add the permission value
+                updatedPermissions = [...updatedPermissions, value];
+            } else {
+                // If the checkbox is unchecked, remove the permission value
+                updatedPermissions = updatedPermissions.filter(permission => permission !== value);
+            }
+    
+            // Return the updated state
+            return {
+                ...prevFormData, // spread the previous state
+                hostPermissions: updatedPermissions, // update the specific field
+            };
+        });
+    };
+
+
+
+
 
     const handleHomeClick = () => {
         navigate("/home");
@@ -204,11 +256,43 @@ export const ConnectionTerms = () => {
 
                                 <label className="obligation-label">
                                     <span >Host Permissions</span>
-                                    <select className="Title" name="hostPermissions" value={formData.hostPermissions} onChange={handleInputChange}>
-                                        <option value="read">Reshare</option>
+                                    {/* <select className="Title" name="hostPermissions" value={formData.hostPermissions} onChange={handleInputChange}> */}
+                                        {/* <option value="read">Reshare</option>
                                         <option value="write">Download</option>
-                                        <option value="execute">Aggregate</option>
-                                    </select>
+                                        <option value="execute">Aggregate</option> */}
+
+                                        <div className="multiselect-container">
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    value="reshare"
+                                                    checked={formData.hostPermissions.includes("reshare")}
+                                                    onChange={handleHostPermissionsChange}
+                                                />
+                                                Reshare
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    value="download"
+                                                    checked={formData.hostPermissions.includes("download")}
+                                                    onChange={handleHostPermissionsChange}
+                                                />
+                                                Download
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    value="aggregate"
+                                                    checked={formData.hostPermissions.includes("aggregate")}
+                                                    onChange={handleHostPermissionsChange}
+                                                />
+                                                Aggregate
+                                            </label>
+                                        </div>
+
+
+                                    {/* </select> */}
                                     <span className="tooltip">?
                                         <span className="tooltiptext">Select host permissions: Reshare, Download, or Aggregate.</span>
                                     </span>
@@ -219,12 +303,12 @@ export const ConnectionTerms = () => {
                                 <h2>Permissions</h2>
                                 <label className="permission-label">
                                     <span className="permission-labels">Can the guest share more data</span>
-                                    <input type="checkbox" name="canShareMore" checked={formData.canShareMore} />
+                                    <input type="checkbox" name="canShareMore" checked={formData.canShareMore} onChange={(handleCheckboxChange)} />
                                 </label>
 
                                 <label className="permission-label">
                                     <span className="permission-labels">Can they download the data</span>
-                                    <input type="checkbox" name="canDownload" checked={formData.canDownload} />
+                                    <input type="checkbox" name="canDownload" checked={formData.canDownload} onChange={(handleCheckboxChange)}/>
                                 </label>
 
 

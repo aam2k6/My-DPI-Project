@@ -125,7 +125,10 @@
 
 .aa {
   width: 45%;
-  float: left;
+  /* float: left; */
+   /* display: flex;  */
+  
+  
 }
 .bb {
   width: 45%;
@@ -142,6 +145,7 @@
   margin-bottom: 2rem;
   margin-left: 2rem;
   font-size: 1.25rem;
+  flex: 1;
 }
 .res {
   margin-left: 2rem;
@@ -171,9 +175,12 @@
 }
 
 .public-private {
-  margin-left: 3rem;
+  margin-left: 1rem;
   margin-bottom: 2rem;
   font-size: 1.25rem;
+  display: flex;
+  flex: 1;
+  text-align: right;
 }
 .conn {
   border: 2px solid rgb(107, 120, 231);
@@ -191,3 +198,22 @@
   margin-left: 2rem;
   font-size: 1.45rem;
 }
+
+.resource-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 10px; */
+  /* border-bottom: 1px solid #ccc; */
+  /* border: 2px solid rgb(107, 120, 231); */
+margin: 1rem;
+width: 50rem;
+max-width: 50rem;
+overflow-x: auto;
+}
+.resource-details {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+

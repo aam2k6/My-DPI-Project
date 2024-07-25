@@ -63,6 +63,8 @@ function App() {
                         <Route path="/create-connection-type" element={<ProtectedRoute><CreateConnectionType /></ProtectedRoute>} />
                         <Route path="/create-connection-terms" element={<ProtectedRoute><CreateConnectionTerms /></ProtectedRoute>} />
                         <Route path="/view-terms-by-type" element={<ProtectedRoute><ViewTermsByType /></ProtectedRoute>} />
+                        <Route path="/make-connection" element={<ProtectedRoute><CreateConnectionType /></ProtectedRoute>} />
+                        <Route path="/show-connection-terms" element={<ProtectedRoute><CreateConnectionTerms /></ProtectedRoute>} />
                         <Route path="*" element={<h1>Page Not Found</h1>} />
                     </Routes>
                 </usercontext.Provider>

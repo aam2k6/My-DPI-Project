@@ -1,9 +1,21 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import React, { useContext, useEffect, useState } from 'react';
+import { useLocation,useNavigate } from "react-router-dom";
+
 import "./connectionTerms.css";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+
+import Cookies from 'js-cookie';
+import { usercontext } from "../../usercontext";
 
 export const ConnectionTerms = () => {
     const navigate = useNavigate();
+
+  const location = useLocation();
+  const locker = location.state ? location.state.selectedLocker : null;
+
+
+
     const initialFormData = {
         labelName: "",
         typeOfAction: "share",
@@ -13,8 +25,18 @@ export const ConnectionTerms = () => {
     };
 
 
+    const capitalizeFirstLetter = (string) => {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+      };
+  
+
+
     const [formData, setFormData] = useState(initialFormData);
     const [obligations, setObligations] = useState({});
+  const [error, setError] = useState(null);
+  const { curruser, setUser } = useContext(usercontext);
+  const [isOpen, setIsOpen] = useState(false);
 
 
     const handleInputChange = (event) => {
@@ -47,7 +69,7 @@ export const ConnectionTerms = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log("Form submitted");
-        navigate("/target-locker-view");
+        navigate("/admin");
     };
 
     const handleHomeClick = () => {
@@ -62,17 +84,31 @@ export const ConnectionTerms = () => {
         navigate('/admin');
     }
     const handleLogout = () => {
+        Cookies.remove('authToken');
+        localStorage.removeItem('curruser');
+        setUser(null);
         navigate('/');
-    }
+      }
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+      }
 
+
+  useEffect(() => {
+    if (!curruser) {
+        navigate('/');
+        return;
+    }   },[curruser]);
+
+    const token = Cookies.get('authToken');
 
 
     return (
         <div>
             <nav className="navbar">
                 <div className="wrap">
-                    <div className="navbarLockerName">Locker : Education</div>
-                    <div className="navbarLockerOwner">Owner : Rohith</div>
+                    <div className="navbarLockerName">Locker : {locker.name}</div>
+                    <div className="navbarLockerOwner">Owner : {curruser.username}</div>
                 </div>
 
                 <div className="navbarLinks">
@@ -89,17 +125,23 @@ export const ConnectionTerms = () => {
                             </a>
                         </li>
                         <li>
-                            <a href="#" onClick={handleAdmin}>Admin</a>
+                            <a href="#" onClick={handleAdmin}></a>
                         </li>
                     </ul>
 
                     <ul className="navbarThirdLink">
-                        <li>
-                            <img src="" alt="User Icon" />
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleLogout}>Logout</a>
-                        </li>
+                    <li>
+            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
+            </li>
                     </ul>
                 </div>
             </nav>
@@ -221,5 +263,6 @@ export const ConnectionTerms = () => {
                 </div>
             </div>
         </div>
+
     );
 };

@@ -32,12 +32,21 @@
     flex-direction: column;
     width: 85%; /* Adjust as needed */
     /* max-width: 600px; */
+
+  }
+  .connection-lockerForm select{
+    width: 57%;
+    margin-left: 3rem;
+    padding: 0.5rem;
+    border: 2px solid rgb(107, 120, 231);
+    
   }
   
   .connection-lockerForm label {
     display: flex;
     flex-direction: row;
     margin-bottom: 5rem;
+    
    
   }
 

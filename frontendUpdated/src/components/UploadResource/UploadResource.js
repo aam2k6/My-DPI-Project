@@ -3,6 +3,8 @@ import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import "./page4.css";
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+
 
 export const UploadResource = () => {
   const location = useLocation();
@@ -10,9 +12,17 @@ export const UploadResource = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resourceName, setResourceName] = useState("");
   const [document, setDocument] = useState(null);
+<<<<<<< HEAD
   const [visibility, setVisibility] = useState("Public"); // Default value set to Public
   const navigate = useNavigate();
 
+=======
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [visibility, setVisibility] = useState("public"); // Default value set to Public
+  const navigate = useNavigate();
+
+>>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -53,7 +63,46 @@ export const UploadResource = () => {
       alert("An error occurred while uploading the resource");
     });
   };
+<<<<<<< HEAD
 
+=======
+
+
+
+
+  const handleDPIDirectory = () => {
+    navigate('/dpi-directory');
+  };
+
+  const handleHomeClick = () => {
+    navigate('/home');
+  };
+
+  const handleLogout = () => {
+    // Clear cookies
+    Cookies.remove('authToken');
+    // Clear local storage
+    localStorage.removeItem('curruser');
+    // Set user context to null
+    setUser(null);
+    // Redirect to login page
+    navigate('/');
+  }
+  const handleClick = (locker) => {
+    navigate('/view-locker', { state: { locker } });
+  };
+
+  const handleAdmin = () => {
+    navigate('/admin');
+  }
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  }
+
+
+
+>>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
   return (
     <div>
       <nav className="navbar">
@@ -63,6 +112,7 @@ export const UploadResource = () => {
         </div>
         <div className="navbarLinks">
           <ul className="navbarFirstLink">
+<<<<<<< HEAD
             <li><a href="#" onClick={() => navigate('/dpi-directory')}>DPI Directory</a></li>
           </ul>
           <ul className="navbarSecondLink">
@@ -72,6 +122,27 @@ export const UploadResource = () => {
           <ul className="navbarThirdLink">
             <li><a href="#" onClick={() => navigate('/')}>Logout</a></li>
           </ul>
+=======
+            <li><a href="#" onClick={handleDPIDirectory}>DPI Directory</a></li>
+          </ul>
+          <ul className="navbarSecondLink">
+            <li><a href="#" onClick={handleHomeClick}>Home</a></li>
+            <li><a href="#"></a></li>
+          </ul>
+          <ul className="navbarThirdLink">
+            <li> <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
+              {isOpen && (
+                <div className="dropdownContent">
+                  <div className="currusername">{curruser.username}</div>
+                  <div className="curruserdesc">{curruser.description}</div>
+
+                  <button onClick={handleAdmin}>Settings</button>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
+              </li>
+              </ul>
+>>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
         </div>
       </nav>
 

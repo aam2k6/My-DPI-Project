@@ -5,12 +5,19 @@ import { useNavigate } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 import { usercontext } from "../../usercontext";
 
+// Helper function to capitalize the first letter of a string
+const capitalizeFirstLetter = (string) => {
+  if (!string) return '';
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 export const Home = () => {
   const navigate = useNavigate();
   const [lockers, setLockers] = useState([]);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const { curruser,setUser } = useContext(usercontext);
+
 
   useEffect(() => {
     if (!curruser) {
@@ -19,8 +26,6 @@ export const Home = () => {
     }},[]);
 
   useEffect(() => {
-
-
     const token = Cookies.get('authToken');
 
     fetch('http://localhost:8000/get-lockers-user/', {
@@ -82,7 +87,8 @@ export const Home = () => {
     <div>
       <nav className="navbar">
         <div className="wrap">
-          <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
+
+          <div className="navbarBrand">{curruser ? capitalizeFirstLetter(curruser.username) : 'None'}</div>
           <div className="description">{curruser ? curruser.description : 'None'}</div>
         </div>
 
@@ -107,7 +113,8 @@ export const Home = () => {
               <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
               {isOpen && (
                 <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
+
+                  <div className="currusername">{capitalizeFirstLetter(curruser.username)}</div>
                   <div className="curruserdesc">{curruser.description}</div>
 
                   <button onClick={handleAdmin}>Settings</button>

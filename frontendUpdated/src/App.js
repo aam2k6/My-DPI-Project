@@ -15,6 +15,8 @@ import { Admin } from './components/Admin/Admin';
 import { CreateConnectionType } from './components/CreateConnectionType/CreateConnectionType';
 import { CreateConnectionTerms } from './components/CreateConnectionTerms/CreateConnectionTerms';
 import { usercontext } from './usercontext';
+import { ViewTermsByType } from './components/ViewTermsByTypeUser/ViewTermsByType';
+
 
 function App() {
     const [curruser, setUser] = useState(null);
@@ -60,6 +62,7 @@ function App() {
                         <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                         <Route path="/create-connection-type" element={<ProtectedRoute><CreateConnectionType /></ProtectedRoute>} />
                         <Route path="/create-connection-terms" element={<ProtectedRoute><CreateConnectionTerms /></ProtectedRoute>} />
+                        <Route path="/view-terms-by-type" element={<ProtectedRoute><ViewTermsByType /></ProtectedRoute>} />
                         <Route path="*" element={<h1>Page Not Found</h1>} />
                     </Routes>
                 </usercontext.Provider>

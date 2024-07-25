@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 import { usercontext } from "../../usercontext";
-
 import "./connection.css";
 
 export const Connection = () => {
@@ -14,6 +13,9 @@ export const Connection = () => {
     const { curruser, setUser } = useContext(usercontext);
     const location = useLocation();
     const [selectedLocker, setSelectedLocker] = useState(null);
+    const [connectionName, setConnectionName] = useState(null);
+    const [connectionDescription, setConnectionDescription] = useState(null);
+    const [validity, setValidity] = useState(null); 
 
     const capitalizeFirstLetter = (string) => {
         if (!string) return '';
@@ -56,8 +58,18 @@ export const Connection = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        const connectionData = {
+            lockerName: selectedLocker ? selectedLocker.name : '',
+            connectionName,
+            connectionDescription,
+            validity
+        };
+
         console.log("Form submitted");
-        navigate("/connectionTerms", { state: { selectedLocker } });
+        console.log(connectionData);
+
+        navigate("/connectionTerms", { state: { connectionData } });
+        // navigate("/connectionTerms", { state: { selectedLocker } });
     };
 
     const handleHomeClick = () => {
@@ -73,13 +85,9 @@ export const Connection = () => {
     };
 
     const handleLogout = () => {
-        // Clear cookies
         Cookies.remove('authToken');
-        // Clear local storage
         localStorage.removeItem('curruser');
-        // Set user context to null
         setUser(null);
-        // Redirect to login page
         navigate('/');
     };
 
@@ -158,6 +166,7 @@ export const Connection = () => {
                                 type="text"
                                 name="lockerDescription"
                                 placeholder="Connection Name"
+                                onChange = {(e)=>setConnectionName(e.target.value)}
                             />
                         </label>
 
@@ -167,6 +176,7 @@ export const Connection = () => {
                                 type="text"
                                 name="lockerDescription"
                                 placeholder="Description"
+                                onChange = {(e)=>setConnectionDescription(e.target.value)}
                             />
                         </label>
                         <label>
@@ -175,6 +185,7 @@ export const Connection = () => {
                                 type="date"
                                 name="lockerDescription"
                                 placeholder="Calendar Picker"
+                                onChange = {(e)=>setValidity(e.target.value)}
                             />
                         </label>
 

@@ -1,10 +1,6 @@
 import React, { useState,useEffect,useContext } from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-=======
 import { usercontext } from "../../usercontext";
-
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
 import Cookies from "js-cookie";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import "./page2.css";
@@ -14,11 +10,7 @@ export const CreateLocker = () => {
   const [lockerName, setLockerName] = useState("");
   const [description, setDescription] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-<<<<<<< HEAD
-=======
   const { curruser, setUser } = useContext(usercontext);
-
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -78,8 +70,6 @@ export const CreateLocker = () => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   }
-<<<<<<< HEAD
-=======
 
   useEffect(() => {
     if (!curruser) {
@@ -87,7 +77,7 @@ export const CreateLocker = () => {
         return;
     }
   },[]);
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
 
   return (
     <div>
@@ -113,31 +103,14 @@ export const CreateLocker = () => {
             </li>
           </ul>
 
-          {/* <ul className="navbarThirdLink">
-            <li>
-              <img src="" alt="User Icon" />
-            </li>
-            <li>
-              <a href="#" onClick={handleLogout}>Logout</a>
-            </li>
-          </ul> */}
-
-
           <ul className="navbarThirdLink">
             <li>
               <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
               {isOpen && (
                 <div className="dropdownContent">
-                  {/* <button onClick={() => navigate('/profile')}>Profile</button> */}
-<<<<<<< HEAD
-                  <button onClick={handleAdmin}>Admin</button>
-=======
-                 
-                 
                   <div className="currusername">{curruser.username}</div>
                   <div className="curruserdesc">{curruser.description}</div>
                   <button onClick={handleAdmin}>Settings</button>
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
                   <button onClick={handleLogout}>Logout</button>
                 </div>
               )}

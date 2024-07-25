@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import "./page6.css";
-import Cookies from "js-cookie";
-=======
 import React, {useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./page6.css";
@@ -11,16 +5,12 @@ import Cookies from "js-cookie";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 import { usercontext } from "../../usercontext";
 
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
-
 export const TargetUserView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = location.state ? location.state.user : null;
   const [allLockers, setLockers] = useState([]);
   const [error, setError] = useState(null);
-<<<<<<< HEAD
-=======
    const [isOpen, setIsOpen] = useState(false);
    const { curruser,setUser } = useContext(usercontext);
 
@@ -31,7 +21,6 @@ export const TargetUserView = () => {
         navigate('/');
         return;
     }},[]);
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
 
   const handleNewLockerClick = () => {
     navigate('/create-locker');
@@ -50,16 +39,9 @@ export const TargetUserView = () => {
   }
    
   const handleLogout = () => {
-<<<<<<< HEAD
-=======
-    // Clear cookies
     Cookies.remove('authToken');
-    // Clear local storage
     localStorage.removeItem('curruser');
-    // Set user context to null
     setUser(null);
-    // Redirect to login page
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
     navigate('/');
   }
   const toggleDropdown = () => {
@@ -80,11 +62,7 @@ export const TargetUserView = () => {
         console.log('Fetching lockers with params:', params.toString());
         console.log('User object:', user);
 
-<<<<<<< HEAD
-        const response = await fetch(`http://127.0.0.1:8000/get-lockers-user/?${params}`, {
-=======
         const response = await fetch(`http://localhost:8000/get-lockers-user/?${params}`, {
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,

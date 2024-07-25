@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import "./Admin.css";
-import Cookies from 'js-cookie';
-=======
 import React, { useState, useEffect, useContext } from "react";
 import { usercontext } from "../../usercontext";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import Cookies from "js-cookie";
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
 import { useNavigate } from "react-router-dom";
 import "./Admin.css";
 
@@ -25,47 +19,11 @@ export const Admin = () => {
       return;
     }
 
-<<<<<<< HEAD
-    const [connectionTypes, setConnectionTypes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-    // useEffect(() => {
-
-    //     const token = Cookies.get('authToken');
-    //     fetch('http://localhost:8000/get-connection-type/', {
-    //         method: 'GET',
-    //         headers: {
-    //             'Authorization': `Basic ${token}`,
-    //             'Content-Type': 'application/json'
-    //         }
-    //     })
-    //         .then(response => {
-    //             if (!response.ok) {
-    //                 throw new Error('Network response was not ok');
-    //             }
-    //             return response.json();
-    //         })
-    //         .then(data => {
-    //             setConnectionTypes(data.connection_types);
-    //             setLoading(false);
-    //         })
-    //         .catch(error => {
-    //             setError(error.message);
-    //             setLoading(false);
-    //         });
-    // }, []);
-
-
-
-    const handleDPIDirectory = () => {
-        navigate('/dpi-directory');
-    };
-=======
     fetchOtherConnections();
     fetchUserLockers();
   }, [curruser]);
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
 
   const fetchOtherConnections = async () => {
     try {
@@ -124,19 +82,11 @@ export const Admin = () => {
     navigate('/');
   }
 
-<<<<<<< HEAD
-    return (
-        <div>
-            <nav className="navbar">
-                <div className="wrap">
-                    <div className="navbarBrand"></div>
-                    <div className="description7"><u></u></div>
-                </div>
-=======
+
   const handleAdmin = () => {
     navigate('/admin');
   }
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
 
   const gotopage12createconnection = () => {
     navigate('/connection');
@@ -146,44 +96,6 @@ export const Admin = () => {
     setIsOpen(!isOpen);
   }
 
-<<<<<<< HEAD
-                    <ul className="navbarThirdLink">
-                        <li>
-                            <img src="" alt="User Icon" />
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleLogoutClick}>Logout</a>
-
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            <div className="page7description">
-                <div className="descriptionpage7">Existing Connections</div>
-                <button onClick={gotopage12createconnection} className="admin-btn">Create New Connection Type</button>
-            </div>
-            <div className="page8parent">
-                {/* <div className="page8connections">
-                    Btech 2020 applicant
-                </div> */}
-
-                {loading ? (
-                    <div>Loading...</div>
-                ) : error ? (
-                    <div>Error: {error}</div>
-                ) : connectionTypes.length > 0 ? (
-                    connectionTypes.map((connection, index) => (
-                        <div key={index} className="page8connections">
-                            {connection.name}
-                        </div>
-                    ))
-                ) : (
-                    <div>No connection types found.</div>
-                )}
-            </div>
-        </div>
-       
-=======
   return (
     <div>
       <nav className="navbar">
@@ -214,7 +126,7 @@ export const Admin = () => {
           </ul>
         </div>
       </nav>
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
 
       <button onClick={gotopage12createconnection} className="admin-btn">Create New Connection Type</button>
 

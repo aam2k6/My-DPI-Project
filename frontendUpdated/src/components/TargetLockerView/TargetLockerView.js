@@ -3,24 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import "./page7.css";
-<<<<<<< HEAD
-=======
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 
 export const TargetLockerView = () => {
   const navigate = useNavigate();
   const location = useLocation();
-<<<<<<< HEAD
-  const { curruser } = useContext(usercontext);
-  const [parentUser, setParentUser] = useState(location.state ? location.state.user : null);
-  const [resources, setResources] = useState([]);
-  const [locker, setLocker] = useState(location.state ? location.state.locker : null);
-  const [error, setError] = useState(null);
-
-=======
   const { curruser, setUser } = useContext(usercontext);
-
   const [parentUser, setParentUser] = useState(location.state ? location.state.user : null);
   const [resources, setResources] = useState([]);
   const [otherConnections, setOtherConnections] = useState([]); // State for other connections
@@ -28,7 +16,7 @@ export const TargetLockerView = () => {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -36,25 +24,17 @@ export const TargetLockerView = () => {
     }
     if (parentUser && locker) {
       fetchResources();
-<<<<<<< HEAD
-=======
       fetchOtherConnections(); // Fetch other connections when component mounts
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
     }
   }, [curruser, navigate, parentUser, locker]);
 
   const fetchResources = async () => {
-<<<<<<< HEAD
-    const token = Cookies.get('authToken');
-    try {
-      const response = await fetch(`http://localhost:8000/get-public-resources/${parentUser.user_id}/${locker.locker_id}/`, {
-=======
+
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name, username: parentUser.username });
 
       const response = await fetch(`http://localhost:8000/get-public-resources?${params}`, {
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -71,14 +51,13 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching resources");
     }
   };
-<<<<<<< HEAD
-=======
+
 
   const fetchOtherConnections = async () => {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ guest_username: parentUser.username, guest_locker_name: locker.name });
-      
+
       const response = await fetch(`http://localhost:8000/get-other-connections/?${params}`, {
         method: 'GET',
         headers: {
@@ -100,7 +79,7 @@ export const TargetLockerView = () => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   }
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
 
   const handleDPIDirectory = () => {
     navigate('/dpi-directory');
@@ -111,22 +90,7 @@ export const TargetLockerView = () => {
   };
 
   const handleClick = () => {
-<<<<<<< HEAD
-    navigate('/create-connection-terms');
-  };
-
-  const handleLogoutClick = () => {
-    console.log("Logout button clicked");
-    navigate('/');
-  };
-
-  const handleAdminClick = () => {
-    console.log("Admin button clicked");
-    navigate('/admin');
-  };
-
-=======
-    navigate('/make-connection',{state:{hostuser:parentUser,hostlocker:locker}});
+    navigate('/make-connection', { state: { hostuser: parentUser, hostlocker: locker } });
   };
 
   const handleResourceClick = (filePath) => {
@@ -145,7 +109,7 @@ export const TargetLockerView = () => {
     navigate('/admin');
   };
 
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
   return (
     <div>
       <nav className="navbar">
@@ -154,18 +118,13 @@ export const TargetLockerView = () => {
           <div className="description7">Owner:<u>{parentUser?.username}</u></div>
         </div>
         <div className="navbarLinks">
+
           <ul className="navbarFirstLink">
             <li><a href="#" onClick={handleDPIDirectory}>DPI Directory</a></li>
           </ul>
+
           <ul className="navbarSecondLink">
             <li><a href="#" onClick={handleHomeClick}>Home</a></li>
-<<<<<<< HEAD
-            <li><a href="#" onClick={handleAdminClick}>Admin</a></li>
-          </ul>
-          <ul className="navbarThirdLink">
-            <li><img src="" alt="User Icon" /></li>
-            <li><a href="#" onClick={handleLogoutClick}>Logout</a></li>
-=======
             <li><a href="#" ></a></li>
 
           </ul>
@@ -181,7 +140,6 @@ export const TargetLockerView = () => {
                 </div>
               )}
             </li>
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
           </ul>
         </div>
       </nav>
@@ -193,17 +151,18 @@ export const TargetLockerView = () => {
         <div className="notvisible">
           <div className="page7publicresources">
             <p>Public resources: Resources for all</p>
-<<<<<<< HEAD
-            {resources.map(resource => (
-              <div className="page7resource" key={resource.id}>
-                <u>{resource.name}</u>
-              </div>
-            ))}
-          </div>
+            {/* 
+  {
+    resources.map(resource => (
+      <div className="page7resource" key={resource.id}>
+        <u>{resource.name}</u>
+      </div>
+    ))
+  }
+          </div >
           <div className="page7publicresources">
-            <p>Other Resources</p>
-            {/* Additional resources can be displayed here */}
-=======
+            <p>Other Resources</p> */}
+
             {resources.length > 0 ? (
               resources.map(resource => (
                 <div className="page7resource" key={resource.id}>
@@ -232,9 +191,9 @@ export const TargetLockerView = () => {
             ) : (
               <p id="page7noconn">No other connections found.</p>
             )}
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
           </div>
-        </div>
+        </div >
         <div className="page7containerB">
           <p>My connections</p>
           <div className="page7myconnections">
@@ -250,7 +209,7 @@ export const TargetLockerView = () => {
             <div id="conntent">Valid Until:</div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };

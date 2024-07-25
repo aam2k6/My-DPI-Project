@@ -12,23 +12,20 @@ export const UploadResource = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resourceName, setResourceName] = useState("");
   const [document, setDocument] = useState(null);
-<<<<<<< HEAD
-  const [visibility, setVisibility] = useState("Public"); // Default value set to Public
-  const navigate = useNavigate();
-
-=======
   const [isOpen, setIsOpen] = useState(false);
-
   const [visibility, setVisibility] = useState("public"); // Default value set to Public
   const navigate = useNavigate();
 
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
+
+
   useEffect(() => {
     if (!curruser) {
       navigate('/');
       return;
     }
   }, [curruser, navigate]);
+
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -63,11 +60,6 @@ export const UploadResource = () => {
       alert("An error occurred while uploading the resource");
     });
   };
-<<<<<<< HEAD
-
-=======
-
-
 
 
   const handleDPIDirectory = () => {
@@ -79,13 +71,9 @@ export const UploadResource = () => {
   };
 
   const handleLogout = () => {
-    // Clear cookies
     Cookies.remove('authToken');
-    // Clear local storage
     localStorage.removeItem('curruser');
-    // Set user context to null
     setUser(null);
-    // Redirect to login page
     navigate('/');
   }
   const handleClick = (locker) => {
@@ -100,9 +88,6 @@ export const UploadResource = () => {
     setIsOpen(!isOpen);
   }
 
-
-
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
   return (
     <div>
       <nav className="navbar">
@@ -112,17 +97,6 @@ export const UploadResource = () => {
         </div>
         <div className="navbarLinks">
           <ul className="navbarFirstLink">
-<<<<<<< HEAD
-            <li><a href="#" onClick={() => navigate('/dpi-directory')}>DPI Directory</a></li>
-          </ul>
-          <ul className="navbarSecondLink">
-            <li><a href="#" onClick={() => navigate('/home')}>Home</a></li>
-            <li><a href="#" onClick={() => navigate('/admin')}>Admin</a></li>
-          </ul>
-          <ul className="navbarThirdLink">
-            <li><a href="#" onClick={() => navigate('/')}>Logout</a></li>
-          </ul>
-=======
             <li><a href="#" onClick={handleDPIDirectory}>DPI Directory</a></li>
           </ul>
           <ul className="navbarSecondLink">
@@ -142,7 +116,6 @@ export const UploadResource = () => {
               )}
               </li>
               </ul>
->>>>>>> 2d773298c9328c24beab6cada3bc2c1e9d296fd4
         </div>
       </nav>
 

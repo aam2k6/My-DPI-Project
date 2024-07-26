@@ -667,10 +667,10 @@ def show_terms(request):
         
     """
     if request.method == 'GET':
-        username = request.user
+       
+        username = request.data["username"]
         locker_name = request.data["locker_name"]
         connection_name = request.data["connection_name"]
-        
         try:
             if username:
                 try:
@@ -685,15 +685,15 @@ def show_terms(request):
                     return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
             locker = Locker.objects.filter(name = locker_name, user_id = user.user_id)
-        
+            
             if locker:
-                conn = Connection.objects.filter(connection_name = connection_name, guest_user_id = user.user_id, guest_locker_id=locker[0].locker_id)
-               
+                conn = Connection.objects.filter(connection_name = connection_name) #Assuming Unique Connection Name
+                
             else:
                 conn = []
 
             if conn and locker:
-                connection_types = ConnectionType.objects.filter(owner_user=user.user_id, owner_locker_id = locker[0].locker_id, connection_type_id = conn[0].connection_type_id_id)
+                connection_types = ConnectionType.objects.filter(connection_type_id = conn[0].connection_type_id_id)
             else:
                 connection_types = []
             
@@ -704,7 +704,6 @@ def show_terms(request):
 
             serializer = ConnectionTermsSerializer(terms, many=True)
 
-            
             filtered_data = {}
             filtered_data["connectionName"] = conn[0].connection_name
             filtered_data["connectionDescription"] = conn[0].connection_description

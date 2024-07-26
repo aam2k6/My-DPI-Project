@@ -439,7 +439,7 @@ def get_other_connection_types(request):
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def get_connectiontype_by_user_by_locker(request):
+def get_connection_type_by_user_by_locker(request):
     """
     Retrieve connection types by locker and user.
 
@@ -510,16 +510,16 @@ def create_new_connection(request):
     - request: HttpRequest object containing metadata about the request.
 
     Form Parameters:
-    - connection_name: The name of the connection.
-    - connection_type_id: The ID of the connection type.
-    - host_locker: The name of the source locker.
-    - guest_locker: The name of the target locker.
-    - host_user: The username of the source user.
-    - guest_user: The username of the target user.
-    - connection_description: The description of the connection.
-    - requester_consent: Boolean indicating if the requester has consented.
-    - revoke_host: Boolean indicating if the source can revoke.
-    - revoke_guest: Boolean indicating if the target can revoke.
+    - connection_name: Name of the connection. -- DONE
+    - connection_type_name: Name of the connection type. -- DONE
+    - host_locker_name: Name of the source locker.
+    - guest_locker_name: Name of the target locker.
+    - host_user_username: Username of the source user.
+    - guest_user_username: Username of the target user.
+    - connection_description: Description of the connection.
+    - requester_consent <Optional> : Boolean indicating if the requester has consented.
+    - revoke_host <Optional> : Boolean indicating if the source can revoke.
+    - revoke_guest <Optional> : Boolean indicating if the target can revoke.
 
     Returns:
     - JsonResponse: A JSON object containing the created connection or an error message.
@@ -533,65 +533,47 @@ def create_new_connection(request):
         if not request.user.is_authenticated:
             return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
-        data = request.POST.copy()
+        request_connection_type_name = request.POST.get('connection_type_name')
+        request_connection_name = request.POST.get('connection_name')
+        request_connection_description = request.POST.get('connection_description', '')
+        host_locker_name = request.POST.get('host_locker_name')
+        guest_locker_name = request.POST.get('guest_locker_name')
+        host_user_username = request.POST.get('host_user_username')
+        guest_user_username = request.POST.get('guest_user_username')
 
-        connection_type_id = data.get('connection_type_id')
-        host_locker_name = data.get('host_locker')
-        guest_locker_name = data.get('guest_locker')
-        host_user_username = data.get('host_user')
-        guest_user_username = data.get('guest_user')
-
-        if not all([connection_type_id, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
+        if not all([request_connection_type_name, host_locker_name, guest_locker_name, host_user_username,
+                    guest_user_username]):
             return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
         try:
-            connection_type = ConnectionType.objects.get(pk=connection_type_id)
             host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            connection_type = ConnectionType.objects.get(connection_type_name=request_connection_type_name,
+                                                         owner_locker=host_locker, owner_user=host_user)
             guest_user = CustomUser.objects.get(username=guest_user_username)
-
-            host_locker = Locker.objects.filter(name=host_locker_name, user=host_user)
-            guest_locker = Locker.objects.filter(name=guest_locker_name, user=guest_user)
-
-            if host_locker.count() != 1:
-                return JsonResponse({'success': False,
-                                     'error': 'Host locker not found or multiple lockers found with the same name for the host user'},
-                                    status=400)
-            if guest_locker.count() != 1:
-                return JsonResponse({'success': False,
-                                     'error': 'Guest locker not found or multiple lockers found with the same name for the guest user'},
-                                    status=400)
-
-            host_locker = host_locker.first()
-            guest_locker = guest_locker.first()
-
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
         except ConnectionType.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Connection type not found'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
+        except Locker.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
         except CustomUser.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
 
-        connection = Connection(connection_name=data.get('connection_name'), connection_type_id=connection_type,
-            host_locker=host_locker, guest_locker=guest_locker, host_user=host_user, guest_user=guest_user,
-            connection_description=data.get('connection_description', ''),
-            requester_consent=data.get('requester_consent', 'false').lower() == 'true',
-            revoke_host=data.get('revoke_host', 'false').lower() == 'true',
-            revoke_guest=data.get('revoke_guest', 'false').lower() == 'true')
+        # Get terms of given connection type mentioned above as we need to now copy it into Connection table.
+        terms = ConnectionTerms.objects.filter(conn_type=connection_type, modality='obligatory')
+        terms_value = {}
+        for term in terms:
+            terms_value[term.data_element_name] = '; None'
 
         try:
+            connection = Connection(connection_name=request_connection_name, connection_type_id=connection_type,
+                                host_locker=host_locker, guest_locker=guest_locker, host_user=host_user,
+                                guest_user=guest_user, connection_description=request_connection_description,
+                                requester_consent=False, revoke_host=False, revoke_guest=False, terms_value=terms_value)
             connection.save()
-            return JsonResponse({'success': True,
-                                 'connection': {'id': connection.connection_id, 'name': connection.connection_name,
-                                     'description': connection.connection_description,
-                                     'host_user': connection.host_user.username,
-                                     'guest_user': connection.guest_user.username,
-                                     'host_locker': connection.host_locker.name,
-                                     'guest_locker': connection.guest_locker.name,
-                                     'requester_consent': connection.requester_consent,
-                                     'revoke_host': connection.revoke_host, 'revoke_guest': connection.revoke_guest,
-                                     'created_time': connection.created_time,
-                                     'validity_time': connection.validity_time}}, status=201)
+            return JsonResponse({'success': True, 'id': connection.connection_id} , status=201)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
-
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 

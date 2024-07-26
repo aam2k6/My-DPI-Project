@@ -87,8 +87,8 @@ class Connection(models.Model):
     revoke_host = models.BooleanField(default=False)
     revoke_guest = models.BooleanField(default=False)
     is_frozen = models.BooleanField(default=False)
-
-
+    resources = models.JSONField(default=dict)
+    terms_value = models.JSONField(default=dict)
     validity_time = models.DateTimeField(default=default_validity_time)
     created_time = models.DateTimeField(auto_now_add=True)
 

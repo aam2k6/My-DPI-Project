@@ -28,7 +28,10 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                path('create-connection-type-and-terms/', views.create_connection_type_and_connection_terms,
                     name='create-connection-type-and-terms'),
                path('freeze_locker/', views.freeze_locker, name='freeze_locker'),
-               path('freeze_connection/', views.freeze_connection, name='freeze_connection')
+               path('freeze_connection/', views.freeze_connection, name='freeze_connection'),
+               path('get-guest-user-connection/', views.get_guest_user_connection, name='get_guest_user_connection'),
+               path('update-connection-terms/', views.update_connection_terms, name='update_connection_terms'),
+               path('get-terms-status/', views.get_terms_status, name='get_terms_status'),
                ]
 
 if settings.DEBUG:

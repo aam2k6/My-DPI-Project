@@ -1280,3 +1280,27 @@ def create_connection_type_and_connection_terms(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_guest_user_connection(request):
+    pass
+
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def update_connection_terms(request):
+    pass
+
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_terms_status(request):
+    pass

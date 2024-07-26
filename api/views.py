@@ -633,6 +633,7 @@ def show_terms(request):
         - username: The username of the user whose terms are to be fetched.
         - locker_name: The locker name of the user to be fetched
         - term_id: Optional. The ID of the specific term to be fetched.
+        - connection_name: Name of the active connection for which terms are to be fetched
 
     Returns:
         - JsonResponse: A JSON object containing a list of terms or an error message.
@@ -643,12 +644,33 @@ def show_terms(request):
         - 404: Specified user not found or no terms found.
         - 405: Request method not allowed (if not GET).
         - 400: Bad request (missing parameters or other errors).
+
+    {
+            "connectionName": "Alumni Networks",
+            "connectionDescription": "Connection type that establishes communication between alumni.",
+            "lockerName": "Transcripts",
+            "obligations":
+            [{
+                "labelName": "Graduation Batch",
+                "typeOfAction": "Add Value",
+                "typeOfSharing": "Share",
+                "labelDescription": "It is obligatory to submit your graduation batch in order to accept the terms of this connection",
+                "hostPermissions": ["Re-share", "Download"]
+            }],
+            "permissions":
+            {
+                "canShareMoreData": true,
+                "canDownloadData": false
+            },
+            "validity": "2024-12-31"
+        }
+        
     """
     if request.method == 'GET':
         username = request.user
         locker_name = request.data["locker_name"]
-        terms_id = request.GET.get('terms_id')
-        print(locker_name)
+        connection_name = request.data["connection_name"]
+        
         try:
             if username:
                 try:
@@ -661,27 +683,55 @@ def show_terms(request):
                     user = request.user
                 else:
                     return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
-                
+
             locker = Locker.objects.filter(name = locker_name, user_id = user.user_id)
-            
-           
+        
             if locker:
-                connection_types = ConnectionType.objects.filter(owner_user=user.user_id, owner_locker_id = locker[0].locker_id)
+                conn = Connection.objects.filter(connection_name = connection_name, guest_user_id = user.user_id, guest_locker_id=locker[0].locker_id)
+               
+            else:
+                conn = []
+
+            if conn and locker:
+                connection_types = ConnectionType.objects.filter(owner_user=user.user_id, owner_locker_id = locker[0].locker_id, connection_type_id = conn[0].connection_type_id_id)
             else:
                 connection_types = []
-
-            if terms_id:
-                terms = ConnectionTerms.objects.filter(conn_type__in=connection_types, terms_id=terms_id)
-            else:
-                terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
+            
+            terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
 
             if not terms.exists():
                 return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
 
             serializer = ConnectionTermsSerializer(terms, many=True)
-            filtered_data = [{'description': term['description'], 'modality': term['modality'],
-                'data_element_name': term['data_element_name'], 'data_type': term['data_type'],
-                'sharing_type': term['sharing_type']} for term in serializer.data]
+
+            
+            filtered_data = {}
+            filtered_data["connectionName"] = conn[0].connection_name
+            filtered_data["connectionDescription"] = conn[0].connection_description
+            filtered_data["lockerName"] = locker_name
+
+            obligations = []
+            perm = {"canShareMoreData":False,
+                    "canDownloadData":False}
+
+            for term in serializer.data:
+                if(term["modality"] == "obligatory"):
+                    d = {}
+                    d["labelName"] = term["data_element_name"]
+                    d["typeOfAction"] = term["data_type"]
+                    d["typeOfSharing"] = term["sharing_type"]
+                    d["labelDescription"] = term['description']
+                    d["hostPermissions"] = term["host_permissions"]
+                    obligations.append(d)
+                else:
+                    if(term["description"] == "They can share more data."):
+                        perm["canShareMoreData"] = True
+                    if(term["description"] == "They can download data."):
+                        perm["canDownloadData"] = True
+
+            filtered_data["obligations"] = obligations
+            filtered_data["permissions"] = perm
+
             return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
 
         except CustomUser.DoesNotExist:

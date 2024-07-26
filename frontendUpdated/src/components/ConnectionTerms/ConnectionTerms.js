@@ -60,6 +60,7 @@ export const ConnectionTerms = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        const token = Cookies.get('authToken');
 
         const connectionTermsData = {
             ...location.state.connectionData,
@@ -72,7 +73,33 @@ export const ConnectionTerms = () => {
 
         console.log(connectionTermsData);
 
-        navigate("/admin");
+
+
+
+        fetch('http://localhost:8000/create-connection-type-and-terms/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${token}`, // Include your authentication token
+            },
+            body: JSON.stringify(connectionTermsData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(data.connection_type_message, data.connection_terms_message);
+                navigate("/admin");
+            } else {
+                console.error("Error:", data.error);
+                setError(data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            setError("An error occurred while submitting the data.");
+        });
+
+        
     };
 
     const handleHostPermissionsChange = (event) => {

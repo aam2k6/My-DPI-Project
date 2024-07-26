@@ -58,7 +58,7 @@ export const TargetLockerView = () => {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ guest_username: parentUser.username, guest_locker_name: locker.name });
 
-      const response = await fetch(`http://localhost:8000/get-other-connections/?${params}`, {
+      const response = await fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,

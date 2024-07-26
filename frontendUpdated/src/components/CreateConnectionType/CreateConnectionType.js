@@ -54,7 +54,7 @@ export const CreateConnectionType = () => {
         if (parentUser && locker) {
             const token = Cookies.get('authToken');
             const params = new URLSearchParams({ guest_locker_name: locker.name, guest_username: parentUser.username });
-            fetch(`http://localhost:8000/get-other-connections/?${params}`, {
+            fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Basic ${token}`,

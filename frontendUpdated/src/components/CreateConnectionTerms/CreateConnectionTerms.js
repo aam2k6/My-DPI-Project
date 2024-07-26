@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import { usercontext } from "../../usercontext";
+// import res from "./object";
 
 export const CreateConnectionTerms = () => {
   const navigate = useNavigate();
@@ -13,6 +14,41 @@ export const CreateConnectionTerms = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
   const [message, setMessage] = useState("");
+
+  let res = {
+    connectionDescription: "Connection for education documents",
+    connectionName: "connection1",
+    lockerName: "Education",
+    obligations: [
+        {
+            labelName: "Admission No",
+            typeOfAction: "text",
+            typeOfSharing: "share",
+            hostPermissions: [
+                "reshare",
+                "download"
+            ],
+            labelDescription: "Admission id for mtech admission"
+        },
+        {
+            labelName: "Gate Score Card",
+            typeOfAction: "file",
+            typeOfSharing: "transfer",
+            hostPermissions: [
+                "download"
+            ],
+            labelDescription: "Gate score card for mtechs"
+        }
+    ],
+    permissions: {
+        canShareMoreData: true,
+        canDownloadData: true
+    }
+}
+
+// export default res;
+
+
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -56,36 +92,44 @@ const toggleDropdown = () => {
 const handleIagreebutton = async () => {
 
   const token = Cookies.get('authToken');
-  const consent = true; // Consent is given
+  const consent = true; 
   const id = 1;
   const data = new FormData();
   data.append('connection_id', id);
   data.append('consent', consent);
-
-  // fetch('http://localhost:8000/give_consent/', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Authorization': `Basic ${token}`, // Add token to the headers
-  //   },
-  //   body: data,
-  // })
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     if (data.success) {
-  //       console.log(data.message);
-  //       setIagree("1");
-  //       setMessage(data.message);
-  //     } else {
-  //       console.error("Error:", data.error);
-  //       setMessage(data.error);
-  //     }
-  //   })
-  //   .catch(error => {
-  //     console.error("Error:", error);
-  //     alert("An error occurred while agreeing to the terms and conditions");
-  //   });
+};
 
 
+const renderObligations = () => {
+  if (res && res.obligations) {
+    return res.obligations.map((obligation, index) => (
+      <div key={index}>
+        <ul>
+          <li>{obligation.typeOfSharing}  {" "}  {obligation.labelName}</li>
+        </ul>
+        {/* <h4>{obligation.labelName}</h4>
+        <p>{obligation.labelDescription}</p>
+        <p>Type of Action: {obligation.typeOfAction}</p>
+        <p>Type of Sharing: {obligation.typeOfSharing}</p>
+        <p>Permissions: {obligation.hostPermissions.join(', ')}</p> */}
+      </div>
+    ));
+  } else {
+    return <p>No obligations available.</p>;
+  }
+};
+
+const renderPermissions = () => {
+  const { canShareMoreData, canDownloadData } = res.permissions;
+  return (
+    <div className="permissions">
+      <ul>
+      <li>{canShareMoreData && <div>You can share more data.</div>}</li>
+      <li>{canDownloadData && <div>You can download data.</div>}</li>
+      </ul>
+      
+    </div>
+  );
 };
 
 return (
@@ -146,18 +190,19 @@ return (
 
       <div className="page13subparent">
         <div className="page13headterms">Your Obligations </div>
-        <div className="page13lowerterms">1) Share Eng.marks card
-          <br />  2) Share Gate score </div>
+        <div className="page13lowerterms">
+        {renderObligations()}
+        </div>
 
 
 
         <div className="page13headterms">Your Rights </div>
-        <div className="page13lowerterms">1) Can share any other files</div>
+        <div className="page13lowerterms">{renderPermissions()}</div>
 
 
 
-        <div className="page13headterms">Your Prohibitions </div>
-        <div className="page13lowerterms">1) Can't Unilateraly close the connection</div>
+        {/* <div className="page13headterms">Your Prohibitions </div>
+        <div className="page13lowerterms">1) Can't Unilateraly close the connection</div> */}
 
       </div>
     </div>

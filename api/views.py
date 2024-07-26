@@ -439,7 +439,7 @@ def get_other_connection_types(request):
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def get_connectiontype_by_user_by_locker(request):
+def get_connection_type_by_user_by_locker(request):
     """
     Retrieve connection types by locker and user.
 

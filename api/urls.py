@@ -11,7 +11,7 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                path('get-connection-type/', views.get_connection_type, name='get-connection-type'),
                path('get-lockers-user/', views.get_lockers_user, name='get-lockers-user'),
                path('get-other-connection-types/', views.get_other_connection_types, name='get-other-connection-types'),
-               path('connection_types/', views.get_connectiontype_by_user_by_locker, name='get_connection_types'),
+               path('connection_types/', views.get_connection_type_by_user_by_locker, name='get_connection_types'),
                path('create-new-connection/', views.create_new_connection, name='create_new_connection'),
                path('login-user/', views.login_view, name='login'),
                path('show_terms/', show_terms, name='show_terms'),

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
+    'django_crontab',
     'corsheaders'
 ]
 
@@ -162,3 +163,7 @@ AUTHENTICATION_BACKENDS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CRONJOBS = [
+    ('*/30 * * * *', 'api.tasks.check_connections_valid_until'),
+]

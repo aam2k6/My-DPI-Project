@@ -4,6 +4,7 @@ import json
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -1184,13 +1185,15 @@ def create_connection_type_and_connection_terms(request):
     except json.JSONDecodeError:
         return JsonResponse(data={'error': 'Invalid JSON'}, status=400)
 
-    connection_type_name = data.get('connection_type_name')
-    connection_description = data.get('connection_description')
-    owner_locker_name = data.get('owner_locker')
-    validity_time_str = data.get('validity_time')
-    connection_terms = data.get('connection_terms')
+    connection_type_name = data.get('connectionName')
+    connection_description = data.get('connectionDescription')
+    owner_locker_name = data.get('lockerName')
+    validity_time_str = data.get('validity')
 
-    if not all([connection_type_name, owner_locker_name, validity_time_str]):
+    connection_terms_obligations = data.get('obligations')
+    connection_terms_permissions = data.get('permissions')
+
+    if not all([connection_type_name, owner_locker_name, validity_time_str, connection_description]):
         return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
     try:
@@ -1208,7 +1211,7 @@ def create_connection_type_and_connection_terms(request):
                                              owner_locker=owner_locker, validity_time=validity_time)
         new_connection_type.save()
 
-        for obligation in connection_terms['obligations']:
+        for obligation in connection_terms_obligations:
             ConnectionTerms.objects.create(
                 conn_type=new_connection_type,
                 modality='obligatory',
@@ -1219,9 +1222,8 @@ def create_connection_type_and_connection_terms(request):
                 host_permissions=obligation['host_permissions']
             )
 
-        permissions = connection_terms['permissions']
-        can_share_more_data = permissions['can_share_more_data']
-        can_download_data = permissions['can_download_data']
+        can_share_more_data = connection_terms_permissions['can_share_more_data']
+        can_download_data = connection_terms_permissions['can_download_data']
 
         if can_share_more_data:
             ConnectionTerms.objects.create(conn_type=new_connection_type,

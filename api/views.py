@@ -722,7 +722,6 @@ def show_terms(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -735,7 +734,12 @@ def give_consent(request):
     - request: HttpRequest object containing metadata about the request.
 
     Form Parameters:
-    - connection_id: The ID of the connection.
+    - connection_name: The name of the connection.
+    - connection_type_name: The name of the connection type.
+    - guest_username: The username of the guest user.
+    - guest_lockername: The name of the guest locker.
+    - host_username: The username of the host user.
+    - host_lockername: The name of the host locker.
     - consent: Boolean indicating the consent status.
 
     Returns:
@@ -744,30 +748,63 @@ def give_consent(request):
     Response Codes:
     - 200: Successful update of the consent status.
     - 400: Bad request (if data is invalid or connection not found).
+    - 401: Request User not authenticated.
+    - 403: Permission denied.
+    - 404: Specified connection or user or locker not found.
     - 405: Request method not allowed (if not POST).
     """
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-    if not request.user.is_authenticated:
-        return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
-
-    connection_id = request.POST.get('connection_id')
+    connection_name = request.POST.get('connection_name')
+    connection_type_name = request.POST.get('connection_type_name')
+    guest_username = request.POST.get('guest_username')
+    guest_lockername = request.POST.get('guest_lockername')
+    host_username = request.POST.get('host_username')
+    host_lockername = request.POST.get('host_lockername')
     consent = request.POST.get('consent')
 
-    if connection_id is None or consent is None:
-        return JsonResponse({'success': False, 'error': 'Connection ID and consent status are required'}, status=400)
+    if None in [connection_name, connection_type_name, guest_username, guest_lockername, host_username, host_lockername, consent]:
+        return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
     try:
-        connection = Connection.objects.get(connection_id=connection_id)
+        guest_user = CustomUser.objects.get(username=guest_username)
+        guest_locker = Locker.objects.get(name=guest_lockername, user=guest_user)
+        host_user = CustomUser.objects.get(username=host_username)
+        host_locker = Locker.objects.get(name=host_lockername, user=host_user)
+
+        # Fetch the connection type
+        try:
+            connection_type = ConnectionType.objects.get(connection_type_name__iexact=connection_type_name)
+        except ConnectionType.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection type not found: {}'.format(connection_type_name)}, status=404)
+
+        # Fetch the connection using the connection name, connection type, guest user, and host user
+        try:
+            connection = Connection.objects.get(
+                connection_name=connection_name,
+                connection_type_id=connection_type,
+                guest_user=guest_user,
+                host_user=host_user
+            )
+        except Connection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
+
+        # Check if the requesting user is the guest user
+        if request.user != guest_user:
+            return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+        # Update the consent status
         connection.requester_consent = consent.lower() in ['true', '1', 't', 'y', 'yes']
         connection.save()
-        return JsonResponse({'success': True, 'message': 'Consent status updated successfully'}, status=200)
-    except Connection.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Connection not found'}, status=400)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
+        return JsonResponse({'success': True, 'message': 'Consent status updated successfully'}, status=200)
+    except CustomUser.DoesNotExist as e:
+        return JsonResponse({'success': False, 'error': 'User not found: {}'.format(str(e))}, status=404)
+    except Locker.DoesNotExist as e:
+        return JsonResponse({'success': False, 'error': 'Locker not found: {}'.format(str(e))}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': 'An error occurred: {}'.format(str(e))}, status=400)
 
 @csrf_exempt
 @api_view(['POST'])
@@ -780,18 +817,25 @@ def revoke_consent(request):
     Parameters:
     - request: HttpRequest object containing metadata about the request.
 
-    Body Parameters:
-    - connection_id: The ID of the connection.
-    - revoke_host: Boolean indicating if the source user is revoking consent.
-    - revoke_guest: Boolean indicating if the target user is revoking consent.
+    Form Parameters:
+    - connection_name: The name of the connection.
+    - connection_type_name: The name of the connection type.
+    - guest_username: The username of the guest user.
+    - guest_lockername: The name of the guest locker.
+    - host_username: The username of the host user.
+    - host_lockername: The name of the host locker.
+    - revoke_host: Boolean indicating if the host user is revoking consent.
+    - revoke_guest: Boolean indicating if the guest user is revoking consent.
 
     Returns:
-    - JsonResponse: A JSON object indicating the success or failure of the operation.
+    - JsonResponse: A JSON object containing a success message or an error message.
 
     Response Codes:
     - 200: Successful revocation of consent.
-    - 400: Bad request (if data is invalid).
-    - 404: Connection not found.
+    - 400: Bad request (if data is invalid or connection not found).
+    - 401: User not authenticated.
+    - 403: Permission denied.
+    - 404: Connection or user or locker not found.
     - 405: Request method not allowed (if not POST).
     """
     if request.method != 'POST':
@@ -800,32 +844,68 @@ def revoke_consent(request):
     if not request.user.is_authenticated:
         return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
+    # Extract form data
+    connection_name = request.POST.get('connection_name')
+    connection_type_name = request.POST.get('connection_type_name')
+    guest_username = request.POST.get('guest_username')
+    guest_lockername = request.POST.get('guest_lockername')
+    host_username = request.POST.get('host_username')
+    host_lockername = request.POST.get('host_lockername')
+    revoke_host = request.POST.get('revoke_host', 'false').lower() in ['true', '1', 't', 'y', 'yes']
+    revoke_guest = request.POST.get('revoke_guest', 'false').lower() in ['true', '1', 't', 'y', 'yes']
+
+    # Check if all required fields are present
+    if None in [connection_name, connection_type_name, guest_username, guest_lockername, host_username, host_lockername]:
+        return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
     try:
-        connection_id = request.POST.get('connection_id')
-        revoke_host = request.POST.get('revoke_host', 'false').lower() == 'true'
-        revoke_guest = request.POST.get('revoke_guest', 'false').lower() == 'true'
+        # Retrieve the guest user and guest locker
+        guest_user = CustomUser.objects.get(username=guest_username)
+        guest_locker = Locker.objects.get(name=guest_lockername, user=guest_user)
+        
+        # Retrieve the host user and host locker
+        host_user = CustomUser.objects.get(username=host_username)
+        host_locker = Locker.objects.get(name=host_lockername, user=host_user)
 
-        if not connection_id:
-            return JsonResponse({'success': False, 'error': 'Connection ID is required'}, status=400)
-
+        # Retrieve the connection type
         try:
-            connection = Connection.objects.get(connection_id=connection_id)
-        except ObjectDoesNotExist:
+            connection_type = ConnectionType.objects.get(connection_type_name__iexact=connection_type_name)
+        except ConnectionType.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection type not found: {}'.format(connection_type_name)}, status=404)
+
+        # Retrieve the connection
+        try:
+            connection = Connection.objects.get(
+                connection_name=connection_name,
+                connection_type_id=connection_type,
+                guest_user=guest_user,
+                host_user=host_user
+            )
+        except Connection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
 
+        # Check if the requesting user is either the host or guest user
+        if request.user != host_user and request.user != guest_user:
+            return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+        # Update the revocation status based on the provided flags
         if revoke_host:
             connection.revoke_host = True
 
         if revoke_guest:
             connection.revoke_guest = True
 
+        # Save the connection
         connection.save()
 
         return JsonResponse({'success': True, 'message': 'Consent revoked successfully'}, status=200)
 
+    except CustomUser.DoesNotExist as e:
+        return JsonResponse({'success': False, 'error': 'User not found: {}'.format(str(e))}, status=404)
+    except Locker.DoesNotExist as e:
+        return JsonResponse({'success': False, 'error': 'Locker not found: {}'.format(str(e))}, status=404)
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
-
+        return JsonResponse({'success': False, 'error': 'An error occurred: {}'.format(str(e))}, status=400)
 
 @csrf_exempt
 @api_view(['GET'])
@@ -1057,52 +1137,53 @@ def update_locker(request, locker_id):
 
 @csrf_exempt
 @api_view(['PUT'])
-@permission_classes([AllowAny])  # Allow access without authentication
+@permission_classes([IsAuthenticated])
 def freeze_locker(request):
     """
-    Freeze lockers.
+    Freeze a locker.
 
     Parameters:
     - request: HttpRequest object containing metadata about the request.
 
     Request Data (PUT):
+    - username: The username of the user.
     - locker_name: The name of the locker.
 
     Returns:
     - JsonResponse: A JSON object indicating success or failure.
 
     Response Codes:
-    - 200: Successful freezing of the lockers.
-    - 404: Specified locker not found.
+    - 200: Successful freezing of the locker.
+    - 404: Specified user or locker not found.
     - 400: Bad request (missing parameters).
     """
     if request.method == 'PUT':
+        username = request.data.get('username')
         locker_name = request.data.get('locker_name')
 
-        if not locker_name:
-            return JsonResponse({'success': False, 'error': 'Locker name is required'}, status=400)
+        if not username or not locker_name:
+            return JsonResponse({'success': False, 'error': 'Username and locker name are required'}, status=400)
 
         try:
-            lockers = Locker.objects.filter(name=locker_name)
+            # Check if the requesting user is a sys_admin or moderator
+            requesting_user = request.user
+            if requesting_user.user_type not in [CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+                return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
 
-            if not lockers.exists():
-                return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
+            user = CustomUser.objects.get(username=username)
+            locker = Locker.objects.get(name=locker_name, user=user)
 
-            frozen_lockers = 0
-            already_frozen_lockers = 0
+            if locker.is_frozen:
+                return JsonResponse({'success': False, 'message': 'This locker is already frozen'}, status=200)
+            else:
+                locker.is_frozen = True
+                locker.save()
+                return JsonResponse({'success': True, 'message': 'Locker has been frozen successfully'}, status=200)
 
-            for locker in lockers:
-                if locker.is_frozen:
-                    already_frozen_lockers += 1
-                else:
-                    locker.is_frozen = True
-                    locker.save()
-                    frozen_lockers += 1
-
-            message = f"Lockers frozen: {frozen_lockers}. Already frozen: {already_frozen_lockers}."
-
-            return JsonResponse({'success': True, 'message': message}, status=200)
-
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
@@ -1111,56 +1192,59 @@ def freeze_locker(request):
 
 @csrf_exempt
 @api_view(['PUT'])
-@permission_classes([AllowAny])  # Allow access without authentication
+@permission_classes([IsAuthenticated]) 
 def freeze_connection(request):
     """
-    Freeze connections.
+    Freeze a connection.
 
     Parameters:
     - request: HttpRequest object containing metadata about the request.
 
     Request Data (PUT):
-    - connection_name: The name of the connection.
+    - username: The username of the user.
+    - connection_name: The name of the connection to freeze.
 
     Returns:
     - JsonResponse: A JSON object indicating success or failure.
 
     Response Codes:
-    - 200: Successful freezing of the connections.
-    - 404: Specified connection not found.
+    - 200: Successful freezing of the connection.
+    - 404: Specified user or connection not found.
     - 400: Bad request (missing parameters).
+    - 403: Permission denied.
     """
     if request.method == 'PUT':
+        username = request.data.get('username')
         connection_name = request.data.get('connection_name')
 
-        if not connection_name:
-            return JsonResponse({'success': False, 'error': 'Connection name is required'}, status=400)
+        if not username or not connection_name:
+            return JsonResponse({'success': False, 'error': 'Username and connection name are required'}, status=400)
 
         try:
-            connections = Connection.objects.filter(connection_name=connection_name)
+            # Check if the requesting user is a sys_admin or moderator
+            requesting_user = request.user
+            if requesting_user.user_type not in [CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+                return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
 
-            if not connections.exists():
-                return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
+            user = CustomUser.objects.get(username=username)
+            connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
 
-            frozen_count = 0
-            already_frozen_count = 0
+            if connection.is_frozen:
+                return JsonResponse({'success': False, 'message': 'This connection is already frozen'}, status=200)
+            else:
+                connection.is_frozen = True
+                connection.save()
+                return JsonResponse({'success': True, 'message': 'Connection has been frozen successfully'}, status=200)
 
-            for connection in connections:
-                if connection.is_frozen:
-                    already_frozen_count += 1
-                else:
-                    connection.is_frozen = True
-                    connection.save()
-                    frozen_count += 1
-
-            message = f'{frozen_count} connections frozen, {already_frozen_count} already frozen.'
-
-            return JsonResponse({'success': True, 'message': message}, status=200)
-
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Connection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection not found for the specified user'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 
 @csrf_exempt

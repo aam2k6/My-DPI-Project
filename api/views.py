@@ -1149,28 +1149,25 @@ def create_connection_type_and_connection_terms(request):
         - 405: Request method not allowed (if not POST).
 
     Sample Data - Connection Terms :
-    {
-        "connection_type_name": "Alumni Networks",
-        "connection_description": "Connection type that establishes communication between alumni.",
-        "owner_locker": "Transcripts",
-        "connection_terms":
         {
+            "connectionName": "Alumni Networks",
+            "connectionDescription": "Connection type that establishes communication between alumni.",
+            "lockerName": "Transcripts",
             "obligations":
             [{
-                "label": "Graduation Batch",
-                "type_of_action": "Add Value",
-                "type_of_sharing": "Share",
-                "description": "It is obligatory to submit your graduation batch in order to accept the terms of this connection",
-                "host_permissions": ["Re-share", "Download"]
+                "labelName": "Graduation Batch",
+                "typeOfAction": "Add Value",
+                "typeOfSharing": "Share",
+                "labelDescription": "It is obligatory to submit your graduation batch in order to accept the terms of this connection",
+                "hostPermissions": ["Re-share", "Download"]
             }],
             "permissions":
             {
-                "can_share_more_data": true,
-                "can_download_data": false
-            }
-        },
-        "validity_time": "2024-12-31T23:59:59Z"
-    }
+                "canShareMoreData": true,
+                "canDownloadData": false
+            },
+            "validity": "2024-12-31"
+        }
     """
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
@@ -1215,15 +1212,15 @@ def create_connection_type_and_connection_terms(request):
             ConnectionTerms.objects.create(
                 conn_type=new_connection_type,
                 modality='obligatory',
-                data_element_name=obligation['label'],
-                data_type=obligation['type_of_action'],
-                sharing_type=obligation['type_of_sharing'],
-                description=obligation['description'],
-                host_permissions=obligation['host_permissions']
+                data_element_name=obligation['labelName'],
+                data_type=obligation['typeOfAction'],
+                sharing_type=obligation['typeOfSharing'],
+                description=obligation['labelDescription'],
+                host_permissions=obligation['hostPermissions']
             )
 
-        can_share_more_data = connection_terms_permissions['can_share_more_data']
-        can_download_data = connection_terms_permissions['can_download_data']
+        can_share_more_data = connection_terms_permissions['canShareMoreData']
+        can_download_data = connection_terms_permissions['canDownloadData']
 
         if can_share_more_data:
             ConnectionTerms.objects.create(conn_type=new_connection_type,

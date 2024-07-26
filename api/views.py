@@ -631,6 +631,7 @@ def show_terms(request):
 
     Query Parameters:
         - username: The username of the user whose terms are to be fetched.
+        - locker_name: The locker name of the user to be fetched
         - term_id: Optional. The ID of the specific term to be fetched.
 
     Returns:
@@ -644,13 +645,15 @@ def show_terms(request):
         - 400: Bad request (missing parameters or other errors).
     """
     if request.method == 'GET':
-        username = request.GET.get('username')
-        terms_id = request.GET.get('term_id')
-
+        username = request.user
+        locker_name = request.data["locker_name"]
+        terms_id = request.GET.get('terms_id')
+        print(locker_name)
         try:
             if username:
                 try:
                     user = CustomUser.objects.get(username=username)
+                    
                 except CustomUser.DoesNotExist:
                     return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
             else:
@@ -658,8 +661,14 @@ def show_terms(request):
                     user = request.user
                 else:
                     return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
-
-            connection_types = ConnectionType.objects.filter(owner_user=user)
+                
+            locker = Locker.objects.filter(name = locker_name, user_id = user.user_id)
+            
+           
+            if locker:
+                connection_types = ConnectionType.objects.filter(owner_user=user.user_id, owner_locker_id = locker[0].locker_id)
+            else:
+                connection_types = []
 
             if terms_id:
                 terms = ConnectionTerms.objects.filter(conn_type__in=connection_types, terms_id=terms_id)

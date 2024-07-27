@@ -72,10 +72,10 @@ def upload_resource(request):
                         destination.write(chunk)
 
                 resource = Resource.objects.create(document_name=document_name, i_node_pointer=relative_path,
-                    locker=locker, owner=user, type=resource_type)
+                                                   locker=locker, owner=user, type=resource_type)
                 resource_url = os.path.join(settings.MEDIA_URL, relative_path)
                 return JsonResponse({'success': True, 'document_name': document_name, 'type': resource_type,
-                    'resource_url': resource_url}, status=201)
+                                     'resource_url': resource_url}, status=201)
             else:
                 return JsonResponse({'success': False, 'error': 'No file provided'}, status=400)
         except Locker.DoesNotExist:
@@ -567,11 +567,12 @@ def create_new_connection(request):
 
         try:
             connection = Connection(connection_name=request_connection_name, connection_type_id=connection_type,
-                                host_locker=host_locker, guest_locker=guest_locker, host_user=host_user,
-                                guest_user=guest_user, connection_description=request_connection_description,
-                                requester_consent=False, revoke_host=False, revoke_guest=False, terms_value=terms_value)
+                                    host_locker=host_locker, guest_locker=guest_locker, host_user=host_user,
+                                    guest_user=guest_user, connection_description=request_connection_description,
+                                    requester_consent=False, revoke_host=False, revoke_guest=False,
+                                    terms_value=terms_value)
             connection.save()
-            return JsonResponse({'success': True, 'id': connection.connection_id} , status=201)
+            return JsonResponse({'success': True, 'id': connection.connection_id}, status=201)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
@@ -649,7 +650,7 @@ def show_terms(request):
         
     """
     if request.method == 'GET':
-       
+
         username = request.data["username"]
         locker_name = request.data["locker_name"]
         connection_name = request.data["connection_name"]
@@ -657,7 +658,7 @@ def show_terms(request):
             if username:
                 try:
                     user = CustomUser.objects.get(username=username)
-                    
+
                 except CustomUser.DoesNotExist:
                     return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
             else:
@@ -666,19 +667,19 @@ def show_terms(request):
                 else:
                     return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
-            locker = Locker.objects.filter(name = locker_name, user_id = user.user_id)
-            
+            locker = Locker.objects.filter(name=locker_name, user_id=user.user_id)
+
             if locker:
-                conn = Connection.objects.filter(connection_name = connection_name) #Assuming Unique Connection Name
-                
+                conn = Connection.objects.filter(connection_name=connection_name)  # Assuming Unique Connection Name
+
             else:
                 conn = []
 
             if conn and locker:
-                connection_types = ConnectionType.objects.filter(connection_type_id = conn[0].connection_type_id_id)
+                connection_types = ConnectionType.objects.filter(connection_type_id=conn[0].connection_type_id_id)
             else:
                 connection_types = []
-            
+
             terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
 
             if not terms.exists():
@@ -692,11 +693,11 @@ def show_terms(request):
             filtered_data["lockerName"] = locker_name
 
             obligations = []
-            perm = {"canShareMoreData":False,
-                    "canDownloadData":False}
+            perm = {"canShareMoreData": False,
+                    "canDownloadData": False}
 
             for term in serializer.data:
-                if(term["modality"] == "obligatory"):
+                if (term["modality"] == "obligatory"):
                     d = {}
                     d["labelName"] = term["data_element_name"]
                     d["typeOfAction"] = term["data_type"]
@@ -705,9 +706,9 @@ def show_terms(request):
                     d["hostPermissions"] = term["host_permissions"]
                     obligations.append(d)
                 else:
-                    if(term["description"] == "They can share more data."):
+                    if (term["description"] == "They can share more data."):
                         perm["canShareMoreData"] = True
-                    if(term["description"] == "They can download data."):
+                    if (term["description"] == "They can download data."):
                         perm["canDownloadData"] = True
 
             filtered_data["obligations"] = obligations
@@ -721,6 +722,7 @@ def show_terms(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @api_view(['POST'])
@@ -764,7 +766,8 @@ def give_consent(request):
     host_lockername = request.POST.get('host_lockername')
     consent = request.POST.get('consent')
 
-    if None in [connection_name, connection_type_name, guest_username, guest_lockername, host_username, host_lockername, consent]:
+    if None in [connection_name, connection_type_name, guest_username, guest_lockername, host_username, host_lockername,
+                consent]:
         return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
     try:
@@ -777,7 +780,8 @@ def give_consent(request):
         try:
             connection_type = ConnectionType.objects.get(connection_type_name__iexact=connection_type_name)
         except ConnectionType.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Connection type not found: {}'.format(connection_type_name)}, status=404)
+            return JsonResponse(
+                {'success': False, 'error': 'Connection type not found: {}'.format(connection_type_name)}, status=404)
 
         # Fetch the connection using the connection name, connection type, guest user, and host user
         try:
@@ -805,6 +809,7 @@ def give_consent(request):
         return JsonResponse({'success': False, 'error': 'Locker not found: {}'.format(str(e))}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': 'An error occurred: {}'.format(str(e))}, status=400)
+
 
 @csrf_exempt
 @api_view(['POST'])
@@ -855,14 +860,15 @@ def revoke_consent(request):
     revoke_guest = request.POST.get('revoke_guest', 'false').lower() in ['true', '1', 't', 'y', 'yes']
 
     # Check if all required fields are present
-    if None in [connection_name, connection_type_name, guest_username, guest_lockername, host_username, host_lockername]:
+    if None in [connection_name, connection_type_name, guest_username, guest_lockername, host_username,
+                host_lockername]:
         return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
     try:
         # Retrieve the guest user and guest locker
         guest_user = CustomUser.objects.get(username=guest_username)
         guest_locker = Locker.objects.get(name=guest_lockername, user=guest_user)
-        
+
         # Retrieve the host user and host locker
         host_user = CustomUser.objects.get(username=host_username)
         host_locker = Locker.objects.get(name=host_lockername, user=host_user)
@@ -871,7 +877,8 @@ def revoke_consent(request):
         try:
             connection_type = ConnectionType.objects.get(connection_type_name__iexact=connection_type_name)
         except ConnectionType.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Connection type not found: {}'.format(connection_type_name)}, status=404)
+            return JsonResponse(
+                {'success': False, 'error': 'Connection type not found: {}'.format(connection_type_name)}, status=404)
 
         # Retrieve the connection
         try:
@@ -906,6 +913,7 @@ def revoke_consent(request):
         return JsonResponse({'success': False, 'error': 'Locker not found: {}'.format(str(e))}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': 'An error occurred: {}'.format(str(e))}, status=400)
+
 
 @csrf_exempt
 @api_view(['GET'])
@@ -1192,7 +1200,7 @@ def freeze_locker(request):
 
 @csrf_exempt
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated]) 
+@permission_classes([IsAuthenticated])
 def freeze_connection(request):
     """
     Freeze a connection.
@@ -1244,7 +1252,6 @@ def freeze_connection(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
 
 
 @csrf_exempt
@@ -1467,7 +1474,7 @@ def get_terms_status(request):
             guest_user = CustomUser.objects.get(username=guest_user_username)
             guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
             connection = Connection.objects.get(connection_name=connection_name, host_locker=host_locker,
-                                            host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
+                                                host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
         except Connection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
         except Locker.DoesNotExist as e:
@@ -1485,6 +1492,6 @@ def get_terms_status(request):
             elif value.endswith('; F'):
                 count_F += 1
 
-        return Response({ 'success': True, 'count_T': count_T, 'count_F': count_F }, status=200)
+        return JsonResponse({'success': True, 'count_T': count_T, 'count_F': count_F}, status=200)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

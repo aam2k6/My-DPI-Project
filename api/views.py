@@ -1407,7 +1407,7 @@ def update_connection_terms(request):
         connection_terms_json = data.get('terms_value')
 
         if not all([connection_name, host_locker_name, guest_locker_name, host_user_username,
-                    guest_user_username]):
+                    guest_user_username, connection_terms_json]):
             return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
         try:
@@ -1436,4 +1436,55 @@ def update_connection_terms(request):
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_terms_status(request):
-    pass
+    """
+    Request Body:
+    {
+        "connection_name": "Application No. 4",
+        "host_locker_name": "Admissions",
+        "guest_locker_name": "Education",
+        "host_user_username": "iiitb",
+        "guest_user_username": "rohith",
+        "terms_value": {
+            "Application Number": "9273903; T",
+            "Another Field": "123456; F"
+        }
+    }
+    """
+    if request.method == 'GET':
+        connection_name = request.GET.get('connection_name')
+        host_locker_name = request.GET.get('host_locker_name')
+        guest_locker_name = request.GET.get('guest_locker_name')
+        host_user_username = request.GET.get('host_user_username')
+        guest_user_username = request.GET.get('guest_user_username')
+
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username,
+                    guest_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
+        try:
+            host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            guest_user = CustomUser.objects.get(username=guest_user_username)
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+            connection = Connection.objects.get(connection_name=connection_name, host_locker=host_locker,
+                                            host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
+        except Connection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
+        except Locker.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
+        except CustomUser.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
+
+        count_T = 0
+        count_F = 0
+
+        terms_value = connection.terms_value
+        for key, value in terms_value.items():
+            if value.endswith('; T'):
+                count_T += 1
+            elif value.endswith('; F'):
+                count_F += 1
+
+        return Response({ 'success': True, 'count_T': count_T, 'count_F': count_F }, status=200)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

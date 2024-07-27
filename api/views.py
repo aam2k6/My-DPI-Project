@@ -1375,15 +1375,64 @@ def get_guest_user_connection(request):
 
 
 @csrf_exempt
-@api_view(['POST'])
+@api_view(['PATCH'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def update_connection_terms(request):
-    pass
+    """
+    Request Body :
+    {
+        "connection_name" : "Application No. 4",
+        "host_locker_name" : "Admissions",
+        "guest_locker_name" : "Education",
+        "host_user_username" : "iiitb",
+        "guest_user_username" : "rohith",
+        "terms_value" : {
+                            "Application Number" : "9273903; None",
+                        }
+    }
+    """
+    if request.method == 'PATCH':
+
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse(data={'error': 'Invalid JSON'}, status=400)
+
+        connection_name = data.get('connection_name')
+        host_locker_name = data.get('host_locker_name')
+        guest_locker_name = data.get('guest_locker_name')
+        host_user_username = data.get('host_user_username')
+        guest_user_username = data.get('guest_user_username')
+        connection_terms_json = data.get('terms_value')
+
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username,
+                    guest_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
+        try:
+            host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            guest_user = CustomUser.objects.get(username=guest_user_username)
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+            connection = Connection.objects.get(connection_name=connection_name, host_locker=host_locker,
+                                                host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
+        except Connection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
+        except Locker.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
+        except CustomUser.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
+
+        connection.terms_value = connection_terms_json
+        connection.save()
+        return JsonResponse({'success': True, 'message': 'Connection Terms successfully updated.'}, status=200)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
 @csrf_exempt
-@api_view(['POST'])
+@api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_terms_status(request):

@@ -56,3 +56,15 @@ class ConnectionTermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionTerms
         fields = ["terms_id", "conn_type", "modality", "data_element_name", "data_type", "sharing_type", "description","host_permissions"]
+
+
+class ConnectionFilterSerializer(serializers.ModelSerializer):
+    host_user = UserSerializer(many=False, read_only=True)
+    guest_user = UserSerializer(many=False, read_only=True)
+    host_locker = LockerSerializer(many=False, read_only=True)
+    guest_locker = LockerSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Connection
+        fields = ["connection_id", "connection_name", "connection_type", "host_locker", "guest_locker",
+                  "host_user", "guest_user", "validity_time", "is_frozen"]

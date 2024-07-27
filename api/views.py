@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType, \
-    ConnectionTermsSerializer
+    ConnectionTermsSerializer, ConnectionFilterSerializer
 from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -1378,7 +1378,31 @@ def create_connection_type_and_connection_terms(request):
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_guest_user_connection(request):
-    pass
+    if request.method == 'GET':
+        connection_type_name = request.GET.get('connection_type_name')
+        host_locker_name = request.GET.get('host_locker_name')
+        host_user_username = request.GET.get('host_user_username')
+
+        if not all([connection_type_name, host_locker_name, host_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
+        try:
+            host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            connection_type = ConnectionType.objects.get(connection_type_name=connection_type_name, owner_locker=host_locker,
+                                                owner_user=host_user)
+            connection = Connection.objects.get(connection_type=connection_type)
+            serializer = ConnectionFilterSerializer(connection)
+            return JsonResponse({'connections': serializer.data}, status=200)
+
+        except ConnectionType.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
+        except Locker.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
+        except CustomUser.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
 @csrf_exempt

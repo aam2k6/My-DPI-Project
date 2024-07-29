@@ -21,6 +21,8 @@ from rest_framework.parsers import JSONParser
 from django.views.decorators.http import require_POST
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_datetime
+from datetime import datetime
+
 
 
 @csrf_exempt
@@ -723,7 +725,6 @@ def show_terms(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -802,7 +803,16 @@ def give_consent(request):
         connection.requester_consent = consent.lower() in ['true', '1', 't', 'y', 'yes']
         connection.save()
 
-        return JsonResponse({'success': True, 'message': 'Consent status updated successfully'}, status=200)
+        # Get the consent given date and the validity date from the connection
+        consent_given_date = datetime.now()
+        validity_date = connection.validity_time
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Consent status updated successfully',
+            'consent_given_date': consent_given_date.strftime('%B %d, %Y, %I:%M %p'),
+            'valid_until': validity_date.strftime('%B %d, %Y, %I:%M %p')
+        }, status=200)
     except CustomUser.DoesNotExist as e:
         return JsonResponse({'success': False, 'error': 'User not found: {}'.format(str(e))}, status=404)
     except Locker.DoesNotExist as e:

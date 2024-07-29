@@ -567,12 +567,16 @@ def create_new_connection(request):
             terms_value[term.data_element_name] = '; None'
 
         resource_json = {}
+        for term in terms:
+            if term.data_type == 'Upload File':
+                resource_json[term.sharing_type] = []
+
         try:
-            connection = Connection(connection_name=request_connection_name, connection_type_id=connection_type,
+            connection = Connection(connection_name=request_connection_name, connection_type=connection_type,
                                     host_locker=host_locker, guest_locker=guest_locker, host_user=host_user,
                                     guest_user=guest_user, connection_description=request_connection_description,
                                     requester_consent=False, revoke_host=False, revoke_guest=False,
-                                    terms_value=terms_value, )
+                                    terms_value=terms_value, resources=resource_json)
             connection.save()
             return JsonResponse({'success': True, 'id': connection.connection_id}, status=201)
         except Exception as e:

@@ -676,7 +676,7 @@ def show_terms(request):
                 conn = []
 
             if conn and locker:
-                connection_types = ConnectionType.objects.filter(connection_type_id=conn[0].connection_type_id_id)
+                connection_types = ConnectionType.objects.filter(connection_type_id=conn[0].connection_type_id)
             else:
                 connection_types = []
 

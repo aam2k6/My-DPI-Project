@@ -653,72 +653,72 @@ def show_terms(request):
         username = request.data["username"]
         locker_name = request.data["locker_name"]
         connection_name = request.data["connection_name"]
-        try:
-            if username:
-                try:
-                    user = CustomUser.objects.get(username=username)
-                    
-                except CustomUser.DoesNotExist:
-                    return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
-            else:
-                if request.user.is_authenticated:
-                    user = request.user
-                else:
-                    return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
-
-            locker = Locker.objects.filter(name = locker_name, user_id = user.user_id)
-            
-            if locker:
-                conn = Connection.objects.filter(connection_name = connection_name) #Assuming Unique Connection Name
+        
+        if username:
+            try:
+                user = CustomUser.objects.get(username=username)
                 
+            except CustomUser.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        else:
+            if request.user.is_authenticated:
+                user = request.user
             else:
-                conn = []
+                return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
 
-            if conn and locker:
-                connection_types = ConnectionType.objects.filter(connection_type_id = conn[0].connection_type_id_id)
-            else:
-                connection_types = []
+        locker = Locker.objects.filter(name = locker_name, user_id = user.user_id)
+        
+        if locker:
+            conn = Connection.objects.filter(connection_name = connection_name) #Assuming Unique Connection Name
             
-            terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
+        else:
+            conn = []
 
-            if not terms.exists():
-                return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
+        if conn and locker:
+            connection_types = ConnectionType.objects.filter(connection_type_id = conn[0].connection_type_id_id)
+        else:
+            connection_types = []
+        
+        terms = ConnectionTerms.objects.filter(conn_type__in=connection_types)
 
-            serializer = ConnectionTermsSerializer(terms, many=True)
+        if not terms.exists():
+            return JsonResponse({'success': False, 'message': 'No terms found for this user'}, status=404)
 
-            filtered_data = {}
-            filtered_data["connectionName"] = conn[0].connection_name
-            filtered_data["connectionDescription"] = conn[0].connection_description
-            filtered_data["lockerName"] = locker_name
+        serializer = ConnectionTermsSerializer(terms, many=True)
 
-            obligations = []
-            perm = {"canShareMoreData":False,
-                    "canDownloadData":False}
+        filtered_data = {}
+        filtered_data["connectionName"] = conn[0].connection_name
+        filtered_data["connectionDescription"] = conn[0].connection_description
+        filtered_data["lockerName"] = locker_name
 
-            for term in serializer.data:
-                if(term["modality"] == "obligatory"):
-                    d = {}
-                    d["labelName"] = term["data_element_name"]
-                    d["typeOfAction"] = term["data_type"]
-                    d["typeOfSharing"] = term["sharing_type"]
-                    d["labelDescription"] = term['description']
-                    d["hostPermissions"] = term["host_permissions"]
-                    obligations.append(d)
-                else:
-                    if(term["description"] == "They can share more data."):
-                        perm["canShareMoreData"] = True
-                    if(term["description"] == "They can download data."):
-                        perm["canDownloadData"] = True
+        obligations = []
+        perm = {"canShareMoreData":False,
+                "canDownloadData":False}
 
-            filtered_data["obligations"] = obligations
-            filtered_data["permissions"] = perm
+        for term in serializer.data:
+            if(term["modality"] == "obligatory"):
+                d = {}
+                d["labelName"] = term["data_element_name"]
+                d["typeOfAction"] = term["data_type"]
+                d["typeOfSharing"] = term["sharing_type"]
+                d["labelDescription"] = term['description']
+                d["hostPermissions"] = term["host_permissions"]
+                obligations.append(d)
+            else:
+                if(term["description"] == "They can share more data."):
+                    perm["canShareMoreData"] = True
+                if(term["description"] == "They can download data."):
+                    perm["canDownloadData"] = True
 
-            return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
+        filtered_data["obligations"] = obligations
+        filtered_data["permissions"] = perm
 
-        except CustomUser.DoesNotExist:
+        return JsonResponse({'success': True, 'terms': filtered_data}, status=200)
+
+        """except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)"""
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 

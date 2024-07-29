@@ -77,7 +77,7 @@ class ConnectionType(models.Model):
 class Connection(models.Model):
     connection_id = models.AutoField(primary_key=True)
     connection_name = models.CharField(max_length=100)
-    connection_type_id = models.ForeignKey(ConnectionType, on_delete=models.CASCADE, related_name='connection_type')
+    connection_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE, related_name='connection_type')
     host_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='host_locker')
     guest_locker = models.ForeignKey(Locker, on_delete=models.CASCADE, related_name='guest_locker')
     host_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='host_user')

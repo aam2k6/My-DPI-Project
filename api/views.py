@@ -1406,7 +1406,7 @@ def get_guest_user_connection(request):
             return JsonResponse({'connections': serializer.data}, status=200)
 
         except ConnectionType.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
+            return JsonResponse({'success': False, 'error': 'No Connections found for this Connection Type'}, status=404)
         except Locker.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
         except CustomUser.DoesNotExist as e:

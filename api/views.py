@@ -24,7 +24,6 @@ from django.utils.dateparse import parse_datetime
 from datetime import datetime
 
 
-
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -567,12 +566,13 @@ def create_new_connection(request):
         for term in terms:
             terms_value[term.data_element_name] = '; None'
 
+        resource_json = {}
         try:
             connection = Connection(connection_name=request_connection_name, connection_type_id=connection_type,
                                     host_locker=host_locker, guest_locker=guest_locker, host_user=host_user,
                                     guest_user=guest_user, connection_description=request_connection_description,
                                     requester_consent=False, revoke_host=False, revoke_guest=False,
-                                    terms_value=terms_value)
+                                    terms_value=terms_value, )
             connection.save()
             return JsonResponse({'success': True, 'id': connection.connection_id}, status=201)
         except Exception as e:
@@ -724,6 +724,7 @@ def show_terms(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @api_view(['POST'])
@@ -1399,14 +1400,16 @@ def get_guest_user_connection(request):
         try:
             host_user = CustomUser.objects.get(username=host_user_username)
             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
-            connection_type = ConnectionType.objects.get(connection_type_name=connection_type_name, owner_locker=host_locker,
-                                                owner_user=host_user)
+            connection_type = ConnectionType.objects.get(connection_type_name=connection_type_name,
+                                                         owner_locker=host_locker,
+                                                         owner_user=host_user)
             connection = Connection.objects.get(connection_type=connection_type)
             serializer = ConnectionFilterSerializer(connection)
             return JsonResponse({'connections': serializer.data}, status=200)
 
         except ConnectionType.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'No Connections found for this Connection Type'}, status=404)
+            return JsonResponse({'success': False, 'error': 'No Connections found for this Connection Type'},
+                                status=404)
         except Locker.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
         except CustomUser.DoesNotExist as e:
@@ -1529,3 +1532,11 @@ def get_terms_status(request):
         return JsonResponse({'success': True, 'count_T': count_T, 'count_F': count_F}, status=200)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def transfer_resource(request):
+    pass

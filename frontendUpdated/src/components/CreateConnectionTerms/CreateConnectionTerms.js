@@ -14,37 +14,38 @@ export const CreateConnectionTerms = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
   const [message, setMessage] = useState("");
+  const [res, setRes] = useState(null);
 
-  let res = {
-    connectionDescription: "Connection for education documents",
-    connectionName: "connection1",
-    lockerName: "Education",
-    obligations: [
-        {
-            labelName: "Admission No",
-            typeOfAction: "text",
-            typeOfSharing: "share",
-            hostPermissions: [
-                "reshare",
-                "download"
-            ],
-            labelDescription: "Admission id for mtech admission"
-        },
-        {
-            labelName: "Gate Score Card",
-            typeOfAction: "file",
-            typeOfSharing: "transfer",
-            hostPermissions: [
-                "download"
-            ],
-            labelDescription: "Gate score card for mtechs"
-        }
-    ],
-    permissions: {
-        canShareMoreData: true,
-        canDownloadData: true
-    }
-}
+//   let res = {
+//     connectionDescription: "Connection for education documents",
+//     connectionName: "connection1",
+//     lockerName: "Education",
+//     obligations: [
+//         {
+//             labelName: "Admission No",
+//             typeOfAction: "text",
+//             typeOfSharing: "share",
+//             hostPermissions: [
+//                 "reshare",
+//                 "download"
+//             ],
+//             labelDescription: "Admission id for mtech admission"
+//         },
+//         {
+//             labelName: "Gate Score Card",
+//             typeOfAction: "file",
+//             typeOfSharing: "transfer",
+//             hostPermissions: [
+//                 "download"
+//             ],
+//             labelDescription: "Gate score card for mtechs"
+//         }
+//     ],
+//     permissions: {
+//         canShareMoreData: true,
+//         canDownloadData: true
+//     }
+// }
 
 // export default res;
 
@@ -60,7 +61,45 @@ export const CreateConnectionTerms = () => {
       navigate('/');
       return;
     }
+
+
+
+    //fetch terms from the api
+    const fetchTerms = async () => {
+      console.log("Inside fetch terms");
+      try {
+        const token = Cookies.get('authToken');
+        const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=Transcripts&connection_name=Connection 1`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${token}` // Adjust if using a different authentication method
+          },
+          // body: JSON.stringify({
+          //   username: curruser.username,
+          //   lockername: "Transcripts",
+          //   connection_name: "Connection 1"
+          // }
+          // )
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch terms');
+        }
+        const data = await response.json();
+        if (data.success) {
+          setRes(data.terms);
+          console.log(data.terms);
+        } else {
+          setError(data.error || 'No terms found');
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchTerms();
   }, []);
+
 
 
 
@@ -120,7 +159,8 @@ const renderObligations = () => {
 };
 
 const renderPermissions = () => {
-  const { canShareMoreData, canDownloadData } = res.permissions;
+  if(res && res.permissions){
+    const { canShareMoreData, canDownloadData } = res.permissions;
   return (
     <div className="permissions">
       <ul>
@@ -130,6 +170,10 @@ const renderPermissions = () => {
       
     </div>
   );
+
+  }
+  return null;
+  
 };
 
 return (
@@ -209,7 +253,7 @@ return (
 
 
     {
-      Iagree == "0" &&
+      Iagree === "0" &&
       <div >
         <div className="page13button"> <button className="page13iagree0button" onClick={handleIagreebutton}> I  Agree </button></div>
         <div>
@@ -219,7 +263,7 @@ return (
     }
 
     {
-      Iagree == "1" &&
+      Iagree === "1" &&
       <div className="page13parent13state1" >
         <div className="page13consent">consent Given on :&lt;june 20,2024,5:34pm&gt;
           <br />

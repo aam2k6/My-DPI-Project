@@ -653,9 +653,9 @@ def show_terms(request):
     """
     if request.method == 'GET':
 
-        username = request.data["username"]
-        locker_name = request.data["locker_name"]
-        connection_name = request.data["connection_name"]
+        username = request.GET.get("username")
+        locker_name = request.GET.get("locker_name")
+        connection_name = request.GET.get("connection_name")
         try:
             if username:
                 try:

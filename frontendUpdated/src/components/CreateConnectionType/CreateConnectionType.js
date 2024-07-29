@@ -118,13 +118,16 @@ export const CreateConnectionType = () => {
         navigate('/show-connection-terms', {
             state: {
                 selectedConnectionType,
-                selectedLocker
+                selectedLocker,
+                parentUser,
+                locker
             }
         });
     };
 
     return (
-        <div>
+
+        <div className='create-connection-type-page'>
             <nav className="navbar">
                 <div className="wrap">
                     <select className="navbarBrand" name="connectionType" onChange={handleConnectionTypeChange} value={selectedConnectionType ? selectedConnectionType.connection_type_name : ''}>
@@ -143,6 +146,11 @@ export const CreateConnectionType = () => {
                     <ul className="navbarSecondLink">
                         <li>
                             <a href="#" onClick={handleHomeClick}>Home</a>
+                            
+                        </li>
+                        <li>
+                            <a href="#" onClick={handleHomeClick}></a>
+                            
                         </li>
                     </ul>
                     <ul className="navbarThirdLink">

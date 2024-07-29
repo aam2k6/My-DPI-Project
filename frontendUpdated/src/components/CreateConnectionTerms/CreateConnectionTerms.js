@@ -15,7 +15,7 @@ export const CreateConnectionTerms = () => {
   const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
   const [message, setMessage] = useState("");
   const [res, setRes] = useState(null);
-
+  const { selectedConnectionType, selectedLocker, parentUser ,locker} = location.state || {};
 //   let res = {
 //     connectionDescription: "Connection for education documents",
 //     connectionName: "connection1",
@@ -180,7 +180,7 @@ return (
   <div>
     <nav className="navbar">
       <div className="wrap">
-        <div className="navbarBrand">Mtech 2024 (Rohith&lt; &gt;IIITB)</div>
+        <div className="navbarBrand">{capitalizeFirstLetter(selectedConnectionType.connection_type_name)} ({capitalizeFirstLetter(parentUser.username)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
         <div className="description"></div>
       </div>
 
@@ -217,14 +217,14 @@ return (
     </nav >
 
     <div className="page13parent">
-      <div className="page13host1">Host : IIITB</div>
-      <div className="page13requestor">Requestor : Rohith</div>
+      <div className="page13host1">Host : {capitalizeFirstLetter(parentUser.username)}</div>
+      <div className="page13requestor">Requestor :{capitalizeFirstLetter(curruser.username)}</div>
 
     </div>
 
     <div className="page13parent">
-      <div className="page13host2">Locker:Transcripts</div>
-      <div className="page13requestor">Locker : Education</div>
+      <div className="page13host2">Locker:{capitalizeFirstLetter(locker.name)}</div>
+      <div className="page13requestor">Locker :{capitalizeFirstLetter(selectedLocker.name)}</div>
 
     </div>
     <div className="page13container">

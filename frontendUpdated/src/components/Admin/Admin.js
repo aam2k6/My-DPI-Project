@@ -135,10 +135,11 @@ export const Admin = () => {
         {otherConnections.length > 0 ? (
           otherConnections.map(connection => (
             <div key={connection.connection_type_id} className="page8connections">
-              <h4>{connection.connection_type_name}</h4>
+              <h4>{connection.connectioimprtn_type_name}</h4>
               <p>{connection.connection_description}</p>
               <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
               <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
+              
               <button>Edit</button>
             </div>
           ))

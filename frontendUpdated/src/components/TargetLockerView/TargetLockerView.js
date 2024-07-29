@@ -11,11 +11,11 @@ export const TargetLockerView = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [parentUser, setParentUser] = useState(location.state ? location.state.user : null);
   const [resources, setResources] = useState([]);
-  const [otherConnections, setOtherConnections] = useState([]); // State for other connections
+  const [otherConnections, setOtherConnections] = useState([]); 
   const [locker, setLocker] = useState(location.state ? location.state.locker : null);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-
+  const [outgoingConnections, setOutgoingConnections] = useState([]); // State for outgoing connections
 
   useEffect(() => {
     if (!curruser) {
@@ -24,16 +24,15 @@ export const TargetLockerView = () => {
     }
     if (parentUser && locker) {
       fetchResources();
-      fetchOtherConnections(); // Fetch other connections when component mounts
+      fetchOtherConnections(); 
+      fetchConnections(); // Fetch connections when component mounts
     }
   }, [curruser, navigate, parentUser, locker]);
 
   const fetchResources = async () => {
-
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name, username: parentUser.username });
-
       const response = await fetch(`http://localhost:8000/get-public-resources?${params}`, {
         method: 'GET',
         headers: {
@@ -52,12 +51,10 @@ export const TargetLockerView = () => {
     }
   };
 
-
   const fetchOtherConnections = async () => {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ guest_username: parentUser.username, guest_locker_name: locker.name });
-
       const response = await fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
         method: 'GET',
         headers: {
@@ -67,7 +64,7 @@ export const TargetLockerView = () => {
       });
       const data = await response.json();
       if (data.success) {
-        setOtherConnections(data.connection_types); // Updated to match the new response structure
+        setOtherConnections(data.connection_types); 
       } else {
         setError(data.message);
       }
@@ -76,10 +73,39 @@ export const TargetLockerView = () => {
     }
   };
 
+  const fetchConnections = async () => {
+    try {
+      const token = Cookies.get('authToken');
+      const params = new URLSearchParams({ locker_name: locker.name });
+      const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch connections');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        // Filter outgoing connections
+        const outgoing = data.connections.outgoing_connections.filter(conn => conn.host_locker.name === locker.name);
+        setOutgoingConnections(outgoing);
+      } else {
+        setError(data.message || 'Failed to fetch connections');
+      }
+    } catch (error) {
+      console.error('Error fetching connections:', error);
+      setError('An error occurred while fetching connections');
+    }
+  };
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   }
-
 
   const handleDPIDirectory = () => {
     navigate('/dpi-directory');
@@ -109,7 +135,6 @@ export const TargetLockerView = () => {
     navigate('/admin');
   };
 
-
   return (
     <div>
       <nav className="navbar">
@@ -118,15 +143,12 @@ export const TargetLockerView = () => {
           <div className="description7">Owner:<u>{parentUser?.username}</u></div>
         </div>
         <div className="navbarLinks">
-
           <ul className="navbarFirstLink">
             <li><a href="#" onClick={handleDPIDirectory}>DPI Directory</a></li>
           </ul>
-
           <ul className="navbarSecondLink">
             <li><a href="#" onClick={handleHomeClick}>Home</a></li>
             <li><a href="#" ></a></li>
-
           </ul>
           <ul className="navbarThirdLink">
             <li>
@@ -151,18 +173,6 @@ export const TargetLockerView = () => {
         <div className="notvisible">
           <div className="page7publicresources">
             <p>Public resources: Resources for all</p>
-            {/* 
-  {
-    resources.map(resource => (
-      <div className="page7resource" key={resource.id}>
-        <u>{resource.name}</u>
-      </div>
-    ))
-  }
-          </div >
-          <div className="page7publicresources">
-            <p>Other Resources</p> */}
-
             {resources.length > 0 ? (
               resources.map(resource => (
                 <div className="page7resource" key={resource.id}>
@@ -191,23 +201,22 @@ export const TargetLockerView = () => {
             ) : (
               <p id="page7noconn">No other connections found.</p>
             )}
-
           </div>
         </div >
         <div className="page7containerB">
           <p>My connections</p>
-          <div className="page7myconnections">
-            <div id="conntent"><h3>Btech 2020: Applicant</h3></div>
-            <div id="conntent">IIITb Transcripts &lt;&gt; Rohith: Education</div>
-            <div id="conntent">Created On:</div>
-            <div id="conntent">Valid Until:</div>
-          </div>
-          <div className="page7myconnections">
-            <div id="conntent"><h3>IMtech 2020: Applicant</h3></div>
-            <div id="conntent">IIITb Transcripts &lt;&gt; Rohith: Education</div>
-            <div id="conntent">Created On:</div>
-            <div id="conntent">Valid Until:</div>
-          </div>
+          {outgoingConnections.length > 0 ? (
+            outgoingConnections.map((connection, index) => (
+              <div className="page7myconnections" key={index}>
+                <div id="conntent"><h3>{connection.connection_type_name}</h3></div>
+                <div id="conntent">{connection.host_locker.name} &lt;&gt; {connection.guest_locker.name}</div>
+                <div id="conntent">Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
+                <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
+              </div>
+            ))
+          ) : (
+            <p>No outgoing connections found.</p>
+          )}
         </div>
       </div >
     </div >

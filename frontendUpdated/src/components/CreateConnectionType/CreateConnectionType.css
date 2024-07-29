@@ -6,40 +6,41 @@
 
 .page12hostlocker {
   font-size: 1.25rem;
-  width: 30rem;
-  height: 8rem;
-  border: 2px solid rgb(107, 120, 231);
-
-  margin-top: 4rem;
+  width: 25rem;
+  height: 4rem;
+  margin-top: 3rem;
   margin-left: 1rem;
-  margin-right: 24rem;
+  margin-right: 1rem; /* Adjusted to be more centered */
+  padding: 1rem;
+  border: 2px solid rgb(107, 120, 231);
 }
 
-.page12parentpara {
-  display: flex;
-  align-items: top;
-}
 .page12parentconnections {
   display: flex;
-  align-items: top;
+  align-items: flex-start; /* Adjusted alignment */
+  margin-left: 3rem;
 }
+
 .page12hostlocker div {
-  margin: 1rem;
+  margin-bottom:  0.5rem;
 }
+
 .page12paragraph {
   margin-top: 7rem;
   margin-left: 3rem;
   font-size: 1.25rem;
-  /* padding: 2rem; */
-
+  padding: 2rem; /* Added padding for better spacing */
   width: 50rem;
-  height: 10rem;
-}
-.page12paragraph button {
-  margin-left: 45rem;
+  height: auto; /* Adjusted height for content flexibility */
+  background-color: #f4f6f8;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between; /* Flexbox to align content and button */
+  align-items: center; /* Center-align items vertically */
 }
 
-.next-btn {
+.page12paragraph button {
   background-color: #007bff;
   color: #fff;
   width: 5rem;
@@ -48,11 +49,13 @@
   border-radius: 0.25rem;
   cursor: pointer;
   font-weight: bolder;
-  /* padding: 0.5rem 0.25rem;  */
-  /* max-width: rem; */
 }
 
-.createconnectionmylock{
+.page12paragraph button:hover {
+  background-color: #0056b3; /* Darker color on hover */
+}
+
+.createconnectionmylock {
   margin-top: 4rem;
   font-size: large;
   font-weight: 500;

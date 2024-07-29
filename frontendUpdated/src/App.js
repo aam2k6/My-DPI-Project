@@ -16,6 +16,7 @@ import { CreateConnectionType } from './components/CreateConnectionType/CreateCo
 import { CreateConnectionTerms } from './components/CreateConnectionTerms/CreateConnectionTerms';
 import { usercontext } from './usercontext';
 import { ViewTermsByType } from './components/ViewTermsByTypeUser/ViewTermsByType';
+import { Guestusers } from './components/Guest-users/Guestusers';
 
 
 function App() {
@@ -65,6 +66,8 @@ function App() {
                         <Route path="/view-terms-by-type" element={<ProtectedRoute><ViewTermsByType /></ProtectedRoute>} />
                         <Route path="/make-connection" element={<ProtectedRoute><CreateConnectionType /></ProtectedRoute>} />
                         <Route path="/show-connection-terms" element={<ProtectedRoute><CreateConnectionTerms /></ProtectedRoute>} />
+                        <Route path="/show-guest-users" element={<ProtectedRoute><Guestusers /></ProtectedRoute>} />
+
                         <Route path="*" element={<h1>Page Not Found</h1>} />
                     </Routes>
                 </usercontext.Provider>

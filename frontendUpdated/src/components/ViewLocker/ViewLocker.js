@@ -6,7 +6,6 @@ import Cookies from 'js-cookie';
 import { useParams, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 
-
 export const ViewLocker = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,14 +18,37 @@ export const ViewLocker = () => {
   const [error, setError] = useState(null);
 
   const [connections, setConnections] = useState({ incoming_connections: [], outgoing_connections: [] });
-
+  const [otherConnections, setOtherConnections] = useState([]); // State for other connections
+  
   useEffect(() => {
     if (!curruser) {
       navigate('/');
       return;
     }
-  }, []);
+  }, [curruser, navigate]);
 
+  const fetchOtherConnections = async () => {
+    try {
+      const token = Cookies.get('authToken');
+      const params = new URLSearchParams({ locker_name: locker.name });
+
+      const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setOtherConnections(data.connection_types);
+      } else {
+        setError(data.message);
+      }
+    } catch (error) {
+      setError("An error occurred while fetching other connections");
+    }
+  };
 
   useEffect(() => {
     const fetchConnections = async () => {
@@ -90,9 +112,9 @@ export const ViewLocker = () => {
     if (locker) {
       fetchResources();
       fetchConnections();
+      fetchOtherConnections();
     }
   }, [locker]);
-
 
   const handleUploadResource = () => {
     navigate('/upload-resource', { state: { locker } });
@@ -107,12 +129,9 @@ export const ViewLocker = () => {
     window.open(url, "_blank");
   };
 
-
-
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   }
-
 
   const handleNewLockerClick = () => {
     navigate('/create-locker');
@@ -135,21 +154,26 @@ export const ViewLocker = () => {
     navigate('/view-locker');
   };
 
-
   const handleLogout = () => {
     Cookies.remove('authToken');
     localStorage.removeItem('curruser');
     setUser(null);
     navigate('/');
   }
+//locker  bhi state se paas krra
+  const handleConnectionClick = (connection) => {
+    // navigate('/show-guest-users', { state: { connection } ,{locker} }); // Change '/next-page' to your desired route
+    // navigate('/show-guest-users', { state: { connection, locker } });
+    navigate('/show-guest-users', { state: { connection, locker } });
 
+
+  }
 
   return (
     <div>
       <nav className="navbar">
         <div className="wrap">
           <div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div>
-          {/* <div className="description3">{locker ? `Description: ${locker.description}` : 'Description'}</div> */}
         </div>
 
         <div className="navbarLinks">
@@ -185,7 +209,6 @@ export const ViewLocker = () => {
         </div>
       </nav>
 
-
       <div className="container">
         <div className="locker-name">
           <div className="loc"><span className='desc'>{locker ? ` ${locker.description}` : 'Description'}</span></div>
@@ -196,12 +219,11 @@ export const ViewLocker = () => {
             <div className="container-3 clearfix">
 
               <div className='aa'>
-
                 {resources.length > 0 ? (
-                  resources.map(resource => (
+                  resources.map((resource, index) => (
                     <div key={resource.resource_id} className="resource-item">
                       <div className="resource-details">
-                        <div id="documents" onClick={() => handleResourceClick(resource.i_node_pointer)}>{resource.document_name}</div>
+                        <div id="documents" onClick={() => handleResourceClick(resource.i_node_pointer)}>{index + 1}. {resource.document_name}</div>
                         <div className="public-private">
                           {resource.type === 'private' ? (
                             <>
@@ -223,7 +245,6 @@ export const ViewLocker = () => {
                 ) : (
                   <p>No resources found.</p>
                 )}
-
               </div>
             </div>
             <button className="page3button">Share</button>
@@ -232,27 +253,29 @@ export const ViewLocker = () => {
           </div>
           <div className="b">
             <h3 id="mycon">My Connections:</h3>
+            <h4 id='headingconnection'>Incoming Connection types</h4>
+
             <div className="conn">
-              <h4>Incoming Connections</h4>
-              {connections.incoming_connections.length > 0 ? (
-                connections.incoming_connections.map(connection => (
-                  <div key={connection.connection_id}>
-                    <div id="conntent"><h3>{connection.connection_name}</h3></div>
-                    <div id="conntent">{connection.host_locker.name} &lt;&gt; {connection.guest_user.username}: {connection.guest_locker.name}</div>
-                    <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
-                    <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
+              {otherConnections.length > 0 ? (
+                otherConnections.map((connection, index) => (
+                  <div key={connection.connection_type_id} className="viewlockerconnections" onClick={() => handleConnectionClick(connection)}>
+                    <h4 id='connectiontype'><u>{index + 1}. {connection.connection_type_name}</u></h4>
+                    {/* <p id='conntent'>{connection.connection_description}</p>
+                    <div id='conntent'>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
+                    <div id='conntent'>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div> */}
                   </div>
                 ))
               ) : (
-                <p>No incoming connections found.</p>
+                <p>No connections found.</p>
               )}
             </div>
+            <h4 id='headingconnection'>Outgoing Connections</h4>
+
             <div className="conn">
-              <h4>Outgoing Connections</h4>
               {connections.outgoing_connections.length > 0 ? (
-                connections.outgoing_connections.map(connection => (
-                  <div key={connection.connection_id}>
-                    <div id="conntent"><h3>{connection.connection_name}</h3></div>
+                connections.outgoing_connections.map((connection, index) => (
+                  <div key={connection.connection_id} className='viewlockerconnections'>
+                    <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>
                     <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
                     <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
                     <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>

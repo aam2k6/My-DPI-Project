@@ -102,7 +102,7 @@
 .a {
   height: 27rem; /* Set a max height for scrolling */
   overflow-y: auto; /* Enable vertical scrolling */
-  width: 45%;
+  width: 42%;
   border: 2px solid rgb(107, 120, 231);
   padding: 0.5rem;
 
@@ -114,7 +114,7 @@
   max-height: 27rem; /* Set a max height for scrolling */
   overflow-y: auto; /* Enable vertical scrolling */
   margin-right: 5rem;
-  width: 45%;
+  width: 42%;
   /* height: 30rem; */
   float: right;
   border: 2px solid rgb(107, 120, 231);
@@ -123,16 +123,23 @@
   /* font-size: 2rem; */
 }
 
+
 .aa {
-  width: 45%;
+  width: 42%;
   /* float: left; */
    /* display: flex;  */
   
   
 }
-.bb {
-  width: 45%;
+.bb {max-height: 27rem; /* Set a max height for scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin-right: 5rem;
+  width: 42%;
+  /* height: 30rem; */
   float: right;
+  border: 2px solid rgb(107, 120, 231);
+  padding: 0.5rem;
+
 }
 .locker-name {
   font-size: 1.45rem;
@@ -189,10 +196,14 @@
   margin-right: 2rem;
   margin-top: 2rem;
   padding: 1rem;
+  max-height: 10rem;
+  height: 10rem;
+  overflow-y: auto;
+  padding: 1rem;
 }
 #conntent {
-  margin-bottom: 2rem;
-  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
 }
 #mycon {
   margin-left: 2rem;
@@ -217,3 +228,19 @@ overflow-x: auto;
   width: 100%;
 }
 
+#headingconnection{
+  font-size: 1rem;
+  font-weight: bolder;
+  margin-left: 1rem;
+}
+#connectiontype{
+   color: #007bff;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 1rem;
+
+}
+#connectiontype :hover{
+  color: red;
+  cursor: pointer;
+}

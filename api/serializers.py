@@ -22,7 +22,7 @@ class ConnectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Connection
-        fields = ["connection_id", "connection_name", "connection_type_id", "host_locker", "guest_locker",
+        fields = ["connection_id", "connection_name", "connection_type", "host_locker", "guest_locker",
                   "host_user", "guest_user", "connection_description", "requester_consent", "revoke_host",
                   "revoke_guest", "validity_time", "created_time","is_frozen"]
 

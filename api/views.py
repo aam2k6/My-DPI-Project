@@ -699,8 +699,7 @@ def show_terms(request):
             filtered_data["lockerName"] = locker_name
 
             obligations = []
-            perm = {"canShareMoreData": False,
-                    "canDownloadData": False}
+            perm = {"canShareMoreData": False, "canDownloadData": False}
 
             for term in serializer.data:
                 if (term["modality"] == "obligatory"):
@@ -791,12 +790,8 @@ def give_consent(request):
 
         # Fetch the connection using the connection name, connection type, guest user, and host user
         try:
-            connection = Connection.objects.get(
-                connection_name=connection_name,
-                connection_type_id=connection_type,
-                guest_user=guest_user,
-                host_user=host_user
-            )
+            connection = Connection.objects.get(connection_name=connection_name, connection_type_id=connection_type,
+                guest_user=guest_user, host_user=host_user)
         except Connection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
 
@@ -812,12 +807,9 @@ def give_consent(request):
         consent_given_date = datetime.now()
         validity_date = connection.validity_time
 
-        return JsonResponse({
-            'success': True,
-            'message': 'Consent status updated successfully',
+        return JsonResponse({'success': True, 'message': 'Consent status updated successfully',
             'consent_given_date': consent_given_date.strftime('%B %d, %Y, %I:%M %p'),
-            'valid_until': validity_date.strftime('%B %d, %Y, %I:%M %p')
-        }, status=200)
+            'valid_until': validity_date.strftime('%B %d, %Y, %I:%M %p')}, status=200)
     except CustomUser.DoesNotExist as e:
         return JsonResponse({'success': False, 'error': 'User not found: {}'.format(str(e))}, status=404)
     except Locker.DoesNotExist as e:
@@ -897,12 +889,8 @@ def revoke_consent(request):
 
         # Retrieve the connection
         try:
-            connection = Connection.objects.get(
-                connection_name=connection_name,
-                connection_type_id=connection_type,
-                guest_user=guest_user,
-                host_user=host_user
-            )
+            connection = Connection.objects.get(connection_name=connection_name, connection_type_id=connection_type,
+                guest_user=guest_user, host_user=host_user)
         except Connection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
 
@@ -1355,26 +1343,19 @@ def create_connection_type_and_connection_terms(request):
         new_connection_type.save()
 
         for obligation in connection_terms_obligations:
-            ConnectionTerms.objects.create(
-                conn_type=new_connection_type,
-                modality='obligatory',
-                data_element_name=obligation['labelName'],
-                data_type=obligation['typeOfAction'],
-                sharing_type=obligation['typeOfSharing'],
-                description=obligation['labelDescription'],
-                host_permissions=obligation['hostPermissions']
-            )
+            ConnectionTerms.objects.create(conn_type=new_connection_type, modality='obligatory',
+                data_element_name=obligation['labelName'], data_type=obligation['typeOfAction'],
+                sharing_type=obligation['typeOfSharing'], description=obligation['labelDescription'],
+                host_permissions=obligation['hostPermissions'])
 
         can_share_more_data = connection_terms_permissions['canShareMoreData']
         can_download_data = connection_terms_permissions['canDownloadData']
 
         if can_share_more_data:
-            ConnectionTerms.objects.create(conn_type=new_connection_type,
-                                           modality='permissive',
+            ConnectionTerms.objects.create(conn_type=new_connection_type, modality='permissive',
                                            description='They can share more data.')
         if can_download_data:
-            ConnectionTerms.objects.create(conn_type=new_connection_type,
-                                           modality='permissive',
+            ConnectionTerms.objects.create(conn_type=new_connection_type, modality='permissive',
                                            description='They can download data.')
 
         return JsonResponse({'success': True, 'connection_type_message': 'Connection Type successfully created',
@@ -1405,8 +1386,7 @@ def get_guest_user_connection(request):
             host_user = CustomUser.objects.get(username=host_user_username)
             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
             connection_type = ConnectionType.objects.get(connection_type_name=connection_type_name,
-                                                         owner_locker=host_locker,
-                                                         owner_user=host_user)
+                                                         owner_locker=host_locker, owner_user=host_user)
             connection = Connection.objects.get(connection_type=connection_type)
             serializer = ConnectionFilterSerializer(connection)
             return JsonResponse({'connections': serializer.data}, status=200)
@@ -1436,8 +1416,13 @@ def update_connection_terms(request):
         "host_user_username" : "iiitb",
         "guest_user_username" : "rohith",
         "terms_value" : {
-                            "Application Number" : "9273903; None",
-                        }
+                            "Application Number" : "9273903; F",
+                            "BTech Marks Card" : "documents/rohith_transcripts.pdf; T",
+                            "Gate ScoreCard" : "documents/rohith_gate_score_card.pdf; T"
+                        },
+        "resources" : {
+                            "Transfer": ["documents/rohith_transcripts.pdf", "documents/rohith_gate_score_card.pdf"],
+                            "Share": [],
     }
     """
     if request.method == 'PATCH':
@@ -1453,9 +1438,10 @@ def update_connection_terms(request):
         host_user_username = data.get('host_user_username')
         guest_user_username = data.get('guest_user_username')
         connection_terms_json = data.get('terms_value')
+        resources_json = data.get('resources')
 
-        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username,
-                    guest_user_username, connection_terms_json]):
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username,
+                    connection_terms_json]):
             return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
         try:
@@ -1473,6 +1459,7 @@ def update_connection_terms(request):
             return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
 
         connection.terms_value = connection_terms_json
+        connection.resources = resources_json
         connection.save()
         return JsonResponse({'success': True, 'message': 'Connection Terms successfully updated.'}, status=200)
 
@@ -1493,8 +1480,8 @@ def get_terms_status(request):
         "host_user_username": "iiitb",
         "guest_user_username": "rohith",
         "terms_value": {
-            "Application Number": "9273903; T",
-            "Another Field": "123456; F"
+            "Application Number": "; F",
+            "Another Field": "documents/rohith_transcripts.pdf; F"
         }
     }
     """
@@ -1505,8 +1492,7 @@ def get_terms_status(request):
         host_user_username = request.GET.get('host_user_username')
         guest_user_username = request.GET.get('guest_user_username')
 
-        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username,
-                    guest_user_username]):
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
             return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
         try:
@@ -1543,4 +1529,40 @@ def get_terms_status(request):
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def transfer_resource(request):
-    pass
+    if request.method == 'POST':
+
+        connection_name = request.POST.get('connection_name')
+        host_locker_name = request.POST.get('host_locker_name')
+        guest_locker_name = request.POST.get('guest_locker_name')
+        host_user_username = request.POST.get('host_user_username')
+        guest_user_username = request.POST.get('guest_user_username')
+
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
+        try:
+            host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            guest_user = CustomUser.objects.get(username=guest_user_username)
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+            connection = Connection.objects.get(connection_name=connection_name, host_locker=host_locker,
+                                                host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
+        except Connection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
+        except Locker.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
+        except CustomUser.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
+
+        for key, value in connection.terms_value.items():
+            if "; T" in value:
+                doc_path = value.split("; T")[0].strip()
+                if doc_path in connection.resources['Transfer']:
+                    res = Resource.objects.get(i_node_pointer=doc_path)
+                    res.owner = host_user
+                    res.locker = host_locker
+                    res.save()
+        return JsonResponse({'success': True, 'message': 'Transfer successful'}, status=200)
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+

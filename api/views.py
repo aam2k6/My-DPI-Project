@@ -1388,17 +1388,21 @@ def get_guest_user_connection(request):
             connection_type = ConnectionType.objects.get(connection_type_name=connection_type_name,
                                                          owner_locker=host_locker, owner_user=host_user)
             connection = Connection.objects.filter(connection_type=connection_type)
-            serializer = ConnectionFilterSerializer(connection)
+
+            if not connection:
+                return JsonResponse({'success': False, 'error': 'No Connections found for this Connection Type'},
+                                    status=404)
+
+            serializer = ConnectionFilterSerializer(connection, many=True)
             return JsonResponse({'connections': serializer.data}, status=200)
 
         except ConnectionType.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'No Connections found for this Connection Type'},
+            return JsonResponse({'success': False, 'error': 'No such Connection Type found'},
                                 status=404)
         except Locker.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
         except CustomUser.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
-
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 

@@ -16,7 +16,7 @@ export const CreateConnectionTerms = () => {
   const [message, setMessage] = useState("");
   const [res, setRes] = useState(null);
   const [consentData, setConsentData] = useState(null);
-  const { selectedConnectionType, selectedLocker, parentUser ,locker} = location.state || {};
+  const { selectedConnectionType, selectedLocker, parentUser, locker } = location.state || {};
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -34,7 +34,7 @@ export const CreateConnectionTerms = () => {
       console.log("Inside fetch terms");
       try {
         const token = Cookies.get('authToken');
-        const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=Education&connection_name=Connection 1`, {
+        const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=${selectedLocker.name}&connection_name=Connection 1`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -90,11 +90,11 @@ export const CreateConnectionTerms = () => {
 
     const formData = new FormData();
     formData.append('connection_name', "Connection 1");
-    formData.append('connection_type_name', "Connection IIITB");
-    formData.append('guest_username', 'rohith')
-    formData.append('guest_lockername', "Education");
-    formData.append('host_username', "iiitb");
-    formData.append('host_lockername', "Transcripts");
+    formData.append('connection_type_name', selectedConnectionType.connection_type_name);
+    formData.append('guest_username', curruser.username)
+    formData.append('guest_lockername', selectedLocker.name); //rohiths locker
+    formData.append('host_username', parentUser.username);
+    formData.append('host_lockername', locker.name); //logged in users locker(iiitb)
     formData.append('consent', consent);
 
     try {
@@ -122,18 +122,18 @@ export const CreateConnectionTerms = () => {
     }
   };
 
-  const handleRevokebutton = async () =>{
+  const handleRevokebutton = async () => {
     const token = Cookies.get('authToken');
     const revoke_guest = false;
     const revoke_host = false;
 
     const formData = new FormData();
     formData.append('connection_name', "Connection 1");
-    formData.append('connection_type_name', "Connection IIITB");
-    formData.append('guest_username', 'rohith')
-    formData.append('guest_lockername', "Education");
-    formData.append('host_username', "iiitb");
-    formData.append('host_lockername', "Transcripts");
+    formData.append('connection_type_name', selectedConnectionType.connection_type_name);
+    formData.append('guest_username', curruser.username);
+    formData.append('guest_lockername', selectedLocker.name);
+    formData.append('host_username', parentUser.username);
+    formData.append('host_lockername', locker.name);
     formData.append('revoke_host', revoke_host);
     formData.append('revoke_guest', revoke_guest);
 
@@ -258,15 +258,8 @@ export const CreateConnectionTerms = () => {
             {renderObligations()}
           </div>
 
-
-
           <div className="page13headterms">Your Rights </div>
           <div className="page13lowerterms">{renderPermissions()}</div>
-
-
-
-          {/* <div className="page13headterms">Your Prohibitions </div>
-        <div className="page13lowerterms">1) Can't Unilateraly close the connection</div> */}
 
         </div>
       </div>

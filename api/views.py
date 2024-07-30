@@ -1387,7 +1387,7 @@ def get_guest_user_connection(request):
             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
             connection_type = ConnectionType.objects.get(connection_type_name=connection_type_name,
                                                          owner_locker=host_locker, owner_user=host_user)
-            connection = Connection.objects.get(connection_type=connection_type)
+            connection = Connection.objects.filter(connection_type=connection_type)
             serializer = ConnectionFilterSerializer(connection)
             return JsonResponse({'connections': serializer.data}, status=200)
 

@@ -19,6 +19,8 @@ export const ConnectionTerms = () => {
         typeOfSharing: "share",
         labelDescription: "",
         hostPermissions: [],
+        canShareMore: false, 
+        canDownload: false,
     };
 
     const [formData, setFormData] = useState(initialFormData);
@@ -67,7 +69,7 @@ export const ConnectionTerms = () => {
             obligations: obligations, // Now an array
             permissions: {
                 canShareMoreData: formData.canShareMore,
-                canDownloadData: formData.canDownload,
+                canDownloadData: formData.canDownload 
             }
         };
 
@@ -84,22 +86,22 @@ export const ConnectionTerms = () => {
             },
             body: JSON.stringify(connectionTermsData),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log(data.connection_type_message, data.connection_terms_message);
-                navigate("/admin");
-            } else {
-                console.error("Error:", data.error);
-                setError(data.error);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            setError("An error occurred while submitting the data.");
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data.connection_type_message, data.connection_terms_message);
+                    navigate("/admin");
+                } else {
+                    console.error("Error:", data.error);
+                    setError(data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                setError("An error occurred while submitting the data.");
+            });
 
-        
+
     };
 
     const handleHostPermissionsChange = (event) => {
@@ -137,14 +139,14 @@ export const ConnectionTerms = () => {
     const handleAdmin = () => {
         navigate('/admin');
     }
-    
+
     const handleLogout = () => {
         Cookies.remove('authToken');
         localStorage.removeItem('curruser');
         setUser(null);
         navigate('/');
     }
-    
+
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     }

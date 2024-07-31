@@ -43,12 +43,34 @@ Managing data sharing in compliance with regulations and obtaining consent from 
 ### Backend Setup
 
 1. #### Clone the repository:
-   git clone https://github.com/WSL-IIITB/DPI-Primitive.git
+   git clone https://github.com/WSL-IIITB/DPI-Primitive.git <br>
    cd DPI-Primitive/
-2. Check out the ‘backend’ branch:
-3. Navigate to the backend directory and install dependencies:
-4. Make Migrations:
+   
+2. #### Check out the ‘backend’ branch:
+   git checkout backend
+   
+3. #### Install dependencies:
+   pip install -r requirements.txt
+   
+4. #### Make Migrations:
+   python manage.py makemigrations
+   
 5. #### Run the Development Server:
+   python manage.py runserver
+
+### Frontend Setup
+
+1. #### Return to project root directory:
+   cd ..
+
+2. #### Check out the ‘frontend’ branch:
+   git checkout frontend
+   
+3. #### Install Dependencies:
+   npm  install
+   
+4. #### Start the Development Server:
+   npm start (or) npm run dev
    
 
 

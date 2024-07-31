@@ -1570,3 +1570,41 @@ def transfer_resource(request):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_connection_details(request):
+
+    if request.method == 'GET':
+        connection_type_name = request.GET.get('connection_type_name')
+        host_locker_name = request.GET.get('host_locker_name')
+        guest_locker_name = request.GET.get('guest_locker_name')
+        host_user_username = request.GET.get('host_user_username')
+        guest_user_username = request.GET.get('guest_user_username')
+
+        if not all([connection_type_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
+
+        try:
+            host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            guest_user = CustomUser.objects.get(username=guest_user_username)
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+            connection_type = ConnectionType.objects.get(connection_type_name=connection_type_name, owner_locker=host_locker,
+                                                owner_user=host_user)
+
+            connection = Connection.objects.get(connection_type=connection_type, host_locker=host_locker, guest_locker=guest_locker,
+                                                   host_user=host_user, guest_user=guest_user)
+            serializer = ConnectionSerializer(connection)
+            return JsonResponse({'connections': serializer.data}, status=200)
+
+        except ConnectionType.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
+        except Locker.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
+        except CustomUser.DoesNotExist as e:
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
+
+        # Return appropriate response
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)

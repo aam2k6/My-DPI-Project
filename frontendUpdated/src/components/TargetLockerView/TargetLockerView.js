@@ -33,7 +33,7 @@ export const TargetLockerView = () => {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name, username: parentUser.username });
-      const response = await fetch(`http://localhost:8000/get-public-resources?${params}`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-public-resources?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -55,7 +55,7 @@ export const TargetLockerView = () => {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ guest_username: parentUser.username, guest_locker_name: locker.name });
-      const response = await fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-other-connection-types/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -76,8 +76,8 @@ export const TargetLockerView = () => {
   const fetchConnections = async () => {
     try {
       const token = Cookies.get('authToken');
-      const params = new URLSearchParams({ locker_name: locker.name });
-      const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
+      const params = new URLSearchParams({ locker_name: locker.name ,username:parentUser.username});
+      const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -120,7 +120,7 @@ export const TargetLockerView = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `http://localhost:8000/media/${filePath}`;
+    const url = `http://172.16.192.201:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 
@@ -187,19 +187,20 @@ export const TargetLockerView = () => {
           </div>
 
           <div className="page7publicresources">
-            <p>Other Connections</p>
+            <p>Available Connection Types</p>
             {otherConnections.length > 0 ? (
               otherConnections.map(connection => (
                 <div className="page7connection" key={connection.connection_type_id}>
                   <div id="connectionpage7">
-                    <strong>{connection.connection_type_name}</strong>: {connection.connection_description}
-                    <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
-                    <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
+                    <strong>{connection.connection_type_name}</strong>
+                    <div id="availconntype">{connection.connection_description}</div>
+                    <div id="availconntype">Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
+                    <div id="availconntype">Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
                   </div>
                 </div>
               ))
             ) : (
-              <p id="page7noconn">No other connections found.</p>
+              <p id="noconnfound">No available connection type found.</p>
             )}
           </div>
         </div >
@@ -208,17 +209,19 @@ export const TargetLockerView = () => {
           {outgoingConnections.length > 0 ? (
             outgoingConnections.map((connection, index) => (
               <div className="page7myconnections" key={index}>
-                <div id="conntent"><h3>{connection.connection_type_name}</h3></div>
+                {/* <div id="conntent"><h2>{connection.connection_type_name}</h2></div> */}
+                <div id="conntent"><h2>{connection.connection_name}</h2></div>
+
                 <div id="conntent">{connection.host_locker.name} &lt;&gt; {connection.guest_locker.name}</div>
                 <div id="conntent">Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
                 <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
               </div>
             ))
           ) : (
-            <p>No outgoing connections found.</p>
+            <p id="noconnfound">No outgoing connections found .</p>
           )}
         </div>
       </div >
-    </div >
+    </div>
   );
 };

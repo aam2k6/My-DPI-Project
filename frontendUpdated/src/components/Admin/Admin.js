@@ -28,7 +28,7 @@ export const Admin = () => {
   const fetchOtherConnections = async () => {
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:8000/get-connection-type/`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-connection-type/`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -49,7 +49,7 @@ export const Admin = () => {
   const fetchUserLockers = async () => {
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch('http://localhost:8000/get-lockers-user/', {
+      const response = await fetch(`http://172.16.192.201:8000/get-lockers-user/`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -135,7 +135,7 @@ export const Admin = () => {
         {otherConnections.length > 0 ? (
           otherConnections.map(connection => (
             <div key={connection.connection_type_id} className="page8connections">
-              <h4>{connection.connectioimprtn_type_name}</h4>
+              <h4>{connection.connection_type_name}</h4>
               <p>{connection.connection_description}</p>
               <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
               <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>

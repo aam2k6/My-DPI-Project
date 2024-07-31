@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import "./guestuser.css";
+
 export const Guestusers = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,21 +16,8 @@ export const Guestusers = () => {
   const [filteredConnections, setFilteredConnections] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
-//   const { locker, connection: connectionType } = location.state || {};
-
-
-const connectionType = location.state.connection;
-const locker = location.state.locker;
-// const connection=connectionType;
-
-useEffect(() => {
-    if (connectionType && locker) {
-      console.log('Connection:', connectionType);
-      console.log('Locker:', locker);
-      // Use connectionType and locker as needed
-    }
-  }, [connectionType, locker]);
- 
+  // Destructure connection and locker from location.state with fallback to empty object
+  const { connection: connectionType = null, locker = null } = location.state || {};
 
   useEffect(() => {
     if (!curruser) {
@@ -37,50 +25,44 @@ useEffect(() => {
       return;
     }
 
-    const token = Cookies.get('authToken');
-
-    if (!locker || !connectionType) {
+    if (!connectionType || !locker) {
       setError("Locker or Connection Type information is missing.");
       return;
     }
 
+    const token = Cookies.get('authToken');
     const params = new URLSearchParams({
-        connection_type_name: connectionType.connection_type_name,
-        host_locker_name: locker.name,
-        host_user_username: curruser.username
-      });
-    
-      fetch(`http://localhost:8000/get-guest-user-connection/?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
+      connection_type_name: connectionType.connection_type_name,
+      host_locker_name: locker.name,
+      host_user_username: curruser.username
+    });
+
+    fetch(`http://localhost:8000/get-guest-user-connection/?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.connections) {
+          setConnections(data.connections);
+          setFilteredConnections(data.connections);
+        } else {
+          setError("No connections found.");
         }
       })
-        .then(response => {
-          if (!response.ok) {
-            console.error('Response not OK:', response);
-            console.error('Response status:', response.status);
-            console.error('Response text:', response.statusText);
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log("Response Data:", data);
-          if (data.connections) {
-            setConnections([data.connections]);
-            setFilteredConnections([data.connections]);
-          } else {
-            setError("No connections found.");
-          }
-        })
-        .catch(error => {
-          setError("An error occurred while fetching connection details.");
-          console.error("Error:", error);
-        });
-      
-    }, [curruser, navigate, locker, connectionType]);
+      .catch(error => {
+        setError("An error occurred while fetching connection details.");
+        console.error("Error:", error);
+      });
+  }, [curruser, navigate, locker, connectionType]);
 
   const handleHomeClick = () => {
     navigate('/home');
@@ -92,18 +74,18 @@ useEffect(() => {
 
   const handleAdmin = () => {
     navigate('/admin');
-  }
+  };
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
-  }
+  };
 
   const handleLogout = () => {
     Cookies.remove('authToken');
     localStorage.removeItem('curruser');
     setUser(null);
     navigate('/');
-  }
+  };
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -114,7 +96,7 @@ useEffect(() => {
   };
 
   const handleConnectionClick = (connection) => {
-    navigate(`/connection-details`, { state: { connection } });
+    navigate("/guest-terms-review", { state: { connection ,connectionType} });
   };
 
   return (
@@ -123,13 +105,10 @@ useEffect(() => {
         <div className="wrap">
           {connectionType && (
             <>
-              <div className="navbarBrand">{connectionType.connection_type_name}</div>
+              <div className="navbarBrand">{connectionType.connection_type_name} </div>
               <div className="description">{connectionType.connection_description}</div>
               <div id='conntentguest'>Created On: {new Date(connectionType.created_time).toLocaleDateString()}</div>
-               <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div> 
-              {/* <div className="description">{locker.name}</div> */}
-               
-
+              <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div>
             </>
           )}
         </div>
@@ -168,7 +147,6 @@ useEffect(() => {
       <div className="page5heroContainer">
         <h4 className='guestusers'>Guest Users</h4>
         <div className="search">
-            
           <form onSubmit={handleSearch}>
             <div className="searchContainer">
               <div className="inputContainer">
@@ -200,5 +178,6 @@ useEffect(() => {
         </div>
       </div>
     </div>
+
   );
 };

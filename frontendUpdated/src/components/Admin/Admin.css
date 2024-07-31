@@ -1,164 +1,79 @@
-.page8connections{
-    /* border: 2px solid rgb(107, 120, 231); */
-    height: 4rem;
-    
-    width:20rem;
-      padding: 1rem;
-      margin-left: 1rem;
-      margin-top: 1rem;
-      /* overflow-x: auto; */
-      /* overflow-y: auto; */
-      max-width: 20rem;
-      font-weight: 400;
-      
-      color:black;
-      text-decoration: underline;
-      font-size: 1.25rem;
-      display: flex;
-      align-items: baseline;
-      
-  }
-  .page8connections h4{
-    margin-right: 2rem;
-    font-weight: 400;
-  }
-  .page8connections button{
-    height: fit-content;
+.page8connections {
+  border: 1px solid rgb(107, 120, 231);
+  border-radius: 0.5rem;
+  height: auto; /* Adjusted to fit content */
+  width: 20rem;
+  padding: 1rem;
+  margin-left: 1rem;
+  margin-top: 1rem;
+  overflow: hidden;
+  font-weight: 400;
+  color: black;
+  background-color: #f8f9fa; /* Light background color for better readability */
+  text-decoration: none;
+  font-size: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-  }
+.page8connections h4 {
+  margin-right: 2rem;
+  font-weight: 500; /* Slightly bolder font weight */
+  margin-bottom: 0.5rem; /* Added space below the title */
+}
 
- .descriptionadmin{
+.page8connections p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333; /* Darker color for better readability */
+}
+
+.page8connections button {
+  height: fit-content;
+  margin-top: 1rem; /* Space above the button */
+  padding: 0.5rem 1rem; /* Added padding for better click area */
+  border: 1px solid #007bff; /* Border color matches the button */
+  border-radius: 0.25rem;
+  background-color: #fff; /* White background for the button */
+  color: #007bff; /* Button text color */
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.page8connections button:hover {
+  background-color: #007bff; /* Button background color on hover */
+  color: #fff; /* Button text color on hover */
+  border: 1px solid #007bff; /* Keep border color on hover */
+}
+
+.descriptionadmin {
   font-size: 1.45rem;
   font-weight: bold;
   text-align: center;
- }
-  
- .adminbuttonpar{
-  width: 80rem;
-  margin-left: 80rem;
- }
+  margin-bottom: 1rem; /* Added space below the description */
+}
 
-  .page8parent{
-    padding: 1rem;
-    height: 17rem;
-    border: 2px solid rgb(107, 120, 231);
-    margin: 2rem;
-    width: 40rem;  
-    
-    max-height: 17rem;
-    /* overflow-y: auto; */
-    overflow-x: auto;
-    overflow-y: auto;
-  }
-  .page8connections button:hover{
-      color: darkblue;
-      cursor: pointer;
-  }
-  .page8connections h4{
-    /* border: 1px solid red; */
-    width: 40rem;
-  }
+.page8parent {
+  padding: 1rem;
+  border: 2px solid rgb(107, 120, 231);
+  margin: 2rem;
+  width: 100%; /* Adjusted to use full width of the parent container */
+  max-width: 80rem; /* Ensures a reasonable max width */
+  max-height: 17rem;
+  overflow-x: auto;
+  overflow-y: auto;
+}
 
-  .admin-btn{
-    background-color: #007bff;
-    color: #fff;
-    width: auto;
-    border: none;
-    padding: 1rem 0.75rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    font-weight: bolder;
-    /* padding: 0.5rem 0.25rem;  */
-    max-width: 20rem;
-    /* margin-top: 4rem; */
-    /* margin-left: 90rem; */
-    margin-left: 85rem;
-  }
-
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem 0 1rem;
-
-  }
-  
-  .navbarBrand {
-    font-weight: bolder;
-    font-size: 1.5625rem;
-    margin-left: 2rem;
-  }
-
-  .wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .description {
-    font-size: 0.995rem; /* Slightly smaller font size for the description */
-    color: rgb(44, 41, 41); /* Different color to distinguish from the name */
-    margin-left: 2rem;
-  }
-
- .navbarLinks{
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-    margin-left: auto;
-    
- }
-  
-  .navbarFirstLink {
-    list-style: none;
-    display: flex;
-    
-  }
-
-  .navbarSecondLink {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .navbarThirdLink {
-    list-style: none;
-    display: flex;
-    position: relative;
-  }
-  
-  .navbarFirstLink a {
-    color: black;
-    text-decoration: none;
-    font-weight: bolder;
-    margin: 0 2rem;
-    font-size: 1.25rem;
-  }
-
-  .navbarSecondLink li {
-    margin-bottom: 2rem; /* Add space between the Home and Admin links */
-  }
-
-  .navbarSecondLink a {
-    color: black;
-    text-decoration: none;
-    font-weight: bolder;
-    margin: 0 2rem;
-    font-size: 1.25rem;
-  }
-
-  .navbarThirdLink a {
-    color: black;
-    text-decoration: none;
-    font-weight: bolder;
-    margin: 0 2rem;
-    font-size: 1.25rem;
-  }
-  
-  .navbarLinks img {
-    height: 50px;
-    width: auto;
-    margin-right: 3rem;
-  }
+.admin-btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 1rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: bolder;
+  max-width: 20rem;
+  margin-left: 4rem; /* Center align button horizontally */
+  margin-right: auto; /* Center align button horizontally */
+  display: block; /* Ensure the button is displayed as a block */
+}

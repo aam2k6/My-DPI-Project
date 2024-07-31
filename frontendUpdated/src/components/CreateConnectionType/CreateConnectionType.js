@@ -26,7 +26,7 @@ export const CreateConnectionType = () => {
         }
 
         const token = Cookies.get('authToken');
-        fetch('http://localhost:8000/get-lockers-user/', {
+        fetch('http://172.16.192.201:8000/get-lockers-user/', {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`,
@@ -54,7 +54,7 @@ export const CreateConnectionType = () => {
         if (parentUser && locker) {
             const token = Cookies.get('authToken');
             const params = new URLSearchParams({ guest_locker_name: locker.name, guest_username: parentUser.username });
-            fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
+            fetch(`http://172.16.192.201:8000/get-other-connection-types/?${params}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Basic ${token}`,
@@ -114,16 +114,74 @@ export const CreateConnectionType = () => {
         setIsOpen(!isOpen);
     };
 
-    const handleNextClick = () => {
-        navigate('/show-connection-terms', {
-            state: {
-                selectedConnectionType,
-                selectedLocker,
-                parentUser,
-                locker
-            }
+   const handleNextClick = async (event) => {
+    event.preventDefault();
+    console.log('Next button clicked');
+
+    const token = Cookies.get('authToken');
+    if (!selectedConnectionType || !parentUser || !curruser || !locker || !selectedLocker) {
+        console.error('Missing necessary data to create connection');
+        setError("Required data is missing.");
+        return;
+    }
+
+    console.log('All necessary data is available:', {
+        selectedConnectionType,
+        parentUser,
+        curruser,
+        locker,
+        selectedLocker
+    });
+
+    const formData = new FormData();
+    formData.append('connection_type_name', selectedConnectionType.connection_type_name);
+    formData.append('connection_name', `${locker.name}:${selectedLocker.name}`);
+    formData.append('connection_description', selectedConnectionType.connection_description);
+    formData.append('host_locker_name', locker.name);
+    formData.append('guest_locker_name', selectedLocker.name);
+    formData.append('host_user_username', parentUser.username);
+    formData.append('guest_user_username', curruser.username);
+
+    try {
+        console.log('Sending request to create connection');
+        const response = await fetch('http://172.16.192.201:8000/create-new-connection/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${token}`,
+            },
+            body: formData
         });
-    };
+
+        console.log('Request sent, awaiting response');
+        if (!response.ok) {
+            // console.error(HTTP error! Status: ${response.status});
+            // throw new Error(HTTP error! Status: ${response.status});
+        }
+
+        const data = await response.json();
+        const connectionname=`${locker.name}:${selectedLocker.name}`;
+        console.log('Response data:', data);
+        if (data.success) {
+            console.log('Navigation to show connection terms');
+            navigate('/show-connection-terms', {
+                state: {
+                    selectedConnectionType,
+                    selectedLocker,
+                    parentUser,
+                    locker,
+                    connectionname
+                }
+            });
+        } else {
+            console.error('Server error:', data.error);
+            setError(data.error || 'Failed to create connection');
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        setError("An error occurred while creating the connection.");
+    }
+};
+
 
     return (
 

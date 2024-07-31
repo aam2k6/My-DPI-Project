@@ -19,7 +19,8 @@ export const ViewLocker = () => {
 
   const [connections, setConnections] = useState({ incoming_connections: [], outgoing_connections: [] });
   const [otherConnections, setOtherConnections] = useState([]); // State for other connections
-  
+  const [trackerData, setTrackerData] = useState(null);
+
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -32,7 +33,7 @@ export const ViewLocker = () => {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name });
 
-      const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
+      const response = await fetch(`http://172.16.192.201:8000/connection_types/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -41,7 +42,9 @@ export const ViewLocker = () => {
       });
       const data = await response.json();
       if (data.success) {
+        
         setOtherConnections(data.connection_types);
+        fetchAllTrackerData(data.connections.outgoing_connections);
       } else {
         setError(data.message);
       }
@@ -56,7 +59,7 @@ export const ViewLocker = () => {
         const token = Cookies.get('authToken');
         const params = new URLSearchParams({ locker_name: locker.name });
 
-        const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
+        const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,
@@ -71,6 +74,7 @@ export const ViewLocker = () => {
         const data = await response.json();
         if (data.success) {
           setConnections(data.connections);
+          fetchAllTrackerData(data.connections.outgoing_connections);
         } else {
           setError(data.message || 'Failed to fetch connections');
         }
@@ -85,7 +89,7 @@ export const ViewLocker = () => {
         const token = Cookies.get('authToken');
         const params = new URLSearchParams({ locker_name: locker.name });
 
-        const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
+        const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?${params}`, {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,
@@ -116,6 +120,59 @@ export const ViewLocker = () => {
     }
   }, [locker]);
 
+
+  const fetchAllTrackerData = (outgoingConnections) => {
+    outgoingConnections.forEach(connection => {
+      fetchTrackerData(connection);
+    });
+  };
+
+  const fetchTrackerData = async (connection) => {
+
+
+    console.log("inside fetch tracker data");
+    try {
+      const token = Cookies.get('authToken');
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username
+      });
+
+      const response = await fetch(`http://172.16.192.201:8000/get-terms-status/?${params}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch tracker data');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setTrackerData(prevState => ({
+          ...prevState,
+          [connection.connection_id]: data.status
+        }));
+
+        console.log(trackerData.count_T);
+        console.log(trackerData.count_F);
+
+
+      } else {
+        setError(data.message || 'Failed to fetch tracker data');
+      }
+    } catch (error) {
+      console.error('Error fetching tracker data:', error);
+      setError('An error occurred while fetching tracker data');
+    }
+  };
+
   const handleUploadResource = () => {
     navigate('/upload-resource', { state: { locker } });
   }
@@ -125,7 +182,7 @@ export const ViewLocker = () => {
   }
 
   const handleResourceClick = (filePath) => {
-    const url = `http://localhost:8000/media/${filePath}`;
+    const url = `http://172.16.192.201:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 
@@ -145,6 +202,21 @@ export const ViewLocker = () => {
     navigate('/home');
   };
 
+  const handleTracker = (connection) => {
+    // console.log(connection.host_locker?.name);
+    navigate('/view-terms-by-type', {
+      state: {
+        connectionName: connection.connection_name,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: locker
+      }
+    });
+  }
+
+
   const handleDocsClick = () => {
     console.log("Open Docs button clicked");
   };
@@ -160,10 +232,8 @@ export const ViewLocker = () => {
     setUser(null);
     navigate('/');
   }
-//locker  bhi state se paas krra
+  //locker  bhi state se paas krra
   const handleConnectionClick = (connection) => {
-    // navigate('/show-guest-users', { state: { connection } ,{locker} }); // Change '/next-page' to your desired route
-    // navigate('/show-guest-users', { state: { connection, locker } });
     navigate('/show-guest-users', { state: { connection, locker } });
 
 
@@ -279,6 +349,9 @@ export const ViewLocker = () => {
                     <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
                     <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
                     <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
+                    <div className='tracker'><button onClick={() => handleTracker(connection)}>
+                      {trackerData ? `${trackerData.count_T} / ${trackerData.count_T + trackerData.count_F}` : 'Loading...'}
+                    </button></div>
                   </div>
                 ))
               ) : (

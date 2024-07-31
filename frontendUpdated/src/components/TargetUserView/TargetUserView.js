@@ -62,7 +62,7 @@ export const TargetUserView = () => {
         console.log('Fetching lockers with params:', params.toString());
         console.log('User object:', user);
 
-        const response = await fetch(`http://localhost:8000/get-lockers-user/?${params}`, {
+        const response = await fetch(`http://172.16.192.201:8000/get-lockers-user/?${params}`, {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,

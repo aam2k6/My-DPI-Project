@@ -17,6 +17,7 @@ import { CreateConnectionTerms } from './components/CreateConnectionTerms/Create
 import { usercontext } from './usercontext';
 import { ViewTermsByType } from './components/ViewTermsByTypeUser/ViewTermsByType';
 import { Guestusers } from './components/Guest-users/Guestusers';
+import { Guesttermsreview } from './components/GuestTermsReview/Guesttermsreview';
 
 
 function App() {
@@ -67,6 +68,8 @@ function App() {
                         <Route path="/make-connection" element={<ProtectedRoute><CreateConnectionType /></ProtectedRoute>} />
                         <Route path="/show-connection-terms" element={<ProtectedRoute><CreateConnectionTerms /></ProtectedRoute>} />
                         <Route path="/show-guest-users" element={<ProtectedRoute><Guestusers /></ProtectedRoute>} />
+                        <Route path="/guest-terms-review" element={<ProtectedRoute><Guesttermsreview /></ProtectedRoute>} />
+                    
 
                         <Route path="*" element={<h1>Page Not Found</h1>} />
                     </Routes>

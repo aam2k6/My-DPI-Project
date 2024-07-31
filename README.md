@@ -1,4 +1,4 @@
-# IUDX-DATA TRUSTS
+# IUDX- POLICY BASED CONSENT SERVICE ARCHITECTURE
 
 API Documentation link:
 https://app.swaggerhub.com/apis/CHITNISKANIKA/Locker/1.0.0#/

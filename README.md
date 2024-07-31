@@ -6,12 +6,12 @@ https://app.swaggerhub.com/apis/CHITNISKANIKA/Locker/1.0.0#/
 Managing data sharing in compliance with regulations and obtaining consent from data owners can be complex.  To address this, we are developing a web application specifically designed to streamline the consent management process, ensuring that data sharing is both open-ended and compliant.​
 
 ## Prerequisites
-•	Python 3.x
-•	Django 5.0.6
-•	Django REST framework
-•	Django REST framework authtoken
-•	SQLite (or another database, if configured)
-•	Node.js and npm (for the frontend)
+- Python 3.x
+- Django 5.0.6
+- Django REST framework
+- Django REST framework authtoken
+- SQLite (or another database, if configured)
+- Node.js and npm (for the frontend)
 
 Steps to Run
 

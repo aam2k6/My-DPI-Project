@@ -17,18 +17,45 @@ Managing data sharing in compliance with regulations and obtaining consent from 
 #### Locker Management
 - Resource Organization: Lockers serve as primary storage for user content.
 - Collaborative Management: Connections between lockers enable collaborative sharing and resource management.
+  
+/createlocker- creates new locker 
+
+Eg: Education locker which hold the education documents
 
 #### Connections
 - User Connections: Establish links between users through connections.
 - Locker Connections: Connections link the lockers of different users.
 
+/create_new_connection-creates a new connection
+  
+Eg: ApplicationId
+
 #### Connection Types
 - Diverse Interactions: Define various connection types (e.g., BTech, MTech, staff admissions) with specific attributes and rules.
 - Categorization: Helps categorise and manage connections based on purpose and requirements.
 
+/create_new_connection-creates a new connection type
+
+Eg:Mtech 2024 Admission-contains details for Mtech 2024 Admissions
+
 #### Connection Terms
 - Customizable Terms: Define terms for connection types, specifying rules and conditions.
 - Governance and Control: Tailor connections to specific needs, ensuring proper governance over shared resources.
+
+/create_conntype_connterms-create new connection terms
+
+Eg: "obligations":
+            "labelName": "Graduation Batch",
+            "typeOfAction": "Add Value",
+            "typeOfSharing": "Share",
+            "labelDescription": "It is obligatory to submit your graduation batch in order to accept the terms of this connection",
+            "hostPermissions": ["Re-share", "Download"]
+            "permissions": "canShareMoreData": true,  "canDownloadData": false
+
+## Work Flow
+![Connection Type (1)](https://github.com/user-attachments/assets/8466c8cb-9d82-4df7-ba9f-6891f34777b2)
+
+
 
 ## Prerequisites
 - Python 3.x

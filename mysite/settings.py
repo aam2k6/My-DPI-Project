@@ -165,5 +165,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CRONJOBS = [
-    ('*/30 * * * *', 'api.tasks.check_connections_valid_until'),
+    ('*/5 * * * *', 'api.tasks.check_connections_valid_until'),
 ]

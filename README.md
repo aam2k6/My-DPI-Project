@@ -3,55 +3,15 @@
 API Documentation link:
 https://app.swaggerhub.com/apis/CHITNISKANIKA/Locker/1.0.0#/
 
-This Django-based web application includes various endpoints to create, retrieve, update, and delete resources and lockers. It also includes endpoints to view specific pages within the application.
+Managing data sharing in compliance with regulations and obtaining consent from data owners can be complex.  To address this, we are developing a web application specifically designed to streamline the consent management process, ensuring that data sharing is both open-ended and compliant.​
 
-api/: Contains the Django app responsible for the API.
-
-admin.py: Configuration for the Django admin interface for the API models.
-
-apps.py: Configuration for the API application.
-
-models.py: Defines the database models for the DPI primitives.
-
-serializers.py: Serializers to convert model instances to JSON and vice versa.
-
-tests.py: Unit tests for the API endpoints.
-
-urls.py: URL routes for the API endpoints.
-
-views.py: Contains the logic for handling API requests.
-
-mysite/: Contains the settings and configuration for the Django project.
-
-urls.py: URL routes for the main project.
-
-static/: Directory for static files (CSS, JavaScript, images).
-
-templates/: Directory for HTML templates.
-
-db.sqlite3: SQLite database file.
-
-manage.py: Command-line utility for managing the Django project.
-
-API Endpoints
-GET /api/primitives/: Retrieve a list of all DPI primitives.
-
-POST /api/primitives/: Create a new DPI primitive.
-
-GET /api/primitives/{id}/: Retrieve a specific DPI primitive by its ID.
-
-PUT /api/primitives/{id}/: Update a specific DPI primitive by its ID.
-
-DELETE /api/primitives/{id}/: Delete a specific DPI primitive by its ID.
-
-
-How to Run the Project
-Prerequisites
+## Prerequisites
 •	Python 3.x
-
-•	Django
-
+•	Django 5.0.6
+•	Django REST framework
+•	Django REST framework authtoken
 •	SQLite (or another database, if configured)
+•	Node.js and npm (for the frontend)
 
 Steps to Run
 

@@ -564,7 +564,7 @@ def create_new_connection(request):
         terms = ConnectionTerms.objects.filter(conn_type=connection_type, modality='obligatory')
         terms_value = {}
         for term in terms:
-            terms_value[term.data_element_name] = '; None'
+            terms_value[term.data_element_name] = '; F'
 
         resource_json = {}
         for term in terms:

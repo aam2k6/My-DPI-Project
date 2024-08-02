@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from datetime import timedelta
 
@@ -43,7 +43,22 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return self.username
-
+    
+class GlobalCounter(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    value = models.PositiveIntegerField(default=0)
+    
+    @classmethod
+    def get_next_value(cls, name):
+        # Use atomic transaction to ensure thread safety
+        with transaction.atomic():
+            counter, created = cls.objects.get_or_create(name=name)
+            counter.value += 1
+            counter.save()
+            return counter.value
+        
+def generate_global_id(counter_name):
+    return GlobalCounter.get_next_value(name=counter_name)
 
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
@@ -63,6 +78,7 @@ def default_validity_time():
 
 class ConnectionType(models.Model):
     connection_type_id = models.AutoField(primary_key=True)
+    # connection_type_id = models.PositiveIntegerField(primary_key=True, default=lambda: generate_global_id('connection_type'), editable=False)
     connection_type_name = models.CharField(max_length=50)
     connection_description = models.TextField(blank=True, null=True)
     owner_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='owner_user')
@@ -113,21 +129,6 @@ class Resource(models.Model):
         return self.document_name
 
 
-class ConnectionTerms(models.Model):
-    MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
-    terms_id = models.AutoField(primary_key=True)
-    conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE)
-    modality = models.CharField(max_length=50, choices=MODALITY_CHOICES, default='obligatory')
-    data_element_name = models.CharField(max_length=50)
-    host_permissions = models.JSONField(default=list)
-    data_type = models.CharField(max_length=50)
-    sharing_type = models.CharField(max_length=50)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.modality} - {self.data_element_name}"
-
-
 class Vnode(models.Model):
     vnode_id = models.AutoField(primary_key=True)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
@@ -152,14 +153,26 @@ class Snode(models.Model):
 
 
 class GlobalConnectionTypeTemplate(models.Model):
-    connection_Type_Template_Id = models.AutoField(primary_key=True)
-    connection_Type_Name = models.CharField(max_length=200, default="Test type name")
-    connection_Type_Description = models.CharField(max_length=200, default="test type description")
+    connection_type_template_id = models.AutoField(primary_key=True)
+    connection_type_name = models.CharField(max_length=200, default="Test type name")
+    connection_type_description = models.CharField(max_length=200, default="test type description")
 
 class ConnectionTypeRegulationLinkTable(models.Model):
     link_Id = models.AutoField(primary_key=True)
-    connection_Type_Id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True)
-    conection_Template_Id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True)
+    connection_Type_Id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True) # Actually this is not the ID, it is the complete ConnectionType instance.
+    conection_Template_Id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) # Actually this is not the ID, it is the complete GlobalConnectionTypeTemplate instance.
 
+class ConnectionTerms(models.Model):
+    MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
+    terms_id = models.AutoField(primary_key=True)
+    conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE, null=True)
+    global_conn_type = models.ForeignKey(GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True)
+    modality = models.CharField(max_length=50, choices=MODALITY_CHOICES, default='obligatory')
+    data_element_name = models.CharField(max_length=50)
+    host_permissions = models.JSONField(default=list)
+    data_type = models.CharField(max_length=50)
+    sharing_type = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
 
-
+    def __str__(self):
+        return f"{self.modality} - {self.data_element_name}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Locker, Connection, Resource, ConnectionType, ConnectionTerms, Snode, Vnode
+from .models import CustomUser, Locker, Connection, Resource, ConnectionType, ConnectionTerms, Snode, Vnode, GlobalConnectionTypeTemplate, ConnectionTypeRegulationLinkTable
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -71,3 +71,29 @@ class ConnectionFilterSerializer(serializers.ModelSerializer):
         model = Connection
         fields = ["connection_id", "connection_name", "connection_type", "host_locker", "guest_locker",
                   "host_user", "guest_user", "validity_time", "is_frozen"]
+
+class GlobalConnectionTypeTemplatePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GlobalConnectionTypeTemplate
+        exclude = [
+            'connection_type_template_id'
+        ]
+        depth = 1
+
+class GlobalConnectionTypeTemplateGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GlobalConnectionTypeTemplate
+        depth = 1
+
+class ConnectionTypeRegulationLinkTablePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConnectionTypeRegulationLinkTable
+        exclude = [
+            'link_Id'
+        ]
+        depth = 1
+
+class ConnectionTypeRegulationLinkTableGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConnectionTypeRegulationLinkTable
+        depth = 1

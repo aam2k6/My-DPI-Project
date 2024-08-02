@@ -7,22 +7,41 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes, user_passes_test
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType, \
-    ConnectionTermsSerializer, ConnectionFilterSerializer
-from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms
+    ConnectionTermsSerializer, ConnectionFilterSerializer, GlobalConnectionTypeTemplatePostSerializer, GlobalConnectionTypeTemplateGetSerializer, ConnectionTypeRegulationLinkTableGetSerializer, ConnectionTypeRegulationLinkTablePostSerializer
+from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms, GlobalConnectionTypeTemplate
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse, FileResponse, HttpResponseForbidden
 from django.db import models
 from rest_framework.parsers import JSONParser
 from django.views.decorators.http import require_POST
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_datetime
 from datetime import datetime
+from functools import wraps
 
+def is_sys_admin(user:CustomUser):
+    return (user.user_type == CustomUser.SYS_ADMIN)
+
+def is_moderator(user:CustomUser):
+    return (user.user_type == CustomUser.MODERATOR)
+
+def is_user(user:CustomUser):
+    return (user.user_type == CustomUser.USER)
+
+def role_required(user_type):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if request.user.is_authenticated and request.user.user_type == user_type:
+                return view_func(request, *args, **kwargs)
+            return HttpResponseForbidden()
+        return _wrapped_view
+    return decorator
 
 @csrf_exempt
 @api_view(['POST'])
@@ -1608,3 +1627,124 @@ def get_connection_details(request):
 
         # Return appropriate response
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+@role_required(CustomUser.SYS_ADMIN)
+def create_Global_Connection_Type_Template(request):
+    """
+    This API is used to create a new global connection type. This API is allowed only for system admins.
+    Response Codes:
+        - 201: Successfully created a global connection type.
+        - 400: The data sent in the request is invalid, missing or malformed.
+    """
+    data = request.data
+    try:
+        serializer = GlobalConnectionTypeTemplatePostSerializer(data=data)
+        if not serializer.is_valid():
+            return JsonResponse({
+                'status': 400,
+                'errors': serializer.errors
+            })
+        serializer.save()
+        return JsonResponse({
+            'status': 201,
+            'message': 'Global connection type created successfully.'
+        })
+    except Exception as e:
+        print(e)
+        return JsonResponse({
+            'message': 'Something went wrong.',
+            'error': e
+        })
+    
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_Global_Connection_Type(request):
+    """
+    This API is used to get all global connection type templates or a particular one if the ID is mentioned in the request.
+    """
+    id = request.GET.get('connection_type_template_id', None)
+    if id is not None:
+        global_Connection_Types = GlobalConnectionTypeTemplate.objects.filter(connection_type_template_id=id)
+        if global_Connection_Types.exists():
+            serializer = GlobalConnectionTypeTemplateGetSerializer(global_Connection_Types.first())
+            return JsonResponse({
+                'global_connection': serializer.data
+            })
+        else:
+            return JsonResponse({
+                'message': f'global connection type template with ID = {id} does not exist.'
+            })
+    else:
+        global_Connection_Types = GlobalConnectionTypeTemplate.objects.all()
+        serializer = GlobalConnectionTypeTemplateGetSerializer(global_Connection_Types, many=True)
+        return JsonResponse({
+            'data': serializer.data
+        })
+    
+@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def connect_Global_Connection_Type_Template_And_Connection_Type(request):
+    template_Id = request.GET.get('template_Id')
+    type_Id = request.GET.get('type_Id')
+    data = {
+        'connection_Type_Id': '',
+        'connection_Template_Id': ''
+    }
+    template = GlobalConnectionTypeTemplate.objects.filter(connection_type_template_id=template_Id)
+    if not template.exists():
+        return JsonResponse({
+            'message': f'Global connection type template with ID = {template_Id} does not exist.'
+        })
+    else:
+        connection_Type = ConnectionType.objects.filter(connection_type_id=type_Id)
+        if not connection_Type.exists():
+            return JsonResponse({
+                'message': f'Connection type with ID = {type_Id} does not exist.'
+            })
+        else:
+            data['connection_Template_Id'] = template.first()
+            data['connection_Type_Id'] = connection_Type.first()
+            try:
+                serializer = ConnectionTypeRegulationLinkTablePostSerializer(data=data)
+                if not serializer.is_valid():
+                    return JsonResponse({
+                        'status': 400,
+                        'errors': serializer.errors
+                    })
+                serializer.save()
+                return JsonResponse({
+                    'status': 201,
+                    'message': f'Connection type with ID = {type_Id} linked successfully to global connection type template with ID = {template_Id}'
+                })
+            except Exception as e:
+                print(e)
+                return JsonResponse({
+                    'message': 'Something went wrong.',
+                    'error': e
+                })
+            
+@csrf_exempt
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
+    template_Id = request.GET.get('template_Id')
+    template = GlobalConnectionTypeTemplate.objects.filter(connection_type_template_id=template_Id)
+    if not template.exists():
+        return JsonResponse({
+            'message': f'global conection type template with ID = {template_Id} does not exist.'
+        })
+    else:
+        terms = ConnectionTerms.objects.filter(global_conn_type=template.first())
+        serializer = ConnectionTermsSerializer(data=terms, many=True)
+        return JsonResponse({
+            'data': serializer.data
+        })   

@@ -33,7 +33,11 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                path('update-connection-terms/', views.update_connection_terms, name='update_connection_terms'),
                path('get-terms-status/', views.get_terms_status, name='get_terms_status'),
                path('transfer-resource/', views.transfer_resource, name='transfer_resource'),
-                path('get-connection-details/', views.get_connection_details, name='get_connection_details'),
+               path('get-connection-details/', views.get_connection_details, name='get_connection_details'),
+               path('/get-connection-terms-for-global-template', view=views.get_All_Connection_Terms_For_Global_Connection_Type_Template, name='get_Connection_Terms_For_Global_Template'),
+               path('add-global-template', view=views.create_Global_Connection_Type_Template, name='create_global_template'),
+               path('connect-type-to-template', view=views.connect_Global_Connection_Type_Template_And_Connection_Type, name='connect_type_to_template'),
+               path('get-template-or-templates', view=views.get_Global_Connection_Type, name='get_template_or_templates')
                ]
 
 if settings.DEBUG:

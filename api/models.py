@@ -149,3 +149,14 @@ class Snode(models.Model):
 
     def __str__(self):
         return self.snode_id
+
+
+class GlobalConnectionTypeTemplate(models.Model):
+    connection_Type_Template_Id = models.AutoField(primary_key=True)
+    connection_Type_Name = models.CharField(max_length=200, default="Test type name")
+    connection_Type_Description = models.CharField(max_length=200, default="test type description")
+
+class ConnectionTypeRegulationLinkTable(models.Model):
+    link_Id = models.AutoField(primary_key=True)
+    connection_Type_Id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True)
+    conection_Template_Id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True)

@@ -20,6 +20,7 @@ export const Guesttermsreview = () => {
     const [statuses, setStatuses] = useState({});
 
     const { connection, connectionType } = location.state || {};
+    const [conndetails, setconndetails] = useState([]);
 
     useEffect(() => {
         if (!curruser) {
@@ -53,10 +54,12 @@ export const Guesttermsreview = () => {
 
         const fetchConnectionDetails = async () => {
             try {
+                const token = Cookies.get('authToken');
                 const response = await fetch(`http://localhost:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Basic ${token}`
                     },
                 });
                 if (!response.ok) {
@@ -65,6 +68,14 @@ export const Guesttermsreview = () => {
                 const data = await response.json();
                 if (data.connections) {
                     setTermsValue(data.connections.terms_value || {});
+                    setconndetails(data.connections);
+
+                    // Set initial statuses based on terms_value
+                    const initialStatuses = {};
+                    for (const [key, value] of Object.entries(data.connections.terms_value || {})) {
+                        initialStatuses[key] = value.endsWith(';T') ? 'approved' : 'rejected';
+                    }
+                    setStatuses(initialStatuses);
                 }
             } catch (err) {
                 setError(err.message);
@@ -108,33 +119,48 @@ export const Guesttermsreview = () => {
     const handleSave = async () => {
         try {
             const token = Cookies.get('authToken');
+    
+            // Construct terms_value from the current statuses
             const terms_value = res?.obligations.reduce((acc, obligation, index) => {
-                const status = statuses[index] === 'approved' ? 'T' : 'F';
-                const resourceName = obligation.resource || "";
+                const status = statuses[obligation.labelName] === 'approved' ? 'T' : 'F';
+                const resourceName = termsValue[obligation.labelName]?.split(";")[0] || "";
                 acc[obligation.labelName] = `${resourceName};${status}`;
                 return acc;
             }, {});
-
+    
+            // Extract resources from terms_value
+            const resources = {
+                Transfer: Object.values(terms_value).filter(value => value.includes(";T")).map(value => value.split(";")[0]),
+                Share: [] // Assuming Share is empty based on provided details
+            };
+    
+            const requestBody = {
+                "connection_name": conndetails.connection_name,
+                "host_locker_name": conndetails.host_locker.name,
+                "guest_locker_name": conndetails.guest_locker.name,
+                "host_user_username": conndetails.host_user.username,
+                "guest_user_username": conndetails.guest_user.username,
+                "terms_value": terms_value,
+                resources
+            };
+    
+            console.log("Request Body:", requestBody);
+    
             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Basic ${token}`
                 },
-                body: JSON.stringify({
-                    "connection_name": connection.connection_description,
-                    "host_locker_name": connection.host_locker.name,
-                    "guest_locker_name": connection.guest_locker.name,
-                    "host_user_username": connection.host_user.username,
-                    "guest_user_username": connection.guest_user.username,
-                    terms_value
-                }),
+                body: JSON.stringify(requestBody),
             });
-
+    
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Error Response:', errorText);
                 throw new Error('Failed to save statuses');
             }
-
+    
             const data = await response.json();
             if (data.success) {
                 alert('Statuses saved successfully');
@@ -143,10 +169,11 @@ export const Guesttermsreview = () => {
                 setError(data.error || 'Failed to save statuses');
             }
         } catch (err) {
+            console.error('Error:', err.message);
             setError(err.message);
         }
     };
-
+    
     const handleResourceClick = (filePath) => {
         const url = `http://localhost:8000/media/${filePath}`;
         window.open(url, "_blank");
@@ -202,8 +229,8 @@ export const Guesttermsreview = () => {
                                 <th>Name</th>
                                 <th>Enter Value</th>
                                 <th>Restrictions</th>
-                                <th>Approved</th>
-                                <th>Rejected</th>
+                                <th>Approve</th>
+                                <th>Reject</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -224,7 +251,8 @@ export const Guesttermsreview = () => {
                                             type="radio"
                                             name={`status-${index}`}
                                             value="approved"
-                                            onChange={() => handleStatusChange(index, 'approved')}
+                                            checked={statuses[obligation.labelName] === 'approved'}
+                                            onChange={() => handleStatusChange(obligation.labelName, 'approved')}
                                         />
                                     </td>
                                     <td>
@@ -232,7 +260,8 @@ export const Guesttermsreview = () => {
                                             type="radio"
                                             name={`status-${index}`}
                                             value="rejected"
-                                            onChange={() => handleStatusChange(index, 'rejected')}
+                                            checked={statuses[obligation.labelName] === 'rejected'}
+                                            onChange={() => handleStatusChange(obligation.labelName, 'rejected')}
                                         />
                                     </td>
                                 </tr>

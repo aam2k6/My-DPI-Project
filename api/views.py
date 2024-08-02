@@ -1478,7 +1478,7 @@ def get_terms_status(request):
     """
     Request Body:
     {
-        "connection_name": "Application No. 4",
+        "connection_name": "Connection No. 1",
         "host_locker_name": "Admissions",
         "guest_locker_name": "Education",
         "host_user_username": "iiitb",
@@ -1515,6 +1515,8 @@ def get_terms_status(request):
 
         count_T = 0
         count_F = 0
+        filled = 0
+        empty = 0
 
         terms_value = connection.terms_value
         for key, value in terms_value.items():
@@ -1523,9 +1525,17 @@ def get_terms_status(request):
             elif value.endswith('; F'):
                 count_F += 1
 
-        return JsonResponse({'success': True, 'count_T': count_T, 'count_F': count_F}, status=200)
+        for key, value in terms_value.items():
+            stripped_value = value.rstrip('; F').rstrip('; T')
+            if stripped_value:
+                filled += 1
+            elif value == "; F":
+                empty += 1
+
+        return JsonResponse({'success': True, 'count_T': count_T, 'count_F': count_F, 'empty': empty, 'filled': filled}, status=200)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 
 @csrf_exempt

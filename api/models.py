@@ -160,3 +160,6 @@ class ConnectionTypeRegulationLinkTable(models.Model):
     link_Id = models.AutoField(primary_key=True)
     connection_Type_Id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True)
     conection_Template_Id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True)
+
+
+

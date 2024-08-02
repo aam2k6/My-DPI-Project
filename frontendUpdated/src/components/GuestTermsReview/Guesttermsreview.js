@@ -148,7 +148,7 @@ export const Guesttermsreview = () => {
     };
 
     const handleResourceClick = (filePath) => {
-        const url = `http://172.16.192.201:8000/media/${filePath}`;
+        const url = `http://localhost:8000/media/${filePath}`;
         window.open(url, "_blank");
     };
 

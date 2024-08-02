@@ -33,7 +33,7 @@ export const TargetLockerView = () => {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name, username: parentUser.username });
-      const response = await fetch(`http://172.16.192.201:8000/get-public-resources?${params}`, {
+      const response = await fetch(`http://localhost:8000/get-public-resources?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -55,7 +55,7 @@ export const TargetLockerView = () => {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ guest_username: parentUser.username, guest_locker_name: locker.name });
-      const response = await fetch(`http://172.16.192.201:8000/get-other-connection-types/?${params}`, {
+      const response = await fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -77,7 +77,7 @@ export const TargetLockerView = () => {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name ,username:parentUser.username});
-      const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
+      const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -120,7 +120,7 @@ export const TargetLockerView = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `http://172.16.192.201:8000/media/${filePath}`;
+    const url = `http://localhost:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 

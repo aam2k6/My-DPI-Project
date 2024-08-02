@@ -37,7 +37,7 @@ export const ViewTermsByType = () => {
             console.log("Inside fetch terms");
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+                const response = await fetch(`http://localhost:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ export const ViewTermsByType = () => {
             const fetchResources = async () => {
                 try {
                     const token = Cookies.get('authToken');
-                    const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+                    const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Basic ${token}`,
@@ -194,7 +194,7 @@ export const ViewTermsByType = () => {
 
         try {
             const token = Cookies.get('authToken');
-            const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+            const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

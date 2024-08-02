@@ -32,7 +32,7 @@ export const Connection = () => {
     useEffect(() => {
         const token = Cookies.get('authToken');
 
-        fetch('http://172.16.192.201:8000/get-lockers-user/', {
+        fetch('http://localhost:8000/get-lockers-user/', {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`,

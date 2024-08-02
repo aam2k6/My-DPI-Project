@@ -19,7 +19,7 @@ export const ViewLocker = () => {
 
   const [connections, setConnections] = useState({ incoming_connections: [], outgoing_connections: [] });
   const [otherConnections, setOtherConnections] = useState([]); // State for other connections
-  const [trackerData, setTrackerData] = useState(null);
+  const [trackerData, setTrackerData] = useState([]);
 
   useEffect(() => {
     if (!curruser) {
@@ -33,7 +33,7 @@ export const ViewLocker = () => {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ locker_name: locker.name });
 
-      const response = await fetch(`http://172.16.192.201:8000/connection_types/?${params}`, {
+      const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -42,9 +42,9 @@ export const ViewLocker = () => {
       });
       const data = await response.json();
       if (data.success) {
-        
+
         setOtherConnections(data.connection_types);
-        fetchAllTrackerData(data.connections.outgoing_connections);
+        // fetchAllTrackerData(data.connections.outgoing_connections);
       } else {
         setError(data.message);
       }
@@ -59,7 +59,7 @@ export const ViewLocker = () => {
         const token = Cookies.get('authToken');
         const params = new URLSearchParams({ locker_name: locker.name });
 
-        const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
+        const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,
@@ -89,7 +89,7 @@ export const ViewLocker = () => {
         const token = Cookies.get('authToken');
         const params = new URLSearchParams({ locker_name: locker.name });
 
-        const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?${params}`, {
+        const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,
@@ -141,7 +141,7 @@ export const ViewLocker = () => {
         guest_user_username: connection.guest_user.username
       });
 
-      const response = await fetch(`http://172.16.192.201:8000/get-terms-status/?${params}`, {
+      const response = await fetch(`http://localhost:8000/get-terms-status/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -157,13 +157,11 @@ export const ViewLocker = () => {
       if (data.success) {
         setTrackerData(prevState => ({
           ...prevState,
-          [connection.connection_id]: data.status
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F
+          }
         }));
-
-        console.log(trackerData.count_T);
-        console.log(trackerData.count_F);
-
-
       } else {
         setError(data.message || 'Failed to fetch tracker data');
       }
@@ -182,7 +180,7 @@ export const ViewLocker = () => {
   }
 
   const handleResourceClick = (filePath) => {
-    const url = `http://172.16.192.201:8000/media/${filePath}`;
+    const url = `http://localhost:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 
@@ -330,9 +328,6 @@ export const ViewLocker = () => {
                 otherConnections.map((connection, index) => (
                   <div key={connection.connection_type_id} className="viewlockerconnections" onClick={() => handleConnectionClick(connection)}>
                     <h4 id='connectiontype'><u>{index + 1}. {connection.connection_type_name}</u></h4>
-                    {/* <p id='conntent'>{connection.connection_description}</p>
-                    <div id='conntent'>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
-                    <div id='conntent'>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div> */}
                   </div>
                 ))
               ) : (
@@ -342,21 +337,49 @@ export const ViewLocker = () => {
             <h4 id='headingconnection'>Outgoing Connections</h4>
 
             <div className="conn">
+
               {connections.outgoing_connections.length > 0 ? (
-                connections.outgoing_connections.map((connection, index) => (
-                  <div key={connection.connection_id} className='viewlockerconnections'>
-                    <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>
-                    <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
-                    <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
-                    <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
-                    <div className='tracker'><button onClick={() => handleTracker(connection)}>
-                      {trackerData ? `${trackerData.count_T} / ${trackerData.count_T + trackerData.count_F}` : 'Loading...'}
-                    </button></div>
-                  </div>
-                ))
+                connections.outgoing_connections.map((connection, index) => {
+                  const tracker = trackerData[connection.connection_id];
+                  const count_T = tracker ? tracker.count_T : 0;
+                  const count_F = tracker ? tracker.count_F : 0;
+
+                  return (
+                    <div key={connection.connection_id} className='viewlockerconnections'>
+                      <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>
+                      <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
+                      <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
+                      <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
+                      <div className='tracker'>
+                        <button onClick={() => handleTracker(connection)}>
+                          {count_T} / {count_T + count_F}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
               ) : (
                 <p>No outgoing connections found.</p>
               )}
+
+              {/* {connections.outgoing_connections.length > 0 ? (
+                connections.outgoing_connections.map((connection, index) => (
+
+
+
+              <div key={connection.connection_id} className='viewlockerconnections'>
+                <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>
+                <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
+                <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
+                <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
+                <div className='tracker'><button onClick={() => handleTracker(connection)}>
+                  {trackerData ? `${trackerData.count_T} / ${trackerData.count_T + trackerData.count_F}` : 'Loading...'}
+                </button></div>
+              </div>
+              ))
+              ) : (
+              <p>No outgoing connections found.</p>
+              )} */}
             </div>
           </div>
         </div>

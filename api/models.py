@@ -43,22 +43,6 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return self.username
-    
-class GlobalCounter(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    value = models.PositiveIntegerField(default=0)
-    
-    @classmethod
-    def get_next_value(cls, name):
-        # Use atomic transaction to ensure thread safety
-        with transaction.atomic():
-            counter, created = cls.objects.get_or_create(name=name)
-            counter.value += 1
-            counter.save()
-            return counter.value
-        
-def generate_global_id(counter_name):
-    return GlobalCounter.get_next_value(name=counter_name)
 
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)

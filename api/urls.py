@@ -33,7 +33,9 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                path('update-connection-terms/', views.update_connection_terms, name='update_connection_terms'),
                path('get-terms-status/', views.get_terms_status, name='get_terms_status'),
                path('transfer-resource/', views.transfer_resource, name='transfer_resource'),
-                path('get-connection-details/', views.get_connection_details, name='get_connection_details'),
+               path('get-connection-details/', views.get_connection_details, name='get_connection_details'),
+               path('create-admin/', views.create_admin, name='create_admin'),
+               path('create-moderator/', views.create_moderator, name='create_moderator')
                ]
 
 if settings.DEBUG:

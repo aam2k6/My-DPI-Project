@@ -121,7 +121,6 @@ def download_resource(request, resource_id):
         print(f"Error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=400)
 
-
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -141,28 +140,33 @@ def create_locker(request):
         - JsonResponse: A JSON object containing the new locker id, its name and description or an error message.
 
         Response Codes:
-        - 201: Successfully created a resource(here locker) at the backend.
+        - 201: Successfully created a resource (locker) at the backend.
         - 400: The data sent in the request is invalid, missing or malformed.
-        - 405: Request method not allowed (if not GET).
+        - 401: The user is not authenticated.
+        - 405: Request method not allowed (if not POST).
     """
     if request.method == 'POST':
         try:
             locker_name = request.POST.get('name')
             description = request.POST.get('description', '')
-            if locker_name:
-                if request.user.is_authenticated:
-                    user = request.user
-                else:
-                    return JsonResponse({'error': 'User not authenticated'}, status=401)
+            
+            if not locker_name:
+                return JsonResponse({'success': False, 'error': 'Name is required'}, status=400)
+            
+            user = request.user
 
-                locker = Locker.objects.create(name=locker_name, description=description, user=user)
-                return JsonResponse(
-                    {'success': True, 'id': locker.locker_id, 'name': locker.name, 'description': locker.description},
-                    status=201)
-            return JsonResponse({'success': False, 'error': 'Name and description are required'}, status=400)
+            # Check if a locker with the same name already exists for this user
+            if Locker.objects.filter(name=locker_name, user=user).exists():
+                return JsonResponse({'success': False, 'error': 'Locker with this name already exists'}, status=400)
+
+            # Create the locker
+            locker = Locker.objects.create(name=locker_name, description=description, user=user)
+            return JsonResponse(
+                {'success': True, 'id': locker.locker_id, 'name': locker.name, 'description': locker.description},
+                status=201)
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    # return render(request, 'add_locker.html')
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
@@ -499,6 +503,7 @@ def get_connection_type_by_user_by_locker(request):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
+
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -511,8 +516,8 @@ def create_new_connection(request):
     - request: HttpRequest object containing metadata about the request.
 
     Form Parameters:
-    - connection_name: Name of the connection. -- DONE
-    - connection_type_name: Name of the connection type. -- DONE
+    - connection_name: Name of the connection.
+    - connection_type_name: Name of the connection type.
     - host_locker_name: Name of the source locker.
     - guest_locker_name: Name of the target locker.
     - host_user_username: Username of the source user.
@@ -528,6 +533,8 @@ def create_new_connection(request):
     Response Codes:
     - 201: Successful creation of the connection.
     - 400: Bad request (if data is invalid).
+    - 401: User not authenticated.
+    - 404: Resource not found.
     - 405: Request method not allowed (if not POST).
     """
     if request.method == 'POST':
@@ -543,7 +550,7 @@ def create_new_connection(request):
         guest_user_username = request.POST.get('guest_user_username')
 
         if not all([request_connection_type_name, host_locker_name, guest_locker_name, host_user_username,
-                    guest_user_username]):
+                    guest_user_username, request_connection_name]):
             return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
         try:
@@ -560,6 +567,15 @@ def create_new_connection(request):
         except CustomUser.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
 
+        # Check for existing connection with the same host user, host locker, and guest user
+        if Connection.objects.filter(host_user=host_user, host_locker=host_locker, guest_user=guest_user).exists():
+            return JsonResponse({'success': False, 'error': 'A connection between this host and guest already exists'}, status=400)
+        
+        # Check for existing connection with the same name
+        if (Connection.objects.filter(connection_name=request_connection_name, host_user=host_user).exists() or
+            Connection.objects.filter(connection_name=request_connection_name, guest_user=guest_user).exists()):
+            return JsonResponse({'success': False, 'error': 'A connection with this name already exists'}, status=400)
+
         # Get terms of given connection type mentioned above as we need to now copy it into Connection table.
         terms = ConnectionTerms.objects.filter(conn_type=connection_type, modality='obligatory')
         terms_value = {}
@@ -572,16 +588,27 @@ def create_new_connection(request):
                 resource_json[term.sharing_type] = []
 
         try:
-            connection = Connection(connection_name=request_connection_name, connection_type=connection_type,
-                                    host_locker=host_locker, guest_locker=guest_locker, host_user=host_user,
-                                    guest_user=guest_user, connection_description=request_connection_description,
-                                    requester_consent=False, revoke_host=False, revoke_guest=False,
-                                    terms_value=terms_value, resources=resource_json)
+            connection = Connection(
+                connection_name=request_connection_name,
+                connection_type=connection_type,
+                host_locker=host_locker,
+                guest_locker=guest_locker,
+                host_user=host_user,
+                guest_user=guest_user,
+                connection_description=request_connection_description,
+                requester_consent=False,
+                revoke_host=False,
+                revoke_guest=False,
+                terms_value=terms_value,
+                resources=resource_json
+            )
             connection.save()
             return JsonResponse({'success': True, 'id': connection.connection_id}, status=201)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 
 @csrf_exempt
@@ -1159,6 +1186,7 @@ def freeze_locker(request):
     Request Data (PUT):
     - username: The username of the user.
     - locker_name: The name of the locker.
+    - locker_id (optional): The ID of the locker.
 
     Returns:
     - JsonResponse: A JSON object indicating success or failure.
@@ -1167,22 +1195,30 @@ def freeze_locker(request):
     - 200: Successful freezing of the locker.
     - 404: Specified user or locker not found.
     - 400: Bad request (missing parameters).
+    - 403: Permission denied.
     """
     if request.method == 'PUT':
         username = request.data.get('username')
         locker_name = request.data.get('locker_name')
+        locker_id = request.data.get('locker_id')
+
 
         if not username or not locker_name:
-            return JsonResponse({'success': False, 'error': 'Username and locker name are required'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Username and Locker Name are required'}, status=400)
 
         try:
             # Check if the requesting user is a sys_admin or moderator
             requesting_user = request.user
-            if requesting_user.user_type not in [CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+            if requesting_user.user_type not in ['sys_admin', CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
                 return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
 
-            user = CustomUser.objects.get(username=username)
-            locker = Locker.objects.get(name=locker_name, user=user)
+            if locker_id:
+                # Fetch locker by locker_id
+                locker = Locker.objects.get(locker_id=locker_id)
+            else:
+                # Fetch locker by username and locker_name
+                user = CustomUser.objects.get(username=username)
+                locker = Locker.objects.get(name=locker_name, user=user)
 
             if locker.is_frozen:
                 return JsonResponse({'success': False, 'message': 'This locker is already frozen'}, status=200)
@@ -1191,15 +1227,14 @@ def freeze_locker(request):
                 locker.save()
                 return JsonResponse({'success': True, 'message': 'Locker has been frozen successfully'}, status=200)
 
-        except CustomUser.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
         except Locker.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
 
 @csrf_exempt
 @api_view(['PUT'])
@@ -1214,6 +1249,7 @@ def freeze_connection(request):
     Request Data (PUT):
     - username: The username of the user.
     - connection_name: The name of the connection to freeze.
+    - connection_id: The ID of the connection to freeze (optional).
 
     Returns:
     - JsonResponse: A JSON object indicating success or failure.
@@ -1227,9 +1263,10 @@ def freeze_connection(request):
     if request.method == 'PUT':
         username = request.data.get('username')
         connection_name = request.data.get('connection_name')
+        connection_id = request.data.get('connection_id')
 
         if not username or not connection_name:
-            return JsonResponse({'success': False, 'error': 'Username and connection name are required'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Username and Connection Name are required'}, status=400)
 
         try:
             # Check if the requesting user is a sys_admin or moderator
@@ -1238,7 +1275,13 @@ def freeze_connection(request):
                 return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
 
             user = CustomUser.objects.get(username=username)
-            connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
+
+            if connection_id:
+                # Fetch connection by connection_id
+                connection = Connection.objects.get(connection_id=connection_id)
+            else:
+                # Fetch connection by username and connection_name
+                connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
 
             if connection.is_frozen:
                 return JsonResponse({'success': False, 'message': 'This connection is already frozen'}, status=200)
@@ -1247,15 +1290,14 @@ def freeze_connection(request):
                 connection.save()
                 return JsonResponse({'success': True, 'message': 'Connection has been frozen successfully'}, status=200)
 
+        except Connection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
         except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
-        except Connection.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Connection not found for the specified user'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
 
 @csrf_exempt
 @api_view(['POST'])
@@ -1618,3 +1660,104 @@ def get_connection_details(request):
 
         # Return appropriate response
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def create_admin(request):
+    """
+    Promote a user to sys_admin.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Request Data (PUT):
+    - username: The username of the user to promote to sys_admin.
+
+    Returns:
+    - JsonResponse: A JSON object indicating success or failure.
+
+    Response Codes:
+    - 200: Successful promotion to sys_admin.
+    - 404: Specified user not found.
+    - 400: Bad request (missing parameters).
+    - 403: Permission denied.
+    """
+    if request.method == 'PUT':
+        username = request.data.get('username')
+
+        if not username:
+            return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+
+        try:
+            # Check if the requesting user is a sys_admin
+            requesting_user = request.user
+            if requesting_user.user_type not in ['sys_admin', CustomUser.SYS_ADMIN]:
+                return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+            # Find the user to be promoted
+            user_to_promote = CustomUser.objects.get(username=username)
+            
+            # Promote the user to sys_admin
+            user_to_promote.user_type = CustomUser.SYS_ADMIN
+            user_to_promote.save()
+
+            return JsonResponse({'success': True, 'message': f'{username} has been promoted to sys_admin successfully'}, status=200)
+
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def create_moderator(request):
+    """
+    Promote a user to moderator.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Request Data (PUT):
+    - username: The username of the user to promote to moderator.
+
+    Returns:
+    - JsonResponse: A JSON object indicating success or failure.
+
+    Response Codes:
+    - 200: Successful promotion to moderator.
+    - 404: Specified user not found.
+    - 400: Bad request (missing parameters).
+    - 403: Permission denied.
+    """
+    if request.method == 'PUT':
+        username = request.data.get('username')
+
+        if not username:
+            return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+
+        try:
+            # Check if the requesting user is a sys_admin
+            requesting_user = request.user
+            if requesting_user.user_type not in ['sys_admin', CustomUser.SYS_ADMIN]:
+                return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+            # Find the user to be promoted
+            user_to_promote = CustomUser.objects.get(username=username)
+            
+            # Promote the user to moderator
+            user_to_promote.user_type = CustomUser.MODERATOR
+            user_to_promote.save()
+
+            return JsonResponse({'success': True, 'message': f'{username} has been promoted to moderator successfully'}, status=200)
+
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+

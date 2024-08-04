@@ -57,7 +57,7 @@ class ConnectionTypeSerializer(serializers.ModelSerializer):
 class ConnectionTermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionTerms
-        fields = ["terms_id", "conn_type", "modality", "data_element_name", "data_type", "sharing_type", "description",
+        fields = ["terms_id", "conn_type", "global_conn_type", "modality", "data_element_name", "data_type", "sharing_type", "description",
                   "host_permissions"]
 
 

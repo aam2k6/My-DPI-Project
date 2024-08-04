@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import Cookies from 'js-cookie';
-import { GetResource } from './GetResource'
 import "./ViewTermsByType.css";
 
 export const ViewTermsByType = () => {
@@ -16,11 +15,9 @@ export const ViewTermsByType = () => {
     const [error, setError] = useState(null);
     const [res, setRes] = useState(null);
     const [resources, setResources] = useState([]);
-    const [selectedResource, setSelectedResource] = useState(null);
     const [termValues, setTermValues] = useState({});
-    const [selectedResourceTemp, setSelectedResourceTemp] = useState(null);
-
-
+    const [selectedResources, setSelectedResources] = useState({});
+    const [currentLabelName, setCurrentLabelName] = useState(null);
 
     const { connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, locker } = location.state || {};
 
@@ -32,7 +29,6 @@ export const ViewTermsByType = () => {
             return;
         }
 
-        // Fetch terms from the API
         const fetchTerms = async () => {
             console.log("Inside fetch terms");
             try {
@@ -88,7 +84,6 @@ export const ViewTermsByType = () => {
         }));
     };
 
-
     const renderInputField = (obligation) => {
         switch (obligation.typeOfAction) {
             case 'text':
@@ -101,7 +96,11 @@ export const ViewTermsByType = () => {
                     />
                 );
             case 'file':
-                return <button onClick={handleButtonClick}>{selectedResource ? selectedResource.document_name : "Upload File"}</button>;
+                return (
+                    <button onClick={() => handleButtonClick(obligation.labelName)}>
+                        {selectedResources[obligation.labelName]?.document_name || "Upload File"}
+                    </button>
+                );
             case 'date':
                 return (
                     <input
@@ -115,21 +114,22 @@ export const ViewTermsByType = () => {
         }
     };
 
-
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
 
-    const handleButtonClick = () => {
+    const handleButtonClick = (labelName) => {
         setSelectedLocker(guestLockerName);
         setShowResources(true);
-        setSelectedResourceTemp(null);
+        setCurrentLabelName(labelName);
     };
 
     const handleResourceSelection = (resource) => {
-        // setSelectedResource(resource);
-        setSelectedResourceTemp(resource);
-        // setShowResources(false);
+        setSelectedResources(prev => ({
+            ...prev,
+            [currentLabelName]: resource
+        }));
+        setShowResources(false);
     };
 
     useEffect(() => {
@@ -163,15 +163,13 @@ export const ViewTermsByType = () => {
     }, [selectedLocker]);
 
     const handleSubmit = async () => {
-        // Define the payload based on the updated terms and resources
         const resourcesData = {
             Transfer: [
-                ...resources.map(resource => resource.document_name), // Include all document names
-                ...Object.values(termValues).filter(value => value.includes("documents/")) // Include all document paths in term values
+                ...resources.map(resource => resource.document_name),
+                ...Object.values(termValues).filter(value => value.includes("documents/"))
             ]
         };
 
-        // Define the payload based on the updated terms and resources
         const payload = {
             connection_name: connectionName,
             host_locker_name: hostLockerName,
@@ -179,18 +177,15 @@ export const ViewTermsByType = () => {
             host_user_username: hostUserUsername,
             guest_user_username: guestUserUsername,
             terms_value: {
-                // ...termValues,
-                // "Selected Resource": selectedResourceTemp ? `${selectedResourceTemp.document_name}; F` : "None"
                 ...Object.fromEntries(
                     Object.entries(termValues).map(([key, value]) => [key, `${value}; F`])
                 ),
-                "Selected Resource": selectedResourceTemp ? `${selectedResourceTemp.document_name}; F` : "None"
+                ...Object.fromEntries(
+                    Object.entries(selectedResources).map(([key, resource]) => [key, `${resource.document_name}; F`])
+                ),
             },
             resources: resourcesData
         };
-
-        
-
 
         try {
             const token = Cookies.get('authToken');
@@ -210,9 +205,7 @@ export const ViewTermsByType = () => {
             const data = await response.json();
             if (data.success) {
                 console.log('Terms successfully updated');
-                navigate('/view-locker?param=${Date.now()}', { state: { locker } });
-
-                // Handle success (e.g., navigate to a success page or show a success message)
+                navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
             } else {
                 setError(data.error || 'Failed to update terms');
             }
@@ -299,7 +292,7 @@ export const ViewTermsByType = () => {
                                                 type="radio"
                                                 name="selectedResource"
                                                 value={resource.document_name}
-                                                checked={selectedResourceTemp?.document_name === resource.document_name}
+                                                checked={selectedResources[currentLabelName]?.document_name === resource.document_name}
                                                 onChange={() => handleResourceSelection(resource)}
                                             />
                                             {resource.document_name}
@@ -308,7 +301,7 @@ export const ViewTermsByType = () => {
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => { setSelectedResource(selectedResourceTemp); setShowResources(false); }}>Select</button>
+                        <button onClick={() => setShowResources(false)}>Select</button>
                     </div>
                 )}
             </div>

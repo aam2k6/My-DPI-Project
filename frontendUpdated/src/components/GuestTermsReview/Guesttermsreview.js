@@ -123,12 +123,11 @@ export const Guesttermsreview = () => {
                 acc[obligation.labelName] = `${resourceName};${status}`;
                 return acc;
             }, {});
-
-            const resources = {
-                Transfer: Object.values(terms_value).filter(value => value.includes(";T")).map(value => value.split(";")[0]),
-                Share: []
-            };
-
+    
+            const resourcesToTransfer = Object.values(terms_value)
+                .filter(value => value.includes(";T"))
+                .map(value => value.split(";")[0]);
+    
             const requestBody = {
                 "connection_name": conndetails.connection_name,
                 "host_locker_name": conndetails.host_locker.name,
@@ -136,12 +135,15 @@ export const Guesttermsreview = () => {
                 "host_user_username": conndetails.host_user.username,
                 "guest_user_username": conndetails.guest_user.username,
                 "terms_value": terms_value,
-                resources
+                resources: {
+                    Transfer: resourcesToTransfer,
+                    Share: []
+                }
             };
-
+    
             console.log("Request Body:", requestBody);
-
-            const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+    
+            const updateResponse = await fetch(`http://localhost:8000/update-connection-terms/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -149,25 +151,32 @@ export const Guesttermsreview = () => {
                 },
                 body: JSON.stringify(requestBody),
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
+    
+            if (!updateResponse.ok) {
+                const errorText = await updateResponse.text();
                 console.error('Error Response:', errorText);
                 throw new Error('Failed to save statuses');
             }
-
-            const data = await response.json();
-            if (data.success) {
+    
+            const updateData = await updateResponse.json();
+            if (updateData.success) {
                 alert('Statuses saved successfully');
-                navigate('/home');
             } else {
-                setError(data.error || 'Failed to save statuses');
+                setError(updateData.error || 'Failed to save statuses');
             }
+    
+            // Transfer resources
+            for (const resource of resourcesToTransfer) {
+                await handleAcceptResource(resource);
+            }
+    
+            navigate('/home');
         } catch (err) {
             console.error('Error:', err.message);
             setError(err.message);
         }
     };
+    
 
     const handleAcceptResource = async (resource) => {
         try {
@@ -188,17 +197,16 @@ export const Guesttermsreview = () => {
                     resource
                 })
             });
-
+    
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Error Response:', errorText);
                 throw new Error('Failed to transfer resource');
             }
-
+    
             const data = await response.json();
             if (data.success) {
                 alert('Resource transfer successful');
-                // Optionally, refresh resources or handle the UI update
             } else {
                 setError(data.error || 'Failed to transfer resource');
             }
@@ -207,6 +215,7 @@ export const Guesttermsreview = () => {
             setError(err.message);
         }
     };
+    
 
     const handleResourceClick = (filePath) => {
         const url = `http://localhost:8000/media/documents/${filePath}`;

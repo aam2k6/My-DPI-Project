@@ -1761,3 +1761,111 @@ def create_moderator(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def remove_admin(request):
+    """
+    Remove admin privileges from a user.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Form Parameters:
+    - username: The username of the admin to be demoted.
+
+    Returns:
+    - JsonResponse: A JSON object indicating success or error message.
+
+    Response Codes:
+    - 200: Successful removal of admin privileges.
+    - 400: Bad request (if data is invalid or user is not an admin).
+    - 401: User not authenticated.
+    - 403: Forbidden (if the requesting user does not have permission).
+    - 404: User not found.
+    """
+    if request.method == 'PUT':
+        try:
+            # Check if the requesting user is a sys_admin
+            requesting_user = request.user
+            if requesting_user.user_type not in ['sys_admin', CustomUser.SYS_ADMIN]:
+                return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+            username = request.data.get('username')
+
+            if not username:
+                return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+
+            try:
+                user = CustomUser.objects.get(username=username)
+
+                if user.user_type not in ['system_admin', 'sys_admin']:
+                    return JsonResponse({'success': False, 'error': 'User is not an admin'}, status=400)
+
+                user.user_type = 'user'
+                user.save()
+
+                return JsonResponse({'success': True, 'message': f'Admin privileges removed from {username}'}, status=200)
+            except CustomUser.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def remove_moderator(request):
+    """
+    Remove moderator privileges from a user.
+
+    Parameters:
+    - request: HttpRequest object containing metadata about the request.
+
+    Form Parameters:
+    - username: The username of the moderator to be demoted.
+
+    Returns:
+    - JsonResponse: A JSON object indicating success or error message.
+
+    Response Codes:
+    - 200: Successful removal of moderator privileges.
+    - 400: Bad request (if data is invalid or user is not a moderator).
+    - 401: User not authenticated.
+    - 403: Forbidden (if the requesting user does not have permission).
+    - 404: User not found.
+    """
+    if request.method == 'PUT':
+        try:
+            # Check if the requesting user is a sys_admin
+            requesting_user = request.user
+            if requesting_user.user_type not in ['sys_admin', CustomUser.SYS_ADMIN]:
+                return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+            username = request.data.get('username')
+
+            if not username:
+                return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+
+            try:
+                user = CustomUser.objects.get(username=username)
+
+                if user.user_type != 'moderator':
+                    return JsonResponse({'success': False, 'error': 'User is not a moderator'}, status=400)
+
+                user.user_type = 'user'
+                user.save()
+
+                return JsonResponse({'success': True, 'message': f'Moderator privileges removed from {username}'}, status=200)
+            except CustomUser.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+

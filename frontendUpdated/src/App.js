@@ -18,6 +18,8 @@ import { usercontext } from './usercontext';
 import { ViewTermsByType } from './components/ViewTermsByTypeUser/ViewTermsByType';
 import { Guestusers } from './components/Guest-users/Guestusers';
 import { Guesttermsreview } from './components/GuestTermsReview/Guesttermsreview';
+import ManageUsers from './components/ManageUsers/ManageUsers'; 
+import FreezeLockerConnection from './components/FreezeLockerConnection/FreezeLockerConnection';
 
 
 function App() {
@@ -70,6 +72,10 @@ function App() {
                         <Route path="/show-guest-users" element={<ProtectedRoute><Guestusers /></ProtectedRoute>} />
                         <Route path="/guest-terms-review" element={<ProtectedRoute><Guesttermsreview /></ProtectedRoute>} />
                     
+                        <Route path="/manage-moderators" element={<ProtectedRoute><ManageUsers role = "moderator"/></ProtectedRoute>} />
+                        <Route path="/manage-admins" element={<ProtectedRoute><ManageUsers role = "sys_admin"/></ProtectedRoute>} />
+                        <Route path="/freeze-locker-connection" element={<ProtectedRoute><FreezeLockerConnection/></ProtectedRoute>} />
+
 
                         <Route path="*" element={<h1>Page Not Found</h1>} />
                     </Routes>

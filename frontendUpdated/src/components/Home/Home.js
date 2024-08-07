@@ -4,6 +4,7 @@ import "./page1.css";
 import { useNavigate } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 import { usercontext } from "../../usercontext";
+import Navbar from "../Navbar/Navbar";
 
 // Helper function to capitalize the first letter of a string
 const capitalizeFirstLetter = (string) => {
@@ -28,7 +29,7 @@ export const Home = () => {
   useEffect(() => {
     const token = Cookies.get('authToken');
 
-    fetch('http://localhost:8000/get-lockers-user/', {
+    fetch('http://172.16.192.201:8000/get-lockers-user/', {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -85,7 +86,7 @@ export const Home = () => {
 
   return (
     <div>
-      <nav className="navbar">
+      {/* <nav className="navbar">
         <div className="wrap">
 
           <div className="navbarBrand">{curruser ? capitalizeFirstLetter(curruser.username) : 'None'}</div>
@@ -124,7 +125,9 @@ export const Home = () => {
             </li>
           </ul>
         </div>
-      </nav>
+      </nav> */}
+
+  <Navbar />
 
       <div className="heroContainer">
         <div className="newLocker">
@@ -137,7 +140,7 @@ export const Home = () => {
         <div className="allLockers">
           {lockers.length > 0 ? (
             lockers.map(locker => (
-              <div key={locker.id} className="page1-locker">
+              <div key={locker.locker_id} className="page1-locker">
                 <h4>{locker.name}</h4>
                 <button id="openLockerBtn" onClick={() => handleClick(locker)}>Open</button>
               </div>

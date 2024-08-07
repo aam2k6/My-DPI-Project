@@ -56,6 +56,7 @@ export const DPIdirectory = () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          console.log("dpi ",data);
           setUsers(data.users);
           setFilteredUsers(data.users);
         } else {
@@ -135,7 +136,7 @@ export const DPIdirectory = () => {
           {error && <div className="error">{error}</div>}
           {filteredUsers.length > 0 ? (
             filteredUsers.map(user => (
-              <div key={user.id} className="card">
+              <div key={user.user_id} className="card">
                 <h4>{user.username}</h4>
                 <p>{user.description}</p>
                 <button

@@ -152,7 +152,7 @@ export const Admin = () => {
         <div className="descriptionadmin"> Existing Lockers </div>
         {lockers.length > 0 ? (
           lockers.map(locker => (
-            <div key={locker.id} className="page8connections">
+            <div key={locker.locker_id} className="page8connections">
               <h4>{locker.name}</h4>
               <button>Edit</button>
             </div>

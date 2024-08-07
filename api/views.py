@@ -2232,6 +2232,11 @@ def create_Global_Connection_Type_Template(request):
     Response Codes:
         - 201: Successfully created a global connection type.
         - 400: The data sent in the request is invalid, missing or malformed.
+    Expected JSON:
+    {
+        "connection_type_name": value,
+        "connection_type_description": value
+    }
     """
     data = request.data
     try:
@@ -2254,6 +2259,11 @@ def create_Global_Connection_Type_Template(request):
 def get_Global_Connection_Type(request):
     """
     This API is used to get all global connection type templates or a particular one if the ID is mentioned in the request.
+    Expected JSON to get a particular global connection type:
+    {
+        "connection_type_template_name": value
+    }
+    To get all conection types, no need to send any JSON.
     """
     name = request.GET.get("connection_type_template_name", None)
     if name is not None:
@@ -2264,12 +2274,16 @@ def get_Global_Connection_Type(request):
             serializer = GlobalConnectionTypeTemplateGetSerializer(
                 global_Connection_Types.first()
             )
-            terms = ConnectionTerms.objects.filter(global_conn_type=global_Connection_Types.first())
+            terms = ConnectionTerms.objects.filter(
+                global_conn_type=global_Connection_Types.first()
+            )
             terms_Serializer = ConnectionTermsSerializer(terms, many=True)
-            return JsonResponse({
-                "global_connection": serializer.data,
-                "terms_attached_to_template": terms_Serializer.data
-            })
+            return JsonResponse(
+                {
+                    "global_connection": serializer.data,
+                    "terms_attached_to_template": terms_Serializer.data,
+                }
+            )
         else:
             return JsonResponse(
                 {
@@ -2289,12 +2303,16 @@ def get_Global_Connection_Type(request):
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def connect_Global_Connection_Type_Template_And_Connection_Type(request):
+    """
+    Expected JSON:
+    {
+        "template_Id": value,
+        "type_Id":
+    }
+    """
     template_Id = request.POST.get("template_Id")
     type_Id = request.POST.get("type_Id")
-    data = {
-        "connection_Type_Id": "", 
-        "connection_Template_Id": ""
-    }
+    data = {"connection_Type_Id": "", "connection_Template_Id": ""}
     template = GlobalConnectionTypeTemplate.objects.filter(
         connection_type_template_id=template_Id
     )
@@ -2311,10 +2329,14 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                 {"message": f"Connection type with ID = {type_Id} does not exist."}
             )
         else:
-            data["connection_Template_Id"] = template.first()
-            data["connection_Type_Id"] = connection_Type.first()
+            # data["connection_Template_Id"] = template.first()
+            # data["connection_Type_Id"] = connection_Type.first()
+            link = ConnectionTypeRegulationLinkTable(
+                connection_Type_Id=connection_Type.first(),
+                conection_Template_Id=template.first(),
+            )
             try:
-                serializer = ConnectionTypeRegulationLinkTablePostSerializer(data=data)
+                serializer = ConnectionTypeRegulationLinkTablePostSerializer(data=link)
                 if not serializer.is_valid():
                     return JsonResponse({"status": 400, "errors": serializer.errors})
                 serializer.save()
@@ -2334,6 +2356,12 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
+    """
+    Expected JSON:
+    {
+        "template_Id": value
+    }
+    """
     template_Id = request.GET.get("template_Id")
     template = GlobalConnectionTypeTemplate.objects.filter(
         connection_type_template_id=template_Id
@@ -2355,6 +2383,12 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_Connection_Link_Regulation_For_Connection_Type(request):
+    """
+    Expected JSON:
+    {
+        "connection_Type_ID": value
+    }
+    """
     if request.METHOD == "GET":
         conn_type_ID = request.GET.get("connection_Type_ID")
         link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(

@@ -10,8 +10,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
     api_view,
     permission_classes,
-    authentication_classes,
-    user_passes_test,
+    authentication_classes
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response

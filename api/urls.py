@@ -95,7 +95,7 @@ urlpatterns = [
         name="get_template_or_templates",
     ),
     path(
-        "get-link-regulation-For-connection-type/",
+        "get-link-regulation-for-connection-type/",
         view=views.get_Connection_Link_Regulation_For_Connection_Type,
         name="get_link_for_connection_type"
     ),

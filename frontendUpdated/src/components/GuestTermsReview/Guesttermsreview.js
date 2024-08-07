@@ -7,9 +7,9 @@ import "./Guesttermsreview.css";
 
 export const Guesttermsreview = () => {
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const { curruser, setUser } = useContext(usercontext);
+    const [isOpen, setIsOpen] = useState(false);
     const [showResources, setShowResources] = useState(false);
     const [selectedLocker, setSelectedLocker] = useState(null);
     const [error, setError] = useState(null);
@@ -18,7 +18,6 @@ export const Guesttermsreview = () => {
     const [resources, setResources] = useState([]);
     const [selectedResource, setSelectedResource] = useState(null);
     const [statuses, setStatuses] = useState({});
-
     const { connection, connectionType } = location.state || {};
     const [conndetails, setconndetails] = useState([]);
 
@@ -70,7 +69,6 @@ export const Guesttermsreview = () => {
                     setTermsValue(data.connections.terms_value || {});
                     setconndetails(data.connections);
 
-                    // Set initial statuses based on terms_value
                     const initialStatuses = {};
                     for (const [key, value] of Object.entries(data.connections.terms_value || {})) {
                         initialStatuses[key] = value.endsWith(';T') ? 'approved' : 'rejected';
@@ -119,8 +117,6 @@ export const Guesttermsreview = () => {
     const handleSave = async () => {
         try {
             const token = Cookies.get('authToken');
-    
-            // Construct terms_value from the current statuses
             const terms_value = res?.obligations.reduce((acc, obligation, index) => {
                 const status = statuses[obligation.labelName] === 'approved' ? 'T' : 'F';
                 const resourceName = termsValue[obligation.labelName]?.split(";")[0] || "";
@@ -128,11 +124,9 @@ export const Guesttermsreview = () => {
                 return acc;
             }, {});
     
-            // Extract resources from terms_value
-            const resources = {
-                Transfer: Object.values(terms_value).filter(value => value.includes(";T")).map(value => value.split(";")[0]),
-                Share: [] // Assuming Share is empty based on provided details
-            };
+            const resourcesToTransfer = Object.values(terms_value)
+                .filter(value => value.includes(";T"))
+                .map(value => value.split(";")[0]);
     
             const requestBody = {
                 "connection_name": conndetails.connection_name,
@@ -141,12 +135,15 @@ export const Guesttermsreview = () => {
                 "host_user_username": conndetails.host_user.username,
                 "guest_user_username": conndetails.guest_user.username,
                 "terms_value": terms_value,
-                resources
+                resources: {
+                    Transfer: resourcesToTransfer,
+                    Share: []
+                }
             };
     
             console.log("Request Body:", requestBody);
     
-            const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+            const updateResponse = await fetch(`http://localhost:8000/update-connection-terms/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -155,18 +152,63 @@ export const Guesttermsreview = () => {
                 body: JSON.stringify(requestBody),
             });
     
-            if (!response.ok) {
-                const errorText = await response.text();
+            if (!updateResponse.ok) {
+                const errorText = await updateResponse.text();
                 console.error('Error Response:', errorText);
                 throw new Error('Failed to save statuses');
             }
     
+            const updateData = await updateResponse.json();
+            if (updateData.success) {
+                alert('Statuses saved successfully');
+            } else {
+                setError(updateData.error || 'Failed to save statuses');
+            }
+    
+            // Transfer resources
+            for (const resource of resourcesToTransfer) {
+                await handleAcceptResource(resource);
+            }
+    
+            navigate('/home');
+        } catch (err) {
+            console.error('Error:', err.message);
+            setError(err.message);
+        }
+    };
+    
+
+    const handleAcceptResource = async (resource) => {
+        try {
+            console.log("Resource accepted:", resource);
+            const token = Cookies.get('authToken');
+            const response = await fetch(`http://localhost:8000/transfer-resource`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${token}`
+                },
+                body: JSON.stringify({
+                    connection_name: conndetails.connection_name,
+                    host_locker_name: conndetails.host_locker.name,
+                    guest_locker_name: conndetails.guest_locker.name,
+                    host_user_username: conndetails.host_user.username,
+                    guest_user_username: conndetails.guest_user.username,
+                    resource
+                })
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Error Response:', errorText);
+                throw new Error('Failed to transfer resource');
+            }
+    
             const data = await response.json();
             if (data.success) {
-                alert('Statuses saved successfully');
-                navigate('/home');
+                alert('Resource transfer successful');
             } else {
-                setError(data.error || 'Failed to save statuses');
+                setError(data.error || 'Failed to transfer resource');
             }
         } catch (err) {
             console.error('Error:', err.message);
@@ -174,8 +216,9 @@ export const Guesttermsreview = () => {
         }
     };
     
+
     const handleResourceClick = (filePath) => {
-        const url = `http://localhost:8000/media/${filePath}`;
+        const url = `http://localhost:8000/media/documents/${filePath}`;
         window.open(url, "_blank");
     };
 
@@ -282,14 +325,16 @@ export const Guesttermsreview = () => {
                                                 type="radio"
                                                 name="selectedResource"
                                                 value={resource.document_name}
+                                                onChange={() => setSelectedResource(resource)}
                                             />
                                             {resource.document_name}
                                         </label>
+                                        <button className="link-button" onClick={() => handleAcceptResource(resource)}>Accept</button>
                                     </div>
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => setShowResources(false)}>Select</button>
+                        <button onClick={() => setShowResources(false)}>Close</button>
                     </div>
                 )}
             </div>

@@ -91,8 +91,8 @@ export const TargetLockerView = () => {
 
       const data = await response.json();
       if (data.success) {
-        // Filter outgoing connections
-        const outgoing = data.connections.outgoing_connections.filter(conn => conn.host_locker.name === locker.name);
+        // Filter outgoing connections where curruser is guest
+        const outgoing = data.connections.filter(conn => conn.guest_user.username === curruser.username);
         setOutgoingConnections(outgoing);
       } else {
         setError(data.message || 'Failed to fetch connections');
@@ -209,7 +209,7 @@ export const TargetLockerView = () => {
           {outgoingConnections.length > 0 ? (
             outgoingConnections.map((connection, index) => (
               <div className="page7myconnections" key={index}>
-                {/* <div id="conntent"><h2>{connection.connection_type_name}</h2></div> */}
+                {/* <div id="conntent"><h2>{connection.connection_type_name}</2></div> */}
                 <div id="conntent"><h2>{connection.connection_name}</h2></div>
 
                 <div id="conntent">{connection.host_locker.name} &lt;&gt; {connection.guest_locker.name}</div>
@@ -218,7 +218,7 @@ export const TargetLockerView = () => {
               </div>
             ))
           ) : (
-            <p id="noconnfound">No outgoing connections found .</p>
+            <p id="noconnfound">No outgoing connections found.</p>
           )}
         </div>
       </div >

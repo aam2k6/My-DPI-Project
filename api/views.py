@@ -34,7 +34,7 @@ from .models import (
     Connection,
     ConnectionTerms,
     GlobalConnectionTypeTemplate,
-    ConnectionTypeRegulationLinkTable
+    ConnectionTypeRegulationLinkTable,
 )
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -2218,6 +2218,9 @@ def get_connection_details(request):
     )
 
 
+# FEATURE ADDITION
+
+
 @csrf_exempt
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
@@ -2252,16 +2255,21 @@ def get_Global_Connection_Type(request):
     """
     This API is used to get all global connection type templates or a particular one if the ID is mentioned in the request.
     """
-    id = request.GET.get("connection_type_template_id", None)
-    if id is not None:
+    name = request.GET.get("connection_type_template_name", None)
+    if name is not None:
         global_Connection_Types = GlobalConnectionTypeTemplate.objects.filter(
-            connection_type_template_id=id
+            connection_type_name=name
         )
         if global_Connection_Types.exists():
             serializer = GlobalConnectionTypeTemplateGetSerializer(
                 global_Connection_Types.first()
             )
-            return JsonResponse({"global_connection": serializer.data})
+            terms = ConnectionTerms.objects.filter(global_conn_type=global_Connection_Types.first())
+            terms_Serializer = ConnectionTermsSerializer(terms, many=True)
+            return JsonResponse({
+                "global_connection": serializer.data,
+                "terms_attached_to_template": terms_Serializer.data
+            })
         else:
             return JsonResponse(
                 {
@@ -2283,7 +2291,10 @@ def get_Global_Connection_Type(request):
 def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     template_Id = request.POST.get("template_Id")
     type_Id = request.POST.get("type_Id")
-    data = {"connection_Type_Id": "", "connection_Template_Id": ""}
+    data = {
+        "connection_Type_Id": "", 
+        "connection_Template_Id": ""
+    }
     template = GlobalConnectionTypeTemplate.objects.filter(
         connection_type_template_id=template_Id
     )
@@ -2338,25 +2349,28 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
         serializer = ConnectionTermsSerializer(data=terms, many=True)
         return JsonResponse({"data": serializer.data})
 
+
 @csrf_exempt
-@api_view(['GET'])
+@api_view(["GET"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def get_Connection_Link_Regulation_For_Connection_Type(request):    
-    if request.METHOD == 'GET':
-        conn_type_ID = request.GET.get('connection_Type_ID')
-        link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(connection_Type_Id=conn_type_ID)
+def get_Connection_Link_Regulation_For_Connection_Type(request):
+    if request.METHOD == "GET":
+        conn_type_ID = request.GET.get("connection_Type_ID")
+        link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(
+            connection_Type_Id=conn_type_ID
+        )
         if link_Regulation.exists():
-            serializer = ConnectionTypeRegulationLinkTableGetSerializer(data=link_Regulation, many=True)
-            return JsonResponse({
-                'data': serializer.data
-            })
-        return JsonResponse({
-            'message': f'Connection regulation link table does not have an entry with connection type ID = {conn_type_ID}'
-        })
-    return JsonResponse({
-        'message': 'The method request is not GET.'
-    })
+            serializer = ConnectionTypeRegulationLinkTableGetSerializer(
+                data=link_Regulation, many=True
+            )
+            return JsonResponse({"data": serializer.data})
+        return JsonResponse(
+            {
+                "message": f"Connection regulation link table does not have an entry with connection type ID = {conn_type_ID}"
+            }
+        )
+    return JsonResponse({"message": "The method request is not GET."})
 
 
 @csrf_exempt
@@ -2370,15 +2384,19 @@ def create_Connection_Terms_And_Link_To_Global_Template(request):
         connection_terms_obligations = request.POST.get("obligations")
         connection_terms_permissions = request.POST.get("permissions")
 
-        template = GlobalConnectionTypeTemplate.objects.filter(connection_type_template_id=global_conn_type_id)
+        template = GlobalConnectionTypeTemplate.objects.filter(
+            connection_type_template_id=global_conn_type_id
+        )
         if not template.exists():
-            return JsonResponse({
-                'message': f'Global connection type template with ID = {global_conn_type_id} does not exist.'
-            })
+            return JsonResponse(
+                {
+                    "message": f"Global connection type template with ID = {global_conn_type_id} does not exist."
+                }
+            )
 
         for obligation in connection_terms_obligations:
             ConnectionTerms.objects.create(
-                global_conn_type = template.first(),
+                global_conn_type=template.first(),
                 modality="obligatory",
                 data_element_name=obligation["labelName"],
                 data_type=obligation["typeOfAction"],

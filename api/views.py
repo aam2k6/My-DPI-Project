@@ -2231,13 +2231,13 @@ def create_Global_Connection_Type_Template(request):
     Response Codes:
         - 201: Successfully created a global connection type.
         - 400: The data sent in the request is invalid, missing or malformed.
-    Expected JSON:
+    Expected JSON (raw JSON data/form data):
     {
         "connection_type_name": value,
         "connection_type_description": value
     }
     """
-    data = request.data
+    data = request.data # RAW JSON DATA/FORM DATA  
     requesting_user: CustomUser = request.user
     if requesting_user.user_type in [CustomUser.MODERATOR, CustomUser.USER]:
         return JsonResponse(
@@ -2265,14 +2265,14 @@ def create_Global_Connection_Type_Template(request):
 def get_Global_Connection_Type(request):
     """
     This API is used to get all global connection type templates or a particular one if the ID is mentioned in the request.
-    Expected JSON to get a particular global connection type:
+    Expected JSON to get a particular global connection type (raw JSON data/form data):
     {
         "connection_type_template_name": value
     }
     To get all conection types, no need to send any JSON.
     """
     if request.method == 'GET':
-        name = request.data.get("global_connection_type_template_name")
+        name = request.data.get("global_connection_type_template_name") # RAW JSON DATA/FORM DATA
         print(name)
         if name:
             global_Connection_Type = GlobalConnectionTypeTemplate.objects.filter(
@@ -2313,14 +2313,14 @@ def get_Global_Connection_Type(request):
 @permission_classes([IsAuthenticated])
 def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     """
-    Expected JSON:
+    Expected JSON (form data):
     {
         "template_Id": value,
         "type_Id": value
     }
     """
-    template_Id = request.POST.get("template_Id")
-    type_Id = request.POST.get("type_Id")
+    template_Id = request.POST.get("template_Id") # FORM DATA
+    type_Id = request.POST.get("type_Id") # FORM DATA
     data = {"connection_type_id": "", "global_connection_template_id": ""}
     if template_Id is not None and type_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
@@ -2376,12 +2376,12 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
 @permission_classes([IsAuthenticated])
 def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
     """
-    Expected JSON:
+    Expected JSON (raw JSON data/form data):
     {
         "template_Id": value
     }
     """
-    template_Id = request.GET.get("template_Id", None)
+    template_Id = request.data.get("template_Id", None) # RAW JSON DATA/FORM DATA
     if template_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
             global_connection_type_template_id=template_Id
@@ -2404,13 +2404,13 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
 @permission_classes([IsAuthenticated])
 def get_Connection_Link_Regulation_For_Connection_Type(request):
     """
-    Expected JSON:
+    Expected JSON (raw JSON data/form data):
     {
         "connection_Type_ID": value
     }
     """
     if request.method == "GET":
-        conn_type_ID = request.GET.get("connection_Type_ID")
+        conn_type_ID = request.data.get("connection_Type_ID") # RAW JSON DATA/FORM DATA
         link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(
             connection_type_id=conn_type_ID
         )
@@ -2433,6 +2433,14 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
 @permission_classes([IsAuthenticated])
 # @role_required(CustomUser.SYS_ADMIN)
 def create_Connection_Terms_And_Link_To_Global_Template(request):
+    """
+    Expected JSON (form data):
+    {
+        "global_conn_type_id": value,
+        "connection_terms_obligations": obligations,
+        "connection_terms_permissions": permissions
+    }
+    """
     if request.method == "POST":
         requesting_user: CustomUser = request.user
         if requesting_user.user_type in [CustomUser.MODERATOR, CustomUser.USER]:
@@ -2441,9 +2449,9 @@ def create_Connection_Terms_And_Link_To_Global_Template(request):
                     "message": f"User must be a system admin to hit this API endpoint. Current user has {requesting_user.user_type} type"
                 }
             )
-        global_conn_type_id = request.POST.get("global_conn_type_id")
-        connection_terms_obligations = request.POST.get("obligations")
-        connection_terms_permissions = request.POST.get("permissions")
+        global_conn_type_id = request.POST.get("global_conn_type_id") # FORM DATA
+        connection_terms_obligations = request.POST.get("obligations") # FORM DATA
+        connection_terms_permissions = request.POST.get("permissions") # FORM DATA
 
         template = GlobalConnectionTypeTemplate.objects.filter(
             global_connection_type_template_id=global_conn_type_id

@@ -2272,7 +2272,7 @@ def get_Global_Connection_Type(request):
     To get all conection types, no need to send any JSON.
     """
     name = request.GET.get("connection_type_template_name")
-    if name is not None:
+    if name:
         global_Connection_Type = GlobalConnectionTypeTemplate.objects.get(
             connection_type_name=name
         )

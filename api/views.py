@@ -2365,7 +2365,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                         global_connection_template_id=template.first()
                     )
                     serializer = ConnectionTypeRegulationLinkTablePostSerializer(
-                        link
+                        data=link
                     )
                     if not serializer.is_valid():
                         return JsonResponse(

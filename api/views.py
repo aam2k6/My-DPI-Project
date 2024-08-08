@@ -2224,7 +2224,7 @@ def get_connection_details(request):
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-@role_required(CustomUser.SYS_ADMIN)
+# @role_required(CustomUser.SYS_ADMIN)
 def create_Global_Connection_Type_Template(request):
     """
     This API is used to create a new global connection type. This API is allowed only for system admins.
@@ -2238,6 +2238,14 @@ def create_Global_Connection_Type_Template(request):
     }
     """
     data = request.data
+    requesting_user:CustomUser = request.user
+    if requesting_user.user_type in [
+        CustomUser.MODERATOR,
+        CustomUser.USER
+    ]:
+        return JsonResponse({
+            'message': f'User must be a system admin to access this API endpoint. Current user has {requesting_user.user_type} type.'
+        })
     try:
         serializer = GlobalConnectionTypeTemplatePostSerializer(data=data)
         if not serializer.is_valid():
@@ -2410,9 +2418,17 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-@role_required(CustomUser.SYS_ADMIN)
+# @role_required(CustomUser.SYS_ADMIN)
 def create_Connection_Terms_And_Link_To_Global_Template(request):
     if request.method == "POST":
+        requesting_user:CustomUser = request.user
+        if requesting_user.user_type in [
+            CustomUser.MODERATOR,
+            CustomUser.USER
+        ]:
+            return JsonResponse({
+                'message': f'User must be a system admin to hit this API endpoint. Current user has {requesting_user.user_type} type'
+            })
         global_conn_type_id = request.POST.get("global_conn_type_id")
         connection_terms_obligations = request.POST.get("obligations")
         connection_terms_permissions = request.POST.get("permissions")

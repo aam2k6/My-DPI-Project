@@ -2256,10 +2256,10 @@ def create_Global_Connection_Type_Template(request):
             return JsonResponse({"status": 400, "errors": serializer.errors})
         global_Template:GlobalConnectionTypeTemplate = serializer.save()
         for id in data.get('global_terms_IDs'):
-            global_Term = ConnectionTerms.objects.filter(terms_id=id)
-            if global_Term.exists():
-                global_Term.first().global_conn_type = global_Template
-                global_Term.first().save()
+            global_Term = ConnectionTerms.objects.filter(terms_id=id).first()
+            if global_Term:
+                global_Term.global_conn_type = global_Template
+                global_Term.save()
             else:
                 return JsonResponse({
                     'message': f'Global connection term with ID = {id} does not exist.'

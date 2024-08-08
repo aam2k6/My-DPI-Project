@@ -2407,7 +2407,7 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
         "connection_Type_ID": value
     }
     """
-    if request.METHOD == "GET":
+    if request.method == "GET":
         conn_type_ID = request.GET.get("connection_Type_ID")
         link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(
             connection_Type_Id=conn_type_ID

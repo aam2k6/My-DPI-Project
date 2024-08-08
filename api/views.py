@@ -2483,6 +2483,7 @@ def create_Global_Connection_Terms(request):
         # global_conn_type_id = request.data.get("global_conn_type_id") # RAW JSON DATA/FORM DATA
         connection_terms_obligations = request.data.get("connection_terms_obligations") # RAW JSON DATA/FORM DATA
         connection_terms_permissions = request.data.get("connection_terms_permissions") # RAW JSON DATA/FORM DATA
+        print(connection_terms_obligations)
 
         # template = GlobalConnectionTypeTemplate.objects.filter(
         #     global_connection_type_template_id=global_conn_type_id

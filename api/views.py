@@ -2275,11 +2275,11 @@ def get_Global_Connection_Type(request):
         name = request.data.get("connection_type_template_name")
         print(name)
         if name:
-            global_Connection_Type = GlobalConnectionTypeTemplate.objects.get(
+            global_Connection_Type = GlobalConnectionTypeTemplate.objects.filter(
                 connection_type_name=name
             )
             print(global_Connection_Type)
-            if global_Connection_Type:
+            if global_Connection_Type.exists():
                 serializer = GlobalConnectionTypeTemplateGetSerializer(
                     global_Connection_Type
                 )

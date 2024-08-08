@@ -2281,7 +2281,7 @@ def get_Global_Connection_Type(request):
     This API is used to get all global connection type templates or a particular one if the ID is mentioned in the request.
     Expected JSON to get a particular global connection type (raw JSON data/form data):
     {
-        "connection_type_template_name": value
+        "global_connection_type_template_name": value
     }
     To get all conection types, no need to send any JSON.
     """

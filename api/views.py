@@ -2339,6 +2339,19 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                     {"message": f"Connection type with ID = {type_Id} does not exist."}
                 )
             else:
+                link = ConnectionTypeRegulationLinkTable.objects.filter(
+                    connection_type_id=connection_Type.first(),
+                    global_connection_template_id=template.first()
+                )
+                if link.exists():
+                    template_Serializer = GlobalConnectionTypeTemplateGetSerializer(template.first())
+                    type_Serializer = ConnectionTypeSerializer(connection_Type.first())
+                    return JsonResponse({
+                        'message': 'This link already exists.',
+                        'existing ID of link in DB': link.first().link_id,
+                        'global template': template_Serializer.data,
+                        'connection type': type_Serializer.data 
+                    })
                 data["global_connection_template_id"] = template.first()
                 data["connection_type_id"] = connection_Type.first()
                 # link = ConnectionTypeRegulationLinkTable(

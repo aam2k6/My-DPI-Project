@@ -2321,7 +2321,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     """
     template_Id = request.POST.get("template_Id")
     type_Id = request.POST.get("type_Id")
-    # data = {"connection_Type_Id": "", "connection_Template_Id": ""}
+    data = {"connection_Type_Id": "", "connection_Template_Id": ""}
     if template_Id is not None and type_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
             connection_type_template_id=template_Id
@@ -2341,13 +2341,13 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
             else:
                 # data["connection_Template_Id"] = template.first()
                 # data["connection_Type_Id"] = connection_Type.first()
-                link = ConnectionTypeRegulationLinkTable(
-                    connection_Type_Id=connection_Type.first(),
-                    conection_Template_Id=template.first(),
-                )
+                # link = ConnectionTypeRegulationLinkTable(
+                #     connection_Type_Id=connection_Type.first(),
+                #     conection_Template_Id=template.first(),
+                # )
                 try:
                     serializer = ConnectionTypeRegulationLinkTablePostSerializer(
-                        data=link
+                        data=data
                     )
                     if not serializer.is_valid():
                         return JsonResponse(

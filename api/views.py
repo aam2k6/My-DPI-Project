@@ -2273,18 +2273,18 @@ def get_Global_Connection_Type(request):
     """
     if request.method == 'GET':
         name = request.data.get("global_connection_type_template_name") # RAW JSON DATA/FORM DATA
-        # print(name)
+        print(name)
         if name:
             global_Connection_Type = GlobalConnectionTypeTemplate.objects.filter(
                 global_connection_type_name=name
             )
-            # print(global_Connection_Type.first())
+            print(global_Connection_Type.first())
             if global_Connection_Type.exists():
                 serializer = GlobalConnectionTypeTemplateGetSerializer(
                     global_Connection_Type
                 )
                 terms = ConnectionTerms.objects.filter(
-                    global_conn_type=global_Connection_Type
+                    global_conn_type=global_Connection_Type.first()
                 )
                 terms_Serializer = ConnectionTermsSerializer(terms, many=True)
                 return JsonResponse(

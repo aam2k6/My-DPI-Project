@@ -2520,4 +2520,5 @@ def create_Global_Connection_Terms(request):
                 modality="permissive",
                 description="They can download data.",
             )
-    return JsonResponse({"message": "Request method is not POST."})
+    else:
+        return JsonResponse({"message": "Request method is not POST."})

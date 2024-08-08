@@ -37,7 +37,7 @@ urlpatterns = [
     path("connect-type-to-template/",view=views.connect_Global_Connection_Type_Template_And_Connection_Type,name="connect_type_to_template"),
     path("get-template-or-templates/",view=views.get_Global_Connection_Type,name="get_template_or_templates"),
     path("get-link-regulation-for-connection-type/",view=views.get_Connection_Link_Regulation_For_Connection_Type,name="get_link_for_connection_type"),
-    path("create-terms-and-link-template/",view=views.create_Connection_Terms_And_Link_To_Global_Template,name="create_terms_and_link_template")
+    path("create-global-terms/",view=views.create_Global_Connection_Terms,name="create_global_terms")
 ]
 
 if settings.DEBUG:

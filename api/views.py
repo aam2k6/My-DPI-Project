@@ -2233,8 +2233,9 @@ def create_Global_Connection_Type_Template(request):
         - 400: The data sent in the request is invalid, missing or malformed.
     Expected JSON (raw JSON data/form data):
     {
-        "connection_type_name": value,
-        "connection_type_description": value
+        "global_connection_type_name": value,
+        "global_connection_type_description": value,
+        "global_terms_IDs": list of global connection terms IDs
     }
     """
     data = request.data # RAW JSON DATA/FORM DATA  
@@ -2246,12 +2247,25 @@ def create_Global_Connection_Type_Template(request):
             }
         )
     try:
-        serializer = GlobalConnectionTypeTemplatePostSerializer(data=data)
+        template_Data = {
+            "global_connection_type_name": data.get('global_connection_type_name'),
+            "global_connection_type_description": data.get('global_connection_type_description')
+        }
+        serializer = GlobalConnectionTypeTemplatePostSerializer(data=template_Data)
         if not serializer.is_valid():
             return JsonResponse({"status": 400, "errors": serializer.errors})
-        serializer.save()
+        global_Template:ConnectionTypeRegulationLinkTable = serializer.save()
+        for id in data.get('global_terms_IDs'):
+            global_Term = ConnectionTerms.objects.filter(terms_id=id)
+            if global_Term.exists():
+                global_Term.first().global_conn_type = global_Template
+                global_Term.first().save()
+            else:
+                return JsonResponse({
+                    'message': f'Global connection term with ID = {id} does not exist.'
+                })
         return JsonResponse(
-            {"status": 201, "message": "Global connection type created successfully."}
+            {"status": 201, "message": f"Global connection type created successfully and linked it to the global terms IDs = {data.get('global_terms_IDs')} successfully."}
         )
     except Exception as e:
         print(e)
@@ -2450,11 +2464,10 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 # @role_required(CustomUser.SYS_ADMIN)
-def create_Connection_Terms_And_Link_To_Global_Template(request):
+def create_Global_Connection_Terms(request):
     """
     Expected JSON (raw JSON data/form data):
     {
-        "global_conn_type_id": value,
         "connection_terms_obligations": obligations,
         "connection_terms_permissions": permissions
     }
@@ -2467,23 +2480,23 @@ def create_Connection_Terms_And_Link_To_Global_Template(request):
                     "message": f"User must be a system admin to hit this API endpoint. Current user has {requesting_user.user_type} type"
                 }
             )
-        global_conn_type_id = request.data.get("global_conn_type_id") # RAW JSON DATA/FORM DATA
+        # global_conn_type_id = request.data.get("global_conn_type_id") # RAW JSON DATA/FORM DATA
         connection_terms_obligations = request.data.get("obligations") # RAW JSON DATA/FORM DATA
         connection_terms_permissions = request.data.get("permissions") # RAW JSON DATA/FORM DATA
 
-        template = GlobalConnectionTypeTemplate.objects.filter(
-            global_connection_type_template_id=global_conn_type_id
-        )
-        if not template.exists():
-            return JsonResponse(
-                {
-                    "message": f"Global connection type template with ID = {global_conn_type_id} does not exist."
-                }
-            )
+        # template = GlobalConnectionTypeTemplate.objects.filter(
+        #     global_connection_type_template_id=global_conn_type_id
+        # )
+        # if not template.exists():
+        #     return JsonResponse(
+        #         {
+        #             "message": f"Global connection type template with ID = {global_conn_type_id} does not exist."
+        #         }
+        #     )
 
         for obligation in connection_terms_obligations:
             ConnectionTerms.objects.create(
-                global_conn_type=template.first(),
+                # global_conn_type=None,
                 modality="obligatory",
                 data_element_name=obligation["labelName"],
                 data_type=obligation["typeOfAction"],
@@ -2497,13 +2510,13 @@ def create_Connection_Terms_And_Link_To_Global_Template(request):
 
         if can_share_more_data:
             ConnectionTerms.objects.create(
-                global_conn_type=template.first(),
+                # global_conn_type=None,
                 modality="permissive",
                 description="They can share more data.",
             )
         if can_download_data:
             ConnectionTerms.objects.create(
-                global_conn_type=template.first(),
+                # global_conn_type=None,
                 modality="permissive",
                 description="They can download data.",
             )

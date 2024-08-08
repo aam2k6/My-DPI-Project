@@ -163,4 +163,5 @@ class ConnectionTypeRegulationLinkTablePostSerializer(serializers.ModelSerialize
 class ConnectionTypeRegulationLinkTableGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionTypeRegulationLinkTable
+        fields = '__all__'
         depth = 1

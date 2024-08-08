@@ -2321,7 +2321,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     """
     template_Id = request.POST.get("template_Id") # FORM DATA
     type_Id = request.POST.get("type_Id") # FORM DATA
-    data = {"connection_type_id": "", "global_connection_template_id": ""}
+    # data = {"connection_type_id": "", "global_connection_template_id": ""}
     if template_Id is not None and type_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
             global_connection_type_template_id=template_Id
@@ -2352,21 +2352,26 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                         'global template': template_Serializer.data,
                         'connection type': type_Serializer.data 
                     })
-                data["global_connection_template_id"] = template.first()
-                data["connection_type_id"] = connection_Type.first()
+                # data["global_connection_template_id"] = template.first()
+                # data["connection_type_id"] = connection_Type.first()
                 # link = ConnectionTypeRegulationLinkTable(
                 #     connection_Type_Id=connection_Type.first(),
                 #     conection_Template_Id=template.first(),
                 # )
+
                 try:
+                    link = ConnectionTypeRegulationLinkTable.objects.create(
+                        connection_type_id=connection_Type.first(),
+                        global_connection_template_id=template.first()
+                    )
                     serializer = ConnectionTypeRegulationLinkTablePostSerializer(
-                        data=data
+                        link
                     )
                     if not serializer.is_valid():
                         return JsonResponse(
                             {"status": 400, "errors": serializer.errors}
                         )
-                    serializer.save()
+                    # serializer.save()
                     return JsonResponse(
                         {
                             "status": 201,

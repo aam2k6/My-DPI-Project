@@ -141,6 +141,9 @@ class GlobalConnectionTypeTemplate(models.Model):
     global_connection_type_name = models.CharField(max_length=200, default="Test type name", unique=True)
     global_connection_type_description = models.CharField(max_length=200, default="test type description")
 
+    def __str__(self) -> str:
+        return self.global_connection_type_template_id
+
 class ConnectionTypeRegulationLinkTable(models.Model):
     link_id = models.AutoField(primary_key=True)
     connection_type_id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True)

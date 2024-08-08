@@ -2271,39 +2271,40 @@ def get_Global_Connection_Type(request):
     }
     To get all conection types, no need to send any JSON.
     """
-    name = request.GET.get("connection_type_template_name")
-    print(name)
-    if name:
-        global_Connection_Type = GlobalConnectionTypeTemplate.objects.get(
-            connection_type_name=name
-        )
-        print(global_Connection_Type)
-        if global_Connection_Type:
-            serializer = GlobalConnectionTypeTemplateGetSerializer(
-                global_Connection_Type
+    if request.method == 'GET':
+        name = request.GET.get("connection_type_template_name")
+        print(name)
+        if name:
+            global_Connection_Type = GlobalConnectionTypeTemplate.objects.get(
+                connection_type_name=name
             )
-            terms = ConnectionTerms.objects.filter(
-                global_conn_type=global_Connection_Type
-            )
-            terms_Serializer = ConnectionTermsSerializer(terms, many=True)
-            return JsonResponse(
-                {
-                    "global_connection": serializer.data,
-                    "terms_attached_to_template": terms_Serializer.data,
-                }
-            )
-        else:
-            return JsonResponse(
-                {
-                    "message": f"global connection type template with name = {name} does not exist."
-                }
-            )
-    else:
-        global_Connection_Types = GlobalConnectionTypeTemplate.objects.all()
-        serializer = GlobalConnectionTypeTemplateGetSerializer(
-            global_Connection_Types, many=True
-        )
-        return JsonResponse({"data": serializer.data})
+            print(global_Connection_Type)
+            if global_Connection_Type:
+                serializer = GlobalConnectionTypeTemplateGetSerializer(
+                    global_Connection_Type
+                )
+                terms = ConnectionTerms.objects.filter(
+                    global_conn_type=global_Connection_Type
+                )
+                terms_Serializer = ConnectionTermsSerializer(terms, many=True)
+                return JsonResponse(
+                    {
+                        "global_connection": serializer.data,
+                        "terms_attached_to_template": terms_Serializer.data,
+                    }
+                )
+            else:
+                return JsonResponse(
+                    {
+                        "message": f"global connection type template with name = {name} does not exist."
+                    }
+                )
+        # else:
+        #     global_Connection_Types = GlobalConnectionTypeTemplate.objects.all()
+        #     serializer = GlobalConnectionTypeTemplateGetSerializer(
+        #         global_Connection_Types, many=True
+        #     )
+        #     return JsonResponse({"data": serializer.data})
 
 
 @csrf_exempt

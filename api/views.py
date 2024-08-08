@@ -2426,7 +2426,7 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
             )
         else:
             terms = ConnectionTerms.objects.filter(global_conn_type=template.first())
-            serializer = ConnectionTermsSerializer(data=terms, many=True)
+            serializer = ConnectionTermsSerializer(terms, many=True)
             return JsonResponse({"data": serializer.data})
 
 

@@ -2381,7 +2381,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                 except Exception as e:
                     print(e)
                     return JsonResponse(
-                        {"message": "Something went wrong.", "error": e}
+                        {"message": "Something went wrong.", "error": f'{e}'}
                     )
     return JsonResponse({
         'message': f'Template ID = {template_Id} and type ID = {type_Id}'

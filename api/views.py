@@ -2271,18 +2271,18 @@ def get_Global_Connection_Type(request):
     }
     To get all conection types, no need to send any JSON.
     """
-    name = request.GET.get("connection_type_template_name", None)
+    name = request.GET.get("connection_type_template_name")
     if name is not None:
-        global_Connection_Types = GlobalConnectionTypeTemplate.objects.get(
+        global_Connection_Type = GlobalConnectionTypeTemplate.objects.get(
             connection_type_name=name
         )
-        print(global_Connection_Types)
-        if global_Connection_Types.exists():
+        print(global_Connection_Type)
+        if global_Connection_Type:
             serializer = GlobalConnectionTypeTemplateGetSerializer(
-                global_Connection_Types
+                global_Connection_Type
             )
             terms = ConnectionTerms.objects.filter(
-                global_conn_type=global_Connection_Types
+                global_conn_type=global_Connection_Type
             )
             terms_Serializer = ConnectionTermsSerializer(terms, many=True)
             return JsonResponse(
@@ -2294,7 +2294,7 @@ def get_Global_Connection_Type(request):
         else:
             return JsonResponse(
                 {
-                    "message": f"global connection type template with ID = {id} does not exist."
+                    "message": f"global connection type template with name = {name} does not exist."
                 }
             )
     else:

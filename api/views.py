@@ -2254,7 +2254,7 @@ def create_Global_Connection_Type_Template(request):
         serializer = GlobalConnectionTypeTemplatePostSerializer(data=template_Data)
         if not serializer.is_valid():
             return JsonResponse({"status": 400, "errors": serializer.errors})
-        global_Template:ConnectionTypeRegulationLinkTable = serializer.save()
+        global_Template:GlobalConnectionTypeTemplate = serializer.save()
         for id in data.get('global_terms_IDs'):
             global_Term = ConnectionTerms.objects.filter(terms_id=id)
             if global_Term.exists():

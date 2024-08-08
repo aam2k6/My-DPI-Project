@@ -2314,7 +2314,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     Expected JSON:
     {
         "template_Id": value,
-        "type_Id":
+        "type_Id": value
     }
     """
     template_Id = request.POST.get("template_Id")

@@ -2494,9 +2494,9 @@ def create_Global_Connection_Terms(request):
         #             "message": f"Global connection type template with ID = {global_conn_type_id} does not exist."
         #         }
         #     )
-
+        terms_List:list = []
         for obligation in connection_terms_obligations:
-            ConnectionTerms.objects.create(
+            term = ConnectionTerms.objects.create(
                 # global_conn_type=None,
                 modality="obligatory",
                 data_element_name=obligation["labelName"],
@@ -2505,21 +2505,29 @@ def create_Global_Connection_Terms(request):
                 description=obligation["labelDescription"],
                 host_permissions=obligation["hostPermissions"],
             )
+            terms_List.append(term)
 
         can_share_more_data = connection_terms_permissions["canShareMoreData"]
         can_download_data = connection_terms_permissions["canDownloadData"]
 
         if can_share_more_data:
-            ConnectionTerms.objects.create(
+            term = ConnectionTerms.objects.create(
                 # global_conn_type=None,
                 modality="permissive",
                 description="They can share more data.",
             )
+            terms_List.append(term)
         if can_download_data:
-            ConnectionTerms.objects.create(
+            term = ConnectionTerms.objects.create(
                 # global_conn_type=None,
                 modality="permissive",
                 description="They can download data.",
             )
+            terms_List.append(term)
+        terms_Serializer = ConnectionTermsSerializer(terms_List, many=True)
+        return JsonResponse({
+            'message': 'Global connection terms added successfully.',
+            'terms': terms_Serializer.data
+        })
     else:
         return JsonResponse({"message": "Request method is not POST."})

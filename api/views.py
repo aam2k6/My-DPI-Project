@@ -2364,13 +2364,13 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                         connection_type_id=connection_Type.first(),
                         global_connection_template_id=template.first()
                     )
-                    serializer = ConnectionTypeRegulationLinkTablePostSerializer(
-                        data=link
-                    )
-                    if not serializer.is_valid():
-                        return JsonResponse(
-                            {"status": 400, "errors": serializer.errors}
-                        )
+                    # serializer = ConnectionTypeRegulationLinkTablePostSerializer(
+                    #     data=link
+                    # )
+                    # if not serializer.is_valid():
+                    #     return JsonResponse(
+                    #         {"status": 400, "errors": serializer.errors}
+                    #     )
                     # serializer.save()
                     return JsonResponse(
                         {

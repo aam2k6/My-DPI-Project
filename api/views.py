@@ -10,7 +10,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
     api_view,
     permission_classes,
-    authentication_classes
+    authentication_classes,
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -2238,14 +2238,13 @@ def create_Global_Connection_Type_Template(request):
     }
     """
     data = request.data
-    requesting_user:CustomUser = request.user
-    if requesting_user.user_type in [
-        CustomUser.MODERATOR,
-        CustomUser.USER
-    ]:
-        return JsonResponse({
-            'message': f'User must be a system admin to access this API endpoint. Current user has {requesting_user.user_type} type.'
-        })
+    requesting_user: CustomUser = request.user
+    if requesting_user.user_type in [CustomUser.MODERATOR, CustomUser.USER]:
+        return JsonResponse(
+            {
+                "message": f"User must be a system admin to access this API endpoint. Current user has {requesting_user.user_type} type."
+            }
+        )
     try:
         serializer = GlobalConnectionTypeTemplatePostSerializer(data=data)
         if not serializer.is_valid():
@@ -2321,42 +2320,52 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     template_Id = request.POST.get("template_Id")
     type_Id = request.POST.get("type_Id")
     # data = {"connection_Type_Id": "", "connection_Template_Id": ""}
-    template = GlobalConnectionTypeTemplate.objects.filter(
-        connection_type_template_id=template_Id
-    )
-    if not template.exists():
-        return JsonResponse(
-            {
-                "message": f"Global connection type template with ID = {template_Id} does not exist."
-            }
+    if template_Id is not None and type_Id is not None:
+        template = GlobalConnectionTypeTemplate.objects.filter(
+            connection_type_template_id=template_Id
         )
-    else:
-        connection_Type = ConnectionType.objects.filter(connection_type_id=type_Id)
-        if not connection_Type.exists():
+        if not template.exists():
             return JsonResponse(
-                {"message": f"Connection type with ID = {type_Id} does not exist."}
+                {
+                    "message": f"Global connection type template with ID = {template_Id} does not exist."
+                }
             )
         else:
-            # data["connection_Template_Id"] = template.first()
-            # data["connection_Type_Id"] = connection_Type.first()
-            link = ConnectionTypeRegulationLinkTable(
-                connection_Type_Id=connection_Type.first(),
-                conection_Template_Id=template.first(),
-            )
-            try:
-                serializer = ConnectionTypeRegulationLinkTablePostSerializer(data=link)
-                if not serializer.is_valid():
-                    return JsonResponse({"status": 400, "errors": serializer.errors})
-                serializer.save()
+            connection_Type = ConnectionType.objects.filter(connection_type_id=type_Id)
+            if not connection_Type.exists():
                 return JsonResponse(
-                    {
-                        "status": 201,
-                        "message": f"Connection type with ID = {type_Id} linked successfully to global connection type template with ID = {template_Id}",
-                    }
+                    {"message": f"Connection type with ID = {type_Id} does not exist."}
                 )
-            except Exception as e:
-                print(e)
-                return JsonResponse({"message": "Something went wrong.", "error": e})
+            else:
+                # data["connection_Template_Id"] = template.first()
+                # data["connection_Type_Id"] = connection_Type.first()
+                link = ConnectionTypeRegulationLinkTable(
+                    connection_Type_Id=connection_Type.first(),
+                    conection_Template_Id=template.first(),
+                )
+                try:
+                    serializer = ConnectionTypeRegulationLinkTablePostSerializer(
+                        data=link
+                    )
+                    if not serializer.is_valid():
+                        return JsonResponse(
+                            {"status": 400, "errors": serializer.errors}
+                        )
+                    serializer.save()
+                    return JsonResponse(
+                        {
+                            "status": 201,
+                            "message": f"Connection type with ID = {type_Id} linked successfully to global connection type template with ID = {template_Id}",
+                        }
+                    )
+                except Exception as e:
+                    print(e)
+                    return JsonResponse(
+                        {"message": "Something went wrong.", "error": e}
+                    )
+    return JsonResponse({
+        'message': f'Template ID = {template_Id} and type ID = {type_Id}'
+    })
 
 
 @csrf_exempt
@@ -2423,14 +2432,13 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
 # @role_required(CustomUser.SYS_ADMIN)
 def create_Connection_Terms_And_Link_To_Global_Template(request):
     if request.method == "POST":
-        requesting_user:CustomUser = request.user
-        if requesting_user.user_type in [
-            CustomUser.MODERATOR,
-            CustomUser.USER
-        ]:
-            return JsonResponse({
-                'message': f'User must be a system admin to hit this API endpoint. Current user has {requesting_user.user_type} type'
-            })
+        requesting_user: CustomUser = request.user
+        if requesting_user.user_type in [CustomUser.MODERATOR, CustomUser.USER]:
+            return JsonResponse(
+                {
+                    "message": f"User must be a system admin to hit this API endpoint. Current user has {requesting_user.user_type} type"
+                }
+            )
         global_conn_type_id = request.POST.get("global_conn_type_id")
         connection_terms_obligations = request.POST.get("obligations")
         connection_terms_permissions = request.POST.get("permissions")

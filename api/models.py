@@ -137,20 +137,20 @@ class Snode(models.Model):
 
 
 class GlobalConnectionTypeTemplate(models.Model):
-    connection_type_template_id = models.AutoField(primary_key=True)
-    connection_type_name = models.CharField(max_length=200, default="Test type name", unique=True)
-    connection_type_description = models.CharField(max_length=200, default="test type description")
+    globalconnection_type_template_id = models.AutoField(primary_key=True) #change here
+    globalconnection_type_name = models.CharField(max_length=200, default="Test type name", unique=True) #change here
+    globalconnection_type_description = models.CharField(max_length=200, default="test type description") #change here
 
 class ConnectionTypeRegulationLinkTable(models.Model):
-    link_Id = models.AutoField(primary_key=True)
-    connection_Type_Id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True) # Actually this is not the ID, it is the complete ConnectionType instance.
-    conection_Template_Id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) # Actually this is not the ID, it is the complete GlobalConnectionTypeTemplate instance.
+    link_id = models.AutoField(primary_key=True)
+    connection_type_id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True)
+    globalconnection_template_id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) #change here
 
 class ConnectionTerms(models.Model):
     MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
     terms_id = models.AutoField(primary_key=True)
     conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE, null=True)
-    global_conn_type = models.ForeignKey(GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True)
+    global_conn_type = models.ForeignKey(GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) #change here
     modality = models.CharField(max_length=50, choices=MODALITY_CHOICES, default='obligatory')
     data_element_name = models.CharField(max_length=50)
     host_permissions = models.JSONField(default=list)

@@ -2452,7 +2452,7 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
 # @role_required(CustomUser.SYS_ADMIN)
 def create_Connection_Terms_And_Link_To_Global_Template(request):
     """
-    Expected JSON (form data):
+    Expected JSON (raw JSON data/form data):
     {
         "global_conn_type_id": value,
         "connection_terms_obligations": obligations,
@@ -2467,9 +2467,9 @@ def create_Connection_Terms_And_Link_To_Global_Template(request):
                     "message": f"User must be a system admin to hit this API endpoint. Current user has {requesting_user.user_type} type"
                 }
             )
-        global_conn_type_id = request.POST.get("global_conn_type_id") # FORM DATA
-        connection_terms_obligations = request.POST.get("obligations") # FORM DATA
-        connection_terms_permissions = request.POST.get("permissions") # FORM DATA
+        global_conn_type_id = request.data.get("global_conn_type_id") # RAW JSON DATA/FORM DATA
+        connection_terms_obligations = request.data.get("obligations") # RAW JSON DATA/FORM DATA
+        connection_terms_permissions = request.data.get("permissions") # RAW JSON DATA/FORM DATA
 
         template = GlobalConnectionTypeTemplate.objects.filter(
             global_connection_type_template_id=global_conn_type_id

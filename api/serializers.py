@@ -156,7 +156,7 @@ class GlobalConnectionTypeTemplateGetSerializer(serializers.ModelSerializer):
 class ConnectionTypeRegulationLinkTablePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionTypeRegulationLinkTable
-        exclude = ["link_id"]
+        exclude = ["link_Id"]
         depth = 1
 
 

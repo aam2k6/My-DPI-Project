@@ -2370,20 +2370,21 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
         "template_Id": value
     }
     """
-    template_Id = request.GET.get("template_Id")
-    template = GlobalConnectionTypeTemplate.objects.filter(
-        connection_type_template_id=template_Id
-    )
-    if not template.exists():
-        return JsonResponse(
-            {
-                "message": f"global conection type template with ID = {template_Id} does not exist."
-            }
+    template_Id = request.GET.get("template_Id", None)
+    if template_Id is not None:
+        template = GlobalConnectionTypeTemplate.objects.filter(
+            connection_type_template_id=template_Id
         )
-    else:
-        terms = ConnectionTerms.objects.filter(global_conn_type=template.first())
-        serializer = ConnectionTermsSerializer(data=terms, many=True)
-        return JsonResponse({"data": serializer.data})
+        if not template.exists():
+            return JsonResponse(
+                {
+                    "message": f"global conection type template with ID = {template_Id} does not exist."
+                }
+            )
+        else:
+            terms = ConnectionTerms.objects.filter(global_conn_type=template.first())
+            serializer = ConnectionTermsSerializer(data=terms, many=True)
+            return JsonResponse({"data": serializer.data})
 
 
 @csrf_exempt

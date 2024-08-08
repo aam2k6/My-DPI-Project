@@ -2299,12 +2299,12 @@ def get_Global_Connection_Type(request):
                         "message": f"global connection type template with name = {name} does not exist."
                     }
                 )
-        # else:
-        #     global_Connection_Types = GlobalConnectionTypeTemplate.objects.all()
-        #     serializer = GlobalConnectionTypeTemplateGetSerializer(
-        #         global_Connection_Types, many=True
-        #     )
-        #     return JsonResponse({"data": serializer.data})
+        else:
+            global_Connection_Types = GlobalConnectionTypeTemplate.objects.all()
+            serializer = GlobalConnectionTypeTemplateGetSerializer(
+                global_Connection_Types, many=True
+            )
+            return JsonResponse({"data": serializer.data})
 
 
 @csrf_exempt

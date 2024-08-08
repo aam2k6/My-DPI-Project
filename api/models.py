@@ -137,9 +137,9 @@ class Snode(models.Model):
 
 
 class GlobalConnectionTypeTemplate(models.Model):
-    globalconnection_type_template_id = models.AutoField(primary_key=True) #change here
-    globalconnection_type_name = models.CharField(max_length=200, default="Test type name", unique=True) #change here
-    globalconnection_type_description = models.CharField(max_length=200, default="test type description") #change here
+    global_connection_type_template_id = models.AutoField(primary_key=True)
+    global_connection_type_name = models.CharField(max_length=200, default="Test type name", unique=True)
+    global_connection_type_description = models.CharField(max_length=200, default="test type description")
 
 class ConnectionTypeRegulationLinkTable(models.Model):
     link_id = models.AutoField(primary_key=True)

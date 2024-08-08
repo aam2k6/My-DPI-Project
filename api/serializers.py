@@ -142,7 +142,7 @@ class ConnectionFilterSerializer(serializers.ModelSerializer):
 class GlobalConnectionTypeTemplatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = GlobalConnectionTypeTemplate
-        exclude = ["connection_type_template_id"]
+        exclude = ["global_connection_type_template_id"]
         depth = 1
 
 

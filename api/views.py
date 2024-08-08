@@ -2217,7 +2217,7 @@ def get_connection_details(request):
     )
 
 
-# FEATURE ADDITION
+# FEATURES ADDITION
 
 
 @csrf_exempt
@@ -2272,11 +2272,11 @@ def get_Global_Connection_Type(request):
     To get all conection types, no need to send any JSON.
     """
     if request.method == 'GET':
-        name = request.data.get("connection_type_template_name")
+        name = request.data.get("global_connection_type_template_name")
         print(name)
         if name:
             global_Connection_Type = GlobalConnectionTypeTemplate.objects.filter(
-                connection_type_name=name
+                global_connection_type_name=name
             )
             print(global_Connection_Type)
             if global_Connection_Type.exists():
@@ -2290,7 +2290,7 @@ def get_Global_Connection_Type(request):
                 return JsonResponse(
                     {
                         "global_connection": serializer.data,
-                        "terms_attached_to_template": terms_Serializer.data,
+                        "terms_attached_to_global_template": terms_Serializer.data,
                     }
                 )
             else:
@@ -2324,7 +2324,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     data = {"connection_Type_Id": "", "connection_Template_Id": ""}
     if template_Id is not None and type_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
-            connection_type_template_id=template_Id
+            global_connection_type_template_id=template_Id
         )
         if not template.exists():
             return JsonResponse(
@@ -2339,8 +2339,8 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                     {"message": f"Connection type with ID = {type_Id} does not exist."}
                 )
             else:
-                # data["connection_Template_Id"] = template.first()
-                # data["connection_Type_Id"] = connection_Type.first()
+                data["connection_Template_Id"] = template.first()
+                data["connection_Type_Id"] = connection_Type.first()
                 # link = ConnectionTypeRegulationLinkTable(
                 #     connection_Type_Id=connection_Type.first(),
                 #     conection_Template_Id=template.first(),
@@ -2384,7 +2384,7 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
     template_Id = request.GET.get("template_Id", None)
     if template_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
-            connection_type_template_id=template_Id
+            global_connection_type_template_id=template_Id
         )
         if not template.exists():
             return JsonResponse(
@@ -2446,7 +2446,7 @@ def create_Connection_Terms_And_Link_To_Global_Template(request):
         connection_terms_permissions = request.POST.get("permissions")
 
         template = GlobalConnectionTypeTemplate.objects.filter(
-            connection_type_template_id=global_conn_type_id
+            global_connection_type_template_id=global_conn_type_id
         )
         if not template.exists():
             return JsonResponse(

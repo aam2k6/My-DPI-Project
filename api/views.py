@@ -2434,7 +2434,7 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
         )
         if link_Regulation.exists():
             serializer = ConnectionTypeRegulationLinkTableGetSerializer(
-                data=link_Regulation, many=True
+                link_Regulation, many=True
             )
             return JsonResponse({"data": serializer.data})
         return JsonResponse(

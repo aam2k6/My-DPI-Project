@@ -144,7 +144,7 @@ class GlobalConnectionTypeTemplate(models.Model):
 class ConnectionTypeRegulationLinkTable(models.Model):
     link_id = models.AutoField(primary_key=True)
     connection_type_id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True)
-    globalconnection_template_id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) #change here
+    global_connection_template_id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) #change here
 
 class ConnectionTerms(models.Model):
     MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]

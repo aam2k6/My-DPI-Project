@@ -2321,7 +2321,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     """
     template_Id = request.POST.get("template_Id")
     type_Id = request.POST.get("type_Id")
-    data = {"connection_Type_Id": "", "connection_Template_Id": ""}
+    data = {"connection_type_id": "", "global_connection_template_id": ""}
     if template_Id is not None and type_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
             global_connection_type_template_id=template_Id
@@ -2339,8 +2339,8 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                     {"message": f"Connection type with ID = {type_Id} does not exist."}
                 )
             else:
-                data["connection_Template_Id"] = template.first()
-                data["connection_Type_Id"] = connection_Type.first()
+                data["global_connection_template_id"] = template.first()
+                data["connection_type_id"] = connection_Type.first()
                 # link = ConnectionTypeRegulationLinkTable(
                 #     connection_Type_Id=connection_Type.first(),
                 #     conection_Template_Id=template.first(),
@@ -2412,7 +2412,7 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
     if request.method == "GET":
         conn_type_ID = request.GET.get("connection_Type_ID")
         link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(
-            connection_Type_Id=conn_type_ID
+            connection_type_id=conn_type_ID
         )
         if link_Regulation.exists():
             serializer = ConnectionTypeRegulationLinkTableGetSerializer(

@@ -149,6 +149,7 @@ class GlobalConnectionTypeTemplatePostSerializer(serializers.ModelSerializer):
 class GlobalConnectionTypeTemplateGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = GlobalConnectionTypeTemplate
+        fields = '__all__'
         depth = 1
 
 

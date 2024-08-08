@@ -2277,6 +2277,7 @@ def get_Global_Connection_Type(request):
         global_Connection_Types = GlobalConnectionTypeTemplate.objects.filter(
             connection_type_name=name
         )
+        print(global_Connection_Types)
         if global_Connection_Types.exists():
             serializer = GlobalConnectionTypeTemplateGetSerializer(
                 global_Connection_Types.first()
@@ -2319,7 +2320,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
     """
     template_Id = request.POST.get("template_Id")
     type_Id = request.POST.get("type_Id")
-    data = {"connection_Type_Id": "", "connection_Template_Id": ""}
+    # data = {"connection_Type_Id": "", "connection_Template_Id": ""}
     template = GlobalConnectionTypeTemplate.objects.filter(
         connection_type_template_id=template_Id
     )

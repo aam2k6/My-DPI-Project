@@ -1016,6 +1016,78 @@ def get_connection_by_user_by_locker(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
+@api_view(["GET"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_connection_by_user(request):
+    """
+    Retrieves all the connections of the specified user.
+
+    Parameters:
+        - request: HttpRequest object containing metadata about the request.
+
+    Query Parameters:
+        - username: The username of the user whose connections are to be retrieved.
+
+    Returns:
+        - JsonResponse: A JSON object containing a list of connections or an error message.
+
+    Response Codes:
+        - 200: Successful retrieval of connections.
+        - 401: User is not authenticated.
+        - 404: Specified user or connections not found.
+        - 405: Request method not allowed (if not GET).
+    """
+    if request.method == "GET":
+        try:
+            username = request.GET.get("username")
+
+            if not username:
+                return JsonResponse({"error": "Username is required"}, status=400)
+
+            try:
+                user = CustomUser.objects.get(username=username)
+            except CustomUser.DoesNotExist:
+                return JsonResponse({"error": "User not found"}, status=404)
+
+            # Fetch all incoming connections where the specified user is the guest
+            incoming_connections = Connection.objects.filter(host_user=user)
+            # Fetch all outgoing connections where the specified user is the host
+            outgoing_connections = Connection.objects.filter(guest_user=user)
+
+            # Prepare the response data with only the required fields
+            connections = {
+                "incoming_connections": [
+                    {
+                        "connection_name": conn.connection_name,
+                        "host_user_locker": conn.host_locker.name,
+                        "guest_user_locker": conn.guest_locker.name
+                    }
+                    for conn in incoming_connections
+                ],
+                "outgoing_connections": [
+                    {
+                        "connection_name": conn.connection_name,
+                        "host_user_locker": conn.host_locker.name,
+                        "guest_user_locker": conn.guest_locker.name
+                    }
+                    for conn in outgoing_connections
+                ]
+            }
+
+            return JsonResponse(
+                {"success": True, "connections": connections}, status=200
+            )
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+    return JsonResponse(
+        {"success": False, "error": "Invalid request method"}, status=405
+    )
+
+
 
 @csrf_exempt
 @api_view(['GET'])
@@ -1172,90 +1244,97 @@ def update_locker(request, locker_id):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-
 @csrf_exempt
 @api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def freeze_locker(request):
+def freeze_or_unfreeze_locker(request):
     """
-    Freeze a locker.
+    Freeze or unfreeze a locker based on its current status.
 
     Parameters:
-    - request: HttpRequest object containing metadata about the request.
+        - request: HttpRequest object containing metadata about the request.
 
-    Request Data (PUT):
-    - username: The username of the user.
-    - locker_name: The name of the locker.
-    - locker_id (optional): The ID of the locker.
+    Form Parameters:
+        - username: The username of the user whose locker is to be frozen or unfrozen.
+        - locker_name: Name of the locker to be frozen or unfrozen.
+        - action: Specifies whether to "freeze" or "unfreeze" the locker.
 
     Returns:
-    - JsonResponse: A JSON object indicating success or failure.
+        - JsonResponse: A JSON object indicating success or an error message.
 
     Response Codes:
-    - 200: Successful freezing of the locker.
-    - 404: Specified user or locker not found.
-    - 400: Bad request (missing parameters).
-    - 403: Permission denied.
+        - 200: Successful freezing or unfreezing of the locker.
+        - 400: Bad request (if data is invalid).
+        - 401: User not authenticated.
+        - 403: Forbidden (if the requesting user does not have permission).
+        - 404: Locker not found.
+        - 405: Request method not allowed (if not PUT).
     """
     if request.method == 'PUT':
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'User not authenticated'}, status=401)
+
+        # Check if the requesting user is a sys_admin or moderator
+        requesting_user = request.user
+        if requesting_user.user_type not in [CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+            return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
         username = request.data.get('username')
         locker_name = request.data.get('locker_name')
-        locker_id = request.data.get('locker_id')
+        action = request.data.get('action')
 
-
-        if not username or not locker_name:
-            return JsonResponse({'success': False, 'error': 'Username and Locker Name are required'}, status=400)
+        if not username or not locker_name or not action:
+            return JsonResponse({'success': False, 'error': 'Username, locker name, and action are required'}, status=400)
 
         try:
-            # Check if the requesting user is a sys_admin or moderator
-            requesting_user = request.user
-            if requesting_user.user_type not in ['sys_admin', CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
-                return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
-
-            if locker_id:
-                # Fetch locker by locker_id
-                locker = Locker.objects.get(locker_id=locker_id)
-            else:
-                # Fetch locker by username and locker_name
-                user = CustomUser.objects.get(username=username)
-                locker = Locker.objects.get(name=locker_name, user=user)
-
-            if locker.is_frozen:
-                return JsonResponse({'success': False, 'message': 'This locker is already frozen'}, status=200)
-            else:
-                locker.is_frozen = True
-                locker.save()
-                return JsonResponse({'success': True, 'message': 'Locker has been frozen successfully'}, status=200)
-
-        except Locker.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
+            user = CustomUser.objects.get(username=username)
+            locker = Locker.objects.get(name=locker_name, user=user)
         except CustomUser.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        except Locker.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Locker not found'}, status=404)
+
+        if action == "freeze":
+            if locker.is_frozen:
+                return JsonResponse({'success': False, 'error': 'Locker is already frozen'}, status=400)
+            locker.is_frozen = True
+            locker.save()
+            return JsonResponse({'success': True, 'message': f'Locker "{locker_name}" has been frozen'}, status=200)
+
+        elif action == "unfreeze":
+            if not locker.is_frozen:
+                return JsonResponse({'success': False, 'error': 'Locker is not frozen'}, status=400)
+            locker.is_frozen = False
+            locker.save()
+            return JsonResponse({'success': True, 'message': f'Locker "{locker_name}" has been unfrozen'}, status=200)
+
+        else:
+            return JsonResponse({'success': False, 'error': 'Invalid action specified'}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def freeze_connection(request):
+def freeze_or_unfreeze_connection(request):
     """
-    Freeze a connection.
+    Freeze or unfreeze a connection based on the specified action.
 
     Parameters:
     - request: HttpRequest object containing metadata about the request.
 
     Request Data (PUT):
     - username: The username of the user.
-    - connection_name: The name of the connection to freeze.
-    - connection_id: The ID of the connection to freeze (optional).
+    - connection_name: The name of the connection to freeze or unfreeze.
+    - connection_id: The ID of the connection to freeze or unfreeze (optional).
+    - action: Specifies whether to "freeze" or "unfreeze" the connection.
 
     Returns:
     - JsonResponse: A JSON object indicating success or failure.
 
     Response Codes:
-    - 200: Successful freezing of the connection.
+    - 200: Successful freezing or unfreezing of the connection.
     - 404: Specified user or connection not found.
     - 400: Bad request (missing parameters).
     - 403: Permission denied.
@@ -1264,9 +1343,10 @@ def freeze_connection(request):
         username = request.data.get('username')
         connection_name = request.data.get('connection_name')
         connection_id = request.data.get('connection_id')
+        action = request.data.get('action')
 
-        if not username or not connection_name:
-            return JsonResponse({'success': False, 'error': 'Username and Connection Name are required'}, status=400)
+        if not username or not connection_name or not action:
+            return JsonResponse({'success': False, 'error': 'Username, Connection Name, and Action are required'}, status=400)
 
         try:
             # Check if the requesting user is a sys_admin or moderator
@@ -1283,12 +1363,24 @@ def freeze_connection(request):
                 # Fetch connection by username and connection_name
                 connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
 
-            if connection.is_frozen:
-                return JsonResponse({'success': False, 'message': 'This connection is already frozen'}, status=200)
+            if action == "freeze":
+                if connection.is_frozen:
+                    return JsonResponse({'success': False, 'message': 'This connection is already frozen'}, status=200)
+                else:
+                    connection.is_frozen = True
+                    connection.save()
+                    return JsonResponse({'success': True, 'message': 'Connection has been frozen successfully'}, status=200)
+
+            elif action == "unfreeze":
+                if not connection.is_frozen:
+                    return JsonResponse({'success': False, 'message': 'This connection is not frozen'}, status=200)
+                else:
+                    connection.is_frozen = False
+                    connection.save()
+                    return JsonResponse({'success': True, 'message': 'Connection has been unfrozen successfully'}, status=200)
+
             else:
-                connection.is_frozen = True
-                connection.save()
-                return JsonResponse({'success': True, 'message': 'Connection has been frozen successfully'}, status=200)
+                return JsonResponse({'success': False, 'error': 'Invalid action specified'}, status=400)
 
         except Connection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
@@ -1298,6 +1390,7 @@ def freeze_connection(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 @api_view(['POST'])

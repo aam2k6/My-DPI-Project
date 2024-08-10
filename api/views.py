@@ -1016,77 +1016,117 @@ def get_connection_by_user_by_locker(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+# @csrf_exempt
+# @api_view(["GET"])
+# @authentication_classes([BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# def get_connection_by_user(request):
+#     """
+#     Retrieves all the connections of the specified user.
+
+#     Parameters:
+#         - request: HttpRequest object containing metadata about the request.
+
+#     Query Parameters:
+#         - username: The username of the user whose connections are to be retrieved.
+
+#     Returns:
+#         - JsonResponse: A JSON object containing a list of connections or an error message.
+
+#     Response Codes:
+#         - 200: Successful retrieval of connections.
+#         - 401: User is not authenticated.
+#         - 404: Specified user or connections not found.
+#         - 405: Request method not allowed (if not GET).
+#     """
+#     if request.method == "GET":
+#         try:
+#             username = request.GET.get("username")
+
+#             if not username:
+#                 return JsonResponse({"error": "Username is required"}, status=400)
+
+#             try:
+#                 user = CustomUser.objects.get(username=username)
+#             except CustomUser.DoesNotExist:
+#                 return JsonResponse({"error": "User not found"}, status=404)
+
+#             # Fetch all incoming connections where the specified user is the guest
+#             incoming_connections = Connection.objects.filter(host_user=user)
+#             # Fetch all outgoing connections where the specified user is the host
+#             outgoing_connections = Connection.objects.filter(guest_user=user)
+
+#             # Prepare the response data with only the required fields
+#             connections = {
+#                 "incoming_connections": [
+#                     {
+#                         "connection_name": conn.connection_name,
+#                         "host_user_locker": conn.host_locker.name,
+#                         "guest_user_locker": conn.guest_locker.name
+#                     }
+#                     for conn in incoming_connections
+#                 ],
+#                 "outgoing_connections": [
+#                     {
+#                         "connection_name": conn.connection_name,
+#                         "host_user_locker": conn.host_locker.name,
+#                         "guest_user_locker": conn.guest_locker.name
+#                     }
+#                     for conn in outgoing_connections
+#                 ]
+#             }
+
+#             return JsonResponse(
+#                 {"success": True, "connections": connections}, status=200
+#             )
+
+#         except Exception as e:
+#             return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+#     return JsonResponse(
+#         {"success": False, "error": "Invalid request method"}, status=405
+#     )
+
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def get_connection_by_user(request):
+def get_all_connections(request):
     """
-    Retrieves all the connections of the specified user.
+    Retrieves all connections, both incoming and outgoing.
 
     Parameters:
         - request: HttpRequest object containing metadata about the request.
 
-    Query Parameters:
-        - username: The username of the user whose connections are to be retrieved.
-
     Returns:
-        - JsonResponse: A JSON object containing a list of connections or an error message.
+        - JsonResponse: A JSON object containing a list of all connections or an error message.
 
     Response Codes:
         - 200: Successful retrieval of connections.
         - 401: User is not authenticated.
-        - 404: Specified user or connections not found.
         - 405: Request method not allowed (if not GET).
     """
     if request.method == "GET":
         try:
-            username = request.GET.get("username")
-
-            if not username:
-                return JsonResponse({"error": "Username is required"}, status=400)
-
-            try:
-                user = CustomUser.objects.get(username=username)
-            except CustomUser.DoesNotExist:
-                return JsonResponse({"error": "User not found"}, status=404)
-
-            # Fetch all incoming connections where the specified user is the guest
-            incoming_connections = Connection.objects.filter(host_user=user)
-            # Fetch all outgoing connections where the specified user is the host
-            outgoing_connections = Connection.objects.filter(guest_user=user)
+            # Fetch all connections
+            all_connections = Connection.objects.all()
 
             # Prepare the response data with only the required fields
-            connections = {
-                "incoming_connections": [
-                    {
-                        "connection_name": conn.connection_name,
-                        "host_user_locker": conn.host_locker.name,
-                        "guest_user_locker": conn.guest_locker.name
-                    }
-                    for conn in incoming_connections
-                ],
-                "outgoing_connections": [
-                    {
-                        "connection_name": conn.connection_name,
-                        "host_user_locker": conn.host_locker.name,
-                        "guest_user_locker": conn.guest_locker.name
-                    }
-                    for conn in outgoing_connections
-                ]
-            }
+            connections = [
+                {
+                    "connection_name": conn.connection_name,
+                    "host_user_locker": conn.host_locker.name,
+                    "guest_user_locker": conn.guest_locker.name,
+                }
+                for conn in all_connections
+            ]
 
-            return JsonResponse(
-                {"success": True, "connections": connections}, status=200
-            )
+            return JsonResponse({"success": True, "connections": connections}, status=200)
 
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=400)
 
-    return JsonResponse(
-        {"success": False, "error": "Invalid request method"}, status=405
-    )
-
+    return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
 
 
 @csrf_exempt

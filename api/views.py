@@ -37,7 +37,7 @@ from .models import (
 )
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.http import JsonResponse, FileResponse, HttpResponseForbidden
+from django.http import JsonResponse, FileResponse, HttpResponseForbidden, HttpRequest
 from django.db import models
 from rest_framework.parsers import JSONParser
 from django.views.decorators.http import require_POST
@@ -2238,7 +2238,7 @@ def create_Global_Connection_Type_Template(request):
         "global_terms_IDs": list of global connection terms IDs
     }
     """
-    data = request.data # RAW JSON DATA/FORM DATA  
+    data = request.data  # RAW JSON DATA/FORM DATA
     requesting_user: CustomUser = request.user
     if requesting_user.user_type in [CustomUser.MODERATOR, CustomUser.USER]:
         return JsonResponse(
@@ -2248,24 +2248,31 @@ def create_Global_Connection_Type_Template(request):
         )
     try:
         template_Data = {
-            "global_connection_type_name": data.get('global_connection_type_name'),
-            "global_connection_type_description": data.get('global_connection_type_description')
+            "global_connection_type_name": data.get("global_connection_type_name"),
+            "global_connection_type_description": data.get(
+                "global_connection_type_description"
+            ),
         }
         serializer = GlobalConnectionTypeTemplatePostSerializer(data=template_Data)
         if not serializer.is_valid():
             return JsonResponse({"status": 400, "errors": serializer.errors})
-        global_Template:GlobalConnectionTypeTemplate = serializer.save()
-        for id in data.get('global_terms_IDs'):
+        global_Template: GlobalConnectionTypeTemplate = serializer.save()
+        for id in data.get("global_terms_IDs"):
             global_Term = ConnectionTerms.objects.filter(terms_id=id).first()
             if global_Term:
                 global_Term.global_conn_type = global_Template
                 global_Term.save()
             else:
-                return JsonResponse({
-                    'message': f'Global connection term with ID = {id} does not exist.'
-                })
+                return JsonResponse(
+                    {
+                        "message": f"Global connection term with ID = {id} does not exist."
+                    }
+                )
         return JsonResponse(
-            {"status": 201, "message": f"Global connection type created successfully and linked it to the global terms IDs = {data.get('global_terms_IDs')} successfully."}
+            {
+                "status": 201,
+                "message": f"Global connection type created successfully and linked it to the global terms IDs = {data.get('global_terms_IDs')} successfully.",
+            }
         )
     except Exception as e:
         print(e)
@@ -2285,8 +2292,10 @@ def get_Global_Connection_Type(request):
     }
     To get all conection types, no need to send any JSON.
     """
-    if request.method == 'GET':
-        name = request.data.get("global_connection_type_template_name") # RAW JSON DATA/FORM DATA
+    if request.method == "GET":
+        name = request.data.get(
+            "global_connection_type_template_name"
+        )  # RAW JSON DATA/FORM DATA
         print(name)
         if name:
             global_Connection_Type = GlobalConnectionTypeTemplate.objects.filter(
@@ -2333,8 +2342,8 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
         "type_Id": value
     }
     """
-    template_Id = request.POST.get("template_Id") # FORM DATA
-    type_Id = request.POST.get("type_Id") # FORM DATA
+    template_Id = request.POST.get("template_Id")  # FORM DATA
+    type_Id = request.POST.get("type_Id")  # FORM DATA
     # data = {"connection_type_id": "", "global_connection_template_id": ""}
     if template_Id is not None and type_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
@@ -2355,17 +2364,21 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
             else:
                 link = ConnectionTypeRegulationLinkTable.objects.filter(
                     connection_type_id=connection_Type.first(),
-                    global_connection_template_id=template.first()
+                    global_connection_template_id=template.first(),
                 )
                 if link.exists():
-                    template_Serializer = GlobalConnectionTypeTemplateGetSerializer(template.first())
+                    template_Serializer = GlobalConnectionTypeTemplateGetSerializer(
+                        template.first()
+                    )
                     type_Serializer = ConnectionTypeSerializer(connection_Type.first())
-                    return JsonResponse({
-                        'message': 'This link already exists.',
-                        'existing ID of link in DB': link.first().link_id,
-                        'global template': template_Serializer.data,
-                        'connection type': type_Serializer.data 
-                    })
+                    return JsonResponse(
+                        {
+                            "message": "This link already exists.",
+                            "existing ID of link in DB": link.first().link_id,
+                            "global template": template_Serializer.data,
+                            "connection type": type_Serializer.data,
+                        }
+                    )
                 # data["global_connection_template_id"] = template.first()
                 # data["connection_type_id"] = connection_Type.first()
                 # link = ConnectionTypeRegulationLinkTable(
@@ -2376,7 +2389,7 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                 try:
                     link = ConnectionTypeRegulationLinkTable.objects.create(
                         connection_type_id=connection_Type.first(),
-                        global_connection_template_id=template.first()
+                        global_connection_template_id=template.first(),
                     )
                     # serializer = ConnectionTypeRegulationLinkTablePostSerializer(
                     #     data=link
@@ -2395,11 +2408,11 @@ def connect_Global_Connection_Type_Template_And_Connection_Type(request):
                 except Exception as e:
                     print(e)
                     return JsonResponse(
-                        {"message": "Something went wrong.", "error": f'{e}'}
+                        {"message": "Something went wrong.", "error": f"{e}"}
                     )
-    return JsonResponse({
-        'message': f'Template ID = {template_Id} and type ID = {type_Id}'
-    })
+    return JsonResponse(
+        {"message": f"Template ID = {template_Id} and type ID = {type_Id}"}
+    )
 
 
 @csrf_exempt
@@ -2413,7 +2426,7 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
         "template_Id": value
     }
     """
-    template_Id = request.data.get("template_Id", None) # RAW JSON DATA/FORM DATA
+    template_Id = request.data.get("template_Id", None)  # RAW JSON DATA/FORM DATA
     if template_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
             global_connection_type_template_id=template_Id
@@ -2442,7 +2455,7 @@ def get_Connection_Link_Regulation_For_Connection_Type(request):
     }
     """
     if request.method == "GET":
-        conn_type_ID = request.data.get("connection_Type_ID") # RAW JSON DATA/FORM DATA
+        conn_type_ID = request.data.get("connection_Type_ID")  # RAW JSON DATA/FORM DATA
         link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(
             connection_type_id=conn_type_ID
         )
@@ -2481,8 +2494,12 @@ def create_Global_Connection_Terms(request):
                 }
             )
         # global_conn_type_id = request.data.get("global_conn_type_id") # RAW JSON DATA/FORM DATA
-        connection_terms_obligations = request.data.get("connection_terms_obligations") # RAW JSON DATA/FORM DATA
-        connection_terms_permissions = request.data.get("connection_terms_permissions") # RAW JSON DATA/FORM DATA
+        connection_terms_obligations = request.data.get(
+            "connection_terms_obligations"
+        )  # RAW JSON DATA/FORM DATA
+        connection_terms_permissions = request.data.get(
+            "connection_terms_permissions"
+        )  # RAW JSON DATA/FORM DATA
         print(connection_terms_obligations)
 
         # template = GlobalConnectionTypeTemplate.objects.filter(
@@ -2494,7 +2511,7 @@ def create_Global_Connection_Terms(request):
         #             "message": f"Global connection type template with ID = {global_conn_type_id} does not exist."
         #         }
         #     )
-        terms_List:list = []
+        terms_List: list = []
         for obligation in connection_terms_obligations:
             term = ConnectionTerms.objects.create(
                 # global_conn_type=None,
@@ -2525,9 +2542,91 @@ def create_Global_Connection_Terms(request):
             )
             terms_List.append(term)
         terms_Serializer = ConnectionTermsSerializer(terms_List, many=True)
-        return JsonResponse({
-            'message': 'Global connection terms added successfully.',
-            'terms': terms_Serializer.data
-        })
+        return JsonResponse(
+            {
+                "message": "Global connection terms added successfully.",
+                "terms": terms_Serializer.data,
+            }
+        )
     else:
         return JsonResponse({"message": "Request method is not POST."})
+
+
+@csrf_exempt
+@api_view(["PUT, DELETE"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_Update_Locker(request: HttpRequest):
+    if request.method == "DELETE":
+        """
+        Expected JSON data(raw JSON data/form data):
+        {
+            "locker_name": value
+        }
+        """
+        user: CustomUser = request.user
+        actual_User = CustomUser.objects.filter(username=user.username)
+        if actual_User.exists():
+            locker_Name = request.data.get("locker_name")
+            if locker_Name is None:
+                return JsonResponse({"message": "Locker name is not provided."})
+            particular_User: CustomUser = actual_User.first()
+            locker_To_Be_Deleted = Locker.objects.filter(
+                name=locker_Name, user=particular_User
+            )
+            if locker_To_Be_Deleted.exists():
+                delete_Locker: Locker = locker_To_Be_Deleted.first()
+                delete_Locker.delete()
+                return JsonResponse(
+                    {
+                        "message": f"Locker(ID = {delete_Locker.locker_id}) with name = {locker_Name} of user with username = {particular_User.username} was successfully deleted."
+                    }
+                )
+        else:
+            return JsonResponse(
+                {"message": f"User with username = {user.username} does not exist."}
+            )
+    elif request.method == "PUT":
+        """
+        Expected JSON data (raw JSON data/form data):
+        {
+            "new_locker_name": value,
+            "description": value,
+            "username": username of the new user,
+            "is_frozen": value (boolean)
+        }
+        """
+        user: CustomUser = request.user
+        actual_User = CustomUser.objects.filter(username=user.username)
+        if actual_User.exists():
+            locker_Name = request.data.get("locker_name")
+            if locker_Name is None:
+                return JsonResponse({"message": "Locker name is not provided."})
+            particular_User: CustomUser = actual_User.first()
+            locker_To_Be_Updated = Locker.objects.filter(
+                name=locker_Name, user=particular_User
+            )
+            if locker_To_Be_Updated.exists():
+                update_Locker: Locker = locker_To_Be_Updated.first()
+                new_locker_name = request.data.get("new_locker_name")
+                description = request.data.get("description")
+                username = request.data.get("username")
+                is_frozen = request.data.get("is_frozen")
+                new_User = CustomUser.objects.filter(username=username)
+                if new_User.exists():
+                    update_Locker.name = new_locker_name
+                    update_Locker.description = description
+                    update_Locker.is_frozen = is_frozen
+                    update_Locker.user = new_User
+                    update_Locker.save()
+                    return JsonResponse({"message": "Locker updated successfully."})
+                else:
+                    return JsonResponse({
+                        'message': f'User with username = {username} does not exist.'
+                    })
+        else:
+            return JsonResponse(
+                {"message": f"User with username = {user.username} does not exist."}
+            )
+    else:
+        return JsonResponse({"message": "Request method should be either POST or PUT."})

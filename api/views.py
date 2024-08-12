@@ -2630,3 +2630,49 @@ def delete_Update_Locker(request: HttpRequest):
             )
     else:
         return JsonResponse({"message": "Request method should be either POST or PUT."})
+
+@csrf_exempt
+@api_view(["PUT, DELETE"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_Update_Resource(request:HttpRequest):
+    if request.method == 'DELETE':
+        """
+        Expected JSON (raw JSON data/form data):
+        {
+            "locker_name": value,
+            "owner_name": value
+        }
+        """
+        locker_name = request.data.get('locker_name')
+        owner_name = request.data.get('owner_name')
+        user:CustomUser = request.user
+        request_User:CustomUser = CustomUser.objects.filter(username=owner_name).first()
+        if request_User.DoesNotExist:
+            return JsonResponse({
+                'message': f'User with name = {owner_name} does not exist.'
+            })
+        if(request_User == user):
+            locker_of_resource = Locker.objects.filter(name=locker_name, user=user)
+            if locker_of_resource.exists():
+                particular_locker:Locker = locker_of_resource.first()
+                resource_To_Be_Deleted = Resource.objects.filter(owner=user, locker=particular_locker)
+                if resource_To_Be_Deleted.exists():
+                    delete_Resource:Resource = resource_To_Be_Deleted.first()
+                    id = delete_Resource.resource_id
+                    delete_Resource.delete()
+                    return JsonResponse({
+                        'message': f'Resource with ID = {id} deleted successfully.'
+                    })
+                else:
+                    return JsonResponse({
+                        'message': f'Resource with user having username = {user.username} and locker with ID = {particular_locker.locker_id} does not exist.'
+                    })
+            else:
+                return JsonResponse({
+                    'message': f'Locker with name = {locker_name} does not exist.'
+                })
+        else:
+            return JsonResponse({
+                'message': 'You are not allowed to delete this resource.'
+            })

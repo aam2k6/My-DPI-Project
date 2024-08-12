@@ -1,15 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from "react-router-dom";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 import { usercontext } from "../../usercontext";
 import "./connection.css";
+import Navbar from "../Navbar/Navbar";
 
 export const Connection = () => {
     const navigate = useNavigate();
     const [lockers, setLockers] = useState([]);
     const [error, setError] = useState(null);
-    const [isOpen, setIsOpen] = useState(false);
     const { curruser, setUser } = useContext(usercontext);
     const location = useLocation();
     const [selectedLocker, setSelectedLocker] = useState(null);
@@ -17,10 +16,6 @@ export const Connection = () => {
     const [connectionDescription, setConnectionDescription] = useState(null);
     const [validity, setValidity] = useState(null); 
 
-    const capitalizeFirstLetter = (string) => {
-        if (!string) return '';
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    };
 
     useEffect(() => {
         if (!curruser) {
@@ -72,29 +67,6 @@ export const Connection = () => {
         // navigate("/connectionTerms", { state: { selectedLocker } });
     };
 
-    const handleHomeClick = () => {
-        navigate("/home");
-    };
-
-    const handleDPIDirectory = () => {
-        navigate('/dpi-directory');
-    };
-
-    const handleAdmin = () => {
-        navigate('/admin');
-    };
-
-    const handleLogout = () => {
-        Cookies.remove('authToken');
-        localStorage.removeItem('curruser');
-        setUser(null);
-        navigate('/');
-    };
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
-
     const handleLockerChange = (event) => {
         const selectedLockerName = event.target.value;
         const locker = lockers.find(l => l.name === selectedLockerName);
@@ -103,46 +75,7 @@ export const Connection = () => {
 
     return (
         <div>
-            <nav className="navbar">
-                <div className="wrap">
-                    <div className="navbarLockerName"></div>
-                    <div className="navbarLockerOwner"></div>
-                </div>
-
-                <div className="navbarLinks">
-                    <ul className="navbarFirstLink">
-                        <li>
-                            <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-                        </li>
-                    </ul>
-
-                    <ul className="navbarSecondLink">
-                        <li>
-                            <a href="#" onClick={handleHomeClick}>
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleAdmin}></a>
-                        </li>
-                    </ul>
-
-                    <ul className="navbarThirdLink">
-                        <li>
-                            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-                            {isOpen && (
-                                <div className="dropdownContent">
-                                    <div className="currusername">{capitalizeFirstLetter(curruser.username)}</div>
-                                    <div className="curruserdesc">{curruser.description}</div>
-
-                                    <button onClick={handleAdmin}>Settings</button>
-                                    <button onClick={handleLogout}>Logout</button>
-                                </div>
-                            )}
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <Navbar />
                                 
           <div className="connection-heroContainer">
                 <div className="connection-resourceHeading">Connection</div>

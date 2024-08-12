@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
+import Navbar from '../Navbar/Navbar';
 
 export const CreateConnectionType = () => {
     const navigate = useNavigate();
@@ -181,7 +182,6 @@ export const CreateConnectionType = () => {
         setError("An error occurred while creating the connection.");
     }
 };
-
 
     return (
 

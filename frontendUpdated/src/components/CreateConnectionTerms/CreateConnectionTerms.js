@@ -299,8 +299,8 @@ import "./CreateConnectionTerms.css";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from "react-router-dom";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import { usercontext } from "../../usercontext";
+import Navbar from "../Navbar/Navbar";
 // import res from "./object";
 
 export const CreateConnectionTerms = () => {
@@ -308,7 +308,6 @@ export const CreateConnectionTerms = () => {
   const location = useLocation();
   const { curruser, setUser } = useContext(usercontext);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
   const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
   const [message, setMessage] = useState("");
   const [res, setRes] = useState(null);
@@ -355,31 +354,6 @@ export const CreateConnectionTerms = () => {
 
     fetchTerms();
   }, []);
-
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
-
-  const handleAdmin = () => {
-    navigate('/admin');
-  };
-
-
-
-  const handleLogout = () => {
-    Cookies.remove('authToken');
-    localStorage.removeItem('curruser');
-    setUser(null);
-    navigate('/');
-  };
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
 
   const handleIagreebutton = async () => {
     const token = Cookies.get('authToken');
@@ -492,47 +466,18 @@ export const CreateConnectionTerms = () => {
     return null;
   };
 
+const content = (
+  <>
+  <div className="navbarBrand">{capitalizeFirstLetter(selectedConnectionType.connection_type_name)} ({capitalizeFirstLetter(parentUser.username)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
+  <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionname)}   </div>
+  <div className="description"></div>
+  </>
+  
+);
 
   return (
     <div>
-      <nav className="navbar">
-        <div className="wrap">
-          <div className="navbarBrand">{capitalizeFirstLetter(selectedConnectionType.connection_type_name)} ({capitalizeFirstLetter(parentUser.username)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
-          <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionname)}   </div>
-          <div className="description"></div>
-        </div>
-
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-            </li>
-          </ul>
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>Home</a>
-            </li>
-            <li>
-              <a href="" ></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{capitalizeFirstLetter(curruser.username)}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div >
-      </nav >
+      <Navbar content = {content}/>
 
       <div className="page13parent">
         <div className="page13host1">Host : {capitalizeFirstLetter(parentUser.username)}</div>

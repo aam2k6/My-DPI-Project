@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 
 import "./connectionTerms.css";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
+import Navbar from '../Navbar/Navbar';
 
 export const ConnectionTerms = () => {
     const navigate = useNavigate();
@@ -27,7 +27,6 @@ export const ConnectionTerms = () => {
     const [obligations, setObligations] = useState([]); // Change to an array
     const [error, setError] = useState(null);
     const { curruser, setUser } = useContext(usercontext);
-    const [isOpen, setIsOpen] = useState(false);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -128,28 +127,6 @@ export const ConnectionTerms = () => {
         });
     };
 
-    const handleHomeClick = () => {
-        navigate("/home");
-    };
-
-    const handleDPIDirectory = () => {
-        navigate('/dpi-directory');
-    };
-
-    const handleAdmin = () => {
-        navigate('/admin');
-    }
-
-    const handleLogout = () => {
-        Cookies.remove('authToken');
-        localStorage.removeItem('curruser');
-        setUser(null);
-        navigate('/');
-    }
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    }
 
     useEffect(() => {
         if (!curruser) {
@@ -160,49 +137,16 @@ export const ConnectionTerms = () => {
 
     const token = Cookies.get('authToken');
 
+
+    const content = (
+    <><div className="navbarLockerName">Locker : {locker}</div>
+    <div className="navbarLockerOwner">Owner : {curruser.username}</div>
+    </>
+    );
+
     return (
         <div>
-            <nav className="navbar">
-                <div className="wrap">
-                    <div className="navbarLockerName">Locker : {locker}</div>
-                    <div className="navbarLockerOwner">Owner : {curruser.username}</div>
-                </div>
-
-                <div className="navbarLinks">
-                    <ul className="navbarFirstLink">
-                        <li>
-                            <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-                        </li>
-                    </ul>
-
-                    <ul className="navbarSecondLink">
-                        <li>
-                            <a href="#" onClick={handleHomeClick}>
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleAdmin}></a>
-                        </li>
-                    </ul>
-
-                    <ul className="navbarThirdLink">
-                        <li>
-                            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-                            {isOpen && (
-                                <div className="dropdownContent">
-                                    <div className="currusername">{curruser.username}</div>
-                                    <div className="curruserdesc">{curruser.description}</div>
-
-                                    <button onClick={handleAdmin}>Settings</button>
-                                    <button onClick={handleLogout}>Logout</button>
-                                </div>
-                            )}
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
+            <Navbar content = {content} ></Navbar>
             <div className="connectionTerms-heroContainer">
                 <div className="main-heading">Guest Terms Of Service</div>
 

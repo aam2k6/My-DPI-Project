@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import './page3.css';
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { useParams, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
+import Navbar from '../Navbar/Navbar';
 
 export const ViewLocker = () => {
   const location = useLocation();
@@ -175,30 +175,16 @@ export const ViewLocker = () => {
     navigate('/upload-resource', { state: { locker } });
   }
 
-  const handleAdmin = () => {
-    navigate('/admin');
-  }
 
   const handleResourceClick = (filePath) => {
     const url = `http://localhost:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  }
-
   const handleNewLockerClick = () => {
     navigate('/create-locker');
   };
 
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
 
   const handleTracker = (connection) => {
     // console.log(connection.host_locker?.name);
@@ -224,12 +210,6 @@ export const ViewLocker = () => {
     navigate('/view-locker');
   };
 
-  const handleLogout = () => {
-    Cookies.remove('authToken');
-    localStorage.removeItem('curruser');
-    setUser(null);
-    navigate('/');
-  }
   //locker  bhi state se paas krra
   const handleConnectionClick = (connection) => {
     navigate('/show-guest-users', { state: { connection, locker } });
@@ -237,45 +217,15 @@ export const ViewLocker = () => {
 
   }
 
+  const content = (
+    <><div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div>
+    </>
+    
+  );
+
   return (
     <div>
-      <nav className="navbar">
-        <div className="wrap">
-          <div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div>
-        </div>
-
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-            </li>
-          </ul>
-
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>Home</a>
-            </li>
-            <li>
-              <a href="#" onClick={handleAdmin}></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <Navbar content = {content} />
 
       <div className="container">
         <div className="locker-name">

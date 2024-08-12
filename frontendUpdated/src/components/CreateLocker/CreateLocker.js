@@ -2,14 +2,13 @@ import React, { useState,useEffect,useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import "./page2.css";
+import Navbar from "../Navbar/Navbar";
 
 export const CreateLocker = () => {
   const navigate = useNavigate();
   const [lockerName, setLockerName] = useState("");
   const [description, setDescription] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
   const { curruser, setUser } = useContext(usercontext);
 
   const handleSubmit = (event) => {
@@ -50,27 +49,6 @@ export const CreateLocker = () => {
   };
 
 
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
-  const handleLogout = () => {
-    Cookies.remove('authToken');
-    localStorage.removeItem('curruser');
-    setUser(null);
-    navigate('/');
-  }
-  const handleAdmin = () =>{
-    navigate('/admin');
-  }
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  }
-
   useEffect(() => {
     if (!curruser) {
         navigate('/');
@@ -81,43 +59,7 @@ export const CreateLocker = () => {
 
   return (
     <div>
-      <nav className="navbar">
-        <div className="wrap">
-          <div className="navbarBrand"></div>
-          <div className="description"></div>
-        </div>
-
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-            </li>
-          </ul>
-
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>Home</a>
-            </li>
-            <li>
-              <a href="#" onClick={handleAdmin}></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="page2heroContainer">
         <form className="page2lockerForm" onSubmit={handleSubmit}>

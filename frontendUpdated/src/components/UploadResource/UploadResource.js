@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import "./page4.css";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+import Navbar from '../Navbar/Navbar';
 
 
 export const UploadResource = () => {
@@ -12,7 +12,6 @@ export const UploadResource = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resourceName, setResourceName] = useState("");
   const [document, setDocument] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
   const [visibility, setVisibility] = useState("public"); // Default value set to Public
   const navigate = useNavigate();
 
@@ -62,62 +61,22 @@ export const UploadResource = () => {
   };
 
 
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
-
-  const handleLogout = () => {
-    Cookies.remove('authToken');
-    localStorage.removeItem('curruser');
-    setUser(null);
-    navigate('/');
-  }
+  
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   };
 
-  const handleAdmin = () => {
-    navigate('/admin');
-  }
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  }
+  const content = (
+    <>
+    <div className="navbarLockerName">Locker: {locker.name}</div>
+          <div className="navbarLockerOwner">Owner: {curruser.username}</div>
+    </>
+  );
 
   return (
     <div>
-      <nav className="navbar">
-        <div className="wrap">
-          <div className="navbarLockerName">Locker: {locker.name}</div>
-          <div className="navbarLockerOwner">Owner: {curruser.username}</div>
-        </div>
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li><a href="#" onClick={handleDPIDirectory}>DPI Directory</a></li>
-          </ul>
-          <ul className="navbarSecondLink">
-            <li><a href="#" onClick={handleHomeClick}>Home</a></li>
-            <li><a href="#"></a></li>
-          </ul>
-          <ul className="navbarThirdLink">
-            <li> <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-              </li>
-              </ul>
-        </div>
-      </nav>
+    <Navbar content = {content} />
 
       <div className="descriptionLocker">
         <p>{locker.description}</p>

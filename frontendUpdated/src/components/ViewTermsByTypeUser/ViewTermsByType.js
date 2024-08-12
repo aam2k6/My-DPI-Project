@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import Cookies from 'js-cookie';
 import "./ViewTermsByType.css";
+import Navbar from "../Navbar/Navbar";
 
 export const ViewTermsByType = () => {
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const { curruser, setUser } = useContext(usercontext);
     const [showResources, setShowResources] = useState(false);
@@ -58,24 +57,6 @@ export const ViewTermsByType = () => {
         fetchTerms();
     }, []);
 
-    const handleDPIDirectory = () => {
-        navigate('/dpi-directory');
-    };
-
-    const handleHomeClick = () => {
-        navigate('/home');
-    };
-
-    const handleLogout = () => {
-        Cookies.remove('authToken');
-        localStorage.removeItem('curruser');
-        setUser(null);
-        navigate('/');
-    };
-
-    const handleAdmin = () => {
-        navigate('/admin');
-    };
 
     const handleInputChange = (labelName, value) => {
         setTermValues(prev => ({
@@ -112,10 +93,6 @@ export const ViewTermsByType = () => {
             default:
                 return null;
         }
-    };
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
     };
 
     const handleButtonClick = (labelName) => {
@@ -214,46 +191,16 @@ export const ViewTermsByType = () => {
         }
     };
 
+
+    const content = (
+        <>
+        <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
+        <div className="description">{curruser ? curruser.description : 'None'}</div>
+        </>
+    );
     return (
         <div>
-            <nav className="navbar">
-                <div className="wrap">
-                    <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
-                    <div className="description">{curruser ? curruser.description : 'None'}</div>
-                </div>
-
-                <div className="navbarLinks">
-                    <ul className="navbarFirstLink">
-                        <li>
-                            <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-                        </li>
-                    </ul>
-
-                    <ul className="navbarSecondLink">
-                        <li>
-                            <a href="#" onClick={handleHomeClick}>Home</a>
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleAdmin}></a>
-                        </li>
-                    </ul>
-
-                    <ul className="navbarThirdLink">
-                        <li>
-                            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-                            {isOpen && (
-                                <div className="dropdownContent">
-                                    <div className="currusername">{curruser.username}</div>
-                                    <div className="curruserdesc">{curruser.description}</div>
-
-                                    <button onClick={handleAdmin}>Settings</button>
-                                    <button onClick={handleLogout}>Logout</button>
-                                </div>
-                            )}
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+        <Navbar content = {content}/>
 
             <div className={showResources ? "split-view" : ""}>
                 <div className="table-container">

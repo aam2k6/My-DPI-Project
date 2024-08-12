@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import "./page1.css";
 import { useNavigate } from "react-router-dom";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+//import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 
@@ -17,7 +17,7 @@ export const Home = () => {
   const [lockers, setLockers] = useState([]);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const { curruser,setUser } = useContext(usercontext);
+  const { curruser } = useContext(usercontext);
 
 
   useEffect(() => {
@@ -26,108 +26,72 @@ export const Home = () => {
         return;
     }},[]);
 
-  useEffect(() => {
-    const token = Cookies.get('authToken');
 
-    fetch('http://172.16.192.201:8000/get-lockers-user/', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json'
+  useEffect(() => {
+    const fetchLockers = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        console.log('Fetching lockers with token:', token);
+
+        const response = await fetch('http://localhost:8000/get-lockers-user/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Basic ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          setError(errorData.error || 'Failed to fetch lockers');
+          console.error('Error fetching lockers:', errorData);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (data.success) {
+          setLockers(data.lockers || []);
+        } else {
+          setError(data.message || data.error);
+        }
+      } catch (error) {
+        setError("An error occurred while fetching this user's lockers.");
+        console.error("Error:", error);
       }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        setLockers(data.lockers);
-      } else {
-        setError(data.message || data.error);
-      }
-    })
-    .catch(error => {
-      setError("An error occurred while fetching lockers.");
-      console.error("Error:", error);
-    });
+    };
+
+    if (curruser) {
+      fetchLockers();
+    }
   }, [curruser]);
 
   const handleNewLockerClick = () => {
     navigate('/create-locker');
   };
 
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
-
-  const handleLogout = () => {
-    // Clear cookies
-    Cookies.remove('authToken');
-    // Clear local storage
-    localStorage.removeItem('curruser');
-    // Set user context to null
-    setUser(null);
-    // Redirect to login page
-    navigate('/');
-  }
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   };
 
-  const handleAdmin = () => {
-    navigate('/admin');
-  }
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  }
+  const content = (
+    <>
+      <div className="navbarBrand">
+        {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
+      </div>
+      <div className="description">
+        {curruser ? curruser.description : "None"}
+      </div>
+    </>
+  );
 
   return (
     <div>
-      {/* <nav className="navbar">
-        <div className="wrap">
 
-          <div className="navbarBrand">{curruser ? capitalizeFirstLetter(curruser.username) : 'None'}</div>
-          <div className="description">{curruser ? curruser.description : 'None'}</div>
-        </div>
-
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-            </li>
-          </ul>
-
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>Home</a>
-            </li>
-            <li>
-              <a href="#" onClick={handleAdmin}></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-
-                  <div className="currusername">{capitalizeFirstLetter(curruser.username)}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div>
-      </nav> */}
-
-  <Navbar />
+  <Navbar content = {content}/>
 
       <div className="heroContainer">
         <div className="newLocker">
@@ -142,7 +106,8 @@ export const Home = () => {
             lockers.map(locker => (
               <div key={locker.locker_id} className="page1-locker">
                 <h4>{locker.name}</h4>
-                <button id="openLockerBtn" onClick={() => handleClick(locker)}>Open</button>
+                {locker.is_frozen === false && <button id="openLockerBtn" onClick={() => handleClick(locker)}>Open</button>}
+                {locker.is_frozen === true && <button id="openLockerBtn">Frozen</button>}
               </div>
             ))
           ) : (

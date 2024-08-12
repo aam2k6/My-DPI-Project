@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./page6.css";
-import Cookies from "js-cookie";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+import Cookies from "js-cookie"; 
 import { usercontext } from "../../usercontext";
+import Navbar from "../Navbar/Navbar";
 
 export const TargetUserView = () => {
   const navigate = useNavigate();
@@ -26,32 +26,11 @@ export const TargetUserView = () => {
     navigate('/create-locker');
   };
 
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
 
   const handleLockersClick = (lockers) => {
     navigate('/target-locker-view', { state: { locker:lockers, user:user } });
   }
    
-  const handleLogout = () => {
-    Cookies.remove('authToken');
-    localStorage.removeItem('curruser');
-    setUser(null);
-    navigate('/');
-  }
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  }
-
-  const handleAdmin = () => {
-    navigate('/admin');
-  }
-
   useEffect(() => {
     const fetchLockers = async () => {
       try {
@@ -98,46 +77,15 @@ export const TargetUserView = () => {
     }
   }, [user]);
 
+  const content = (
+    <>
+    <div className="navbarBrand">{user ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : 'None'}</div>
+          <div className="description">{user ? user.description : 'None'}</div></>
+  );
+
   return (
     <div>
-      <nav className="navbar">
-        <div className="wrap">
-          <div className="navbarBrand">{user ? user.username : 'None'}</div>
-          <div className="description">{user ? user.description : 'None'}</div>
-        </div>
-
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-            </li>
-          </ul>
-
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>Home</a>
-            </li>
-            <li>
-              <a href="#" onClick={handleAdmin}></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <Navbar content = {content}/>
 
       <div className="heroContainer">
         <div className="newLocker">
@@ -152,9 +100,11 @@ export const TargetUserView = () => {
             allLockers.map(lockers => (
               <div key={lockers.locker_id} className="page6-locker">
                 <h4>{lockers.name}</h4>
-                <button id="docsBtn" onClick={() => handleLockersClick(lockers)}>
+                {lockers.is_frozen === false && <button id="docsBtn" onClick={() => handleLockersClick(lockers)}>
                   Open
-                </button>
+                </button>} 
+                {lockers.is_frozen === true && <button id="docsBtn">Frozen</button> }
+                
               </div>
             ))
           ) : (

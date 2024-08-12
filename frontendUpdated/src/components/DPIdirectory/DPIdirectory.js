@@ -3,7 +3,7 @@ import './page5.css';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
+import Navbar from '../Navbar/Navbar';
 
 
 export const DPIdirectory = () => {
@@ -12,30 +12,8 @@ export const DPIdirectory = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const { curruser, setUser } = useContext(usercontext);
-  const [isOpen, setIsOpen] = useState(false);
+  const { curruser } = useContext(usercontext);
 
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
-
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleAdmin = () => {
-    navigate('/admin');
-  }
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  }
-
-  const handleLogout = () => {
-    Cookies.remove('authToken');
-    localStorage.removeItem('curruser');
-    setUser(null);
-    navigate('/');
-  }
 
   useEffect(() => {
     if (!curruser) {
@@ -87,39 +65,7 @@ export const DPIdirectory = () => {
 
   return (
     <div>
-      <nav className="navbar">
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-            </li>
-          </ul>
-
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>Home</a>
-            </li>
-            <li>
-              <a href="#" onClick={handleAdmin}></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div>
-      </nav>
-
+      <Navbar />
       <div className="page5heroContainer">
         <div className="search">
           <form onSubmit={handleSearch}>

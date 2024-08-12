@@ -1713,18 +1713,22 @@ def get_terms_status(request):
 
 
 
+
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def transfer_resource(request):
     if request.method == 'POST':
-
-        connection_name = request.POST.get('connection_name')
-        host_locker_name = request.POST.get('host_locker_name')
-        guest_locker_name = request.POST.get('guest_locker_name')
-        host_user_username = request.POST.get('host_user_username')
-        guest_user_username = request.POST.get('guest_user_username')
+       
+        body = json.loads(request.body)
+        connection_name = body['connection_name']
+        host_locker_name = body['host_locker_name']
+        guest_locker_name = body['guest_locker_name']
+        host_user_username = body['host_user_username']
+        guest_user_username = body['guest_user_username']
+        
+        print(connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username)
 
         if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
             return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
@@ -1742,19 +1746,26 @@ def transfer_resource(request):
             return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
         except CustomUser.DoesNotExist as e:
             return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
+            
 
         for key, value in connection.terms_value.items():
-            if "; T" in value:
-                doc_path = value.split("; T")[0].strip()
+            if(("; T" in value) or (";T" in value)):
+                if("; T" in value):
+                    doc_path = value.split("; T")[0].strip()
+                else:
+                    doc_path = value.split(";T")[0]
+                    print(doc_path)
+
                 if doc_path in connection.resources['Transfer']:
-                    res = Resource.objects.get(i_node_pointer=doc_path)
+                    res = Resource.objects.get(document_name=doc_path)
+                    print(res)
                     res.owner = host_user
                     res.locker = host_locker
                     res.save()
-        return JsonResponse({'success': True, 'message': 'Transfer successful'}, status=200)
+                    return JsonResponse({'success': True, 'message': 'Transfer successful'}, status=200)
+        return JsonResponse({'fail': True, 'message': 'Transfer successful'}, status=201)           
+                    
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
-
 @csrf_exempt
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])

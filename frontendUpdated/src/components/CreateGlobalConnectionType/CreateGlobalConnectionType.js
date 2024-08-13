@@ -60,7 +60,7 @@ export default function CreateGlobalConnectionType() {
   return (
     <div className='manage-connection-page'>
       <Navbar />
-      {/* <Sidebar /> */}
+      <Sidebar />
       <div className='manage-connection-content'>
         <h1>SYSTEM ADMIN SETTINGS</h1> 
 

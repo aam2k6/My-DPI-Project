@@ -39,27 +39,19 @@ export default function Navbar({content}) {
     navigate("/admin");
   };
 
-<<<<<<< HEAD
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleCreateGlobalConnectionType = () => {
-    navigate("/create-global-connection-type");
-  };
-
-  const handleManageAdmins = () => {
-=======
+  // const handleCreateGlobalConnectionType = () => {
+  //   navigate("/create-global-connection-type");
+  // };
   const handleAdminSettings = () => {
->>>>>>> e90cc3daa799e40d894e933be8bb534a37989238
-    navigate("/manage-admins");
+    navigate("/create-global-connection-type");
   };
 
   const handleModeratorSettings = () => {
     navigate("/freeze-locker-connection");
-  };
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
   };
 
   return (

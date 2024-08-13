@@ -44,7 +44,7 @@ export default function Navbar() {
   };
 
   const handleCreateGlobalConnectionType = () => {
-    //navigate("/create-global-connection-type");
+    navigate("/create-global-connection-type");
   };
 
   const handleManageAdmins = () => {

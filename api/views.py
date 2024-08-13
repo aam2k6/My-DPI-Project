@@ -2676,3 +2676,75 @@ def delete_Update_Resource(request:HttpRequest):
             return JsonResponse({
                 'message': 'You are not allowed to delete this resource.'
             })
+
+    if request.method == 'PUT':
+        """
+        Expected JSON (raw JSON data/form data):
+        {
+            "old_locker_name": value,
+            "old_owner_name": value,
+            "document_name": value,
+            "i_node_pointer": value,
+            "new_locker_name": value,
+            "version": value,
+            "new_owner_name": value,
+            "type": value
+        }
+        """
+        locker_name = request.data.get('old_locker_name')
+        owner_name = request.data.get('old_owner_name')
+        user:CustomUser = request.user
+        request_User:CustomUser = CustomUser.objects.filter(username=owner_name).first()
+        if request_User.DoesNotExist:
+            return JsonResponse({
+                'message': f'User with name = {owner_name} does not exist.'
+            })
+        if(request_User == user):
+            locker_of_resource = Locker.objects.filter(name=locker_name, user=user)
+            if locker_of_resource.exists():
+                particular_locker:Locker = locker_of_resource.first()
+                resource_To_Be_Updated = Resource.objects.filter(owner=user, locker=particular_locker)
+                if resource_To_Be_Updated.exists():
+                    update_Resource:Resource = resource_To_Be_Updated.first()
+                    # id = delete_Resource.resource_id
+                    # delete_Resource.delete()
+                    document_name = request.data.get('document_name')
+                    i_node_pointer = request.data.get('i_node_pointer')
+                    new_locker_name = request.data.get('new_locker_name')
+                    version = request.data.get('version')
+                    new_owner_name = request.data.get('new_owner_name')
+                    resource_type = request.data.get('type')
+                    new_Locker: Locker = Locker.objects.filter(name=new_locker_name, user=request_User).first()
+                    if new_Locker.DoesNotExist:
+                        return JsonResponse({
+                            'message': f'Locker with name = {new_locker_name} does not exist.'
+                        })
+                    else:
+                        new_owner: CustomUser = CustomUser.objects.filter(username=new_owner_name).first()
+                        if new_owner.DoesNotExist:
+                            return JsonResponse({
+                                'message': f'User with name = {new_owner_name} does not exist.'
+                            })
+                        else:
+                            update_Resource.document_name = document_name
+                            update_Resource.i_node_pointer = i_node_pointer
+                            update_Resource.locker = new_Locker
+                            update_Resource.version = version
+                            update_Resource.owner = new_owner
+                            update_Resource.type = resource_type
+                            update_Resource.save()
+                            return JsonResponse({
+                                'message': f'Resource with ID = {update_Resource.resource_id} updated successfully.'
+                            })
+                else:
+                    return JsonResponse({
+                        'message': f'Resource with user having username = {user.username} and locker with ID = {particular_locker.locker_id} does not exist.'
+                    })
+            else:
+                return JsonResponse({
+                    'message': f'Locker with name = {locker_name} does not exist.'
+                })
+        else:
+            return JsonResponse({
+                'message': 'You are not allowed to delete this resource.'
+            })

@@ -20,9 +20,13 @@ import { Guestusers } from './components/Guest-users/Guestusers';
 import { Guesttermsreview } from './components/GuestTermsReview/Guesttermsreview';
 import ManageUsers from './components/ManageUsers/ManageUsers'; 
 import FreezeLockerConnection from './components/FreezeLockerConnection/FreezeLockerConnection';
+<<<<<<< HEAD
 import CreateGlobalConnectionType from "./components/CreateGlobalConnectionType/CreateGlobalConnectionType";
 
 
+=======
+// import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
+>>>>>>> e90cc3daa799e40d894e933be8bb534a37989238
 
 function App() {
     const [curruser, setUser] = useState(null);
@@ -77,6 +81,7 @@ function App() {
                         <Route path="/manage-moderators" element={<ProtectedRoute><ManageUsers role = "moderator"/></ProtectedRoute>} />
                         <Route path="/manage-admins" element={<ProtectedRoute><ManageUsers role = "sys_admin"/></ProtectedRoute>} />
                         <Route path="/freeze-locker-connection" element={<ProtectedRoute><FreezeLockerConnection/></ProtectedRoute>} />
+                        {/* <Route path="/create-global-connection-type" element={<ProtectedRoute><CreateGlobalConnTypesTerms/></ProtectedRoute>} /> */}
 
 
                         <Route path="*" element={<h1>Page Not Found</h1>} />

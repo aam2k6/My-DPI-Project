@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import { usercontext } from "../../usercontext";
 
-export default function Navbar() {
+export default function Navbar({content}) {
   // Helper function to capitalize the first letter of a string
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -14,7 +14,7 @@ export default function Navbar() {
 
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const { curruser,setUser } = useContext(usercontext);
+  const { curruser, setUser } = useContext(usercontext);
 
   const handleDPIDirectory = () => {
     navigate("/dpi-directory");
@@ -39,6 +39,7 @@ export default function Navbar() {
     navigate("/admin");
   };
 
+<<<<<<< HEAD
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
@@ -48,26 +49,23 @@ export default function Navbar() {
   };
 
   const handleManageAdmins = () => {
+=======
+  const handleAdminSettings = () => {
+>>>>>>> e90cc3daa799e40d894e933be8bb534a37989238
     navigate("/manage-admins");
   };
-  
-  const handleManageModerators = () => {
-    navigate("/manage-moderators");
-  };
-  
-  const handleFreezeLockerConnection = () => {
+
+  const handleModeratorSettings = () => {
     navigate("/freeze-locker-connection");
+  };
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
   };
 
   return (
     <nav className="navbar">
       <div className="wrap">
-        <div className="navbarBrand">
-          {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
-        </div>
-        <div className="description">
-          {curruser ? curruser.description : "None"}
-        </div>
+        {content}
       </div>
 
       <div className="navbarLinks">
@@ -105,25 +103,18 @@ export default function Navbar() {
                 </div>
                 <div className="curruserdesc">{curruser.description}</div>
 
-                {curruser.user_type === "sys_admin" && (
+                {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
                   <>
-                    <button onClick={handleCreateGlobalConnectionType}>
-                      Create Global Connection Type
-                    </button>
-                    <button onClick={handleManageAdmins}>Manage Admins</button>
-                    <button onClick={handleManageModerators}>
-                      Manage Moderators
-                    </button>
-                    <button onClick={handleFreezeLockerConnection}>
-                      Freeze Locker/Connection
+                    <button onClick={handleAdminSettings}>
+                      System Admin Settings
                     </button>
                   </>
-                 )} 
+                )}
 
                 {curruser.user_type === "moderator" && (
                   <>
-                    <button onClick={handleFreezeLockerConnection}>
-                      Freeze Locker/Connection
+                    <button onClick={handleModeratorSettings}>
+                      Moderator Settings
                     </button>
                   </>
                 )}

@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import "./guestuser.css";
+import Navbar from '../Navbar/Navbar';
 
 export const Guestusers = () => {
   const navigate = useNavigate();
@@ -14,7 +14,6 @@ export const Guestusers = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredConnections, setFilteredConnections] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
 
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
@@ -64,29 +63,6 @@ export const Guestusers = () => {
       });
   }, [curruser, navigate, locker, connectionType]);
 
-  const handleHomeClick = () => {
-    navigate('/home');
-  };
-
-  const handleDPIDirectory = () => {
-    navigate('/dpi-directory');
-  };
-
-  const handleAdmin = () => {
-    navigate('/admin');
-  };
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleLogout = () => {
-    Cookies.remove('authToken');
-    localStorage.removeItem('curruser');
-    setUser(null);
-    navigate('/');
-  };
-
   const handleSearch = (event) => {
     event.preventDefault();
     const results = connections.filter(connection =>
@@ -99,11 +75,10 @@ export const Guestusers = () => {
     navigate("/guest-terms-review", { state: { connection ,connectionType} });
   };
 
-  return (
-    <div>
-      <nav className="navbar">
-        <div className="wrap">
-          {connectionType && (
+
+  const content = (
+    <>
+            {connectionType && (
             <>
               <div className="navbarBrand">{connectionType.connection_type_name} </div>
               <div className="description">{connectionType.connection_description}</div>
@@ -111,39 +86,12 @@ export const Guestusers = () => {
               <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div>
             </>
           )}
-        </div>
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-            </li>
-          </ul>
+    </>
+  );
 
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>Home</a>
-            </li>
-            <li>
-              <a href="#" onClick={handleAdmin}></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-              <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div>
-      </nav>
-
+  return (
+    <div>
+      <Navbar content = {content}/>
       <div className="page5heroContainer">
         <h4 className='guestusers'>Guest Users</h4>
         <div className="search">

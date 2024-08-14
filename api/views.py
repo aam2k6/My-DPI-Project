@@ -568,13 +568,13 @@ def create_new_connection(request):
             return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
 
         # Check for existing connection with the same host user, host locker, and guest user
-        if Connection.objects.filter(host_user=host_user, host_locker=host_locker, guest_user=guest_user).exists():
-            return JsonResponse({'success': False, 'error': 'A connection between this host and guest already exists'}, status=400)
+        # if Connection.objects.filter(host_user=host_user, host_locker=host_locker, guest_user=guest_user).exists():
+        #     return JsonResponse({'success': False, 'error': 'A connection between this host and guest already exists'}, status=400)
         
         # Check for existing connection with the same name
-        if (Connection.objects.filter(connection_name=request_connection_name, host_user=host_user).exists() or
-            Connection.objects.filter(connection_name=request_connection_name, guest_user=guest_user).exists()):
-            return JsonResponse({'success': False, 'error': 'A connection with this name already exists'}, status=400)
+        # if (Connection.objects.filter(connection_name=request_connection_name, host_user=host_user).exists() or
+        #     Connection.objects.filter(connection_name=request_connection_name, guest_user=guest_user).exists()):
+        #     return JsonResponse({'success': False, 'error': 'A connection with this name already exists'}, status=400)
 
         # Get terms of given connection type mentioned above as we need to now copy it into Connection table.
         terms = ConnectionTerms.objects.filter(conn_type=connection_type, modality='obligatory')
@@ -1111,12 +1111,13 @@ def get_all_connections(request):
             # Fetch all connections
             all_connections = Connection.objects.all()
 
-            # Prepare the response data with only the required fields
             connections = [
                 {
                     "connection_name": conn.connection_name,
                     "host_user_locker": conn.host_locker.name,
                     "guest_user_locker": conn.guest_locker.name,
+                    "is_frozen": conn.is_frozen,
+                    "connection_id": conn.connection_id,
                 }
                 for conn in all_connections
             ]
@@ -1317,7 +1318,7 @@ def freeze_or_unfreeze_locker(request):
 
         # Check if the requesting user is a sys_admin or moderator
         requesting_user = request.user
-        if requesting_user.user_type not in [CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+        if requesting_user.user_type not in ['sys_admin',CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
             return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
 
         username = request.data.get('username')
@@ -1385,23 +1386,23 @@ def freeze_or_unfreeze_connection(request):
         connection_id = request.data.get('connection_id')
         action = request.data.get('action')
 
-        if not username or not connection_name or not action:
-            return JsonResponse({'success': False, 'error': 'Username, Connection Name, and Action are required'}, status=400)
+        # if not username or not connection_name or not action:
+        #     return JsonResponse({'success': False, 'error': 'Username, Connection Name, and Action are required'}, status=400)
 
         try:
             # Check if the requesting user is a sys_admin or moderator
             requesting_user = request.user
-            if requesting_user.user_type not in [CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+            if requesting_user.user_type not in ['sys_admin',CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
                 return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
 
-            user = CustomUser.objects.get(username=username)
+            #user = CustomUser.objects.get(username=username)
 
             if connection_id:
                 # Fetch connection by connection_id
                 connection = Connection.objects.get(connection_id=connection_id)
-            else:
-                # Fetch connection by username and connection_name
-                connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
+            # else:
+            #     # Fetch connection by username and connection_name
+            #     connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
 
             if action == "freeze":
                 if connection.is_frozen:
@@ -1424,8 +1425,8 @@ def freeze_or_unfreeze_connection(request):
 
         except Connection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
-        except CustomUser.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        # except CustomUser.DoesNotExist:
+        #     return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 

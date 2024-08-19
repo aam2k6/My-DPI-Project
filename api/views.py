@@ -25,6 +25,7 @@ from .serializers import (
     GlobalConnectionTypeTemplateGetSerializer,
     ConnectionTypeRegulationLinkTableGetSerializer,
     ConnectionTypeRegulationLinkTablePostSerializer,
+    VnodeSerializer
 )
 from .models import (
     Resource,
@@ -34,6 +35,7 @@ from .models import (
     ConnectionTerms,
     GlobalConnectionTypeTemplate,
     ConnectionTypeRegulationLinkTable,
+    Vnode
 )
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -2553,7 +2555,7 @@ def create_Global_Connection_Terms(request):
 
 
 @csrf_exempt
-@api_view(["PUT, DELETE"])
+@api_view(["PUT", "DELETE"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_Update_Locker(request: HttpRequest):
@@ -2632,7 +2634,7 @@ def delete_Update_Locker(request: HttpRequest):
         return JsonResponse({"message": "Request method should be either POST or PUT."})
 
 @csrf_exempt
-@api_view(["PUT, DELETE"])
+@api_view(["PUT", "DELETE"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_Update_Resource(request:HttpRequest):
@@ -2748,3 +2750,62 @@ def delete_Update_Resource(request:HttpRequest):
             return JsonResponse({
                 'message': 'You are not allowed to delete this resource.'
             })
+        
+@csrf_exempt
+@api_view(["POST"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def share_Resource_Create_Vnode(request:HttpRequest):
+    if request.method == 'POST':
+        """
+        Expected JSON data (raw JSON data/form data):
+        {
+            "resource_id": value,
+            "guest_locker_id": value,
+            "host_locker_id": value,
+            "connection_id": value,
+            "operator_constraints": value
+        }
+        """
+        resource_id = request.data.get('resource_id')
+        guest_locker_id = request.data.get('guest_locker_id')
+        host_locker_id = request.data.get('host_locker_id')
+        connection_id = request.data.get('connection_id')
+        resource_List = Resource.objects.filter(resource_id=resource_id)
+        if resource_List.exists():
+            guest_Locker_List = Locker.objects.filter(locker_id=guest_locker_id)
+            if guest_Locker_List.exists():
+                host_Locker_List = Locker.objects.filter(locker_id=host_locker_id)
+                if host_Locker_List.exists():
+                    connection_List = Connection.objects.filter(connection_id=connection_id)
+                    if connection_List.exists():
+                        connection = connection_List.first()
+                        guest_locker = guest_Locker_List.first()
+                        host_locker = host_Locker_List.first()
+                        resource = resource_List.first()
+                        operator_constraints = request.data.get('operator_constraints')
+                        vnode = Vnode.objects.create(
+                            resource=resource,
+                            connection=connection,
+                            host_locker=host_locker,
+                            guest_locker=guest_locker,
+                            operator_constraints=operator_constraints
+                        )
+                        vnode.save()
+                        serializer = VnodeSerializer(vnode)
+                        return JsonResponse({
+                            'message': 'Vnode created successfully.',
+                            'data': serializer.data
+                        })
+                    return JsonResponse({
+                        'message': f'Connection with ID = {connection_id} does not exist.'
+                    })
+                return JsonResponse({
+                    'message': f'Locker(host locker) with ID = {host_locker_id} does not exist.'
+                })
+            return JsonResponse({
+                'message': f'Locker(guest locker) with ID = {guest_locker_id} does not exist.'
+            })
+        return JsonResponse({
+            'message': f'Resource with ID = {resource_id} does not exist.'
+        })

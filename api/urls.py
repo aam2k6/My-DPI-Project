@@ -37,7 +37,8 @@ urlpatterns = [
     path("connect-type-to-template/",view=views.connect_Global_Connection_Type_Template_And_Connection_Type,name="connect_type_to_template"),
     path("get-template-or-templates/",view=views.get_Global_Connection_Type,name="get_template_or_templates"),
     path("get-link-regulation-for-connection-type/",view=views.get_Connection_Link_Regulation_For_Connection_Type,name="get_link_for_connection_type"),
-    path("create-global-terms/",view=views.create_Global_Connection_Terms,name="create_global_terms")
+    path("create-global-terms/",view=views.create_Global_Connection_Terms,name="create_global_terms"),
+    path("share-resource/", view=views.share_Resource_Create_Vnode, name="share_resource")
 ]
 
 if settings.DEBUG:

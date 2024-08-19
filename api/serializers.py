@@ -80,12 +80,14 @@ class VnodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vnode
         fields = [
-            "resource_id",
+            "resource",
             "host_locker",
             "guest_locker",
             "connection",
             "operator_constraints",
+            "vnode_id"
         ]
+        depth = 1
 
 
 class ConnectionTypeSerializer(serializers.ModelSerializer):

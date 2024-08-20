@@ -113,6 +113,21 @@ class Resource(models.Model):
         return self.document_name
 
 
+# class ConnectionTerms(models.Model):
+#     MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
+#     terms_id = models.AutoField(primary_key=True)
+#     conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE)
+#     modality = models.CharField(max_length=50, choices=MODALITY_CHOICES, default='obligatory')
+#     data_element_name = models.CharField(max_length=50)
+#     host_permissions = models.JSONField(default=list)
+#     data_type = models.CharField(max_length=50)
+#     sharing_type = models.CharField(max_length=50)
+#     description = models.TextField(blank=True, null=True)
+
+#     def __str__(self):
+#         return f"{self.modality} - {self.data_element_name}"
+
+
 class Vnode(models.Model):
     vnode_id = models.AutoField(primary_key=True)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
@@ -134,14 +149,13 @@ class Snode(models.Model):
 
     def __str__(self):
         return self.snode_id
-
-
+    
 class GlobalConnectionTypeTemplate(models.Model):
     global_connection_type_template_id = models.AutoField(primary_key=True)
     global_connection_type_name = models.CharField(max_length=200, unique=True)
     global_connection_type_description = models.CharField(max_length=200)
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return self.global_connection_type_name
 
 class ConnectionTypeRegulationLinkTable(models.Model):
@@ -161,5 +175,5 @@ class ConnectionTerms(models.Model):
     sharing_type = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.modality} - {self.data_element_name}"

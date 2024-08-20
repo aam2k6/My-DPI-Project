@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from datetime import timedelta
 
@@ -44,7 +44,6 @@ class CustomUser(AbstractBaseUser):
     def __str__(self):
         return self.username
 
-
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
@@ -63,6 +62,7 @@ def default_validity_time():
 
 class ConnectionType(models.Model):
     connection_type_id = models.AutoField(primary_key=True)
+    # connection_type_id = models.PositiveIntegerField(primary_key=True, default=lambda: generate_global_id('connection_type'), editable=False)
     connection_type_name = models.CharField(max_length=50)
     connection_description = models.TextField(blank=True, null=True)
     owner_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='owner_user')
@@ -113,21 +113,6 @@ class Resource(models.Model):
         return self.document_name
 
 
-class ConnectionTerms(models.Model):
-    MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
-    terms_id = models.AutoField(primary_key=True)
-    conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE)
-    modality = models.CharField(max_length=50, choices=MODALITY_CHOICES, default='obligatory')
-    data_element_name = models.CharField(max_length=50)
-    host_permissions = models.JSONField(default=list)
-    data_type = models.CharField(max_length=50)
-    sharing_type = models.CharField(max_length=50)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.modality} - {self.data_element_name}"
-
-
 class Vnode(models.Model):
     vnode_id = models.AutoField(primary_key=True)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
@@ -149,3 +134,32 @@ class Snode(models.Model):
 
     def __str__(self):
         return self.snode_id
+
+
+class GlobalConnectionTypeTemplate(models.Model):
+    global_connection_type_template_id = models.AutoField(primary_key=True)
+    global_connection_type_name = models.CharField(max_length=200, unique=True)
+    global_connection_type_description = models.CharField(max_length=200)
+
+    def __str__(self) -> str:
+        return self.global_connection_type_name
+
+class ConnectionTypeRegulationLinkTable(models.Model):
+    link_id = models.AutoField(primary_key=True)
+    connection_type_id = models.ForeignKey(to=ConnectionType, on_delete=models.CASCADE, null=True)
+    global_connection_template_id = models.ForeignKey(to=GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) #change here
+
+class ConnectionTerms(models.Model):
+    MODALITY_CHOICES = [('obligatory', 'Obligatory'), ('permissive', 'Permissive'), ('forbidden', 'Forbidden')]
+    terms_id = models.AutoField(primary_key=True)
+    conn_type = models.ForeignKey(ConnectionType, on_delete=models.CASCADE, null=True)
+    global_conn_type = models.ForeignKey(GlobalConnectionTypeTemplate, on_delete=models.CASCADE, null=True) #change here
+    modality = models.CharField(max_length=50, choices=MODALITY_CHOICES, default='obligatory')
+    data_element_name = models.CharField(max_length=50)
+    host_permissions = models.JSONField(default=list)
+    data_type = models.CharField(max_length=50)
+    sharing_type = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.modality} - {self.data_element_name}"

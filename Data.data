@@ -481,6 +481,7 @@ for connection_term in connection_terms:
           f"Description: {connection_term.description}")
 
 # ------------ GLOBAL CONNECTION TYPE TEMPLATE TABLE INSERTION -------------
+<<<<<<< HEAD
 
 # Check if a template with connection_type_name already exists
 template_one_exists = GlobalConnectionTypeTemplate.objects.filter(global_connection_type_name="DPDP").exists()
@@ -490,16 +491,35 @@ if not template_one_exists:
     new_connection_type_template_one = GlobalConnectionTypeTemplate(
         global_connection_type_name="DPDP",
         global_connection_type_description="A template for rights of individuals to protect their personal data."
+=======
+# Check if a template with connection_type_name already exists
+template_one_exists = GlobalConnectionTypeTemplate.objects.filter(connection_type_name="MTech 2024 Transcripts").exists()
+template_two_exists = GlobalConnectionTypeTemplate.objects.filter(connection_type_name="Admissions 2024").exists()
+
+if not template_one_exists:
+    new_connection_type_template_one = GlobalConnectionTypeTemplate(
+        connection_type_name="MTech 2024 Transcripts",
+        connection_type_description="A template for connection types involving MTech 2024 students and their transcripts."
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466
     )
     new_connection_type_template_one.save()
 
 if not template_two_exists:
     new_connection_type_template_two = GlobalConnectionTypeTemplate(
+<<<<<<< HEAD
         global_connection_type_name="GDPR",
         global_connection_type_description="General data protection regulation."
     )
     new_connection_type_template_two.save()
 
+=======
+        connection_type_name="Admissions 2024",
+        connection_type_description="A template for connection types related to the 2024 admissions process."
+    )
+    new_connection_type_template_two.save()
+
+
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466
 # ------------ CONNECTION TERMS TABLE INSERTION -------------
 
 # Fetch the ConnectionType objects to use for the ConnectionTerms
@@ -507,13 +527,22 @@ mtech_admissions = ConnectionType.objects.get(connection_type_name="MTech 2024 A
 btech_admissions = ConnectionType.objects.get(connection_type_name="BTech 2024 Transcripts")
 
 # Fetch the GlobalConnectionTypeTemplate objects to use for the ConnectionTerms
+<<<<<<< HEAD
 dpdp_template = GlobalConnectionTypeTemplate.objects.get(global_connection_type_name="DPDP")
 gdpr_template = GlobalConnectionTypeTemplate.objects.get(global_connection_type_name="GDPR")
+=======
+mtech_template = GlobalConnectionTypeTemplate.objects.get(connection_type_name="MTech 2024 Transcripts")
+btech_template = GlobalConnectionTypeTemplate.objects.get(connection_type_name="Admissions 2024")
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466
 
 # Create and save new ConnectionTerms instances
 new_connection_term_one = ConnectionTerms(
     conn_type=mtech_admissions,
+<<<<<<< HEAD
     global_conn_type=dpdp_template,
+=======
+    global_conn_type=mtech_template,
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466
     modality='obligatory',
     data_element_name='Marks card',
     host_permissions=[],  # You can add specific permissions here
@@ -525,7 +554,11 @@ new_connection_term_one.save()
 
 new_connection_term_two = ConnectionTerms(
     conn_type=btech_admissions,
+<<<<<<< HEAD
     global_conn_type=gdpr_template,
+=======
+    global_conn_type=btech_template,
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466
     modality='permissive',
     data_element_name='Applicant Email',
     host_permissions=[],  # You can add specific permissions here
@@ -535,6 +568,22 @@ new_connection_term_two = ConnectionTerms(
 )
 new_connection_term_two.save()
 
+<<<<<<< HEAD
+=======
+# Fetch and print all ConnectionTerms objects
+connection_terms = ConnectionTerms.objects.all()
+
+for connection_term in connection_terms:
+    print(f"Terms ID: {connection_term.terms_id}, "
+          f"Connection Type: {connection_term.conn_type.connection_type_name}, "
+          f"Global Connection Type: {connection_term.global_conn_type.connection_type_name}, "
+          f"Modality: {connection_term.modality}, "
+          f"Data Element Name: {connection_term.data_element_name}, "
+          f"Data Type: {connection_term.data_type}, "
+          f"Sharing Type: {connection_term.sharing_type}, "
+          f"Description: {connection_term.description}")
+
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466
 # ------------ CONNECTION TYPE REGULATION LINK TABLE INSERTION -------------
 
 # Fetch the ConnectionType objects
@@ -542,6 +591,7 @@ mtech_admissions = ConnectionType.objects.get(connection_type_name="MTech 2024 A
 btech_transcripts = ConnectionType.objects.get(connection_type_name="BTech 2024 Transcripts")
 
 # Fetch the GlobalConnectionTypeTemplate objects
+<<<<<<< HEAD
 dpdp_template = GlobalConnectionTypeTemplate.objects.get(global_connection_type_name="DPDP")
 gdpr_template = GlobalConnectionTypeTemplate.objects.get(global_connection_type_name="GDPR")
 
@@ -549,11 +599,36 @@ gdpr_template = GlobalConnectionTypeTemplate.objects.get(global_connection_type_
 link_one = ConnectionTypeRegulationLinkTable(
     connection_type_id=mtech_admissions,
     global_connection_template_id=dpdp_template
+=======
+mtech_template = GlobalConnectionTypeTemplate.objects.get(connection_type_name="MTech 2024 Transcripts")
+btech_template = GlobalConnectionTypeTemplate.objects.get(connection_type_name="Admissions 2024")
+
+# Create and save new ConnectionTypeRegulationLinkTable instances
+link_one = ConnectionTypeRegulationLinkTable(
+    connection_Type_Id=mtech_admissions,
+    conection_Template_Id=mtech_template
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466
 )
 link_one.save()
 
 link_two = ConnectionTypeRegulationLinkTable(
+<<<<<<< HEAD
     connection_type_id=btech_transcripts,
     global_connection_template_id=gdpr_template
 )
 link_two.save()
+=======
+    connection_Type_Id=btech_transcripts,
+    conection_Template_Id=btech_template
+)
+link_two.save()
+
+# Fetch and print all ConnectionTypeRegulationLinkTable objects
+regulation_links = ConnectionTypeRegulationLinkTable.objects.all()
+
+for link in regulation_links:
+    print(f"Link ID: {link.link_Id}, "
+          f"Connection Type: {link.connection_Type_Id.connection_type_name}, "
+          f"Connection Template: {link.conection_Template_Id.connection_type_name}")
+
+>>>>>>> 0fe7273363b91469dac1e35502115b2763260466

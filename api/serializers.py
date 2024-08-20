@@ -85,6 +85,18 @@ from .models import (
     GlobalConnectionTypeTemplate,
     ConnectionTypeRegulationLinkTable,
 )
+from .models import (
+    CustomUser,
+    Locker,
+    Connection,
+    Resource,
+    ConnectionType,
+    ConnectionTerms,
+    Snode,
+    Vnode,
+    GlobalConnectionTypeTemplate,
+    ConnectionTypeRegulationLinkTable,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -125,6 +137,24 @@ class ConnectionSerializer(serializers.ModelSerializer):
             "terms_value",
             "resources",
         ]
+        fields = [
+            "connection_id",
+            "connection_name",
+            "connection_type",
+            "host_locker",
+            "guest_locker",
+            "host_user",
+            "guest_user",
+            "connection_description",
+            "requester_consent",
+            "revoke_host",
+            "revoke_guest",
+            "validity_time",
+            "created_time",
+            "is_frozen",
+            "terms_value",
+            "resources",
+        ]
 
 
 class ResourceSerializer(serializers.ModelSerializer):
@@ -132,6 +162,16 @@ class ResourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Resource
+        fields = [
+            "resource_id",
+            "document_name",
+            "i_node_pointer",
+            "locker",
+            "version",
+            "connections",
+            "owner",
+            "type",
+        ]
         fields = [
             "resource_id",
             "document_name",
@@ -162,6 +202,15 @@ class VnodeSerializer(serializers.ModelSerializer):
             "vnode_id"
         ]
         depth = 1
+        fields = [
+            "resource",
+            "host_locker",
+            "guest_locker",
+            "connection",
+            "operator_constraints",
+            "vnode_id"
+        ]
+        depth = 1
 
 
 class ConnectionTypeSerializer(serializers.ModelSerializer):
@@ -176,11 +225,31 @@ class ConnectionTypeSerializer(serializers.ModelSerializer):
             "validity_time",
             "created_time",
         ]
+        fields = [
+            "connection_type_id",
+            "connection_type_name",
+            "connection_description",
+            "owner_user",
+            "owner_locker",
+            "validity_time",
+            "created_time",
+        ]
 
 
 class ConnectionTermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionTerms
+        fields = [
+            "terms_id",
+            "conn_type",
+            "global_conn_type",
+            "modality",
+            "data_element_name",
+            "data_type",
+            "sharing_type",
+            "description",
+            "host_permissions",
+        ]
         fields = [
             "terms_id",
             "conn_type",

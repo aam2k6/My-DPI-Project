@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from datetime import timedelta
 
@@ -44,7 +44,6 @@ class CustomUser(AbstractBaseUser):
     def __str__(self):
         return self.username
 
-
 class Locker(models.Model):
     locker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
@@ -63,6 +62,7 @@ def default_validity_time():
 
 class ConnectionType(models.Model):
     connection_type_id = models.AutoField(primary_key=True)
+    # connection_type_id = models.PositiveIntegerField(primary_key=True, default=lambda: generate_global_id('connection_type'), editable=False)
     connection_type_name = models.CharField(max_length=50)
     connection_description = models.TextField(blank=True, null=True)
     owner_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='owner_user')

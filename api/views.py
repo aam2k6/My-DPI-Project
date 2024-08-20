@@ -2751,61 +2751,111 @@ def delete_Update_Resource(request:HttpRequest):
                 'message': 'You are not allowed to delete this resource.'
             })
         
+# @csrf_exempt
+# @api_view(["POST"])
+# @authentication_classes([BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# def share_Resource_Create_Vnode(request:HttpRequest):
+#     if request.method == 'POST':
+#         """
+#         Expected JSON data (raw JSON data/form data):
+#         {
+#             "resource_id": value,
+#             "guest_locker_id": value,
+#             "host_locker_id": value,
+#             "connection_id": value,
+#             "operator_constraints": value
+#         }
+#         """
+#         resource_id = request.data.get('resource_id')
+#         guest_locker_id = request.data.get('guest_locker_id')
+#         host_locker_id = request.data.get('host_locker_id')
+#         connection_id = request.data.get('connection_id')
+#         resource_List = Resource.objects.filter(resource_id=resource_id)
+#         if resource_List.exists():
+#             guest_Locker_List = Locker.objects.filter(locker_id=guest_locker_id)
+#             if guest_Locker_List.exists():
+#                 host_Locker_List = Locker.objects.filter(locker_id=host_locker_id)
+#                 if host_Locker_List.exists():
+#                     connection_List = Connection.objects.filter(connection_id=connection_id)
+#                     if connection_List.exists():
+#                         connection = connection_List.first()
+#                         guest_locker = guest_Locker_List.first()
+#                         host_locker = host_Locker_List.first()
+#                         resource = resource_List.first()
+#                         operator_constraints = request.data.get('operator_constraints')
+#                         vnode = Vnode.objects.create(
+#                             resource=resource,
+#                             connection=connection,
+#                             host_locker=host_locker,
+#                             guest_locker=guest_locker,
+#                             operator_constraints=operator_constraints
+#                         )
+#                         vnode.save()
+#                         serializer = VnodeSerializer(vnode)
+#                         return JsonResponse({
+#                             'message': 'Vnode created successfully.',
+#                             'data': serializer.data
+#                         })
+#                     return JsonResponse({
+#                         'message': f'Connection with ID = {connection_id} does not exist.'
+#                     })
+#                 return JsonResponse({
+#                     'message': f'Locker(host locker) with ID = {host_locker_id} does not exist.'
+#                 })
+#             return JsonResponse({
+#                 'message': f'Locker(guest locker) with ID = {guest_locker_id} does not exist.'
+#             })
+#         return JsonResponse({
+#             'message': f'Resource with ID = {resource_id} does not exist.'
+#         })
+
 @csrf_exempt
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def share_Resource_Create_Vnode(request:HttpRequest):
-    if request.method == 'POST':
-        """
-        Expected JSON data (raw JSON data/form data):
-        {
-            "resource_id": value,
-            "guest_locker_id": value,
-            "host_locker_id": value,
-            "connection_id": value,
-            "operator_constraints": value
-        }
-        """
-        resource_id = request.data.get('resource_id')
-        guest_locker_id = request.data.get('guest_locker_id')
-        host_locker_id = request.data.get('host_locker_id')
-        connection_id = request.data.get('connection_id')
-        resource_List = Resource.objects.filter(resource_id=resource_id)
-        if resource_List.exists():
-            guest_Locker_List = Locker.objects.filter(locker_id=guest_locker_id)
-            if guest_Locker_List.exists():
-                host_Locker_List = Locker.objects.filter(locker_id=host_locker_id)
-                if host_Locker_List.exists():
-                    connection_List = Connection.objects.filter(connection_id=connection_id)
-                    if connection_List.exists():
-                        connection = connection_List.first()
-                        guest_locker = guest_Locker_List.first()
-                        host_locker = host_Locker_List.first()
-                        resource = resource_List.first()
-                        operator_constraints = request.data.get('operator_constraints')
-                        vnode = Vnode.objects.create(
-                            resource=resource,
-                            connection=connection,
-                            host_locker=host_locker,
-                            guest_locker=guest_locker,
-                            operator_constraints=operator_constraints
-                        )
-                        vnode.save()
-                        serializer = VnodeSerializer(vnode)
-                        return JsonResponse({
-                            'message': 'Vnode created successfully.',
-                            'data': serializer.data
-                        })
-                    return JsonResponse({
-                        'message': f'Connection with ID = {connection_id} does not exist.'
-                    })
-                return JsonResponse({
-                    'message': f'Locker(host locker) with ID = {host_locker_id} does not exist.'
-                })
-            return JsonResponse({
-                'message': f'Locker(guest locker) with ID = {guest_locker_id} does not exist.'
-            })
-        return JsonResponse({
-            'message': f'Resource with ID = {resource_id} does not exist.'
-        })
+def share_resource(request):
+    if request.method == "POST":
+        # Extracting POST data
+        connection_id = request.POST.get("connection_id")
+        host_locker_name = request.POST.get("host_locker_name")
+        guest_locker_name = request.POST.get("guest_locker_name")
+        host_user_username = request.POST.get("host_user_username")
+        guest_user_username = request.POST.get("guest_user_username")
+        resource_id = request.POST.get("resource_id")
+
+        # Check for missing fields
+        if not all([connection_id, host_locker_name, guest_locker_name, host_user_username, guest_user_username, resource_id]):
+            return JsonResponse({"success": False, "error": "All fields are required"}, status=400)
+
+        try:
+            # Fetch related objects from the database
+            host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            guest_user = CustomUser.objects.get(username=guest_user_username)
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+            connection = Connection.objects.get(connection_id=connection_id, host_locker=host_locker, host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
+            resource = Resource.objects.get(resource_id=resource_id)
+        except (Connection.DoesNotExist, Locker.DoesNotExist, CustomUser.DoesNotExist, Resource.DoesNotExist) as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=404)
+
+        # Check terms_value for the "; S" indicator and create Vnode if conditions are met
+        shared = False
+        if "Share" in connection.resources:
+            if resource.i_node_pointer in connection.resources["Share"]:
+                # Resource is eligible for sharing
+                Vnode.objects.create(
+                    resource=resource,
+                    host_locker=host_locker,
+                    guest_locker=guest_locker,
+                    connection=connection,  # Use the connection object
+                    operator_constraints={"view_only": True}  # Set view-only permissions
+                )
+                shared = True
+
+        if shared:
+            return JsonResponse({"success": True, "message": "Resource shared successfully"}, status=200)
+        else:
+            return JsonResponse({"success": False, "error": "Resource not eligible for sharing"}, status=400)
+
+    return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)

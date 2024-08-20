@@ -2279,10 +2279,15 @@ def create_Global_Connection_Type_Template(request):
                 "global_connection_type_description"
             ),
         }
-        serializer = GlobalConnectionTypeTemplatePostSerializer(data=template_Data)
-        if not serializer.is_valid():
-            return JsonResponse({"status": 400, "errors": serializer.errors})
-        global_Template: GlobalConnectionTypeTemplate = serializer.save()
+        # serializer = GlobalConnectionTypeTemplatePostSerializer(data=template_Data)
+        # if not serializer.is_valid():
+        #     return JsonResponse({"status": 400, "errors": serializer.errors})
+        # global_Template: GlobalConnectionTypeTemplate = serializer.save()
+        global_Template: GlobalConnectionTypeTemplate = GlobalConnectionTypeTemplate.objects.create(
+            global_connection_type_name=template_Data['global_connection_type_name'],
+            global_connection_type_description=template_Data["global_connection_type_description"]
+        )
+        global_Template.save()
         for id in data.get("global_terms_IDs"):
             global_Term = ConnectionTerms.objects.filter(terms_id=id).first()
             if global_Term:
@@ -2302,7 +2307,7 @@ def create_Global_Connection_Type_Template(request):
         )
     except Exception as e:
         print(e)
-        return JsonResponse({"message": "Something went wrong.", "error": e})
+        return JsonResponse({"message": "Something went wrong.", "error": f'{e}'})
 
 
 @csrf_exempt

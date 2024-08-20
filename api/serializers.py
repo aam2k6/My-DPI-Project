@@ -151,7 +151,7 @@ class GlobalConnectionTypeTemplatePostSerializer(serializers.ModelSerializer):
 class GlobalConnectionTypeTemplateGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = GlobalConnectionTypeTemplate
-        fields = '__all__'
+        fields = "__all__"
         depth = 1
 
 
@@ -165,5 +165,5 @@ class ConnectionTypeRegulationLinkTablePostSerializer(serializers.ModelSerialize
 class ConnectionTypeRegulationLinkTableGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionTypeRegulationLinkTable
-        fields = '__all__'
+        fields = "__all__"
         depth = 1

@@ -36,7 +36,16 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                path('create-admin/', views.create_admin, name='create_admin'),
                path('create-moderator/', views.create_moderator, name='create_moderator'),
                path('remove-admin/', views.remove_admin, name='remove_admin'),
-               path('remove-moderator/', views.remove_moderator, name='remove_moderator')
+               path('remove-moderator/', views.remove_moderator, name='remove_moderator'),
+               path("get-connection-terms-for-global-template/",view=views.get_All_Connection_Terms_For_Global_Connection_Type_Template,name="get_Connection_Terms_For_Global_Template"),
+               path("add-global-template/",view=views.create_Global_Connection_Type_Template,name="create_global_template"),
+               path("connect-type-to-template/",view=views.connect_Global_Connection_Type_Template_And_Connection_Type,name="connect_type_to_template"),
+               path("get-template-or-templates/",view=views.get_Global_Connection_Type,name="get_template_or_templates"),
+               path("get-link-regulation-for-connection-type/",view=views.get_Connection_Link_Regulation_For_Connection_Type,name="get_link_for_connection_type"),
+               path("create-global-terms/",view=views.create_Global_Connection_Terms,name="create_global_terms"),
+               #path("share-resource/", view=views.share_Resource_Create_Vnode, name="share_resource"),
+               path("share-resource/", views.share_resource, name="share_resource")
+
 
 
                ]

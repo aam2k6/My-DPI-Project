@@ -11,11 +11,11 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .serializers import ResourceSerializer, ConnectionTypeSerializer, ConnectionSerializer, ConnectionType, \
-    ConnectionTermsSerializer, ConnectionFilterSerializer
-from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms
+    ConnectionTermsSerializer, ConnectionFilterSerializer,VnodeSerializer,SnodeSerializer,GlobalConnectionTypeTemplateGetSerializer,GlobalConnectionTypeTemplatePostSerializer,ConnectionTypeRegulationLinkTableGetSerializer,ConnectionTypeRegulationLinkTablePostSerializer
+from .models import Resource, Locker, CustomUser, Connection, ConnectionTerms,Vnode,Snode,GlobalConnectionTypeTemplate,ConnectionTypeRegulationLinkTable
 from .serializers import ResourceSerializer, LockerSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.http import JsonResponse, FileResponse
+from django.http import HttpRequest, JsonResponse, FileResponse
 from django.db import models
 from rest_framework.parsers import JSONParser
 from django.views.decorators.http import require_POST
@@ -1016,77 +1016,6 @@ def get_connection_by_user_by_locker(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-# @csrf_exempt
-# @api_view(["GET"])
-# @authentication_classes([BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-# def get_connection_by_user(request):
-#     """
-#     Retrieves all the connections of the specified user.
-
-#     Parameters:
-#         - request: HttpRequest object containing metadata about the request.
-
-#     Query Parameters:
-#         - username: The username of the user whose connections are to be retrieved.
-
-#     Returns:
-#         - JsonResponse: A JSON object containing a list of connections or an error message.
-
-#     Response Codes:
-#         - 200: Successful retrieval of connections.
-#         - 401: User is not authenticated.
-#         - 404: Specified user or connections not found.
-#         - 405: Request method not allowed (if not GET).
-#     """
-#     if request.method == "GET":
-#         try:
-#             username = request.GET.get("username")
-
-#             if not username:
-#                 return JsonResponse({"error": "Username is required"}, status=400)
-
-#             try:
-#                 user = CustomUser.objects.get(username=username)
-#             except CustomUser.DoesNotExist:
-#                 return JsonResponse({"error": "User not found"}, status=404)
-
-#             # Fetch all incoming connections where the specified user is the guest
-#             incoming_connections = Connection.objects.filter(host_user=user)
-#             # Fetch all outgoing connections where the specified user is the host
-#             outgoing_connections = Connection.objects.filter(guest_user=user)
-
-#             # Prepare the response data with only the required fields
-#             connections = {
-#                 "incoming_connections": [
-#                     {
-#                         "connection_name": conn.connection_name,
-#                         "host_user_locker": conn.host_locker.name,
-#                         "guest_user_locker": conn.guest_locker.name
-#                     }
-#                     for conn in incoming_connections
-#                 ],
-#                 "outgoing_connections": [
-#                     {
-#                         "connection_name": conn.connection_name,
-#                         "host_user_locker": conn.host_locker.name,
-#                         "guest_user_locker": conn.guest_locker.name
-#                     }
-#                     for conn in outgoing_connections
-#                 ]
-#             }
-
-#             return JsonResponse(
-#                 {"success": True, "connections": connections}, status=200
-#             )
-
-#         except Exception as e:
-#             return JsonResponse({"success": False, "error": str(e)}, status=400)
-
-#     return JsonResponse(
-#         {"success": False, "error": "Invalid request method"}, status=405
-#     )
-
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])
@@ -1355,6 +1284,83 @@ def freeze_or_unfreeze_locker(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+# @csrf_exempt
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def freeze_or_unfreeze_connection(request):
+#     """
+#     Freeze or unfreeze a connection based on the specified action.
+
+#     Parameters:
+#     - request: HttpRequest object containing metadata about the request.
+
+#     Request Data (PUT):
+#     - username: The username of the user.
+#     - connection_name: The name of the connection to freeze or unfreeze.
+#     - connection_id: The ID of the connection to freeze or unfreeze (optional).
+#     - action: Specifies whether to "freeze" or "unfreeze" the connection.
+
+#     Returns:
+#     - JsonResponse: A JSON object indicating success or failure.
+
+#     Response Codes:
+#     - 200: Successful freezing or unfreezing of the connection.
+#     - 404: Specified user or connection not found.
+#     - 400: Bad request (missing parameters).
+#     - 403: Permission denied.
+#     """
+#     if request.method == 'PUT':
+#         username = request.data.get('username')
+#         connection_name = request.data.get('connection_name')
+#         connection_id = request.data.get('connection_id')
+#         action = request.data.get('action')
+
+#         # if not username or not connection_name or not action:
+#         #     return JsonResponse({'success': False, 'error': 'Username, Connection Name, and Action are required'}, status=400)
+
+#         try:
+#             # Check if the requesting user is a sys_admin or moderator
+#             requesting_user = request.user
+#             if requesting_user.user_type not in ['sys_admin',CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+#                 return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+#             #user = CustomUser.objects.get(username=username)
+
+#             if connection_id:
+#                 # Fetch connection by connection_id
+#                 connection = Connection.objects.get(connection_id=connection_id)
+#             # else:
+#             #     # Fetch connection by username and connection_name
+#             #     connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
+
+#             if action == "freeze":
+#                 if connection.is_frozen:
+#                     return JsonResponse({'success': False, 'message': 'This connection is already frozen'}, status=200)
+#                 else:
+#                     connection.is_frozen = True
+#                     connection.save()
+#                     return JsonResponse({'success': True, 'message': 'Connection has been frozen successfully'}, status=200)
+
+#             elif action == "unfreeze":
+#                 if not connection.is_frozen:
+#                     return JsonResponse({'success': False, 'message': 'This connection is not frozen'}, status=200)
+#                 else:
+#                     connection.is_frozen = False
+#                     connection.save()
+#                     return JsonResponse({'success': True, 'message': 'Connection has been unfrozen successfully'}, status=200)
+
+#             else:
+#                 return JsonResponse({'success': False, 'error': 'Invalid action specified'}, status=400)
+
+#         except Connection.DoesNotExist:
+#             return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
+#         # except CustomUser.DoesNotExist:
+#         #     return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+#         except Exception as e:
+#             return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+#     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -1386,23 +1392,23 @@ def freeze_or_unfreeze_connection(request):
         connection_id = request.data.get('connection_id')
         action = request.data.get('action')
 
-        # if not username or not connection_name or not action:
-        #     return JsonResponse({'success': False, 'error': 'Username, Connection Name, and Action are required'}, status=400)
+        if not username or not connection_name or not action:
+            return JsonResponse({'success': False, 'error': 'Username, Connection Name, and Action are required'}, status=400)
 
         try:
             # Check if the requesting user is a sys_admin or moderator
             requesting_user = request.user
-            if requesting_user.user_type not in ['sys_admin',CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
+            if requesting_user.user_type not in ['sys_admin', CustomUser.SYS_ADMIN, CustomUser.MODERATOR]:
                 return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
 
-            #user = CustomUser.objects.get(username=username)
+            user = CustomUser.objects.get(username=username)
 
             if connection_id:
                 # Fetch connection by connection_id
                 connection = Connection.objects.get(connection_id=connection_id)
-            # else:
-            #     # Fetch connection by username and connection_name
-            #     connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
+            else:
+                # Fetch connection by username and connection_name
+                connection = Connection.objects.get(connection_name=connection_name, guest_user=user)
 
             if action == "freeze":
                 if connection.is_frozen:
@@ -1425,12 +1431,13 @@ def freeze_or_unfreeze_connection(request):
 
         except Connection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
-        # except CustomUser.DoesNotExist:
-        #     return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
 
 
 @csrf_exempt
@@ -2014,3 +2021,639 @@ def remove_moderator(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
+@api_view(["POST"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+# @role_required(CustomUser.SYS_ADMIN)
+def create_Global_Connection_Type_Template(request):
+    """
+    This API is used to create a new global connection type. This API is allowed only for system admins.
+    Response Codes:
+        - 201: Successfully created a global connection type.
+        - 400: The data sent in the request is invalid, missing or malformed.
+    Expected JSON (raw JSON data/form data):
+    {
+        "global_connection_type_name": value,
+        "global_connection_type_description": value,
+        "global_terms_IDs": list of global connection terms IDs
+    }
+    """
+    data = request.data  # RAW JSON DATA/FORM DATA
+    requesting_user: CustomUser = request.user
+    if requesting_user.user_type in [CustomUser.MODERATOR, CustomUser.USER]:
+        return JsonResponse(
+            {
+                "message": f"User must be a system admin to access this API endpoint. Current user has {requesting_user.user_type} type."
+            }
+        )
+    try:
+        template_Data = {
+            "global_connection_type_name": data.get("global_connection_type_name"),
+            "global_connection_type_description": data.get(
+                "global_connection_type_description"
+            ),
+        }
+        serializer = GlobalConnectionTypeTemplatePostSerializer(data=template_Data)
+        if not serializer.is_valid():
+            return JsonResponse({"status": 400, "errors": serializer.errors})
+        global_Template: GlobalConnectionTypeTemplate = serializer.save()
+        for id in data.get("global_terms_IDs"):
+            global_Term = ConnectionTerms.objects.filter(terms_id=id).first()
+            if global_Term:
+                global_Term.global_conn_type = global_Template
+                global_Term.save()
+            else:
+                return JsonResponse(
+                    {
+                        "message": f"Global connection term with ID = {id} does not exist."
+                    }
+                )
+        return JsonResponse(
+            {
+                "status": 201,
+                "message": f"Global connection type created successfully and linked it to the global terms IDs = {data.get('global_terms_IDs')} successfully.",
+            }
+        )
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": "Something went wrong.", "error": e})
+
+
+@csrf_exempt
+@api_view(["GET"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_Global_Connection_Type(request):
+    """
+    This API is used to get all global connection type templates or a particular one if the ID is mentioned in the request.
+    Expected JSON to get a particular global connection type (raw JSON data/form data):
+    {
+        "global_connection_type_template_name": value
+    }
+    To get all conection types, no need to send any JSON.
+    """
+    if request.method == "GET":
+        name = request.data.get(
+            "global_connection_type_template_name"
+        )  # RAW JSON DATA/FORM DATA
+        print(name)
+        if name:
+            global_Connection_Type = GlobalConnectionTypeTemplate.objects.filter(
+                global_connection_type_name=name
+            )
+            print(global_Connection_Type.first())
+            if global_Connection_Type.exists():
+                serializer = GlobalConnectionTypeTemplateGetSerializer(
+                    global_Connection_Type.first()
+                )
+                terms = ConnectionTerms.objects.filter(
+                    global_conn_type=global_Connection_Type.first()
+                )
+                terms_Serializer = ConnectionTermsSerializer(terms, many=True)
+                return JsonResponse(
+                    {
+                        "global_connection": serializer.data,
+                        "terms_attached_to_global_template": terms_Serializer.data,
+                    }
+                )
+            else:
+                return JsonResponse(
+                    {
+                        "message": f"global connection type template with name = {name} does not exist."
+                    }
+                )
+        else:
+            global_Connection_Types = GlobalConnectionTypeTemplate.objects.all()
+            serializer = GlobalConnectionTypeTemplateGetSerializer(
+                global_Connection_Types, many=True
+            )
+            return JsonResponse({"data": serializer.data})
+
+
+@csrf_exempt
+@api_view(["POST"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def connect_Global_Connection_Type_Template_And_Connection_Type(request):
+    """
+    Expected JSON (form data):
+    {
+        "template_Id": value,
+        "type_Id": value
+    }
+    """
+    template_Id = request.POST.get("template_Id")  # FORM DATA
+    type_Id = request.POST.get("type_Id")  # FORM DATA
+    # data = {"connection_type_id": "", "global_connection_template_id": ""}
+    if template_Id is not None and type_Id is not None:
+        template = GlobalConnectionTypeTemplate.objects.filter(
+            global_connection_type_template_id=template_Id
+        )
+        if not template.exists():
+            return JsonResponse(
+                {
+                    "message": f"Global connection type template with ID = {template_Id} does not exist."
+                }
+            )
+        else:
+            connection_Type = ConnectionType.objects.filter(connection_type_id=type_Id)
+            if not connection_Type.exists():
+                return JsonResponse(
+                    {"message": f"Connection type with ID = {type_Id} does not exist."}
+                )
+            else:
+                link = ConnectionTypeRegulationLinkTable.objects.filter(
+                    connection_type_id=connection_Type.first(),
+                    global_connection_template_id=template.first(),
+                )
+                if link.exists():
+                    template_Serializer = GlobalConnectionTypeTemplateGetSerializer(
+                        template.first()
+                    )
+                    type_Serializer = ConnectionTypeSerializer(connection_Type.first())
+                    return JsonResponse(
+                        {
+                            "message": "This link already exists.",
+                            "existing ID of link in DB": link.first().link_id,
+                            "global template": template_Serializer.data,
+                            "connection type": type_Serializer.data,
+                        }
+                    )
+                # data["global_connection_template_id"] = template.first()
+                # data["connection_type_id"] = connection_Type.first()
+                # link = ConnectionTypeRegulationLinkTable(
+                #     connection_Type_Id=connection_Type.first(),
+                #     conection_Template_Id=template.first(),
+                # )
+
+                try:
+                    link = ConnectionTypeRegulationLinkTable.objects.create(
+                        connection_type_id=connection_Type.first(),
+                        global_connection_template_id=template.first(),
+                    )
+                    # serializer = ConnectionTypeRegulationLinkTablePostSerializer(
+                    #     data=link
+                    # )
+                    # if not serializer.is_valid():
+                    #     return JsonResponse(
+                    #         {"status": 400, "errors": serializer.errors}
+                    #     )
+                    # serializer.save()
+                    return JsonResponse(
+                        {
+                            "status": 201,
+                            "message": f"Connection type with ID = {type_Id} linked successfully to global connection type template with ID = {template_Id}",
+                        }
+                    )
+                except Exception as e:
+                    print(e)
+                    return JsonResponse(
+                        {"message": "Something went wrong.", "error": f"{e}"}
+                    )
+    return JsonResponse(
+        {"message": f"Template ID = {template_Id} and type ID = {type_Id}"}
+    )
+
+
+@csrf_exempt
+@api_view(["GET"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
+    """
+    Expected JSON (raw JSON data/form data):
+    {
+        "template_Id": value
+    }
+    """
+    template_Id = request.get.get("template_Id", None)  # RAW JSON DATA/FORM DATA
+    if template_Id is not None:
+        template = GlobalConnectionTypeTemplate.objects.filter(
+            global_connection_type_template_id=template_Id
+        )
+        if not template.exists():
+            return JsonResponse(
+                {
+                    "message": f"global conection type template with ID = {template_Id} does not exist."
+                }
+            )
+        else:
+            terms = ConnectionTerms.objects.filter(global_conn_type=template.first())
+            serializer = ConnectionTermsSerializer(terms, many=True)
+            return JsonResponse({"data": serializer.data})
+
+
+@csrf_exempt
+@api_view(["GET"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_Connection_Link_Regulation_For_Connection_Type(request):
+    """
+    Expected JSON (raw JSON data/form data):
+    {
+        "connection_Type_ID": value
+    }
+    """
+    if request.method == "GET":
+        conn_type_ID = request.data.get("connection_Type_ID")  # RAW JSON DATA/FORM DATA
+        link_Regulation = ConnectionTypeRegulationLinkTable.objects.filter(
+            connection_type_id=conn_type_ID
+        )
+        if link_Regulation.exists():
+            serializer = ConnectionTypeRegulationLinkTableGetSerializer(
+                link_Regulation, many=True
+            )
+            return JsonResponse({"data": serializer.data})
+        return JsonResponse(
+            {
+                "message": f"Connection regulation link table does not have an entry with connection type ID = {conn_type_ID}"
+            }
+        )
+    return JsonResponse({"message": "The method request is not GET."})
+
+
+@csrf_exempt
+@api_view(["POST"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+# @role_required(CustomUser.SYS_ADMIN)
+def create_Global_Connection_Terms(request):
+    """
+    Expected JSON (raw JSON data/form data):
+    {
+        "connection_terms_obligations": obligations,
+        "connection_terms_permissions": permissions
+    }
+    """
+    if request.method == "POST":
+        requesting_user: CustomUser = request.user
+        if requesting_user.user_type in [CustomUser.MODERATOR, CustomUser.USER]:
+            return JsonResponse(
+                {
+                    "message": f"User must be a system admin to hit this API endpoint. Current user has {requesting_user.user_type} type"
+                }
+            )
+        # global_conn_type_id = request.data.get("global_conn_type_id") # RAW JSON DATA/FORM DATA
+        connection_terms_obligations = request.data.get(
+            "connection_terms_obligations"
+        )  # RAW JSON DATA/FORM DATA
+        connection_terms_permissions = request.data.get(
+            "connection_terms_permissions"
+        )  # RAW JSON DATA/FORM DATA
+        print(connection_terms_obligations)
+
+        # template = GlobalConnectionTypeTemplate.objects.filter(
+        #     global_connection_type_template_id=global_conn_type_id
+        # )
+        # if not template.exists():
+        #     return JsonResponse(
+        #         {
+        #             "message": f"Global connection type template with ID = {global_conn_type_id} does not exist."
+        #         }
+        #     )
+        terms_List: list = []
+        for obligation in connection_terms_obligations:
+            term = ConnectionTerms.objects.create(
+                # global_conn_type=None,
+                modality="obligatory",
+                data_element_name=obligation["labelName"],
+                data_type=obligation["typeOfAction"],
+                sharing_type=obligation["typeOfSharing"],
+                description=obligation["labelDescription"],
+                host_permissions=obligation["hostPermissions"],
+            )
+            terms_List.append(term)
+
+        can_share_more_data = connection_terms_permissions["canShareMoreData"]
+        can_download_data = connection_terms_permissions["canDownloadData"]
+
+        if can_share_more_data:
+            term = ConnectionTerms.objects.create(
+                # global_conn_type=None,
+                modality="permissive",
+                description="They can share more data.",
+            )
+            terms_List.append(term)
+        if can_download_data:
+            term = ConnectionTerms.objects.create(
+                # global_conn_type=None,
+                modality="permissive",
+                description="They can download data.",
+            )
+            terms_List.append(term)
+        terms_Serializer = ConnectionTermsSerializer(terms_List, many=True)
+        return JsonResponse(
+            {
+                "message": "Global connection terms added successfully.",
+                "terms": terms_Serializer.data,
+            }
+        )
+    else:
+        return JsonResponse({"message": "Request method is not POST."})
+
+
+@csrf_exempt
+@api_view(["PUT", "DELETE"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_Update_Locker(request: HttpRequest):
+    if request.method == "DELETE":
+        """
+        Expected JSON data(raw JSON data/form data):
+        {
+            "locker_name": value
+        }
+        """
+        user: CustomUser = request.user
+        actual_User = CustomUser.objects.filter(username=user.username)
+        if actual_User.exists():
+            locker_Name = request.data.get("locker_name")
+            if locker_Name is None:
+                return JsonResponse({"message": "Locker name is not provided."})
+            particular_User: CustomUser = actual_User.first()
+            locker_To_Be_Deleted = Locker.objects.filter(
+                name=locker_Name, user=particular_User
+            )
+            if locker_To_Be_Deleted.exists():
+                delete_Locker: Locker = locker_To_Be_Deleted.first()
+                delete_Locker.delete()
+                return JsonResponse(
+                    {
+                        "message": f"Locker(ID = {delete_Locker.locker_id}) with name = {locker_Name} of user with username = {particular_User.username} was successfully deleted."
+                    }
+                )
+        else:
+            return JsonResponse(
+                {"message": f"User with username = {user.username} does not exist."}
+            )
+    elif request.method == "PUT":
+        """
+        Expected JSON data (raw JSON data/form data):
+        {
+            "new_locker_name": value,
+            "description": value,
+            "username": username of the new user,
+            "is_frozen": value (boolean)
+        }
+        """
+        user: CustomUser = request.user
+        actual_User = CustomUser.objects.filter(username=user.username)
+        if actual_User.exists():
+            locker_Name = request.data.get("locker_name")
+            if locker_Name is None:
+                return JsonResponse({"message": "Locker name is not provided."})
+            particular_User: CustomUser = actual_User.first()
+            locker_To_Be_Updated = Locker.objects.filter(
+                name=locker_Name, user=particular_User
+            )
+            if locker_To_Be_Updated.exists():
+                update_Locker: Locker = locker_To_Be_Updated.first()
+                new_locker_name = request.data.get("new_locker_name")
+                description = request.data.get("description")
+                username = request.data.get("username")
+                is_frozen = request.data.get("is_frozen")
+                new_User = CustomUser.objects.filter(username=username)
+                if new_User.exists():
+                    update_Locker.name = new_locker_name
+                    update_Locker.description = description
+                    update_Locker.is_frozen = is_frozen
+                    update_Locker.user = new_User
+                    update_Locker.save()
+                    return JsonResponse({"message": "Locker updated successfully."})
+                else:
+                    return JsonResponse({
+                        'message': f'User with username = {username} does not exist.'
+                    })
+        else:
+            return JsonResponse(
+                {"message": f"User with username = {user.username} does not exist."}
+            )
+    else:
+        return JsonResponse({"message": "Request method should be either POST or PUT."})
+
+@csrf_exempt
+@api_view(["PUT", "DELETE"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_Update_Resource(request:HttpRequest):
+    if request.method == 'DELETE':
+        """
+        Expected JSON (raw JSON data/form data):
+        {
+            "locker_name": value,
+            "owner_name": value
+        }
+        """
+        locker_name = request.data.get('locker_name')
+        owner_name = request.data.get('owner_name')
+        user:CustomUser = request.user
+        request_User:CustomUser = CustomUser.objects.filter(username=owner_name).first()
+        if request_User.DoesNotExist:
+            return JsonResponse({
+                'message': f'User with name = {owner_name} does not exist.'
+            })
+        if(request_User == user):
+            locker_of_resource = Locker.objects.filter(name=locker_name, user=user)
+            if locker_of_resource.exists():
+                particular_locker:Locker = locker_of_resource.first()
+                resource_To_Be_Deleted = Resource.objects.filter(owner=user, locker=particular_locker)
+                if resource_To_Be_Deleted.exists():
+                    delete_Resource:Resource = resource_To_Be_Deleted.first()
+                    id = delete_Resource.resource_id
+                    delete_Resource.delete()
+                    return JsonResponse({
+                        'message': f'Resource with ID = {id} deleted successfully.'
+                    })
+                else:
+                    return JsonResponse({
+                        'message': f'Resource with user having username = {user.username} and locker with ID = {particular_locker.locker_id} does not exist.'
+                    })
+            else:
+                return JsonResponse({
+                    'message': f'Locker with name = {locker_name} does not exist.'
+                })
+        else:
+            return JsonResponse({
+                'message': 'You are not allowed to delete this resource.'
+            })
+
+    if request.method == 'PUT':
+        """
+        Expected JSON (raw JSON data/form data):
+        {
+            "old_locker_name": value,
+            "old_owner_name": value,
+            "document_name": value,
+            "i_node_pointer": value,
+            "new_locker_name": value,
+            "version": value,
+            "new_owner_name": value,
+            "type": value
+        }
+        """
+        locker_name = request.data.get('old_locker_name')
+        owner_name = request.data.get('old_owner_name')
+        user:CustomUser = request.user
+        request_User:CustomUser = CustomUser.objects.filter(username=owner_name).first()
+        if request_User.DoesNotExist:
+            return JsonResponse({
+                'message': f'User with name = {owner_name} does not exist.'
+            })
+        if(request_User == user):
+            locker_of_resource = Locker.objects.filter(name=locker_name, user=user)
+            if locker_of_resource.exists():
+                particular_locker:Locker = locker_of_resource.first()
+                resource_To_Be_Updated = Resource.objects.filter(owner=user, locker=particular_locker)
+                if resource_To_Be_Updated.exists():
+                    update_Resource:Resource = resource_To_Be_Updated.first()
+                    # id = delete_Resource.resource_id
+                    # delete_Resource.delete()
+                    document_name = request.data.get('document_name')
+                    i_node_pointer = request.data.get('i_node_pointer')
+                    new_locker_name = request.data.get('new_locker_name')
+                    version = request.data.get('version')
+                    new_owner_name = request.data.get('new_owner_name')
+                    resource_type = request.data.get('type')
+                    new_Locker: Locker = Locker.objects.filter(name=new_locker_name, user=request_User).first()
+                    if new_Locker.DoesNotExist:
+                        return JsonResponse({
+                            'message': f'Locker with name = {new_locker_name} does not exist.'
+                        })
+                    else:
+                        new_owner: CustomUser = CustomUser.objects.filter(username=new_owner_name).first()
+                        if new_owner.DoesNotExist:
+                            return JsonResponse({
+                                'message': f'User with name = {new_owner_name} does not exist.'
+                            })
+                        else:
+                            update_Resource.document_name = document_name
+                            update_Resource.i_node_pointer = i_node_pointer
+                            update_Resource.locker = new_Locker
+                            update_Resource.version = version
+                            update_Resource.owner = new_owner
+                            update_Resource.type = resource_type
+                            update_Resource.save()
+                            return JsonResponse({
+                                'message': f'Resource with ID = {update_Resource.resource_id} updated successfully.'
+                            })
+                else:
+                    return JsonResponse({
+                        'message': f'Resource with user having username = {user.username} and locker with ID = {particular_locker.locker_id} does not exist.'
+                    })
+            else:
+                return JsonResponse({
+                    'message': f'Locker with name = {locker_name} does not exist.'
+                })
+        else:
+            return JsonResponse({
+                'message': 'You are not allowed to delete this resource.'
+            })
+        
+# @csrf_exempt
+# @api_view(["POST"])
+# @authentication_classes([BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# def share_Resource_Create_Vnode(request:HttpRequest):
+#     if request.method == 'POST':
+#         """
+#         Expected JSON data (raw JSON data/form data):
+#         {
+#             "resource_id": value,
+#             "guest_locker_id": value,
+#             "host_locker_id": value,
+#             "connection_id": value,
+#             "operator_constraints": value
+#         }
+#         """
+#         resource_id = request.data.get('resource_id')
+#         guest_locker_id = request.data.get('guest_locker_id')
+#         host_locker_id = request.data.get('host_locker_id')
+#         connection_id = request.data.get('connection_id')
+#         resource_List = Resource.objects.filter(resource_id=resource_id)
+#         if resource_List.exists():
+#             guest_Locker_List = Locker.objects.filter(locker_id=guest_locker_id)
+#             if guest_Locker_List.exists():
+#                 host_Locker_List = Locker.objects.filter(locker_id=host_locker_id)
+#                 if host_Locker_List.exists():
+#                     connection_List = Connection.objects.filter(connection_id=connection_id)
+#                     if connection_List.exists():
+#                         connection = connection_List.first()
+#                         guest_locker = guest_Locker_List.first()
+#                         host_locker = host_Locker_List.first()
+#                         resource = resource_List.first()
+#                         operator_constraints = request.data.get('operator_constraints')
+#                         vnode = Vnode.objects.create(
+#                             resource=resource,
+#                             connection=connection,
+#                             host_locker=host_locker,
+#                             guest_locker=guest_locker,
+#                             operator_constraints=operator_constraints
+#                         )
+#                         vnode.save()
+#                         serializer = VnodeSerializer(vnode)
+#                         return JsonResponse({
+#                             'message': 'Vnode created successfully.',
+#                             'data': serializer.data
+#                         })
+#                     return JsonResponse({
+#                         'message': f'Connection with ID = {connection_id} does not exist.'
+#                     })
+#                 return JsonResponse({
+#                     'message': f'Locker(host locker) with ID = {host_locker_id} does not exist.'
+#                 })
+#             return JsonResponse({
+#                 'message': f'Locker(guest locker) with ID = {guest_locker_id} does not exist.'
+#             })
+#         return JsonResponse({
+#             'message': f'Resource with ID = {resource_id} does not exist.'
+#         })
+
+@csrf_exempt
+@api_view(["POST"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def share_resource(request):
+    if request.method == "POST":
+        
+        connection_id = request.POST.get("connection_id")
+        host_locker_name = request.POST.get("host_locker_name")
+        guest_locker_name = request.POST.get("guest_locker_name")
+        host_user_username = request.POST.get("host_user_username")
+        guest_user_username = request.POST.get("guest_user_username")
+        resource_id = request.POST.get("resource_id")
+
+     
+        if not all([connection_id, host_locker_name, guest_locker_name, host_user_username, guest_user_username, resource_id]):
+            return JsonResponse({"success": False, "error": "All fields are required"}, status=400)
+
+        try:
+            host_user = CustomUser.objects.get(username=host_user_username)
+            host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+            guest_user = CustomUser.objects.get(username=guest_user_username)
+            guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+            connection = Connection.objects.get(connection_id=connection_id, host_locker=host_locker, host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
+            resource = Resource.objects.get(resource_id=resource_id)
+        except (Connection.DoesNotExist, Locker.DoesNotExist, CustomUser.DoesNotExist, Resource.DoesNotExist) as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=404)
+
+        # Check terms_value for the "; S" indicator and create Vnode if conditions are met
+        if resource.i_node_pointer in connection.resources.get("Share", []):
+            for key, value in connection.terms_value.items():
+                if "; S" in value:
+                    doc_path = value.split("; S")[0].strip()
+                    if doc_path == resource.i_node_pointer:
+                        # Create Vnode only if the resource is intended for sharing
+                        Vnode.objects.create(
+                            resource=resource,
+                            host_locker=host_locker,
+                            guest_locker=guest_locker,
+                            connection=connection,
+                            operator_constraints={"view_only": True}
+                        )
+                        return JsonResponse({"success": True, "message": "Resource shared successfully"}, status=200)
+
+        # Resource is not eligible for sharing or does not match the criteria
+        return JsonResponse({"success": False, "error": "Resource not eligible for sharing"}, status=400)
+
+    return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)

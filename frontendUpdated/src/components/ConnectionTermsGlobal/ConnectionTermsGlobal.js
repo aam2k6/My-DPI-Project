@@ -60,6 +60,15 @@ export const ConnectionTermsGlobal = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (
+      formData.globalName.trim() === "" ||
+      formData.globalDescription.trim() === ""
+    ) {
+      alert("Please fill out both the Name and Description fields.");
+      return; // Prevent form submission if fields are empty
+    }
+
     const token = Cookies.get("authToken");
 
     const connectionTermsData = {

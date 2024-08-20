@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import { usercontext } from "../../usercontext";
 
-export default function Navbar({content}) {
+export default function Navbar({ content }) {
   // Helper function to capitalize the first letter of a string
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -35,7 +35,7 @@ export default function Navbar({content}) {
     navigate("/");
   };
 
-  const handleAdmin = () => {
+  const handleConnection = () => {
     navigate("/admin");
   };
 
@@ -43,9 +43,6 @@ export default function Navbar({content}) {
     setIsOpen(!isOpen);
   };
 
-  // const handleCreateGlobalConnectionType = () => {
-  //   navigate("/create-global-connection-type");
-  // };
   const handleAdminSettings = () => {
     navigate("/create-global-connection-type");
   };
@@ -56,11 +53,17 @@ export default function Navbar({content}) {
 
   return (
     <nav className="navbar">
-      <div className="wrap">
-        {content}
-      </div>
+      <div className="wrap">{content}</div>
 
       <div className="navbarLinks">
+      <ul className="navbarFirstLink">
+          <li>
+            <a href="#" onClick={handleConnection}>
+              Connection Type
+            </a>
+          </li>
+        </ul>
+
         <ul className="navbarFirstLink">
           <li>
             <a href="#" onClick={handleDPIDirectory}>
@@ -76,18 +79,22 @@ export default function Navbar({content}) {
             </a>
           </li>
           <li>
-            <a href="#" onClick={handleAdmin}></a>
+            <a href="#" onClick={handleAdminSettings}></a>
           </li>
         </ul>
 
         <ul className="navbarThirdLink">
           <li>
-            <img
-              src={userImage}
-              alt="User Icon"
-              onClick={toggleDropdown}
-              className="dropdownImage"
-            />
+              <img
+                src={userImage}
+                alt="User Icon"
+                onClick={toggleDropdown}
+                className="dropdownImage"
+              />
+              <div className="username">
+                {capitalizeFirstLetter(curruser.username)}
+              </div>
+
             {isOpen && (
               <div className="dropdownContent">
                 <div className="currusername">
@@ -95,7 +102,8 @@ export default function Navbar({content}) {
                 </div>
                 <div className="curruserdesc">{curruser.description}</div>
 
-                {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
+                {(curruser.user_type === "sys_admin" ||
+                  curruser.user_type === "system_admin") && (
                   <>
                     <button onClick={handleAdminSettings}>
                       System Admin Settings
@@ -111,7 +119,7 @@ export default function Navbar({content}) {
                   </>
                 )}
 
-                <button onClick={handleAdmin}>Settings</button>
+                {/* <button onClick={handleConnection}>Settings</button> */}
                 <button onClick={handleLogout}>Logout</button>
               </div>
             )}

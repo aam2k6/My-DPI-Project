@@ -80,20 +80,27 @@
     font-size: 1.25rem;
   }
   
-  .navbarLinks img {
+  /* .navbarLinks img {
     height: 50px;
     width: auto;
     margin-right: 3rem;
+  } */
+
+  img {
+    display: block; /* Ensure no extra space below the image */
+    margin: 0;
+    padding: 0;
+    border: none; /* Remove border if any */
   }
 
-
-   .dropdownImage {
+  
+  .dropdownImage {
     cursor: pointer;
-    width: 40px; /* Adjust the size as needed */
-    height: 40px; /* Adjust the size as needed */
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: block;
-    position: relative; /* Ensure the image is positioned relatively */
+    margin: 0 auto; 
   }
   
   .dropdownContent {
@@ -126,10 +133,18 @@
     background-color: #f1f1f1;
   }
   .currusername {
-    text-align: center; /* Center the username text */
-    width: 100%; /* Ensure it takes the full width of the container */
+    text-align: center;
+    width: 100%; 
+    /* Ensure it takes the full width of the container */
     font-size: large;
     font-weight: bold;
+  }
+
+  .username{
+    font-size: medium;
+    font-weight: bold;
+    margin-top: 8px;
+    text-align: center;
   }
   .curruserdesc {
     text-align: center; /* Center the username text */

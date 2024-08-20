@@ -234,14 +234,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/create-global-connection-type"
-              element={
-                <ProtectedRoute>
-                  <CreateGlobalConnectionType />
-                </ProtectedRoute>
-              }
-            />
 
             <Route path="*" element={<h1>Page Not Found</h1>} />
           </Routes>

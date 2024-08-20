@@ -215,7 +215,7 @@
   
   }
  
-  CSS for name and description above obligation
+  /* CSS for name and description above obligation */
   .obligation-label, .connectionTerms-heroContainer .obligation-label {
     display: flex;
     align-items: center;
@@ -239,4 +239,8 @@
     border-radius: 0.25rem;
     flex: 1;  
     box-sizing: border-box;
+}
+
+.connectionTerms-heroContainer{
+  margin-top: 0px;
 }

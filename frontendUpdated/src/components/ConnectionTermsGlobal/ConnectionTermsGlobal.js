@@ -2,13 +2,44 @@ import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import "./ConnectionTermsGlobal.css";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
+import Navbar from "../Navbar/Navbar";
 
 import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
 
 export const ConnectionTermsGlobal = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Get the state passed from the previous page
+  const { connectionTypeName, connectionTypeDescription, existingTerms } = location.state || {};
+
+  useEffect(() => {
+    if (location.state) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        globalName: connectionTypeName || "",
+        globalDescription: connectionTypeDescription || "",
+      }));
+      console.log("existing terms ", existingTerms);
+      if (existingTerms && existingTerms.length > 0) {
+      // Map existing terms to the formData structure
+      const mappedTerms = existingTerms.map((term) => ({
+        labelName: term.data_element_name || "", // Map data_element_name to labelName
+        typeOfAction: term.data_type || "text",
+        typeOfSharing: term.sharing_type || "share",
+        labelDescription: term.description || "",
+        hostPermissions: term.host_permissions || [],
+        // canShareMore: term.permissions.canShareMoreData,
+        // canDownload: term.permissions.canDownloadData,
+        canShareMore: false,
+        canDownload: false,
+        globalName: connectionTypeName || "",
+        globalDescription: connectionTypeDescription || "",
+      }));
+      setObligations(mappedTerms);
+      }
+    }
+  }, [location.state]);
+
 
   const initialFormData = {
     labelName: "",
@@ -29,10 +60,10 @@ export const ConnectionTermsGlobal = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormData({
-      ...formData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
-    });
+    }));
   };
 
   const handleCheckboxChange = (event) => {
@@ -51,6 +82,7 @@ export const ConnectionTermsGlobal = () => {
   };
 
   const handleLoadObligation = (index) => {
+
     setFormData(obligations[index]);
   };
 
@@ -167,28 +199,28 @@ export const ConnectionTermsGlobal = () => {
     });
   };
 
-  const handleHomeClick = () => {
-    navigate("/home");
-  };
+  // const handleHomeClick = () => {
+  //   navigate("/home");
+  // };
 
-  const handleDPIDirectory = () => {
-    navigate("/dpi-directory");
-  };
+  // const handleDPIDirectory = () => {
+  //   navigate("/dpi-directory");
+  // };
 
-  const handleAdmin = () => {
-    navigate("/admin");
-  };
+  // const handleAdmin = () => {
+  //   navigate("/admin");
+  // };
 
-  const handleLogout = () => {
-    Cookies.remove("authToken");
-    localStorage.removeItem("curruser");
-    setUser(null);
-    navigate("/");
-  };
+  // const handleLogout = () => {
+  //   Cookies.remove("authToken");
+  //   localStorage.removeItem("curruser");
+  //   setUser(null);
+  //   navigate("/");
+  // };
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
+  // const toggleDropdown = () => {
+  //   setIsOpen(!isOpen);
+  // };
 
   useEffect(() => {
     if (!curruser) {
@@ -201,53 +233,7 @@ export const ConnectionTermsGlobal = () => {
 
   return (
     <div>
-      <nav className="navbar">
-        {/* <div className="wrap">
-          <div className="navbarLockerName">Locker : {locker}</div>
-          <div className="navbarLockerOwner">Owner : {curruser.username}</div>
-        </div> */}
-
-        <div className="navbarLinks">
-          <ul className="navbarFirstLink">
-            <li>
-              <a href="#" onClick={handleDPIDirectory}>
-                DPI Directory
-              </a>
-            </li>
-          </ul>
-
-          <ul className="navbarSecondLink">
-            <li>
-              <a href="#" onClick={handleHomeClick}>
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="#" onClick={handleAdmin}></a>
-            </li>
-          </ul>
-
-          <ul className="navbarThirdLink">
-            <li>
-              <img
-                src={userImage}
-                alt="User Icon"
-                onClick={toggleDropdown}
-                className="dropdownImage"
-              />
-              {isOpen && (
-                <div className="dropdownContent">
-                  <div className="currusername">{curruser.username}</div>
-                  <div className="curruserdesc">{curruser.description}</div>
-
-                  <button onClick={handleAdmin}>Settings</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="connectionTerms-heroContainer">
         <label className="obligation-label">

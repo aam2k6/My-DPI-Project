@@ -2237,7 +2237,7 @@ def get_All_Connection_Terms_For_Global_Connection_Type_Template(request):
         "template_Id": value
     }
     """
-    template_Id = request.get.get("template_Id", None)  # RAW JSON DATA/FORM DATA
+    template_Id = request.GET.get("template_Id", None)  # RAW JSON DATA/FORM DATA
     if template_Id is not None:
         template = GlobalConnectionTypeTemplate.objects.filter(
             global_connection_type_template_id=template_Id

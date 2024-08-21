@@ -2047,12 +2047,17 @@ def create_Global_Connection_Type_Template(request):
                 "message": f"User must be a system admin to access this API endpoint. Current user has {requesting_user.user_type} type."
             }
         )
+    ids:list = data.get('global_terms_IDs')
+    if len(ids) == 0:
+        return JsonResponse({
+            'message': 'List of IDs of terms must not be empty.'
+        })
     try:
         template_Data = {
             "global_connection_type_name": data.get("global_connection_type_name"),
             "global_connection_type_description": data.get(
                 "global_connection_type_description"
-            ),
+            )
         }
         # serializer = GlobalConnectionTypeTemplatePostSerializer(data=template_Data)
         # if not serializer.is_valid():

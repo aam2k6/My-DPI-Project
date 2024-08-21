@@ -59,7 +59,7 @@ export default function Navbar({ content }) {
       <ul className="navbarFirstLink">
           <li>
             <a href="#" onClick={handleConnection}>
-              Connection Type
+              Locker Admin
             </a>
           </li>
         </ul>

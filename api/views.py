@@ -2048,7 +2048,7 @@ def create_Global_Connection_Type_Template(request):
             }
         )
     ids:list = data.get('global_terms_IDs')
-    if len(ids) == 0:
+    if ids is None or len(ids) == 0:
         return JsonResponse({
             'message': 'List of IDs of terms must not be empty.'
         })

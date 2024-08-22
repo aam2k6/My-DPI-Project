@@ -33,7 +33,7 @@ export const Home = () => {
         const token = Cookies.get('authToken');
         console.log('Fetching lockers with token:', token);
 
-        const response = await fetch('http://localhost:8000/get-lockers-user/', {
+        const response = await fetch('http://172.16.192.201:8000/get-lockers-user/', {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,

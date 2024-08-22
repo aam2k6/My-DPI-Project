@@ -27,7 +27,7 @@ export const Admin = () => {
   const fetchOtherConnections = async () => {
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:8000/get-connection-type/`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-connection-type/`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -48,7 +48,7 @@ export const Admin = () => {
   const fetchUserLockers = async () => {
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:8000/get-lockers-user/`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-lockers-user/`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,

@@ -1175,45 +1175,6 @@ def update_connection_type(request, connection_type_id):
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-
-@csrf_exempt
-@api_view(['PATCH'])
-@authentication_classes([BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def update_locker(request, locker_id):
-    """
-    Update an existing Locker.
-
-    Parameters:
-       - request: HttpRequest object containing metadata about the request.
-       - locker_id: ID of the Locker to be updated.
-
-    Returns:
-       - JsonResponse: A JSON object containing the updated Locker or an error message.
-
-    Response Codes:
-       - 200: Successful update of the Locker.
-       - 400: Bad request due to invalid data.
-       - 404: Locker not found.
-       - 405: Request method not allowed (if not PATCH).
-    """
-    if request.method == 'PATCH':
-        try:
-            locker = Locker.objects.get(pk=locker_id)
-        except Locker.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Locker not found.'}, status=404)
-
-        data = json.loads(request.body)
-        serializer = LockerSerializer(locker, data=data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'success': True, 'locker': serializer.data}, status=200)
-
-        return JsonResponse({'success': False, 'errors': serializer.errors}, status=400)
-
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
 @csrf_exempt
 @api_view(['PUT'])
 @authentication_classes([BasicAuthentication])
@@ -2363,6 +2324,84 @@ def create_Global_Connection_Terms(request):
         return JsonResponse({"message": "Request method is not POST."})
 
 
+# @csrf_exempt
+# @api_view(["PUT", "DELETE"])
+# @authentication_classes([BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# def delete_Update_Locker(request: HttpRequest):
+#     if request.method == "DELETE":
+#         """
+#         Expected JSON data(raw JSON data/form data):
+#         {
+#             "locker_name": value
+#         }
+#         """
+#         user: CustomUser = request.user
+#         actual_User = CustomUser.objects.filter(username=user.username)
+#         if actual_User.exists():
+#             locker_Name = request.data.get("locker_name")
+#             if locker_Name is None:
+#                 return JsonResponse({"message": "Locker name is not provided."})
+#             particular_User: CustomUser = actual_User.first()
+#             locker_To_Be_Deleted = Locker.objects.filter(
+#                 name=locker_Name, user=particular_User
+#             )
+#             if locker_To_Be_Deleted.exists():
+#                 delete_Locker: Locker = locker_To_Be_Deleted.first()
+#                 delete_Locker.delete()
+#                 return JsonResponse(
+#                     {
+#                         "message": f"Locker(ID = {delete_Locker.locker_id}) with name = {locker_Name} of user with username = {particular_User.username} was successfully deleted."
+#                     }
+#                 )
+#         else:
+#             return JsonResponse(
+#                 {"message": f"User with username = {user.username} does not exist."}
+#             )
+#     elif request.method == "PUT":
+#         """
+#         Expected JSON data (raw JSON data/form data):
+#         {
+#             "new_locker_name": value,
+#             "description": value,
+#             "username": username of the new user,
+#             "is_frozen": value (boolean)
+#         }
+#         """
+#         user: CustomUser = request.user
+#         actual_User = CustomUser.objects.filter(username=user.username)
+#         if actual_User.exists():
+#             locker_Name = request.data.get("locker_name")
+#             if locker_Name is None:
+#                 return JsonResponse({"message": "Locker name is not provided."})
+#             particular_User: CustomUser = actual_User.first()
+#             locker_To_Be_Updated = Locker.objects.filter(
+#                 name=locker_Name, user=particular_User
+#             )
+#             if locker_To_Be_Updated.exists():
+#                 update_Locker: Locker = locker_To_Be_Updated.first()
+#                 new_locker_name = request.data.get("new_locker_name")
+#                 description = request.data.get("description")
+#                 username = request.data.get("username")
+#                 is_frozen = request.data.get("is_frozen")
+#                 new_User = CustomUser.objects.filter(username=username)
+#                 if new_User.exists():
+#                     update_Locker.name = new_locker_name
+#                     update_Locker.description = description
+#                     update_Locker.is_frozen = is_frozen
+#                     update_Locker.user = new_User
+#                     update_Locker.save()
+#                     return JsonResponse({"message": "Locker updated successfully."})
+#                 else:
+#                     return JsonResponse({
+#                         'message': f'User with username = {username} does not exist.'
+#                     })
+#         else:
+#             return JsonResponse(
+#                 {"message": f"User with username = {user.username} does not exist."}
+#             )
+#     else:
+#         return JsonResponse({"message": "Request method should be either POST or PUT."})
 @csrf_exempt
 @api_view(["PUT", "DELETE"])
 @authentication_classes([BasicAuthentication])
@@ -2376,71 +2415,66 @@ def delete_Update_Locker(request: HttpRequest):
         }
         """
         user: CustomUser = request.user
-        actual_User = CustomUser.objects.filter(username=user.username)
-        if actual_User.exists():
-            locker_Name = request.data.get("locker_name")
-            if locker_Name is None:
-                return JsonResponse({"message": "Locker name is not provided."})
-            particular_User: CustomUser = actual_User.first()
-            locker_To_Be_Deleted = Locker.objects.filter(
-                name=locker_Name, user=particular_User
+        locker_name = request.data.get("locker_name")
+
+        if not locker_name:
+            return JsonResponse({"message": "Locker name is not provided."}, status=400)
+
+        locker_to_be_deleted = Locker.objects.filter(name=locker_name, user=user)
+
+        if locker_to_be_deleted.exists():
+            delete_locker = locker_to_be_deleted.first()
+            delete_locker.delete()
+            return JsonResponse(
+                {
+                    "message": f"Locker(ID = {delete_locker.locker_id}) with name = {locker_name} of user with username = {user.username} was successfully deleted."
+                },
+                status=200
             )
-            if locker_To_Be_Deleted.exists():
-                delete_Locker: Locker = locker_To_Be_Deleted.first()
-                delete_Locker.delete()
-                return JsonResponse(
-                    {
-                        "message": f"Locker(ID = {delete_Locker.locker_id}) with name = {locker_Name} of user with username = {particular_User.username} was successfully deleted."
-                    }
-                )
         else:
             return JsonResponse(
-                {"message": f"User with username = {user.username} does not exist."}
+                {"message": f"Locker with name = {locker_name} does not exist."},
+                status=404
             )
+
     elif request.method == "PUT":
         """
         Expected JSON data (raw JSON data/form data):
         {
+            "locker_name": value,
             "new_locker_name": value,
-            "description": value,
-            "username": username of the new user,
-            "is_frozen": value (boolean)
+            "description": value
         }
         """
         user: CustomUser = request.user
-        actual_User = CustomUser.objects.filter(username=user.username)
-        if actual_User.exists():
-            locker_Name = request.data.get("locker_name")
-            if locker_Name is None:
-                return JsonResponse({"message": "Locker name is not provided."})
-            particular_User: CustomUser = actual_User.first()
-            locker_To_Be_Updated = Locker.objects.filter(
-                name=locker_Name, user=particular_User
-            )
-            if locker_To_Be_Updated.exists():
-                update_Locker: Locker = locker_To_Be_Updated.first()
-                new_locker_name = request.data.get("new_locker_name")
-                description = request.data.get("description")
-                username = request.data.get("username")
-                is_frozen = request.data.get("is_frozen")
-                new_User = CustomUser.objects.filter(username=username)
-                if new_User.exists():
-                    update_Locker.name = new_locker_name
-                    update_Locker.description = description
-                    update_Locker.is_frozen = is_frozen
-                    update_Locker.user = new_User
-                    update_Locker.save()
-                    return JsonResponse({"message": "Locker updated successfully."})
-                else:
-                    return JsonResponse({
-                        'message': f'User with username = {username} does not exist.'
-                    })
+        locker_name = request.data.get("locker_name")
+
+        if not locker_name:
+            return JsonResponse({"message": "Locker name is not provided."}, status=400)
+
+        locker_to_be_updated = Locker.objects.filter(name=locker_name, user=user)
+
+        if locker_to_be_updated.exists():
+            update_locker = locker_to_be_updated.first()
+            new_locker_name = request.data.get("new_locker_name")
+            description = request.data.get("description")
+
+            if new_locker_name:
+                update_locker.name = new_locker_name
+            if description:
+                update_locker.description = description
+
+            update_locker.save()
+            return JsonResponse({"message": "Locker updated successfully."}, status=200)
         else:
             return JsonResponse(
-                {"message": f"User with username = {user.username} does not exist."}
+                {"message": f"Locker with name = {locker_name} does not exist."},
+                status=404
             )
+
     else:
-        return JsonResponse({"message": "Request method should be either POST or PUT."})
+        return JsonResponse({"message": "Request method should be either PUT or DELETE."}, status=405)
+
 
 @csrf_exempt
 @api_view(["PUT", "DELETE"])

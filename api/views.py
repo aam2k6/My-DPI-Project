@@ -2267,13 +2267,97 @@ def get_terms_status(request):
     )
 
 
+# @csrf_exempt
+# @api_view(["POST"])
+# @authentication_classes([BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# def transfer_resource(request):
+#     if request.method == "POST":
+
+#         body = json.loads(request.body)
+#         connection_name = body["connection_name"]
+#         host_locker_name = body["host_locker_name"]
+#         guest_locker_name = body["guest_locker_name"]
+#         host_user_username = body["host_user_username"]
+#         guest_user_username = body["guest_user_username"]
+
+#         print(
+#             connection_name,
+#             host_locker_name,
+#             guest_locker_name,
+#             host_user_username,
+#             guest_user_username,
+#         )
+
+#         if not all(
+#             [
+#                 connection_name,
+#                 host_locker_name,
+#                 guest_locker_name,
+#                 host_user_username,
+#                 guest_user_username,
+#             ]
+#         ):
+#             return JsonResponse(
+#                 {"success": False, "error": "All fields are required"}, status=400
+#             )
+
+#         try:
+#             host_user = CustomUser.objects.get(username=host_user_username)
+#             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+#             guest_user = CustomUser.objects.get(username=guest_user_username)
+#             guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+#             connection = Connection.objects.get(
+#                 connection_name=connection_name,
+#                 host_locker=host_locker,
+#                 host_user=host_user,
+#                 guest_locker=guest_locker,
+#                 guest_user=guest_user,
+#             )
+#         except Connection.DoesNotExist:
+#             return JsonResponse(
+#                 {"success": False, "error": "Requested Connection type not found"},
+#                 status=404,
+#             )
+#         except Locker.DoesNotExist as e:
+#             return JsonResponse(
+#                 {"success": False, "error": f"Locker not found: {e}"}, status=400
+#             )
+#         except CustomUser.DoesNotExist as e:
+#             return JsonResponse(
+#                 {"success": False, "error": f"User not found: {e}"}, status=400
+#             )
+
+#         for key, value in connection.terms_value.items():
+#             if ("; T" in value) or (";T" in value):
+#                 if "; T" in value:
+#                     doc_path = value.split("; T")[0].strip()
+#                 else:
+#                     doc_path = value.split(";T")[0]
+#                     print(doc_path)
+
+#                 if doc_path in connection.resources["Transfer"]:
+#                     res = Resource.objects.get(document_name=doc_path)
+#                     print(res)
+#                     res.owner = host_user
+#                     res.locker = host_locker
+#                     res.save()
+#                     return JsonResponse(
+#                         {"success": True, "message": "Transfer successful"}, status=200
+#                     )
+#         return JsonResponse(
+#             {"fail": True, "message": "Transfer successful"}, status=201
+#         )
+
+#     return JsonResponse(
+#         {"success": False, "error": "Invalid request method"}, status=405
+#     )
 @csrf_exempt
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def transfer_resource(request):
     if request.method == "POST":
-
         body = json.loads(request.body)
         connection_name = body["connection_name"]
         host_locker_name = body["host_locker_name"]
@@ -2281,26 +2365,8 @@ def transfer_resource(request):
         host_user_username = body["host_user_username"]
         guest_user_username = body["guest_user_username"]
 
-        print(
-            connection_name,
-            host_locker_name,
-            guest_locker_name,
-            host_user_username,
-            guest_user_username,
-        )
-
-        if not all(
-            [
-                connection_name,
-                host_locker_name,
-                guest_locker_name,
-                host_user_username,
-                guest_user_username,
-            ]
-        ):
-            return JsonResponse(
-                {"success": False, "error": "All fields are required"}, status=400
-            )
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
+            return JsonResponse({"success": False, "error": "All fields are required"}, status=400)
 
         try:
             host_user = CustomUser.objects.get(username=host_user_username)
@@ -2315,43 +2381,39 @@ def transfer_resource(request):
                 guest_user=guest_user,
             )
         except Connection.DoesNotExist:
-            return JsonResponse(
-                {"success": False, "error": "Requested Connection type not found"},
-                status=404,
-            )
+            return JsonResponse({"success": False, "error": "Requested Connection type not found"}, status=404)
         except Locker.DoesNotExist as e:
-            return JsonResponse(
-                {"success": False, "error": f"Locker not found: {e}"}, status=400
-            )
+            return JsonResponse({"success": False, "error": f"Locker not found: {e}"}, status=400)
         except CustomUser.DoesNotExist as e:
-            return JsonResponse(
-                {"success": False, "error": f"User not found: {e}"}, status=400
-            )
+            return JsonResponse({"success": False, "error": f"User not found: {e}"}, status=400)
 
+        transferred = False
         for key, value in connection.terms_value.items():
-            if ("; T" in value) or (";T" in value):
-                if "; T" in value:
-                    doc_path = value.split("; T")[0].strip()
-                else:
-                    doc_path = value.split(";T")[0]
-                    print(doc_path)
+            if (";T" in value):
+                doc_path = value.split(";T")[0].strip()
 
-                if doc_path in connection.resources["Transfer"]:
-                    res = Resource.objects.get(document_name=doc_path)
-                    print(res)
-                    res.owner = host_user
-                    res.locker = host_locker
-                    res.save()
-                    return JsonResponse(
-                        {"success": True, "message": "Transfer successful"}, status=200
-                    )
-        return JsonResponse(
-            {"fail": True, "message": "Transfer successful"}, status=201
-        )
+                if doc_path in connection.resources.get("Transfer", []):
+                    try:
+                        resource = Resource.objects.get(document_name=doc_path, locker=host_locker, owner=host_user)
+                        resource.owner = guest_user
+                        resource.locker = guest_locker
+                        resource.save()
 
-    return JsonResponse(
-        {"success": False, "error": "Invalid request method"}, status=405
-    )
+                        # Optionally, remove the resource from host's resources
+                        connection.resources["Transfer"].remove(doc_path)
+                        connection.save()
+
+                        transferred = True
+                    except Resource.DoesNotExist:
+                        return JsonResponse({"success": False, "error": f"Resource not found: {doc_path}"}, status=400)
+
+        if transferred:
+            return JsonResponse({"success": True, "message": "Transfer successful"}, status=200)
+        else:
+            return JsonResponse({"fail": True, "message": "No resources were transferred"}, status=201)
+
+    return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
+
 
 
 @csrf_exempt
@@ -3504,3 +3566,96 @@ def update_Connection(request:HttpRequest):
     return JsonResponse({
         'message': f'The connection with ID = {connection_id} has been updated successfully.'
     })
+
+@csrf_exempt
+@api_view(["GET"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_terms_for_user(request):
+    if request.method == "GET":
+        username = request.GET.get("username")  # This should be the host user's username 
+        locker_name = request.GET.get("locker_name")
+        connection_name = request.GET.get("connection_name")
+        try:
+            # Get the host user (owner of the locker)
+            try:
+                host_user = CustomUser.objects.get(username=username)
+                print(f"Host user found: {host_user}")
+            except CustomUser.DoesNotExist:
+                return JsonResponse(
+                    {"success": False, "error": "User not found"}, status=404
+                )
+
+            # Get locker
+            locker = Locker.objects.filter(name=locker_name, user_id=host_user.user_id).first()
+            if not locker:
+                print(f"Locker not found for user: {username}, locker name: {locker_name}")
+                return JsonResponse({"success": False, "error": "Locker not found"}, status=404)
+            print(f"Locker found: {locker}")
+
+            
+            connection = Connection.objects.filter(
+                connection_name=connection_name, host_user=host_user, guest_user=request.user
+            ).first()
+
+            if not connection:
+                print(f"Connection not found for host_user: {username}, guest_user: {request.user.username}, connection_name: {connection_name}")
+                return JsonResponse(
+                    {"success": False, "error": "Connection not found"}, status=404
+                )
+            print(f"Connection found: {connection}")
+
+            # Get connection type and associated terms
+            connection_type = connection.connection_type
+            terms = ConnectionTerms.objects.filter(conn_type=connection_type)
+
+            if not terms.exists():
+                return JsonResponse(
+                    {"success": False, "message": "No terms found for this user"},
+                    status=404,
+                )
+
+            serializer = ConnectionTermsSerializer(terms, many=True)
+
+            # Prepare response data
+            filtered_data = {}
+            filtered_data["connectionName"] = connection.connection_name
+            filtered_data["connectionDescription"] = connection.connection_description
+            filtered_data["lockerName"] = locker_name
+
+            obligations = []
+            perm = {"canShareMoreData": False, "canDownloadData": False}
+
+            terms_value = connection.terms_value
+
+            for term in serializer.data:
+                term_value = terms_value.get(term["data_element_name"], None)
+                term_data = {
+                    "labelName": term["data_element_name"],
+                    "typeOfAction": term["data_type"],
+                    "typeOfSharing": term["sharing_type"],
+                    "labelDescription": term["description"],
+                    "hostPermissions": term["host_permissions"],
+                    "value": term_value,  # Include the user-provided value
+                }
+
+                if term["modality"] == "obligatory":
+                    obligations.append(term_data)
+                else:
+                    if term["description"] == "They can share more data.":
+                        perm["canShareMoreData"] = True
+                    if term["description"] == "They can download data.":
+                        perm["canDownloadData"] = True
+
+            filtered_data["obligations"] = obligations
+            filtered_data["permissions"] = perm
+
+            return JsonResponse({"success": True, "terms": filtered_data}, status=200)
+
+        except Exception as e:
+            print(f"Exception occurred: {e}")
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+    return JsonResponse(
+        {"success": False, "error": "Invalid request method"}, status=405
+    )

@@ -1252,22 +1252,22 @@ def revoke_consent(request):
 @permission_classes([IsAuthenticated])
 def get_connection_by_user_by_locker(request):
     """
-    Retrieves all the connections of the logged-in user and the associated locker.
+    Retrieves the number of unique users in the incoming connections of the specified locker.
 
     Parameters:
         - request: HttpRequest object containing metadata about the request.
 
     Query Parameters:
-        - locker_name : The name of the locker of the currently logged-in user whose incoming and
-                    outgoing connections have to be fetched / The name of the locker that is owned by some other
-                    user that the logged-in user is currently viewing.
-        - username : The username of the user whose locker the current logged-in user is currently viewing.
+        - locker_name : The name of the locker of the currently logged-in user whose incoming 
+                        connections have to be fetched.
+        - username : The username of the user whose locker the current logged-in user is currently viewing (optional).
 
     Returns:
-        - JsonResponse: A JSON object containing a list of lockers or an error message.
+        - JsonResponse: A JSON object containing the number of unique users in the incoming connections 
+                        or an error message.
 
     Response Codes:
-        - 200: Successful retrieval of connections.
+        - 200: Successful retrieval of the count.
         - 401: User is not authenticated.
         - 404: Specified locker not found.
         - 405: Request method not allowed (if not GET).
@@ -1277,77 +1277,38 @@ def get_connection_by_user_by_locker(request):
             locker_name = request.GET.get("locker_name")
             username = request.GET.get("username")
 
-            if request.user.is_authenticated:
-                user = request.user
-            else:
+            if not request.user.is_authenticated:
                 return JsonResponse({"error": "User not authenticated"}, status=401)
 
-            if not username:
-                locker = Locker.objects.filter(user=user, name=locker_name).first()
-
-                # If the current user does not have the given locker with "locker_name"
-                if not locker:
-                    return JsonResponse(
-                        {
-                            "success": False,
-                            "message": "No such locker found for this user",
-                        },
-                        status=404,
-                    )
-
-                # Fetch incoming connections
-                incoming_connections = Connection.objects.filter(
-                    host_user=user, host_locker=locker
-                )
-                incoming_serializer = ConnectionSerializer(
-                    incoming_connections, many=True
-                )
-
-                count: int = 0
-
-                for connection in incoming_connections:
-                    count += 1
-
-                # Fetch outgoing connections
-                outgoing_connections = Connection.objects.filter(
-                    guest_user=user, guest_locker=locker
-                )
-                outgoing_serializer = ConnectionSerializer(
-                    outgoing_connections, many=True
-                )
-
-                connections = {
-                    "incoming_connections": incoming_serializer.data,
-                    "outgoing_connections": outgoing_serializer.data,
-                }
-
-                return JsonResponse(
-                    {"success": True, "connections": connections, "total_number_of_users_in_incoming_connections": count}, status=200
-                )
-
             if username:
-                other_user = CustomUser.objects.get(username=username)
-                other_locker = Locker.objects.filter(
-                    user=other_user, name=locker_name
-                ).first()
+                user = CustomUser.objects.get(username=username)
+            else:
+                user = request.user
 
-                # Fetch only the outgoing connections
-                outgoing_connections = Connection.objects.filter(
-                    host_user=other_user, host_locker=other_locker, guest_user=user
-                )
-                outgoing_serializer = ConnectionSerializer(
-                    outgoing_connections, many=True
-                )
-                connections = outgoing_serializer.data
+            locker = Locker.objects.filter(user=user, name=locker_name).first()
+
+            if not locker:
                 return JsonResponse(
-                    {"success": True, "connections": connections}, status=200
+                    {"success": False, "message": "No such locker found for this user"},
+                    status=404,
                 )
+
+            # Count the number of unique users in incoming connections
+            guest_users_count = Connection.objects.filter(
+                host_user=user, host_locker=locker
+            ).values('guest_user').distinct().count()
+
+            return JsonResponse(
+                {"success": True, "users_in_incoming_connections": guest_users_count}, 
+                status=200
+            )
 
         except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
-    return JsonResponse(
-        {"success": False, "error": "Invalid request method"}, status=405
-    )
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+    else:
+        return JsonResponse(
+            {"success": False, "error": "Invalid request method"}, status=405
+        )
 
 
 @csrf_exempt

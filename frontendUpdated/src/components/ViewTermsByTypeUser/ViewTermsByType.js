@@ -257,6 +257,7 @@
 //         </div>
 //     );
 // };
+
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
@@ -267,14 +268,14 @@ import Navbar from "../Navbar/Navbar";
 export const ViewTermsByType = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { curruser } = useContext(usercontext);
+    const { curruser, setUser } = useContext(usercontext);
     const [showResources, setShowResources] = useState(false);
     const [selectedLocker, setSelectedLocker] = useState(null);
     const [error, setError] = useState(null);
     const [res, setRes] = useState(null);
     const [resources, setResources] = useState([]);
-    const [termValues, setTermValues] = useState(() => JSON.parse(localStorage.getItem('termValues')) || {});
-    const [selectedResources, setSelectedResources] = useState(() => JSON.parse(localStorage.getItem('selectedResources')) || {});
+    const [termValues, setTermValues] = useState({});
+    const [selectedResources, setSelectedResources] = useState({});
     const [currentLabelName, setCurrentLabelName] = useState(null);
 
     const { connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, locker } = location.state || {};
@@ -301,6 +302,11 @@ export const ViewTermsByType = () => {
                 const data = await response.json();
                 if (data.success) {
                     setRes(data.terms);
+                    const initialValues = {};
+                    data.terms.obligations.forEach(obligation => {
+                        initialValues[obligation.labelName] = obligation.value || "";
+                    });
+                    setTermValues(initialValues);
                 } else {
                     setError(data.error || 'No terms found');
                 }
@@ -310,15 +316,13 @@ export const ViewTermsByType = () => {
         };
 
         fetchTerms();
-    }, [curruser, guestUserUsername, guestLockerName, connectionName, navigate]);
+    }, []);
 
     const handleInputChange = (labelName, value) => {
-        const updatedTermValues = {
-            ...termValues,
+        setTermValues(prev => ({
+            ...prev,
             [labelName]: value
-        };
-        setTermValues(updatedTermValues);
-        localStorage.setItem('termValues', JSON.stringify(updatedTermValues));
+        }));
     };
 
     const renderInputField = (obligation) => {
@@ -358,12 +362,10 @@ export const ViewTermsByType = () => {
     };
 
     const handleResourceSelection = (resource) => {
-        const updatedSelectedResources = {
-            ...selectedResources,
+        setSelectedResources(prev => ({
+            ...prev,
             [currentLabelName]: resource
-        };
-        setSelectedResources(updatedSelectedResources);
-        localStorage.setItem('selectedResources', JSON.stringify(updatedSelectedResources));
+        }));
         setShowResources(false);
     };
 
@@ -440,9 +442,6 @@ export const ViewTermsByType = () => {
             const data = await response.json();
             if (data.success) {
                 console.log('Terms successfully updated');
-                // Save the submitted data back to localStorage
-                localStorage.setItem('termValues', JSON.stringify(termValues));
-                localStorage.setItem('selectedResources', JSON.stringify(selectedResources));
                 navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
             } else {
                 setError(data.error || 'Failed to update terms');
@@ -520,6 +519,3 @@ export const ViewTermsByType = () => {
         </div>
     );
 };
-
-
-

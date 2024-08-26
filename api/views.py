@@ -1244,30 +1244,28 @@ def revoke_consent(request):
             {"success": False, "error": "An error occurred: {}".format(str(e))},
             status=400,
         )
-
-
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_connection_by_user_by_locker(request):
     """
-    Retrieves the number of unique users in the incoming connections of the specified locker.
+    Retrieves all the connections of the logged-in user and the associated locker.
 
     Parameters:
         - request: HttpRequest object containing metadata about the request.
 
     Query Parameters:
-        - locker_name : The name of the locker of the currently logged-in user whose incoming 
-                        connections have to be fetched.
-        - username : The username of the user whose locker the current logged-in user is currently viewing (optional).
+        - locker_name : The name of the locker of the currently logged-in user whose incoming and
+                    outgoing connections have to be fetched / The name of the locker that is owned by some other
+                    user that the logged-in user is currently viewing.
+        - username : The username of the user whose locker the current logged-in user is currently viewing.
 
     Returns:
-        - JsonResponse: A JSON object containing the number of unique users in the incoming connections 
-                        or an error message.
+        - JsonResponse: A JSON object containing a list of lockers or an error message.
 
     Response Codes:
-        - 200: Successful retrieval of the count.
+        - 200: Successful retrieval of connections.
         - 401: User is not authenticated.
         - 404: Specified locker not found.
         - 405: Request method not allowed (if not GET).
@@ -1280,6 +1278,7 @@ def get_connection_by_user_by_locker(request):
             if not request.user.is_authenticated:
                 return JsonResponse({"error": "User not authenticated"}, status=401)
 
+            # Determine the user and locker based on whether 'username' is provided
             if username:
                 user = CustomUser.objects.get(username=username)
             else:
@@ -1293,14 +1292,33 @@ def get_connection_by_user_by_locker(request):
                     status=404,
                 )
 
-            # Count the number of unique users in incoming connections
-            guest_users_count = Connection.objects.filter(
+            # Fetch incoming connections
+            incoming_connections = Connection.objects.filter(
                 host_user=user, host_locker=locker
-            ).values('guest_user').distinct().count()
+            )
+            incoming_serializer = ConnectionSerializer(incoming_connections, many=True)
+
+            # Count the number of unique guest users in incoming connections
+            guest_users_count = incoming_connections.values('guest_user').distinct().count()
+
+            # Fetch outgoing connections
+            outgoing_connections = Connection.objects.filter(
+                guest_user=request.user, guest_locker=locker
+            )
+            outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
+
+            connections = {
+                "incoming_connections": incoming_serializer.data,
+                "outgoing_connections": outgoing_serializer.data,
+            }
 
             return JsonResponse(
-                {"success": True, "users_in_incoming_connections": guest_users_count}, 
-                status=200
+                {
+                    "success": True,
+                    "connections": connections,
+                    "total_number_of_users_in_incoming_connections": guest_users_count,
+                },
+                status=200,
             )
 
         except Exception as e:
@@ -1309,7 +1327,6 @@ def get_connection_by_user_by_locker(request):
         return JsonResponse(
             {"success": False, "error": "Invalid request method"}, status=405
         )
-
 
 @csrf_exempt
 @api_view(["GET"])

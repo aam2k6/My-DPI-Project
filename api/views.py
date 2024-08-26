@@ -3461,3 +3461,29 @@ def share_resource(request):
         )
 
         # return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
+
+@csrf_exempt
+@api_view(["PUT"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def update_Connection(request:HttpRequest):
+    """
+    Expected JSON (raw JSON data/form data):
+    {
+        "connection_id": value,
+        "name": new name,
+        "description": new description
+    }
+    """
+    connection_id:int = request.data.get('connection_id')
+    connection:Connection = Connection.objects.filter(connection_id=connection_id).first()
+    if connection.DoesNotExist:
+        return JsonResponse({
+            'message': f'Connection with ID = {connection_id} does not exist.'
+        })
+    connection.connection_description = request.data.get('description')
+    connection.connection_name = request.data.get('name')
+    connection.save()
+    return JsonResponse({
+        'message': f'The connection with ID = {connection_id} has been updated successfully.'
+    })

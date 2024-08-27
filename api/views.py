@@ -3537,7 +3537,8 @@ def get_terms_for_user(request):
                 )
 
             # Get locker
-            locker = Locker.objects.filter(name=locker_name, user_id=host_user.user_id).first()
+            #CHANGED TO REQUEST.USER.USER_ID
+            locker = Locker.objects.filter(name=locker_name, user_id=request.user.user_id).first()
             if not locker:
                 print(f"Locker not found for user: {username}, locker name: {locker_name}")
                 return JsonResponse({"success": False, "error": "Locker not found"}, status=404)

@@ -4,6 +4,7 @@ import json
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
@@ -1244,6 +1245,10 @@ def revoke_consent(request):
             {"success": False, "error": "An error occurred: {}".format(str(e))},
             status=400,
         )
+
+from collections import defaultdict
+from collections import defaultdict
+
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])
@@ -1307,16 +1312,24 @@ def get_connection_by_user_by_locker(request):
             )
             outgoing_serializer = ConnectionSerializer(outgoing_connections, many=True)
 
+            # Count the number of unique users in each incoming connection type
+            connection_type_counts = defaultdict(int)
+            for connection in incoming_connections:
+                # Ensure the connection_type is converted to a string
+                connection_type_str = str(connection.connection_type)
+                connection_type_counts[connection_type_str] += 1
+
             connections = {
                 "incoming_connections": incoming_serializer.data,
                 "outgoing_connections": outgoing_serializer.data,
+                "total_number_of_users_in_incoming_connections": guest_users_count,
+                "connection_type_counts": dict(connection_type_counts),  # Add the counts here
             }
 
             return JsonResponse(
                 {
                     "success": True,
                     "connections": connections,
-                    "total_number_of_users_in_incoming_connections": guest_users_count,
                 },
                 status=200,
             )
@@ -1327,6 +1340,7 @@ def get_connection_by_user_by_locker(request):
         return JsonResponse(
             {"success": False, "error": "Invalid request method"}, status=405
         )
+
 
 @csrf_exempt
 @api_view(["GET"])
@@ -2267,97 +2281,13 @@ def get_terms_status(request):
     )
 
 
-# @csrf_exempt
-# @api_view(["POST"])
-# @authentication_classes([BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-# def transfer_resource(request):
-#     if request.method == "POST":
-
-#         body = json.loads(request.body)
-#         connection_name = body["connection_name"]
-#         host_locker_name = body["host_locker_name"]
-#         guest_locker_name = body["guest_locker_name"]
-#         host_user_username = body["host_user_username"]
-#         guest_user_username = body["guest_user_username"]
-
-#         print(
-#             connection_name,
-#             host_locker_name,
-#             guest_locker_name,
-#             host_user_username,
-#             guest_user_username,
-#         )
-
-#         if not all(
-#             [
-#                 connection_name,
-#                 host_locker_name,
-#                 guest_locker_name,
-#                 host_user_username,
-#                 guest_user_username,
-#             ]
-#         ):
-#             return JsonResponse(
-#                 {"success": False, "error": "All fields are required"}, status=400
-#             )
-
-#         try:
-#             host_user = CustomUser.objects.get(username=host_user_username)
-#             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
-#             guest_user = CustomUser.objects.get(username=guest_user_username)
-#             guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
-#             connection = Connection.objects.get(
-#                 connection_name=connection_name,
-#                 host_locker=host_locker,
-#                 host_user=host_user,
-#                 guest_locker=guest_locker,
-#                 guest_user=guest_user,
-#             )
-#         except Connection.DoesNotExist:
-#             return JsonResponse(
-#                 {"success": False, "error": "Requested Connection type not found"},
-#                 status=404,
-#             )
-#         except Locker.DoesNotExist as e:
-#             return JsonResponse(
-#                 {"success": False, "error": f"Locker not found: {e}"}, status=400
-#             )
-#         except CustomUser.DoesNotExist as e:
-#             return JsonResponse(
-#                 {"success": False, "error": f"User not found: {e}"}, status=400
-#             )
-
-#         for key, value in connection.terms_value.items():
-#             if ("; T" in value) or (";T" in value):
-#                 if "; T" in value:
-#                     doc_path = value.split("; T")[0].strip()
-#                 else:
-#                     doc_path = value.split(";T")[0]
-#                     print(doc_path)
-
-#                 if doc_path in connection.resources["Transfer"]:
-#                     res = Resource.objects.get(document_name=doc_path)
-#                     print(res)
-#                     res.owner = host_user
-#                     res.locker = host_locker
-#                     res.save()
-#                     return JsonResponse(
-#                         {"success": True, "message": "Transfer successful"}, status=200
-#                     )
-#         return JsonResponse(
-#             {"fail": True, "message": "Transfer successful"}, status=201
-#         )
-
-#     return JsonResponse(
-#         {"success": False, "error": "Invalid request method"}, status=405
-#     )
 @csrf_exempt
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def transfer_resource(request):
     if request.method == "POST":
+
         body = json.loads(request.body)
         connection_name = body["connection_name"]
         host_locker_name = body["host_locker_name"]
@@ -2365,8 +2295,26 @@ def transfer_resource(request):
         host_user_username = body["host_user_username"]
         guest_user_username = body["guest_user_username"]
 
-        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
-            return JsonResponse({"success": False, "error": "All fields are required"}, status=400)
+        print(
+            connection_name,
+            host_locker_name,
+            guest_locker_name,
+            host_user_username,
+            guest_user_username,
+        )
+
+        if not all(
+            [
+                connection_name,
+                host_locker_name,
+                guest_locker_name,
+                host_user_username,
+                guest_user_username,
+            ]
+        ):
+            return JsonResponse(
+                {"success": False, "error": "All fields are required"}, status=400
+            )
 
         try:
             host_user = CustomUser.objects.get(username=host_user_username)
@@ -2381,40 +2329,43 @@ def transfer_resource(request):
                 guest_user=guest_user,
             )
         except Connection.DoesNotExist:
-            return JsonResponse({"success": False, "error": "Requested Connection type not found"}, status=404)
+            return JsonResponse(
+                {"success": False, "error": "Requested Connection type not found"},
+                status=404,
+            )
         except Locker.DoesNotExist as e:
-            return JsonResponse({"success": False, "error": f"Locker not found: {e}"}, status=400)
+            return JsonResponse(
+                {"success": False, "error": f"Locker not found: {e}"}, status=400
+            )
         except CustomUser.DoesNotExist as e:
-            return JsonResponse({"success": False, "error": f"User not found: {e}"}, status=400)
+            return JsonResponse(
+                {"success": False, "error": f"User not found: {e}"}, status=400
+            )
 
-        transferred = False
         for key, value in connection.terms_value.items():
-            if (";T" in value):
-                doc_path = value.split(";T")[0].strip()
+            if ("; T" in value) or (";T" in value):
+                if "; T" in value:
+                    doc_path = value.split("; T")[0].strip()
+                else:
+                    doc_path = value.split(";T")[0]
+                    print(doc_path)
 
-                if doc_path in connection.resources.get("Transfer", []):
-                    try:
-                        resource = Resource.objects.get(document_name=doc_path, locker=host_locker, owner=host_user)
-                        resource.owner = guest_user
-                        resource.locker = guest_locker
-                        resource.save()
+                if doc_path in connection.resources["Transfer"]:
+                    res = Resource.objects.get(document_name=doc_path)
+                    print(res)
+                    res.owner = host_user
+                    res.locker = host_locker
+                    res.save()
+                    return JsonResponse(
+                        {"success": True, "message": "Transfer successful"}, status=200
+                    )
+        return JsonResponse(
+            {"fail": True, "message": "Transfer successful"}, status=201
+        )
 
-                        # Optionally, remove the resource from host's resources
-                        connection.resources["Transfer"].remove(doc_path)
-                        connection.save()
-
-                        transferred = True
-                    except Resource.DoesNotExist:
-                        return JsonResponse({"success": False, "error": f"Resource not found: {doc_path}"}, status=400)
-
-        if transferred:
-            return JsonResponse({"success": True, "message": "Transfer successful"}, status=200)
-        else:
-            return JsonResponse({"fail": True, "message": "No resources were transferred"}, status=201)
-
-    return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
-
-
+    return JsonResponse(
+        {"success": False, "error": "Invalid request method"}, status=405
+    )
 
 @csrf_exempt
 @api_view(["GET"])
@@ -3462,7 +3413,6 @@ def delete_Update_Resource(request: HttpRequest):
 #             'message': f'Resource with ID = {resource_id} does not exist.'
 #         })
 
-
 @csrf_exempt
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
@@ -3512,11 +3462,11 @@ def share_resource(request):
         ) as e:
             return JsonResponse({"success": False, "error": str(e)}, status=404)
 
-        # Check terms_value for the "; S" indicator and create Vnode if conditions are met
+        # Check terms_value for the ";T" indicator and create Vnode if conditions are met
         if resource.i_node_pointer in connection.resources.get("Share", []):
             for key, value in connection.terms_value.items():
-                if "; S" in value:
-                    doc_path = value.split("; S")[0].strip()
+                if ";T" in value:
+                    doc_path = value.split(";T")[0].strip()
                     if doc_path == resource.i_node_pointer:
                         # Create Vnode only if the resource is intended for sharing
                         Vnode.objects.create(
@@ -3539,7 +3489,9 @@ def share_resource(request):
             {"success": False, "error": "Resource not eligible for sharing"}, status=400
         )
 
-        # return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
+        return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
+
+
 
 @csrf_exempt
 @api_view(["PUT"])

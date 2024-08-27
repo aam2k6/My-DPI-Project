@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from collections import defaultdict
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
@@ -1245,9 +1246,6 @@ def revoke_consent(request):
             {"success": False, "error": "An error occurred: {}".format(str(e))},
             status=400,
         )
-
-from collections import defaultdict
-from collections import defaultdict
 
 @csrf_exempt
 @api_view(["GET"])

@@ -683,7 +683,6 @@ import './page3.css';
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { useLocation, useParams } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
 
@@ -697,8 +696,6 @@ export const ViewLocker = () => {
   const [resources, setResources] = useState([]);
   const [error, setError] = useState(null);
   const [connections, setConnections] = useState({ incoming_connections: [], outgoing_connections: [] });
-  const [otherConnections, setOtherConnections] = useState([]);
-  const [trackerData, setTrackerData] = useState({});
   const [otherConnections, setOtherConnections] = useState([]);
   const [trackerData, setTrackerData] = useState({});
 
@@ -773,58 +770,8 @@ export const ViewLocker = () => {
       setError('An error occurred while fetching connections');
     }
   };
-  const fetchConnections = async () => {
-    try {
-      const token = Cookies.get('authToken');
-      const params = new URLSearchParams({ locker_name: locker.name });
-      const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch connections');
-      }
-      const data = await response.json();
-      if (data.success) {
-        setConnections(data.connections);
-        fetchAllTrackerData(data.connections.outgoing_connections);
-      } else {
-        setError(data.message || 'Failed to fetch connections');
-      }
-    } catch (error) {
-      console.error('Error fetching connections:', error);
-      setError('An error occurred while fetching connections');
-    }
-  };
 
-  const fetchResources = async () => {
-    try {
-      const token = Cookies.get('authToken');
-      const params = new URLSearchParams({ locker_name: locker.name });
-      const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch resources');
-      }
-      const data = await response.json();
-      if (data.success) {
-        setResources(data.resources);
-      } else {
-        setError(data.message || 'Failed to fetch resources');
-      }
-    } catch (error) {
-      console.error('Error fetching resources:', error);
-      setError('An error occurred while fetching resources');
-    }
-  };
+
   const fetchResources = async () => {
     try {
       const token = Cookies.get('authToken');
@@ -910,21 +857,6 @@ export const ViewLocker = () => {
     }
   };
 
-  const calculateRatio = (tracker) => {
-    const totalObligations = tracker.count_T + tracker.count_F;
-    return totalObligations > 0 ? `${tracker.filled}/${totalObligations}` : '0/0';
-  };
-
-  const getStatusColor = (tracker) => {
-    const totalObligations = tracker.count_T + tracker.count_F;
-    if (tracker.filled === totalObligations) {
-      return 'green';
-    } else if (tracker.filled === 0) {
-      return 'red';
-    } else {
-      return 'orange';
-    }
-  };
 
   const calculateRatio = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F;
@@ -1041,8 +973,6 @@ export const ViewLocker = () => {
                   const tracker = trackerData[connection.connection_id];
                   const color = tracker ? getStatusColor(tracker) : 'gray';
                   const ratio = tracker ? calculateRatio(tracker) : 'Loading...';
-                  const color = tracker ? getStatusColor(tracker) : 'gray';
-                  const ratio = tracker ? calculateRatio(tracker) : 'Loading...';
 
                   return (
                     <div key={connection.connection_id} className='viewlockerconnections'>
@@ -1056,6 +986,7 @@ export const ViewLocker = () => {
                           style={{ backgroundColor: color }}
                         >
                           {ratio}
+                          </button >
                         <button 
                           onClick={() => handleTracker(connection)} 
                           style={{ backgroundColor: color }}

@@ -3460,36 +3460,36 @@ def share_resource(request):
         ) as e:
             return JsonResponse({"success": False, "error": str(e)}, status=404)
 
-        # Check terms_value for the ";T" indicator and create Vnode if conditions are met
-        if resource.i_node_pointer in connection.resources.get("Share", []):
-            for key, value in connection.terms_value.items():
-                if ";T" in value:
+        # logic for checking if the resource is eligible for sharing
+        for key, value in connection.terms_value.items():
+            if ("; T" in value) or (";T" in value):
+                if "; T" in value:
+                    doc_path = value.split("; T")[0].strip()
+                else:
                     doc_path = value.split(";T")[0].strip()
-                    if doc_path == resource.i_node_pointer:
-                        # Create Vnode only if the resource is intended for sharing
-                        Vnode.objects.create(
-                            resource=resource,
-                            host_locker=host_locker,
-                            guest_locker=guest_locker,
-                            connection=connection,
-                            operator_constraints={"view_only": True},
-                        )
-                        return JsonResponse(
-                            {
-                                "success": True,
-                                "message": "Resource shared successfully",
-                            },
-                            status=200,
-                        )
 
-        # Resource is not eligible for sharing or does not match the criteria
+                if doc_path == resource.i_node_pointer and resource.i_node_pointer in connection.resources.get("Share", []):
+                    # Create Vnode if eligible for sharing
+                    Vnode.objects.create(
+                        resource=resource,
+                        host_locker=host_locker,
+                        guest_locker=guest_locker,
+                        connection=connection,
+                        operator_constraints={"view_only": True},
+                    )
+                    return JsonResponse(
+                        {"success": True, "message": "Resource shared successfully"},
+                        status=200,
+                    )
+
+        # Resource not eligible for sharing
         return JsonResponse(
             {"success": False, "error": "Resource not eligible for sharing"}, status=400
         )
 
-        return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
-
-
+    return JsonResponse(
+        {"success": False, "error": "Invalid request method"}, status=405
+    )
 
 @csrf_exempt
 @api_view(["PUT"])

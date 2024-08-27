@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import { usercontext } from "../../usercontext";
 
-export default function Navbar({ content }) {
+export default function Navbar({ content, lockerAdmin, lockerObj }) {
   // Helper function to capitalize the first letter of a string
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -35,8 +35,11 @@ export default function Navbar({ content }) {
     navigate("/");
   };
 
+  const handleSettings = () => {
+    navigate("/settings-page");
+  }
   const handleConnection = () => {
-    navigate("/admin");
+    navigate("/admin", { state:  lockerObj  });
   };
 
   const toggleDropdown = () => {
@@ -56,13 +59,15 @@ export default function Navbar({ content }) {
       <div className="wrap">{content}</div>
 
       <div className="navbarLinks">
-      <ul className="navbarFirstLink">
+        
+      {lockerAdmin &&  (<ul className="navbarFirstLink">
           <li>
             <a href="#" onClick={handleConnection}>
-              Connection Type
+              Locker Admin
             </a>
           </li>
-        </ul>
+        </ul>)}
+     
 
         <ul className="navbarFirstLink">
           <li>
@@ -91,8 +96,9 @@ export default function Navbar({ content }) {
                 onClick={toggleDropdown}
                 className="dropdownImage"
               />
-              <div className="username">
+              <div className="username" onClick={toggleDropdown}>
                 {capitalizeFirstLetter(curruser.username)}
+                
               </div>
 
             {isOpen && (
@@ -119,7 +125,7 @@ export default function Navbar({ content }) {
                   </>
                 )}
 
-                {/* <button onClick={handleConnection}>Settings</button> */}
+                <button onClick={handleSettings}>Settings</button>
                 <button onClick={handleLogout}>Logout</button>
               </div>
             )}

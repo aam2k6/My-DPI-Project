@@ -16,9 +16,11 @@ export const CreateConnectionType = () => {
     const [error, setError] = useState(null);
     const [selectedLocker, setSelectedLocker] = useState(null);
     const [connectionTypes, setConnectionTypes] = useState([]); // Initialize as empty array
-    const [selectedConnectionType, setSelectedConnectionType] = useState(null);
+    // const [selectedConnectionType, setSelectedConnectionType] = useState(null);
     const [parentUser, setParentUser] = useState(location.state ? location.state.hostuser : null);
     const [locker, setLocker] = useState(location.state ? location.state.hostlocker : null);
+    const [selectedConnectionType, setSelectedConnectionType] = useState(location.state ? location.state.selectedConnectionType : null);
+
 
     useEffect(() => {
         if (!curruser) {
@@ -184,7 +186,7 @@ export const CreateConnectionType = () => {
 };
 
     return (
-
+       
         <div className='create-connection-type-page'>
             <nav className="navbar">
                 <div className="wrap">
@@ -236,7 +238,7 @@ export const CreateConnectionType = () => {
                 <span className='createconnectionmylock'><pre>Select My Locker</pre></span>
                 <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
                     {lockers && lockers.map(locker => (
-                        <option key={locker.id} value={locker.name}>{locker.name}</option>
+                        <option key={locker.locker_id} value={locker.name}>{locker.name}</option>
                     ))}
                 </select>
             </div>

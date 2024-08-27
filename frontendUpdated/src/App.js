@@ -27,6 +27,7 @@ import { Guesttermsreview } from "./components/GuestTermsReview/Guesttermsreview
 import ManageUsers from "./components/ManageUsers/ManageUsers";
 import FreezeLockerConnection from "./components/FreezeLockerConnection/FreezeLockerConnection";
 import CreateGlobalConnectionType from "./components/CreateGlobalConnectionType/CreateGlobalConnectionType";
+import SettingsPage from "./components/Settings/SettingsPage";
 
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 
@@ -233,6 +234,15 @@ function App() {
                   <FreezeLockerConnection />
                 </ProtectedRoute>
               }
+            />
+
+            <Route
+            path = "/settings-page"
+            element = {
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
             />
 
             <Route path="*" element={<h1>Page Not Found</h1>} />

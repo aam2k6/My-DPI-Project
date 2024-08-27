@@ -22,7 +22,10 @@
   font-weight: 500; /* Slightly bolder font weight */
   margin-bottom: 0.5rem; /* Added space below the title */
 }
-
+.page8connections label {
+  font-size: smaller;
+  margin-top: 1rem;
+}
 .page8connections p {
   margin: 0;
   font-size: 1rem;

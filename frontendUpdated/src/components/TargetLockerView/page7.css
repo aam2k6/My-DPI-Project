@@ -152,3 +152,16 @@
   font-size: 0.75rem;
   font-weight: 500;
 }
+
+.clickable-tag {
+
+  text-decoration: underline;
+  color: blue;
+  font-size: 1.25rem;
+  flex: 1;
+  margin-left: 1 rem;
+}
+
+.clickable-tag:hover {
+  color: #0056b3;
+}

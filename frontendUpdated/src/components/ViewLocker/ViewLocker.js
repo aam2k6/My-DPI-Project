@@ -700,6 +700,14 @@ export const ViewLocker = () => {
     }
   }, [locker]);
 
+  useEffect(() => {
+    if (locker) {
+      fetchResources();
+      fetchConnections();
+      fetchOtherConnections();
+    }
+  }, [locker]);
+
   const fetchOtherConnections = async () => {
     try {
       const token = Cookies.get("authToken");

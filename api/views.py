@@ -2436,8 +2436,6 @@ def transfer_resource(request):
         
         # If no valid document found for transfer
         return JsonResponse({'success': False, 'message': 'No valid document found for transfer'}, status=404)
-
-
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])
@@ -3611,6 +3609,8 @@ def get_terms_for_user(request):
                 )
 
             # Get locker
+            #CHANGED TO REQUEST.USER.USER_ID
+            locker = Locker.objects.filter(name=locker_name, user_id=request.user.user_id).first()
             #CHANGED TO REQUEST.USER.USER_ID
             locker = Locker.objects.filter(name=locker_name, user_id=request.user.user_id).first()
             if not locker:

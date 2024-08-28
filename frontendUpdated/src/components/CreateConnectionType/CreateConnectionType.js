@@ -3,7 +3,6 @@ import "./CreateConnectionType.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
-import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import Navbar from '../Navbar/Navbar';
 
 export const CreateConnectionType = () => {
@@ -94,28 +93,6 @@ export const CreateConnectionType = () => {
         setSelectedConnectionType(connectionType);
     };
 
-    const handleDPIDirectory = () => {
-        navigate('/dpi-directory');
-    };
-
-    const handleHomeClick = () => {
-        navigate('/home');
-    };
-
-    const handleAdmin = () => {
-        navigate('/admin');
-    };
-
-    const handleLogout = () => {
-        Cookies.remove('authToken');
-        localStorage.removeItem('curruser');
-        setUser(null);
-        navigate('/');
-    };
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
 
    const handleNextClick = async (event) => {
     event.preventDefault();
@@ -138,7 +115,7 @@ export const CreateConnectionType = () => {
 
     const formData = new FormData();
     formData.append('connection_type_name', selectedConnectionType.connection_type_name);
-    formData.append('connection_name', `${locker.name}:${selectedLocker.name}`);
+    formData.append('connection_name', `${locker.name}:${selectedLocker.name}-${selectedConnectionType.connection_type_name}`);
     formData.append('connection_description', selectedConnectionType.connection_description);
     formData.append('host_locker_name', locker.name);
     formData.append('guest_locker_name', selectedLocker.name);
@@ -160,9 +137,9 @@ export const CreateConnectionType = () => {
             // console.error(HTTP error! Status: ${response.status});
             // throw new Error(HTTP error! Status: ${response.status});
         }
-
+        
         const data = await response.json();
-        const connectionname=`${locker.name}:${selectedLocker.name}`;
+        const connectionname=`${locker.name}:${selectedLocker.name}-${selectedConnectionType.connection_type_name}`;
         console.log('Response data:', data);
         if (data.success) {
             console.log('Navigation to show connection terms');
@@ -185,49 +162,22 @@ export const CreateConnectionType = () => {
     }
 };
 
+console.log(connectionTypes);
+const content = (
+    <>
+     <select className="navbarBrand" name="connectionType" onChange={handleConnectionTypeChange} value={selectedConnectionType ? selectedConnectionType.connection_type_name : ''}>
+    <option value="" disabled>Select Connection Type</option>
+    {connectionTypes && connectionTypes.map(type => (
+        <option key={type.connection_type_id} value={type.connection_type_name}>{type.connection_type_name}</option>
+    ))}
+</select>
+    </>
+   
+)
     return (
-       
-        <div className='create-connection-type-page'>
-            <nav className="navbar">
-                <div className="wrap">
-                    <select className="navbarBrand" name="connectionType" onChange={handleConnectionTypeChange} value={selectedConnectionType ? selectedConnectionType.connection_type_name : ''}>
-                        <option value="" disabled>Select Connection Type</option>
-                        {connectionTypes && connectionTypes.map(type => (
-                            <option key={type.connection_type_id} value={type.connection_type_name}>{type.connection_type_name}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="navbarLinks">
-                    <ul className="navbarFirstLink">
-                        <li>
-                            <a href="#" onClick={handleDPIDirectory}>DPI Directory</a>
-                        </li>
-                    </ul>
-                    <ul className="navbarSecondLink">
-                        <li>
-                            <a href="#" onClick={handleHomeClick}>Home</a>
-                            
-                        </li>
-                        <li>
-                            <a href="#" onClick={handleHomeClick}></a>
-                            
-                        </li>
-                    </ul>
-                    <ul className="navbarThirdLink">
-                        <li>
-                            <img src={userImage} alt="User Icon" onClick={toggleDropdown} className="dropdownImage" />
-                            {isOpen && (
-                                <div className="dropdownContent">
-                                    <div className="currusername">{curruser.username}</div>
-                                    <div className="curruserdesc">{curruser.description}</div>
-                                    <button onClick={handleAdmin}>Settings</button>
-                                    <button onClick={handleLogout}>Logout</button>
-                                </div>
-                            )}
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+        <>
+        <Navbar content = {content} />
+        
             <div className="page12typeofconn">
                 {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} (Connection) ({curruser.username }&lt;&gt; {parentUser.username})</div>}
             </div>
@@ -248,6 +198,6 @@ export const CreateConnectionType = () => {
                     <button onClick={handleNextClick} className="next-btn">Next</button>
                 </div>
             )}
-        </div>
+        </>
     );
 };

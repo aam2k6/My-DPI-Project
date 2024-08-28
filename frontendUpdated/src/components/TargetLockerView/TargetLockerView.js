@@ -236,7 +236,7 @@ export const TargetLockerView = () => {
         </div>
         <div className="page7containerB">
           <p>
-            My connections with {locker?.name} locker of {parentUser?.username}:
+          My connections:{locker?.name}::{parentUser?.username}
           </p>
           {outgoingConnections.length > 0 ? (
             outgoingConnections.map((connection, index) => (

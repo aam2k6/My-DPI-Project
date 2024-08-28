@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-from collections import defaultdict
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
@@ -1247,6 +1246,9 @@ def revoke_consent(request):
             status=400,
         )
 
+from collections import defaultdict
+from collections import defaultdict
+
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])
@@ -2179,24 +2181,117 @@ def update_connection_terms(request):
     )
 
 
+# @csrf_exempt
+# @api_view(["GET"])
+# @authentication_classes([BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# def get_terms_status(request):
+#     """
+#     Request Body:
+#     {
+#         "connection_name": "Connection No. 1",
+#         "host_locker_name": "Admissions",
+#         "guest_locker_name": "Education",
+#         "host_user_username": "iiitb",
+#         "guest_user_username": "rohith",
+#         "terms_value": {
+#             "Application Number": "; F",
+#             "Another Field": "documents/rohith_transcripts.pdf; F"
+#         }
+#     }
+#     """
+#     if request.method == "GET":
+#         connection_name = request.GET.get("connection_name")
+#         host_locker_name = request.GET.get("host_locker_name")
+#         guest_locker_name = request.GET.get("guest_locker_name")
+#         host_user_username = request.GET.get("host_user_username")
+#         guest_user_username = request.GET.get("guest_user_username")
+
+#         if not all(
+#             [
+#                 connection_name,
+#                 host_locker_name,
+#                 guest_locker_name,
+#                 host_user_username,
+#                 guest_user_username,
+#             ]
+#         ):
+#             return JsonResponse(
+#                 {"success": False, "error": "All fields are required"}, status=400
+#             )
+
+#         try:
+#             host_user = CustomUser.objects.get(username=host_user_username)
+#             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
+#             guest_user = CustomUser.objects.get(username=guest_user_username)
+#             guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
+#             connection = Connection.objects.get(
+#                 connection_name=connection_name,
+#                 host_locker=host_locker,
+#                 host_user=host_user,
+#                 guest_locker=guest_locker,
+#                 guest_user=guest_user,
+#             )
+#         except Connection.DoesNotExist:
+#             return JsonResponse(
+#                 {"success": False, "error": "Requested Connection type not found"},
+#                 status=404,
+#             )
+#         except Locker.DoesNotExist as e:
+#             return JsonResponse(
+#                 {"success": False, "error": f"Locker not found: {e}"}, status=400
+#             )
+#         except CustomUser.DoesNotExist as e:
+#             return JsonResponse(
+#                 {"success": False, "error": f"User not found: {e}"}, status=400
+#             )
+
+#         count_T = 0
+#         count_F = 0
+#         filled = 0
+#         empty = 0
+
+#         terms_value = connection.terms_value
+#         for key, value in terms_value.items():
+#             if value.endswith("; T"):
+#                 count_T += 1
+#             elif value.endswith("; F"):
+#                 count_F += 1
+
+#         for key, value in terms_value.items():
+#             stripped_value = value.rstrip("; F").rstrip("; T")
+#             if stripped_value:
+#                 filled += 1
+#             elif value == "; F":
+#                 empty += 1
+
+#         return JsonResponse(
+#             {
+#                 "success": True,
+#                 "count_T": count_T,
+#                 "count_F": count_F,
+#                 "empty": empty,
+#                 "filled": filled,
+#             },
+#             status=200,
+#         )
+
+#     return JsonResponse(
+#         {"success": False, "error": "Invalid request method"}, status=405
+#     )
+
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def get_terms_status(request):
     """
-    Request Body:
-    {
-        "connection_name": "Connection No. 1",
-        "host_locker_name": "Admissions",
-        "guest_locker_name": "Education",
-        "host_user_username": "iiitb",
-        "guest_user_username": "rohith",
-        "terms_value": {
-            "Application Number": "; F",
-            "Another Field": "documents/rohith_transcripts.pdf; F"
-        }
-    }
+    Request Parameters:
+    - connection_name
+    - host_locker_name
+    - guest_locker_name
+    - host_user_username
+    - guest_user_username
     """
     if request.method == "GET":
         connection_name = request.GET.get("connection_name")
@@ -2250,18 +2345,31 @@ def get_terms_status(request):
         empty = 0
 
         terms_value = connection.terms_value
-        for key, value in terms_value.items():
-            if value.endswith("; T"):
-                count_T += 1
-            elif value.endswith("; F"):
-                count_F += 1
 
-        for key, value in terms_value.items():
-            stripped_value = value.rstrip("; F").rstrip("; T")
-            if stripped_value:
-                filled += 1
-            elif value == "; F":
-                empty += 1
+        # Handle case when terms_value is empty
+        if terms_value:
+            for key, value in terms_value.items():
+                value = value.strip()
+                if value.endswith("; T") or value.endswith(";T"):
+                    count_T += 1
+                elif value.endswith("; F") or value.endswith(";F"):
+                    count_F += 1
+
+                stripped_value = value.rstrip("; T").rstrip(";T").rstrip("; F").rstrip(";F").strip()
+                if stripped_value:
+                    filled += 1
+                else:
+                    empty += 1
+
+            # Calculate the number of empty terms based on the total count
+            total_terms = count_T + count_F
+            if total_terms > 0:
+                empty = total_terms - filled
+        else:
+            # If terms_value is empty, assume all expected terms are empty
+            total_terms = count_T + count_F
+            empty = total_terms
+            filled = 0
 
         return JsonResponse(
             {
@@ -2277,93 +2385,58 @@ def get_terms_status(request):
     return JsonResponse(
         {"success": False, "error": "Invalid request method"}, status=405
     )
-
-
 @csrf_exempt
-@api_view(["POST"])
+@api_view(['POST'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def transfer_resource(request):
-    if request.method == "POST":
-
+    if request.method == 'POST':
         body = json.loads(request.body)
-        connection_name = body["connection_name"]
-        host_locker_name = body["host_locker_name"]
-        guest_locker_name = body["guest_locker_name"]
-        host_user_username = body["host_user_username"]
-        guest_user_username = body["guest_user_username"]
+        connection_name = body.get('connection_name')
+        host_locker_name = body.get('host_locker_name')
+        guest_locker_name = body.get('guest_locker_name')
+        host_user_username = body.get('host_user_username')
+        guest_user_username = body.get('guest_user_username')
+        
+        print(connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username)
 
-        print(
-            connection_name,
-            host_locker_name,
-            guest_locker_name,
-            host_user_username,
-            guest_user_username,
-        )
-
-        if not all(
-            [
-                connection_name,
-                host_locker_name,
-                guest_locker_name,
-                host_user_username,
-                guest_user_username,
-            ]
-        ):
-            return JsonResponse(
-                {"success": False, "error": "All fields are required"}, status=400
-            )
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
         try:
             host_user = CustomUser.objects.get(username=host_user_username)
             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
             guest_user = CustomUser.objects.get(username=guest_user_username)
             guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
-            connection = Connection.objects.get(
-                connection_name=connection_name,
-                host_locker=host_locker,
-                host_user=host_user,
-                guest_locker=guest_locker,
-                guest_user=guest_user,
-            )
+            connection = Connection.objects.get(connection_name=connection_name, host_locker=host_locker,
+                                                host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
         except Connection.DoesNotExist:
-            return JsonResponse(
-                {"success": False, "error": "Requested Connection type not found"},
-                status=404,
-            )
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
         except Locker.DoesNotExist as e:
-            return JsonResponse(
-                {"success": False, "error": f"Locker not found: {e}"}, status=400
-            )
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
         except CustomUser.DoesNotExist as e:
-            return JsonResponse(
-                {"success": False, "error": f"User not found: {e}"}, status=400
-            )
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
 
+        # Iterate over terms_value to find documents with "; T"
         for key, value in connection.terms_value.items():
-            if ("; T" in value) or (";T" in value):
-                if "; T" in value:
-                    doc_path = value.split("; T")[0].strip()
-                else:
-                    doc_path = value.split(";T")[0]
-                    print(doc_path)
+            if "; T" in value:
+                doc_path = value.split("; T")[0].strip()
+                print(f"Document path: {doc_path}")
 
-                if doc_path in connection.resources["Transfer"]:
-                    res = Resource.objects.get(document_name=doc_path)
-                    print(res)
-                    res.owner = host_user
-                    res.locker = host_locker
-                    res.save()
-                    return JsonResponse(
-                        {"success": True, "message": "Transfer successful"}, status=200
-                    )
-        return JsonResponse(
-            {"fail": True, "message": "Transfer successful"}, status=201
-        )
+                # Find the i_node_pointer from the resource list
+                try:
+                    resource = Resource.objects.get(i_node_pointer=doc_path)
+                    resource.owner = host_user
+                    resource.locker = host_locker
+                    resource.save()
+                    return JsonResponse({'success': True, 'message': 'Transfer successful'}, status=200)
+                except Resource.DoesNotExist:
+                    print(f"Resource with i_node_pointer {doc_path} does not exist.")
+                    continue
+        
+        # If no valid document found for transfer
+        return JsonResponse({'success': False, 'message': 'No valid document found for transfer'}, status=404)
 
-    return JsonResponse(
-        {"success": False, "error": "Invalid request method"}, status=405
-    )
 
 @csrf_exempt
 @api_view(["GET"])
@@ -3491,6 +3564,7 @@ def share_resource(request):
         {"success": False, "error": "Invalid request method"}, status=405
     )
 
+
 @csrf_exempt
 @api_view(["PUT"])
 @authentication_classes([BasicAuthentication])
@@ -3537,7 +3611,8 @@ def get_terms_for_user(request):
                 )
 
             # Get locker
-            locker = Locker.objects.filter(name=locker_name, user_id=host_user.user_id).first()
+            #CHANGED TO REQUEST.USER.USER_ID
+            locker = Locker.objects.filter(name=locker_name, user_id=request.user.user_id).first()
             if not locker:
                 print(f"Locker not found for user: {username}, locker name: {locker_name}")
                 return JsonResponse({"success": False, "error": "Locker not found"}, status=404)

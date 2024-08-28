@@ -120,7 +120,6 @@
 //     }
 //   }, [locker]);
 
-
 //   const fetchAllTrackerData = (outgoingConnections) => {
 //     outgoingConnections.forEach(connection => {
 //       fetchTrackerData(connection);
@@ -128,7 +127,6 @@
 //   };
 
 //   const fetchTrackerData = async (connection) => {
-
 
 //     console.log("inside fetch tracker data");
 //     try {
@@ -175,7 +173,6 @@
 //     navigate('/upload-resource', { state: { locker } });
 //   }
 
-
 //   const handleResourceClick = (filePath) => {
 //     const url = `http://localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
@@ -184,7 +181,6 @@
 //   const handleNewLockerClick = () => {
 //     navigate('/create-locker');
 //   };
-
 
 //   const handleTracker = (connection) => {
 //     // console.log(connection.host_locker?.name);
@@ -200,7 +196,6 @@
 //     });
 //   }
 
-
 //   const handleDocsClick = () => {
 //     console.log("Open Docs button clicked");
 //   };
@@ -214,13 +209,12 @@
 //   const handleConnectionClick = (connection) => {
 //     navigate('/show-guest-users', { state: { connection, locker } });
 
-
 //   }
 
 //   const content = (
 //     <><div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div>
 //     </>
-    
+
 //   );
 
 //   return (
@@ -315,8 +309,6 @@
 //               {/* {connections.outgoing_connections.length > 0 ? (
 //                 connections.outgoing_connections.map((connection, index) => (
 
-
-
 //               <div key={connection.connection_id} className='viewlockerconnections'>
 //                 <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>
 //                 <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
@@ -337,7 +329,6 @@
 //     </div>
 //   );
 // }
-
 
 // import React, { useContext, useEffect, useState } from 'react';
 // import './page3.css';
@@ -461,7 +452,6 @@
 //     }
 //   }, [locker]);
 
-
 //   const fetchAllTrackerData = (outgoingConnections) => {
 //     outgoingConnections.forEach(connection => {
 //       fetchTrackerData(connection);
@@ -469,7 +459,6 @@
 //   };
 
 //   const fetchTrackerData = async (connection) => {
-
 
 //     console.log("inside fetch tracker data");
 //     try {
@@ -516,7 +505,6 @@
 //     navigate('/upload-resource', { state: { locker } });
 //   }
 
-
 //   const handleResourceClick = (filePath) => {
 //     const url = `http://localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
@@ -525,7 +513,6 @@
 //   const handleNewLockerClick = () => {
 //     navigate('/create-locker');
 //   };
-
 
 //   const handleTracker = (connection) => {
 //     // console.log(connection.host_locker?.name);
@@ -541,7 +528,6 @@
 //     });
 //   }
 
-
 //   const handleDocsClick = () => {
 //     console.log("Open Docs button clicked");
 //   };
@@ -555,13 +541,12 @@
 //   const handleConnectionClick = (connection) => {
 //     navigate('/show-guest-users', { state: { connection, locker } });
 
-
 //   }
 
 //   const content = (
 //     <><div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div>
 //     </>
-    
+
 //   );
 
 //   return (
@@ -656,8 +641,6 @@
 //               {/* {connections.outgoing_connections.length > 0 ? (
 //                 connections.outgoing_connections.map((connection, index) => (
 
-
-
 //               <div key={connection.connection_id} className='viewlockerconnections'>
 //                 <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>
 //                 <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
@@ -678,6 +661,7 @@
 //     </div>
 //   );
 // }
+
 // import React, { useContext, useEffect, useState } from 'react';
 // import './page3.css';
 // import { useNavigate } from "react-router-dom";
@@ -1004,13 +988,13 @@
 
 
 
-import React, { useContext, useEffect, useState } from 'react';
-import './page3.css';
+import React, { useContext, useEffect, useState } from "react";
+import "./page3.css";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
-import { useLocation, useParams } from 'react-router-dom';
+import Cookies from "js-cookie";
+import { useLocation, useParams } from "react-router-dom";
 import { usercontext } from "../../usercontext";
-import Navbar from '../Navbar/Navbar';
+import Navbar from "../Navbar/Navbar";
 
 export const ViewLocker = () => {
   const location = useLocation();
@@ -1021,13 +1005,16 @@ export const ViewLocker = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resources, setResources] = useState([]);
   const [error, setError] = useState(null);
-  const [connections, setConnections] = useState({ incoming_connections: [], outgoing_connections: [] });
+  const [connections, setConnections] = useState({
+    incoming_connections: [],
+    outgoing_connections: [],
+  });
   const [otherConnections, setOtherConnections] = useState([]);
   const [trackerData, setTrackerData] = useState({});
 
   useEffect(() => {
     if (!curruser) {
-      navigate('/');
+      navigate("/");
       return;
     }
   }, [curruser, navigate]);
@@ -1050,15 +1037,18 @@ export const ViewLocker = () => {
 
   const fetchOtherConnections = async () => {
     try {
-      const token = Cookies.get('authToken');
+      const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
-      const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8000/connection_types/?${params}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       if (data.success) {
         setOtherConnections(data.connection_types);
@@ -1072,22 +1062,26 @@ export const ViewLocker = () => {
 
   const fetchConnections = async () => {
     try {
-      const token = Cookies.get('authToken');
+      const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
-      const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `http://localhost:8000/get-connections-user-locker/?${params}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch connections');
+        throw new Error("Failed to fetch connections");
       }
       const data = await response.json();
       if (data.success) {
         setConnections(data.connections);
         fetchAllTrackerData(data.connections.outgoing_connections);
+
         // Count incoming connections for each connection type
         const incomingConnectionCounts = {};
         data.connections.incoming_connections.forEach((connection) => {
@@ -1117,61 +1111,68 @@ export const ViewLocker = () => {
          };
 
 
+
   const fetchResources = async () => {
     try {
-      const token = Cookies.get('authToken');
+      const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
-      const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `http://localhost:8000/get-resources-user-locker/?${params}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch resources');
+        throw new Error("Failed to fetch resources");
       }
       const data = await response.json();
       if (data.success) {
         setResources(data.resources);
       } else {
-        setError(data.message || 'Failed to fetch resources');
+        setError(data.message || "Failed to fetch resources");
       }
     } catch (error) {
-      console.error('Error fetching resources:', error);
-      setError('An error occurred while fetching resources');
+      console.error("Error fetching resources:", error);
+      setError("An error occurred while fetching resources");
     }
   };
 
   const fetchAllTrackerData = (outgoingConnections) => {
-    outgoingConnections.forEach(connection => {
+    outgoingConnections.forEach((connection) => {
       fetchTrackerData(connection);
     });
   };
 
   const fetchTrackerData = async (connection) => {
     try {
-      const token = Cookies.get('authToken');
+      const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         connection_name: connection.connection_name,
         host_locker_name: connection.host_locker.name,
         guest_locker_name: connection.guest_locker.name,
         host_user_username: connection.host_user.username,
-        guest_user_username: connection.guest_user.username
+        guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(`http://localhost:8000/get-terms-status/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8000/get-terms-status/?${params}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch tracker data');
+        throw new Error("Failed to fetch tracker data");
       }
       const data = await response.json();
       if (data.success) {
-        setTrackerData(prevState => ({
+        setTrackerData((prevState) => ({
           ...prevState,
           [connection.connection_id]: {
             count_T: data.count_T,
@@ -1179,38 +1180,39 @@ export const ViewLocker = () => {
             filled: data.filled,
             empty: data.empty,
             filled: data.filled,
-            empty: data.empty
-          }
+            empty: data.empty,
+          },
         }));
       } else {
-        setError(data.message || 'Failed to fetch tracker data');
+        setError(data.message || "Failed to fetch tracker data");
       }
     } catch (error) {
-      console.error('Error fetching tracker data:', error);
-      setError('An error occurred while fetching tracker data');
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
     }
   };
 
   const getStatusColor = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F;
     if (tracker.filled === totalObligations) {
-      return 'green';
+      return "green";
     } else if (tracker.filled === 0) {
-      return 'red';
+      return "red";
     } else {
-      return 'orange';
+      return "orange";
     }
   };
 
-
   const calculateRatio = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F;
-    return totalObligations > 0 ? `${tracker.filled}/${totalObligations}` : '0/0';
+    return totalObligations > 0
+      ? `${tracker.filled}/${totalObligations}`
+      : "0/0";
   };
 
   const handleUploadResource = () => {
-    navigate('/upload-resource', { state: { locker } });
-  }
+    navigate("/upload-resource", { state: { locker } });
+  };
 
   const handleResourceClick = (filePath) => {
     const url = `http://localhost:8000/media/${filePath}`;
@@ -1218,21 +1220,21 @@ export const ViewLocker = () => {
   };
 
   const handleNewLockerClick = () => {
-    navigate('/create-locker');
+    navigate("/create-locker");
   };
 
   const handleTracker = (connection) => {
-    navigate('/view-terms-by-type', {
+    navigate("/view-terms-by-type", {
       state: {
         connectionName: connection.connection_name,
         hostLockerName: connection.host_locker?.name,
         guestLockerName: connection.guest_locker?.name,
         hostUserUsername: connection.host_user?.username,
         guestUserUsername: connection.guest_user?.username,
-        locker: locker
-      }
+        locker: locker,
+      },
     });
-  }
+  };
 
   const handleDocsClick = () => {
     console.log("Open Docs button clicked");
@@ -1240,49 +1242,66 @@ export const ViewLocker = () => {
 
   const handleEducationClick = () => {
     console.log("Open Education button clicked");
-    navigate('/view-locker');
+    navigate("/view-locker");
   };
 
   const handleConnectionClick = (connection) => {
-    navigate('/show-guest-users', { state: { connection, locker } });
-  }
-
-  
+    navigate("/show-guest-users", { state: { connection, locker } });
+  };
 
   const content = (
-    <><div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div></>
+    <>
+      <div className="navbarBrand">
+        {locker ? `Locker: ${locker.name}` : "Locker"}
+      </div>
+    </>
   );
 
   return (
     <div>
-      <Navbar content={content} lockerAdmin = {true} lockerObj = {locker}/>
+      <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
       <div className="container">
         <div className="locker-name">
-          <div className="loc"><span className='desc'>{locker ? ` ${locker.description}` : 'Description'}</span></div>
+          <div className="loc">
+            <span className="desc">
+              {locker ? ` ${locker.description}` : "Description"}
+            </span>
+          </div>
         </div>
         <div className="container-2 clearfix">
           <div className="a">
-            <div className="res"><h3>Resources</h3></div>
+            <div className="res">
+              <h3>Resources</h3>
+            </div>
             <div className="container-3 clearfix">
-              <div className='aa'>
+              <div className="aa">
                 {resources.length > 0 ? (
                   resources.map((resource, index) => (
                     <div key={resource.resource_id} className="resource-item">
                       <div className="resource-details">
-                        <div id="documents" onClick={() => handleResourceClick(resource.i_node_pointer)}>{index + 1}. {resource.document_name}</div>
+                        <div
+                          id="documents"
+                          onClick={() =>
+                            handleResourceClick(resource.i_node_pointer)
+                          }
+                        >
+                          {index + 1}. {resource.document_name}
+                        </div>
                         <div className="public-private">
-                          {resource.type === 'private' ? (
+                          {resource.type === "private" ? (
                             <>
                               Private - Shared with:
                               {resource.connections.map((connection, index) => (
                                 <span key={connection.connection_id}>
                                   {connection.host_user.username}
-                                  {index < resource.connections.length - 1 ? ', ' : ''}
+                                  {index < resource.connections.length - 1
+                                    ? ", "
+                                    : ""}
                                 </span>
                               ))}
                             </>
                           ) : (
-                            'Public'
+                            "Public"
                           )}
                         </div>
                       </div>
@@ -1295,47 +1314,71 @@ export const ViewLocker = () => {
             </div>
             <button className="page3button">Share</button>
             &nbsp;&nbsp;&nbsp;
-            <button className="page3button" onClick={handleUploadResource}>Upload resource</button>
+            <button className="page3button" onClick={handleUploadResource}>
+              Upload resource
+            </button>
           </div>
           <div className="b">
             <h3 id="mycon">My Connections:</h3>
-            <h4 id='headingconnection'>Incoming Connection types</h4>
+            <h4 id="headingconnection">Incoming Connection types</h4>
             <div className="conn">
               {otherConnections.length > 0 ? (
                 otherConnections.map((connection, index) => (
                   <div key={connection.connection_type_id} className="viewlockerconnections" onClick={() => handleConnectionClick(connection)}>
 
 
-                    <h4 id='connectiontype'> <div><u>{index + 1}. {connection.connection_type_name}(
- {connection.incoming_count}users)</u> </div></h4>
+                    <h4 id='connectiontype'> <div><u>{index + 1}.{connection.connection_type_name}  
+</u> (  users:  {connection.incoming_count} )</div></h4>
+        
                   </div>
                 ))
               ) : (
                 <p>No connections found.</p>
               )}
             </div>
-            <h4 id='headingconnection'>Outgoing Connections</h4>
+
+            <h4 id="headingconnection">Outgoing Connections</h4>
             <div className="conn">
               {connections.outgoing_connections.length > 0 ? (
                 connections.outgoing_connections.map((connection, index) => {
                   const tracker = trackerData[connection.connection_id];
-                  const color = tracker ? getStatusColor(tracker) : 'gray';
-                  const ratio = tracker ? calculateRatio(tracker) : 'Loading...';
+                  const color = tracker ? getStatusColor(tracker) : "gray";
+                  const ratio = tracker
+                    ? calculateRatio(tracker)
+                    : "Loading...";
 
                   return (
-                    <div key={connection.connection_id} className='viewlockerconnections'>
-                      <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>
-                      <div id="conntent">{connection.host_user.username} &lt;&gt; {connection.guest_locker.name}</div>
-                      <div id="conntent">Created On: {new Date(connection.created_time).toLocaleString()}</div>
-                      <div id="conntent">Valid Until: {new Date(connection.validity_time).toLocaleString()}</div>
-                      <div className='tracker'>
-                        <button 
-                          onClick={() => handleTracker(connection)} 
+                    <div
+                      key={connection.connection_id}
+                      className="viewlockerconnections"
+                    >
+                      <div id="conntent">
+                        <h3>
+                          {index + 1}. {connection.connection_name}
+                        </h3>
+                      </div>
+                      <div id="conntent">
+                        {connection.host_user.username} &lt;&gt;{" "}
+                        {connection.guest_locker.name}
+                      </div>
+                      <div id="conntent">
+                        Created On:{" "}
+                        {new Date(connection.created_time).toLocaleString()}
+                      </div>
+                      <div id="conntent">
+                        Valid Until:{" "}
+                        {new Date(connection.validity_time).toLocaleString()}
+                      </div>
+                      <div className="tracker">
+                        <button
+                          onClick={() => handleTracker(connection)}
                           style={{ backgroundColor: color }}
                         >
                           {ratio}
                           </button >
                       
+          
+                        
                       </div>
                     </div>
                   );
@@ -1349,9 +1392,9 @@ export const ViewLocker = () => {
       </div>
     </div>
   );
-}
 
 
+};
 // //riyacode
 // import React, { useContext, useEffect, useState } from 'react';
 // import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
@@ -1475,7 +1518,6 @@ export const ViewLocker = () => {
 //     }
 //   }, [locker]);
 
-
 //   const fetchAllTrackerData = (outgoingConnections) => {
 //     outgoingConnections.forEach(connection => {
 //       fetchTrackerData(connection);
@@ -1483,7 +1525,6 @@ export const ViewLocker = () => {
 //   };
 
 //   const fetchTrackerData = async (connection) => {
-
 
 //     console.log("inside fetch tracker data");
 //     try {
@@ -1569,7 +1610,6 @@ export const ViewLocker = () => {
 //     });
 //   }
 
-
 //   const handleDocsClick = () => {
 //     console.log("Open Docs button clicked");
 //   };
@@ -1588,7 +1628,6 @@ export const ViewLocker = () => {
 //   //locker  bhi state se paas krra
 //   const handleConnectionClick = (connection) => {
 //     navigate('/show-guest-users', { state: { connection, locker } });
-
 
 //   }
 
@@ -1719,8 +1758,6 @@ export const ViewLocker = () => {
 
 //               {/* {connections.outgoing_connections.length > 0 ? (
 //                 connections.outgoing_connections.map((connection, index) => (
-
-
 
 //               <div key={connection.connection_id} className='viewlockerconnections'>
 //                 <div id="conntent"><h3>{index + 1}. {connection.connection_name}</h3></div>

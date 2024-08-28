@@ -2280,90 +2280,59 @@ def get_terms_status(request):
 
 
 @csrf_exempt
-@api_view(["POST"])
+@api_view(['POST'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def transfer_resource(request):
-    if request.method == "POST":
-
+    if request.method == 'POST':
         body = json.loads(request.body)
-        connection_name = body["connection_name"]
-        host_locker_name = body["host_locker_name"]
-        guest_locker_name = body["guest_locker_name"]
-        host_user_username = body["host_user_username"]
-        guest_user_username = body["guest_user_username"]
+        connection_name = body['connection_name']
+        host_locker_name = body['host_locker_name']
+        guest_locker_name = body['guest_locker_name']
+        host_user_username = body['host_user_username']
+        guest_user_username = body['guest_user_username']
+        
+        print(connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username)
 
-        print(
-            connection_name,
-            host_locker_name,
-            guest_locker_name,
-            host_user_username,
-            guest_user_username,
-        )
-
-        if not all(
-            [
-                connection_name,
-                host_locker_name,
-                guest_locker_name,
-                host_user_username,
-                guest_user_username,
-            ]
-        ):
-            return JsonResponse(
-                {"success": False, "error": "All fields are required"}, status=400
-            )
+        # Ensure all fields are provided
+        if not all([connection_name, host_locker_name, guest_locker_name, host_user_username, guest_user_username]):
+            return JsonResponse({'success': False, 'error': 'All fields are required'}, status=400)
 
         try:
+            # Retrieve the necessary objects
             host_user = CustomUser.objects.get(username=host_user_username)
             host_locker = Locker.objects.get(name=host_locker_name, user=host_user)
             guest_user = CustomUser.objects.get(username=guest_user_username)
             guest_locker = Locker.objects.get(name=guest_locker_name, user=guest_user)
-            connection = Connection.objects.get(
-                connection_name=connection_name,
-                host_locker=host_locker,
-                host_user=host_user,
-                guest_locker=guest_locker,
-                guest_user=guest_user,
-            )
+            connection = Connection.objects.get(connection_name=connection_name, host_locker=host_locker,
+                                                host_user=host_user, guest_locker=guest_locker, guest_user=guest_user)
         except Connection.DoesNotExist:
-            return JsonResponse(
-                {"success": False, "error": "Requested Connection type not found"},
-                status=404,
-            )
+            return JsonResponse({'success': False, 'error': 'Requested Connection type not found'}, status=404)
         except Locker.DoesNotExist as e:
-            return JsonResponse(
-                {"success": False, "error": f"Locker not found: {e}"}, status=400
-            )
+            return JsonResponse({'success': False, 'error': f'Locker not found: {e}'}, status=400)
         except CustomUser.DoesNotExist as e:
-            return JsonResponse(
-                {"success": False, "error": f"User not found: {e}"}, status=400
-            )
+            return JsonResponse({'success': False, 'error': f'User not found: {e}'}, status=400)
 
+        # Process terms and perform resource transfer
         for key, value in connection.terms_value.items():
-            if ("; T" in value) or (";T" in value):
-                if "; T" in value:
-                    doc_path = value.split("; T")[0].strip()
-                else:
-                    doc_path = value.split(";T")[0]
-                    print(doc_path)
+            if("; T" in value or ";T" in value):
+                doc_path = value.split("; T")[0].strip() if "; T" in value else value.split(";T")[0].strip()
+                print(f"Extracted doc_path: {doc_path}")
 
-                if doc_path in connection.resources["Transfer"]:
-                    res = Resource.objects.get(document_name=doc_path)
-                    print(res)
-                    res.owner = host_user
-                    res.locker = host_locker
-                    res.save()
-                    return JsonResponse(
-                        {"success": True, "message": "Transfer successful"}, status=200
-                    )
-        return JsonResponse(
-            {"fail": True, "message": "Transfer successful"}, status=201
-        )
-
-    return JsonResponse(
-        {"success": False, "error": "Invalid request method"}, status=405
-    )
+                if doc_path in connection.resources['Transfer']:
+                    try:
+                        # Query by inodepointer instead of document_name
+                        res = Resource.objects.get(i_node_pointer=doc_path)
+                        print(f"Resource found: {res}")
+                        res.owner = host_user
+                        res.locker = host_locker
+                        res.save()
+                        return JsonResponse({'success': True, 'message': 'Transfer successful'}, status=200)
+                    except Resource.DoesNotExist:
+                        return JsonResponse({'success': False, 'error': f'Resource not found for inodepointer: {doc_path}'}, status=404)
+                    
+        # If no resources were found for transfer
+        return JsonResponse({'success': False, 'error': 'No valid resources found for transfer'}, status=400)
 
 @csrf_exempt
 @api_view(["GET"])

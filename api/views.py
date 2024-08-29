@@ -2437,7 +2437,7 @@ def transfer_resource(request):
 
                 # Find the i_node_pointer from the resource list
                 try:
-                    resource = Resource.objects.get(i_node_pointer=doc_path)
+                    resource = Resource.objects.get(i_node_pointer=doc_path)    
                     resource.owner = host_user
                     resource.locker = host_locker
                     resource.save()

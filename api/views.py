@@ -1496,7 +1496,11 @@ def signup_user(request:HttpRequest):
             "new_description": value
         }
         """
-        user_ID = request.data.get('user_ID')
+        user_ID = request.data.get('user_ID', None)
+        if user_ID is None:
+            return JsonResponse({
+                'message': f'User ID must be provided.'
+            })
         new_name = request.data.get('new_name')
         new_description = request.data.get('new_description')
         user_List = CustomUser.objects.filter(user_id=user_ID)

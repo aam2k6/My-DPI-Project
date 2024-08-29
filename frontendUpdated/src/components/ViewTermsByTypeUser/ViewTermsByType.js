@@ -1124,7 +1124,7 @@ export const ViewTermsByType = () => {
                     const statusMap = {};
                     data.terms.obligations.forEach(obligation => {
                         initialValues[obligation.labelName] = obligation.value || "";
-                        statusMap[obligation.labelName] = obligation.value.substr(obligation.value.length - 1) === 'T' ? 'Approved' : 'Pending';
+                        statusMap[obligation.labelName] = obligation.value.substr(obligation.value.length - 1) === 'T' ? 'Approved' : obligation.value.substr(obligation.value.length - 1) === 'R' ? 'Rejected' : 'Pending';
                         if (obligation.typeOfAction === 'file' && obligation.value) {
                             const [document_name] = obligation.value.split(';');
                             initialResources[obligation.labelName] = { document_name, i_node_pointer: obligation.i_node_pointer };
@@ -1133,6 +1133,8 @@ export const ViewTermsByType = () => {
                     setTermValues(initialValues);
                     setSelectedResources(initialResources);
                     setStatuses(statusMap);
+                    console.log(initialValues);
+                    console.log(initialResources);
                 } else {
                     setError(data.error || 'No terms found');
                 }
@@ -1141,35 +1143,7 @@ export const ViewTermsByType = () => {
             }
         };
 
-        // const fetchStatus = async () => {
-        //     try {
-        //         const token = Cookies.get('authToken');
-        //         const response = await fetch(`http://localhost:8000/get-guest-terms-review/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
-        //             method: 'GET',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //                 'Authorization': `Basic ${token}`
-        //             },
-        //         });
-        //         if (!response.ok) {
-        //             throw new Error('');
-        //         }
-        //         const data = await response.json();
-        //         if (data.success) {
-        //             console.log("data", data);
-        //             const statusMap = {};
-        //             data.statuses.forEach(status => {
-        //                 statusMap[status.labelName] = status.status === 'T' ? 'Approved' : 'Rejected';
-        //             });
-        //             setStatuses(statusMap);
-        //         } else {
-        //             setError(data.error || 'No status found');
-        //         }
-        //     } catch (err) {
-        //         setError(err.message);
-        //     }
-        // };
-
+        
         fetchTerms();
         // fetchStatus();
     }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
@@ -1182,7 +1156,7 @@ export const ViewTermsByType = () => {
     };
 
     const renderInputField = (obligation) => {
-        const strippedValue = termValues[obligation.labelName]?.replace("; F", "").replace("; T", "").replace(";T", "");
+        const strippedValue = termValues[obligation.labelName]?.replace("; F", "").replace("; T", "").replace(";T", "").replace(";F", "").replace(";R", "").replace("; R", "");
 
         switch (obligation.typeOfAction) {
             case 'text':
@@ -1265,22 +1239,53 @@ export const ViewTermsByType = () => {
             ]
         };
 
+        console.log("1 termValues", termValues);
+        console.log("1 selected Res", selectedResources);
         const payload = {
             connection_name: connectionName,
             host_locker_name: hostLockerName,
             guest_locker_name: guestLockerName,
             host_user_username: hostUserUsername,
             guest_user_username: guestUserUsername,
-            terms_value: {
-                ...Object.fromEntries(
-                    Object.entries(termValues).map(([key, value]) => [key, `${value.replace("; F", "")}; F`])
-                ),
-                ...Object.fromEntries(
-                    Object.entries(selectedResources).map(([key, resource]) => [key, `${resource.document_name.replace("; F", "")}; F`])
-                ),
-            },
-            resources: resourcesData
-        };
+
+        terms_value: {
+    
+
+    ...Object.fromEntries(
+        
+        Object.entries(termValues).map(([key, value]) => {
+            // Find the original obligation
+            const obligation = res.obligations.find(ob => ob.labelName === key);
+            const initialValue = obligation?.value || "";
+
+            // Check if the value has changed
+            if (value !== initialValue) {
+                return [key, `${value.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
+            } else {
+                return [key, initialValue]; // Retain original value and status if not changed
+            }
+        })
+    ),
+    ...Object.fromEntries(
+        Object.entries(selectedResources).map(([key, resource]) => {
+            // Find the original resource
+            const obligation = res.obligations.find(ob => ob.labelName === key);
+            const initialResource = obligation?.value || "";
+
+            // Check if the resource has changed
+            if ((resource.document_name !== initialResource.split(";")[0])) {
+                return [key, `${resource.document_name.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
+            } else {
+                return [key, initialResource]; // Retain original value and status if not changed
+            }
+        })
+    ),
+},
+resources: resourcesData
+};
+
+console.log("2 termValues", termValues);
+console.log("2 selected Res", selectedResources);
 
         try {
             const token = Cookies.get('authToken');

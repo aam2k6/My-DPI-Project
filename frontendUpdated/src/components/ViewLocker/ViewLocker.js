@@ -1080,6 +1080,7 @@ export const ViewLocker = () => {
       const data = await response.json();
       if (data.success) {
         setConnections(data.connections);
+        // console.log("view locker", data.connections);
         fetchAllTrackerData(data.connections.outgoing_connections);
 
         // Count incoming connections for each connection type
@@ -1172,13 +1173,13 @@ export const ViewLocker = () => {
       }
       const data = await response.json();
       if (data.success) {
+        // console.log("view locker", data);
         setTrackerData((prevState) => ({
           ...prevState,
           [connection.connection_id]: {
             count_T: data.count_T,
             count_F: data.count_F,
-            filled: data.filled,
-            empty: data.empty,
+            count_R: data.count_R,
             filled: data.filled,
             empty: data.empty,
           },
@@ -1193,10 +1194,10 @@ export const ViewLocker = () => {
   };
 
   const getStatusColor = (tracker) => {
-    const totalObligations = tracker.count_T + tracker.count_F;
-    if (tracker.filled === totalObligations) {
+    const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
+    if (tracker.count_T === totalObligations && tracker.count_R === 0 ) {
       return "green";
-    } else if (tracker.filled === 0) {
+    } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
       return "red";
     } else {
       return "orange";
@@ -1204,7 +1205,7 @@ export const ViewLocker = () => {
   };
 
   const calculateRatio = (tracker) => {
-    const totalObligations = tracker.count_T + tracker.count_F;
+    const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
     return totalObligations > 0
       ? `${tracker.filled}/${totalObligations}`
       : "0/0";

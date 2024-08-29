@@ -959,7 +959,7 @@ export const Guesttermsreview = () => {
 
                     const initialStatuses = {};
                     for (const [key, value] of Object.entries(data.connections.terms_value || {})) {
-                        initialStatuses[key] = value.endsWith(';T') ? 'approved' : 'rejected';
+                        initialStatuses[key] = value.endsWith('T') ? 'approved' : initialStatuses[key] = value.endsWith('R') ? 'rejected': '';
                     }
                     setStatuses(initialStatuses);
                 }
@@ -983,7 +983,7 @@ export const Guesttermsreview = () => {
         try {
             const token = Cookies.get('authToken');
             const terms_value = res?.obligations.reduce((acc, obligation, index) => {
-                const status = statuses[obligation.labelName] === 'approved' ? 'T' : 'F';
+                const status = statuses[obligation.labelName] === 'approved' ? 'T' : statuses[obligation.labelName] === 'rejected' ? 'R' : 'F';
                 const resourceName = termsValue[obligation.labelName]?.split(";")[0] || "";
                 acc[obligation.labelName] = `${resourceName};${status}`;
                 return acc;

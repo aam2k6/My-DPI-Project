@@ -112,6 +112,7 @@ export const Guestusers = () => {
               <div key={index} className="card">
                 <h4>{connection.guest_user.username}</h4>
                 <p>{connection.guest_user.description}</p>
+                <p> Locker: {connection.guest_locker.name}</p>
                 <button
                   className='cardButton'
                   onClick={() => handleConnectionClick(connection)}

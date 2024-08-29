@@ -78,6 +78,7 @@ export const TargetLockerView = () => {
         }
       );
       const data = await response.json();
+      console.log("other types", data);
       if (data.success) {
         setOtherConnections(data.connection_types);
       } else {
@@ -88,23 +89,75 @@ export const TargetLockerView = () => {
     }
   };
 
+  // const fetchConnections = async () => {
+  //   try {
+  //     const token = Cookies.get("authToken");
+  //     const params = new URLSearchParams({
+  //       locker_name: locker.name,
+  //       username: parentUser.username,
+
+  //     });
+
+  //     console.log("params",locker.name, parentUser.username);
+  //     const response = await fetch(
+  //       `http://localhost:8000/get-connections-user-locker/?${params}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Basic ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch connections");
+  //     }
+
+  //     const data = await response.json();
+  //     if (data.success) {
+  //       console.log("target view", data.connections);
+  //       if (typeof data.connections === 'object' && data.connections !== null) {
+  //         // Convert the object to an array of its values
+  //         const connectionsArray = Object.values(data.connections);
+  //         console.log("array", connectionsArray);
+      
+  //         // Now you can filter the array
+  //         const outgoing = connectionsArray.filter(
+  //             (conn) => conn.guest_user?.username === curruser.username
+  //         );
+  //         setOutgoingConnections(outgoing);}
+  //     }
+  //       else if (Array.isArray(data.connections)) {
+  //           // Filter outgoing connections where curruser is guest
+  //           const outgoing = data.connections.filter(
+  //               (conn) => conn.guest_user?.username === curruser.username
+  //           );
+  //           setOutgoingConnections(outgoing);
+  //     } else {
+  //       setError(data.message || "Failed to fetch connections");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching connections:", error);
+  //     setError("An error occurred while fetching connections");
+  //   }
+  // };
+
+
   const fetchConnections = async () => {
     try {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({
-        locker_name: locker.name,
-        username: parentUser.username,
+        host_username: parentUser.username,
+        host_locker_name: locker.name,
       });
-      const response = await fetch(
-        `http://localhost:8000/get-connections-user-locker/?${params}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:8000/get-outgoing-connections/?${params}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch connections");
@@ -112,11 +165,8 @@ export const TargetLockerView = () => {
 
       const data = await response.json();
       if (data.success) {
-        // Filter outgoing connections where curruser is guest
-        const outgoing = data.connections.filter(
-          (conn) => conn.guest_user.username === curruser.username
-        );
-        setOutgoingConnections(outgoing);
+        console.log("Fetched connections:", data.connections); // Debugging output
+        setOutgoingConnections(data.connections);
       } else {
         setError(data.message || "Failed to fetch connections");
       }
@@ -126,6 +176,7 @@ export const TargetLockerView = () => {
     }
   };
 
+  
   const handleClick = () => {
     navigate("/make-connection", {
       state: { hostuser: parentUser, hostlocker: locker },

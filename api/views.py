@@ -2187,18 +2187,12 @@ def update_connection_terms(request):
 # @permission_classes([IsAuthenticated])
 # def get_terms_status(request):
 #     """
-#     Request Body:
-#     {
-#         "connection_name": "Connection No. 1",
-#         "host_locker_name": "Admissions",
-#         "guest_locker_name": "Education",
-#         "host_user_username": "iiitb",
-#         "guest_user_username": "rohith",
-#         "terms_value": {
-#             "Application Number": "; F",
-#             "Another Field": "documents/rohith_transcripts.pdf; F"
-#         }
-#     }
+#     Request Parameters:
+#     - connection_name
+#     - host_locker_name
+#     - guest_locker_name
+#     - host_user_username
+#     - guest_user_username
 #     """
 #     if request.method == "GET":
 #         connection_name = request.GET.get("connection_name")
@@ -2252,18 +2246,31 @@ def update_connection_terms(request):
 #         empty = 0
 
 #         terms_value = connection.terms_value
-#         for key, value in terms_value.items():
-#             if value.endswith("; T"):
-#                 count_T += 1
-#             elif value.endswith("; F"):
-#                 count_F += 1
 
-#         for key, value in terms_value.items():
-#             stripped_value = value.rstrip("; F").rstrip("; T")
-#             if stripped_value:
-#                 filled += 1
-#             elif value == "; F":
-#                 empty += 1
+#         # Handle case when terms_value is empty
+#         if terms_value:
+#             for key, value in terms_value.items():
+#                 value = value.strip()
+#                 if value.endswith("; T") or value.endswith(";T"):
+#                     count_T += 1
+#                 elif value.endswith("; F") or value.endswith(";F"):
+#                     count_F += 1
+
+#                 stripped_value = value.rstrip("; T").rstrip(";T").rstrip("; F").rstrip(";F").strip()
+#                 if stripped_value:
+#                     filled += 1
+#                 else:
+#                     empty += 1
+
+#             # Calculate the number of empty terms based on the total count
+#             total_terms = count_T + count_F
+#             if total_terms > 0:
+#                 empty = total_terms - filled
+#         else:
+#             # If terms_value is empty, assume all expected terms are empty
+#             total_terms = count_T + count_F
+#             empty = total_terms
+#             filled = 0
 
 #         return JsonResponse(
 #             {
@@ -2341,6 +2348,7 @@ def get_terms_status(request):
 
         count_T = 0
         count_F = 0
+        count_R = 0
         filled = 0
         empty = 0
 
@@ -2354,20 +2362,22 @@ def get_terms_status(request):
                     count_T += 1
                 elif value.endswith("; F") or value.endswith(";F"):
                     count_F += 1
+                elif value.endswith("; R") or value.endswith(";R"):
+                    count_R += 1
 
-                stripped_value = value.rstrip("; T").rstrip(";T").rstrip("; F").rstrip(";F").strip()
+                stripped_value = value.rstrip("; T").rstrip(";T").rstrip("; F").rstrip(";F").rstrip("; R").rstrip(";R").strip()
                 if stripped_value:
                     filled += 1
                 else:
                     empty += 1
 
             # Calculate the number of empty terms based on the total count
-            total_terms = count_T + count_F
+            total_terms = count_T + count_F + count_R
             if total_terms > 0:
                 empty = total_terms - filled
         else:
             # If terms_value is empty, assume all expected terms are empty
-            total_terms = count_T + count_F
+            total_terms = count_T + count_F + count_R
             empty = total_terms
             filled = 0
 
@@ -2376,6 +2386,7 @@ def get_terms_status(request):
                 "success": True,
                 "count_T": count_T,
                 "count_F": count_F,
+                "count_R": count_R,
                 "empty": empty,
                 "filled": filled,
             },
@@ -2385,6 +2396,7 @@ def get_terms_status(request):
     return JsonResponse(
         {"success": False, "error": "Invalid request method"}, status=405
     )
+
 @csrf_exempt
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -3685,3 +3697,31 @@ def get_terms_for_user(request):
     return JsonResponse(
         {"success": False, "error": "Invalid request method"}, status=405
     )
+
+@csrf_exempt
+@api_view(["GET"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_outgoing_connections_to_locker(request):
+    try:
+        guest_username = request.user.username  # the user is authenticated 
+        host_username = request.query_params.get('host_username')
+        host_locker_name = request.query_params.get('host_locker_name')
+
+        if not host_username or not host_locker_name:
+            return Response({'success': False, 'message': 'Missing required parameters'}, status=400)
+
+        # Filter connections where guest is the current user and host matches the given locker
+        connections = Connection.objects.filter(
+            guest_user__username=guest_username,
+            host_user__username=host_username,
+            host_locker__name=host_locker_name
+        )
+
+        # Serialize the data
+        serializer = ConnectionSerializer(connections, many=True)
+
+        return Response({'success': True, 'connections': serializer.data}, status=200)
+
+    except Exception as e:
+        return Response({'success': False, 'message': str(e)}, status=500)

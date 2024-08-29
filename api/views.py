@@ -1443,9 +1443,9 @@ def get_resource_by_user_by_locker(request):
 
 
 @csrf_exempt
-@api_view(["POST"])
+@api_view(["POST", "PUT"])
 @permission_classes([AllowAny])
-def signup_user(request):
+def signup_user(request:HttpRequest):
     if request.method == "POST":
         try:
             username = request.POST.get("username")
@@ -1486,6 +1486,32 @@ def signup_user(request):
 
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
+        
+    if request.method == "PUT":
+        """
+        Expected JSON data (raw JSON data/form data):
+        {
+            "user_ID": value,
+            "new_name": value,
+            "new_description": value
+        }
+        """
+        user_ID = request.data.get('user_ID')
+        new_name = request.data.get('new_name')
+        new_description = request.data.get('new_description')
+        user_List = CustomUser.objects.filter(user_id=user_ID)
+        if user_List.exists():
+            user:CustomUser = user_List.first()
+            user.username = new_name
+            user.description = new_description
+            user.save()
+            return JsonResponse({
+                'message': f'User with user ID = {user_ID} updated successfully.'
+            })
+        return JsonResponse({
+            'message': f'User with user ID = {user_ID} does not exist.'
+        })
+
     return JsonResponse(
         {"success": False, "error": "Invalid request method"}, status=405
     )

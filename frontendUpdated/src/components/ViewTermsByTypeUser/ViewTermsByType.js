@@ -32,7 +32,7 @@
 // //             console.log("Inside fetch terms");
 // //             try {
 // //                 const token = Cookies.get('authToken');
-// //                 const response = await fetch(`http://localhost:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+// //                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 // //                     method: 'GET',
 // //                     headers: {
 // //                         'Content-Type': 'application/json',
@@ -113,7 +113,7 @@
 // //             const fetchResources = async () => {
 // //                 try {
 // //                     const token = Cookies.get('authToken');
-// //                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+// //                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 // //                         method: 'GET',
 // //                         headers: {
 // //                             'Authorization': `Basic ${token}`,
@@ -165,7 +165,7 @@
 
 // //         try {
 // //             const token = Cookies.get('authToken');
-// //             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+// //             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
 // //                 method: 'PATCH',
 // //                 headers: {
 // //                     'Content-Type': 'application/json',
@@ -288,7 +288,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://localhost:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+//                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -372,7 +372,7 @@
 //             const fetchResources = async () => {
 //                 try {
 //                     const token = Cookies.get('authToken');
-//                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+//                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 //                         method: 'GET',
 //                         headers: {
 //                             'Authorization': `Basic ${token}`,
@@ -424,7 +424,7 @@
 
 //         try {
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+//             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -554,7 +554,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://localhost:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+//                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -639,7 +639,7 @@
 //             const fetchResources = async () => {
 //                 try {
 //                     const token = Cookies.get('authToken');
-//                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+//                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 //                         method: 'GET',
 //                         headers: {
 //                             'Authorization': `Basic ${token}`,
@@ -691,7 +691,7 @@
 
 //         try {
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+//             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -819,7 +819,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+//                 const response = await fetch(`http://172.16.192.201:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -923,7 +923,7 @@
 //             const fetchResources = async () => {
 //                 try {
 //                     const token = Cookies.get('authToken');
-//                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+//                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 //                         method: 'GET',
 //                         headers: {
 //                             'Authorization': `Basic ${token}`,
@@ -975,7 +975,7 @@
 
 //         try {
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+//             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -1106,7 +1106,7 @@ export const ViewTermsByType = () => {
         const fetchTerms = async () => {
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+                const response = await fetch(`http://172.16.192.201:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1156,7 +1156,10 @@ export const ViewTermsByType = () => {
     };
 
     const renderInputField = (obligation) => {
-        const strippedValue = termValues[obligation.labelName]?.replace("; F", "").replace("; T", "").replace(";T", "").replace(";F", "").replace(";R", "").replace("; R", "");
+        // console.log(termValues[obligation.labelName]);
+        // const val = termValues[obligation.labelName];
+        // const strippedValue = val;
+        const strippedValue = termValues[obligation.labelName]?.replace("; F", "")?.replace("; T", "")?.replace(";T", "")?.replace(";F", "")?.replace(";R", "")?.replace("; R", "");
 
         switch (obligation.typeOfAction) {
             case 'text':
@@ -1206,7 +1209,7 @@ export const ViewTermsByType = () => {
             const fetchResources = async () => {
                 try {
                     const token = Cookies.get('authToken');
-                    const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+                    const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Basic ${token}`,
@@ -1234,7 +1237,7 @@ export const ViewTermsByType = () => {
     const handleSubmit = async () => {
         const resourcesData = {
             Transfer: [
-                ...resources.map(resource => resource.document_name),
+                ...resources.map(resource => resource.i_node_pointer),
                 ...Object.values(termValues).filter(value => value.includes("documents/"))
             ]
         };
@@ -1257,8 +1260,8 @@ export const ViewTermsByType = () => {
             // Find the original obligation
             const obligation = res.obligations.find(ob => ob.labelName === key);
             const initialValue = obligation?.value || "";
-
             // Check if the value has changed
+            console.log("val", value);
             if (value !== initialValue) {
                 return [key, `${value.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
             } else {
@@ -1273,8 +1276,8 @@ export const ViewTermsByType = () => {
             const initialResource = obligation?.value || "";
 
             // Check if the resource has changed
-            if ((resource.document_name !== initialResource.split(";")[0])) {
-                return [key, `${resource.document_name.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
+            if ((resource.i_node_pointer !== initialResource.split(";")[0])) {
+                return [key, `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
             } else {
                 return [key, initialResource]; // Retain original value and status if not changed
             }
@@ -1289,7 +1292,7 @@ console.log("2 selected Res", selectedResources);
 
         try {
             const token = Cookies.get('authToken');
-            const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+            const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

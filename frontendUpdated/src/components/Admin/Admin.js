@@ -52,7 +52,7 @@ export const Admin = () => {
   const handleSaveClick = async (locker_id) => {
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:8000/update-delete-locker/`, {
+      const response = await fetch(`http://172.16.192.201:8000/update-delete-locker/`, {
         method: 'PUT',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -81,7 +81,7 @@ export const Admin = () => {
   const handleDeleteClick = async (locker_name) => {
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:8000/update-delete-locker/`, {
+      const response = await fetch(`http://172.16.192.201:8000/update-delete-locker/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -105,7 +105,7 @@ export const Admin = () => {
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `http://localhost:8000/get-connection-type/`,
+        `http://172.16.192.201:8000/get-connection-type/`,
         {
           method: "GET",
           headers: {
@@ -131,7 +131,7 @@ export const Admin = () => {
   //     const token = Cookies.get("authToken");
   //     const params = new URLSearchParams({ locker_name: locker.name });
   //     const response = await fetch(
-  //       `http://localhost:8000/connection_types/?${params}`,
+  //       `http://172.16.192.201:8000/connection_types/?${params}`,
   //       {
   //         method: "GET",
   //         headers: {
@@ -155,7 +155,7 @@ export const Admin = () => {
   const fetchUserLockers = async () => {
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`http://localhost:8000/get-lockers-user/`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-lockers-user/`, {
         method: "GET",
         headers: {
           Authorization: `Basic ${token}`,

@@ -40,7 +40,7 @@ export const TargetLockerView = () => {
         username: parentUser.username,
       });
       const response = await fetch(
-        `http://localhost:8000/get-public-resources?${params}`,
+        `http://172.16.192.201:8000/get-public-resources?${params}`,
         {
           method: "GET",
           headers: {
@@ -68,7 +68,7 @@ export const TargetLockerView = () => {
         guest_locker_name: locker.name,
       });
       const response = await fetch(
-        `http://localhost:8000/get-other-connection-types/?${params}`,
+        `http://172.16.192.201:8000/get-other-connection-types/?${params}`,
         {
           method: "GET",
           headers: {
@@ -100,7 +100,7 @@ export const TargetLockerView = () => {
 
   //     console.log("params",locker.name, parentUser.username);
   //     const response = await fetch(
-  //       `http://localhost:8000/get-connections-user-locker/?${params}`,
+  //       `http://172.16.192.201:8000/get-connections-user-locker/?${params}`,
   //       {
   //         method: "GET",
   //         headers: {
@@ -151,7 +151,7 @@ export const TargetLockerView = () => {
         host_username: parentUser.username,
         host_locker_name: locker.name,
       });
-      const response = await fetch(`http://localhost:8000/get-outgoing-connections/?${params}`, {
+      const response = await fetch(`http://172.16.192.201:8000/get-outgoing-connections/?${params}`, {
         method: "GET",
         headers: {
           Authorization: `Basic ${token}`,
@@ -176,7 +176,7 @@ export const TargetLockerView = () => {
     }
   };
 
-  
+
   const handleClick = () => {
     navigate("/make-connection", {
       state: { hostuser: parentUser, hostlocker: locker },
@@ -184,7 +184,7 @@ export const TargetLockerView = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `http://localhost:8000/media/${filePath}`;
+    const url = `http://172.16.192.201:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 

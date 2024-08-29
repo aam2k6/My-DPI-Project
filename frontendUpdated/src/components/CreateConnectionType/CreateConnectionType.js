@@ -28,7 +28,7 @@ export const CreateConnectionType = () => {
         }
 
         const token = Cookies.get('authToken');
-        fetch('http://localhost:8000/get-lockers-user/', {
+        fetch('http://172.16.192.201:8000/get-lockers-user/', {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`,
@@ -56,7 +56,7 @@ export const CreateConnectionType = () => {
         if (parentUser && locker) {
             const token = Cookies.get('authToken');
             const params = new URLSearchParams({ guest_locker_name: locker.name, guest_username: parentUser.username });
-            fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
+            fetch(`http://172.16.192.201:8000/get-other-connection-types/?${params}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Basic ${token}`,
@@ -124,7 +124,7 @@ export const CreateConnectionType = () => {
 
     try {
         console.log('Sending request to create connection');
-        const response = await fetch('http://localhost:8000/create-new-connection/', {
+        const response = await fetch('http://172.16.192.201:8000/create-new-connection/', {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${token}`,

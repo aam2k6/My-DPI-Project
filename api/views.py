@@ -2436,6 +2436,7 @@ def transfer_resource(request):
         
         # If no valid document found for transfer
         return JsonResponse({'success': False, 'message': 'No valid document found for transfer'}, status=404)
+
 @csrf_exempt
 @api_view(["GET"])
 @authentication_classes([BasicAuthentication])

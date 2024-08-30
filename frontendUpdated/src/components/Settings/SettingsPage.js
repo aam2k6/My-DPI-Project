@@ -164,7 +164,7 @@ export default function SettingsPage() {
 
         console.log("Updated User Data: ", updatedUser);
         const token = Cookies.get('authToken');
-        fetch('http://localhost:8000/update-user/', {
+        fetch('http://172.16.192.201:8000/signup-user/', {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,

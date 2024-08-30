@@ -432,7 +432,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://172.16.192.201:8000/get-template-or-templates/', {
+    fetch('http://localhost:8000/get-template-or-templates/', {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -474,7 +474,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
   
-    fetch(`http://172.16.192.201:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
+    fetch(`http://localhost:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,

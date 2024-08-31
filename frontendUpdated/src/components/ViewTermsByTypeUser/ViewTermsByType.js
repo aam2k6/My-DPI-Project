@@ -526,7 +526,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import "./ViewTermsByType.css";
 import Navbar from "../Navbar/Navbar";
 
@@ -542,41 +542,60 @@ export const ViewTermsByType = () => {
     const [termValues, setTermValues] = useState({});
     const [selectedResources, setSelectedResources] = useState({});
     const [currentLabelName, setCurrentLabelName] = useState(null);
-    const [statuses, setStatuses] = useState({});  // To store the statuses
+    const [statuses, setStatuses] = useState({}); // To store the statuses
 
-    const { connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, locker } = location.state || {};
+    const {
+        connectionName,
+        hostLockerName,
+        guestLockerName,
+        hostUserUsername,
+        guestUserUsername,
+        locker,
+    } = location.state || {};
 
     useEffect(() => {
         if (!curruser) {
-            navigate('/');
+            navigate("/");
             return;
         }
 
         const fetchTerms = async () => {
             try {
-                const token = Cookies.get('authToken');
-                const response = await fetch(`http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Basic ${token}`
-                    },
-                });
+                const token = Cookies.get("authToken");
+                const response = await fetch(
+                    `http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Basic ${token}`,
+                        },
+                    }
+                );
                 if (!response.ok) {
-                    throw new Error('Failed to fetch terms');
+                    throw new Error("Failed to fetch terms");
                 }
                 const data = await response.json();
                 if (data.success) {
+                    console.log("term value", data);
                     setRes(data.terms);
                     const initialValues = {};
                     const initialResources = {};
                     const statusMap = {};
-                    data.terms.obligations.forEach(obligation => {
+                    data.terms.obligations.forEach((obligation) => {
                         initialValues[obligation.labelName] = obligation.value || "";
-                        statusMap[obligation.labelName] = obligation.value.substr(obligation.value.length - 1) === 'T' ? 'Approved' : obligation.value.substr(obligation.value.length - 1) === 'R' ? 'Rejected' : 'Pending';
-                        if (obligation.typeOfAction === 'file' && obligation.value) {
-                            const [document_name] = obligation.value.split(';');
-                            initialResources[obligation.labelName] = { document_name, i_node_pointer: obligation.i_node_pointer };
+                        statusMap[obligation.labelName] =
+                            obligation.value.substr(obligation.value.length - 1) === "T"
+                                ? "Approved"
+                                : obligation.value.substr(obligation.value.length - 1) === "R"
+                                    ? "Rejected"
+                                    : "Pending";
+                        if (obligation.typeOfAction === "file" && obligation.value) {
+                            const [document_name] = obligation.value.split(";");
+                            initialResources[obligation.labelName] = {
+                                document_name,
+                                i_node_pointer: obligation.i_node_pointer,
+                            };
                         }
                     });
                     setTermValues(initialValues);
@@ -585,22 +604,21 @@ export const ViewTermsByType = () => {
                     console.log(initialValues);
                     console.log(initialResources);
                 } else {
-                    setError(data.error || 'No terms found');
+                    setError(data.error || "No terms found");
                 }
             } catch (err) {
                 setError(err.message);
             }
         };
 
-        
         fetchTerms();
         // fetchStatus();
     }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
 
     const handleInputChange = (labelName, value) => {
-        setTermValues(prev => ({
+        setTermValues((prev) => ({
             ...prev,
-            [labelName]: value
+            [labelName]: value,
         }));
     };
 
@@ -608,30 +626,41 @@ export const ViewTermsByType = () => {
         // console.log(termValues[obligation.labelName]);
         // const val = termValues[obligation.labelName];
         // const strippedValue = val;
-        const strippedValue = termValues[obligation.labelName]?.replace("; F", "")?.replace("; T", "")?.replace(";T", "")?.replace(";F", "")?.replace(";R", "")?.replace("; R", "");
+        const strippedValue = termValues[obligation.labelName]
+            ?.replace("; F", "")
+            ?.replace("; T", "")
+            ?.replace(";T", "")
+            ?.replace(";F", "")
+            ?.replace(";R", "")
+            ?.replace("; R", "");
 
         switch (obligation.typeOfAction) {
-            case 'text':
+            case "text":
                 return (
                     <input
                         type="text"
                         placeholder="Enter value"
                         value={strippedValue || ""}
-                        onChange={(e) => handleInputChange(obligation.labelName, e.target.value)}
+                        onChange={(e) =>
+                            handleInputChange(obligation.labelName, e.target.value)
+                        }
                     />
                 );
-            case 'file':
+            case "file":
                 return (
                     <button onClick={() => handleButtonClick(obligation.labelName)}>
-                        {selectedResources[obligation.labelName]?.document_name || "Upload File"}
+                        {selectedResources[obligation.labelName]?.document_name ||
+                            "Upload File"}
                     </button>
                 );
-            case 'date':
+            case "date":
                 return (
                     <input
                         type="date"
                         value={strippedValue || ""}
-                        onChange={(e) => handleInputChange(obligation.labelName, e.target.value)}
+                        onChange={(e) =>
+                            handleInputChange(obligation.labelName, e.target.value)
+                        }
                     />
                 );
             default:
@@ -646,9 +675,9 @@ export const ViewTermsByType = () => {
     };
 
     const handleResourceSelection = (resource) => {
-        setSelectedResources(prev => ({
+        setSelectedResources((prev) => ({
             ...prev,
-            [currentLabelName]: resource
+            [currentLabelName]: resource,
         }));
         setShowResources(false);
     };
@@ -657,26 +686,29 @@ export const ViewTermsByType = () => {
         if (selectedLocker) {
             const fetchResources = async () => {
                 try {
-                    const token = Cookies.get('authToken');
-                    const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Basic ${token}`,
-                            'Content-Type': 'application/json'
+                    const token = Cookies.get("authToken");
+                    const response = await fetch(
+                        `http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`,
+                        {
+                            method: "GET",
+                            headers: {
+                                Authorization: `Basic ${token}`,
+                                "Content-Type": "application/json",
+                            },
                         }
-                    });
+                    );
                     if (!response.ok) {
-                        throw new Error('Failed to fetch resources');
+                        throw new Error("Failed to fetch resources");
                     }
                     const data = await response.json();
                     if (data.success) {
                         setResources(data.resources);
                     } else {
-                        setError(data.message || 'Failed to fetch resources');
+                        setError(data.message || "Failed to fetch resources");
                     }
                 } catch (error) {
-                    console.error('Error fetching resources:', error);
-                    setError('An error occurred while fetching resources');
+                    console.error("Error fetching resources:", error);
+                    setError("An error occurred while fetching resources");
                 }
             };
             fetchResources();
@@ -686,77 +718,97 @@ export const ViewTermsByType = () => {
     const handleSubmit = async () => {
         const resourcesData = {
             Transfer: [
-                ...resources.map(resource => resource.i_node_pointer),
-                ...Object.values(termValues).filter(value => value.includes("documents/"))
-            ]
+                ...resources.map((resource) => resource.i_node_pointer),
+                ...Object.values(termValues).filter((value) =>
+                    value.includes("documents/")
+                ),
+            ],
         };
-    
+
+        console.log("term", termValues);
         const payload = {
             connection_name: connectionName,
             host_locker_name: hostLockerName,
             guest_locker_name: guestLockerName,
             host_user_username: hostUserUsername,
             guest_user_username: guestUserUsername,
-    
+
             terms_value: {
+
                 ...Object.fromEntries(
                     Object.entries(termValues).map(([key, value]) => {
+                        console.log("Value of text:", value);
                         const obligation = res.obligations.find(ob => ob.labelName === key);
                         const initialValue = obligation?.value || "";
-                        // Ensure value is defined before applying .replace()
-                        if (value !== initialValue) {
-                            return [key, value ? `${value.replace(/;[ ]?[TFR]$/, "")}; F` : "; F"]; // Mark as Pending if changed
+                        
+                        // Check if the field is a file
+                        const isFileField = obligation.typeOfAction === "file";
+                
+                        if (isFileField) {
+                            const resource = selectedResources[key];
+                            const initialResourcePointer = initialValue.split(";")[0]; // The original resource pointer
+                
+                            // console.log("Resource Pointer:", resource?.i_node_pointer);
+                            // console.log("Initial Resource Pointer:", initialResourcePointer);
+                
+                            // If the resource pointer has changed, update it, else keep the original value
+                            if (resource && resource.i_node_pointer && resource.i_node_pointer !== initialResourcePointer) {
+                                return [
+                                    key,
+                                    `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F` // Mark as Pending
+                                ];
+                            } else {
+                                return [key, initialValue]; // Keep original value if the file hasn't been changed
+                            }
+                        } else if (value !== initialValue) {
+                            // Mark text/date fields as "Pending" if changed
+                            return [key, `${value.replace(/;[ ]?[TFR]$/, "")}; F`];
                         } else {
-                            return [key, initialValue]; // Retain original value and status if not changed
+                            // Retain original value if not changed
+                            return [key, initialValue];
                         }
                     })
                 ),
-                ...Object.fromEntries(
-                    Object.entries(selectedResources).map(([key, resource]) => {
-                        const obligation = res.obligations.find(ob => ob.labelName === key);
-                        const initialResource = obligation?.value || "";
-                        if (resource.i_node_pointer !== initialResource.split(";")[0]) {
-                            return [key, resource.i_node_pointer ? `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F` : "; F"]; // Mark as Pending if changed
-                        } else {
-                            return [key, initialResource]; // Retain original value and status if not changed
-                        }
-                    })
-                ),
+                
             },
-            resources: resourcesData
+            resources: resourcesData,
         };
-    
+
         try {
-            const token = Cookies.get('authToken');
-            const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify(payload)
-            });
-    
+            const token = Cookies.get("authToken");
+            const response = await fetch(
+                `http://localhost:8000/update-connection-terms/`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Basic ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
             if (!response.ok) {
-                throw new Error('Failed to update terms');
+                throw new Error("Failed to update terms");
             }
-    
+
             const data = await response.json();
             if (data.success) {
                 navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
             } else {
-                setError(data.error || 'Failed to update terms');
+                setError(data.error || "Failed to update terms");
             }
         } catch (err) {
             setError(err.message);
         }
     };
-    
 
     const content = (
         <>
-            <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
-            <div className="description">{curruser ? curruser.description : 'None'}</div>
+            <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+            <div className="description">
+                {curruser ? curruser.description : "None"}
+            </div>
         </>
     );
 
@@ -784,7 +836,8 @@ export const ViewTermsByType = () => {
                                     <td>{obligation.labelName}</td>
                                     <td>{renderInputField(obligation)}</td>
                                     <td>{obligation.labelDescription}</td>
-                                    <td>{statuses[obligation.labelName] || 'Pending'}</td> {/* Display status */}
+                                    <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
+                                    {/* Display status */}
                                 </tr>
                             ))}
                         </tbody>
@@ -795,8 +848,6 @@ export const ViewTermsByType = () => {
                     <div className="resource-container">
                         <h3>Select Resource for {currentLabelName}</h3>
                         {error && <p className="error">{error}</p>}
-                        
-                        
 
                         <ul>
                             {resources.map((resource, index) => (
@@ -807,7 +858,10 @@ export const ViewTermsByType = () => {
                                                 type="radio"
                                                 name="selectedResource"
                                                 value={resource.i_node_pointer}
-                                                checked={selectedResources[currentLabelName]?.i_node_pointer === resource.i_node_pointer}
+                                                checked={
+                                                    selectedResources[currentLabelName]
+                                                        ?.i_node_pointer === resource.i_node_pointer
+                                                }
                                                 onChange={() => handleResourceSelection(resource)}
                                             />
                                             {resource.document_name}
@@ -827,3 +881,10 @@ export const ViewTermsByType = () => {
         </div>
     );
 };
+
+
+
+;
+
+
+

@@ -782,12 +782,12 @@ export const TargetLockerView = () => {
   const handleTracker = (connection) => {
     navigate("/view-terms-by-type", {
       state: {
-        connection_name: connection.connection_name,
-        host_locker_name: connection.host_locker.name,
-        guest_locker_name: connection.guest_locker.name,
-        host_user_username: connection.host_user.username,
-        guest_user_username: connection.guest_user.username,
-        locker:locker,
+        connectionName: connection.connection_name,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: locker,
       },
     });
   };
@@ -866,7 +866,7 @@ export const TargetLockerView = () => {
                   <div id="connectionpage7">
                     <div onClick={() => handleConnectionClick(connection)}>
                       <h4 className="clickable-tag">
-                        <u>{connection.connection_type_name}</u> (users: {connection.incoming_count})
+                        <u>{connection.connection_type_name}</u> 
                       </h4>
                     </div>
                     <div id="availconntype">

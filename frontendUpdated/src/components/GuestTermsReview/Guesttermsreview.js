@@ -588,7 +588,7 @@ export const Guesttermsreview = () => {
         const fetchTerms = async () => {
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`http://localhost:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
+                const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -613,7 +613,7 @@ export const Guesttermsreview = () => {
         const fetchConnectionDetails = async () => {
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`http://localhost:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
+                const response = await fetch(`http://172.16.192.201:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -680,7 +680,7 @@ export const Guesttermsreview = () => {
             console.log("Request Body:", requestBody);
     
             // First, update the connection terms
-            const updateResponse = await fetch(`http://localhost:8000/update-connection-terms/`, {
+            const updateResponse = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -717,7 +717,7 @@ export const Guesttermsreview = () => {
     const handleAcceptResource = async (resource) => {
         try {
             const token = Cookies.get('authToken');
-            const response = await fetch(`http://localhost:8000/transfer-resource/`, {
+            const response = await fetch(`http://172.16.192.201:8000/transfer-resource/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -750,7 +750,7 @@ export const Guesttermsreview = () => {
     };
 
     const handleResourceClick = (filePath) => {
-        const url = `http://localhost:8000/media/documents/${filePath}`;
+        const url = `http://172.16.192.201:8000/media/documents/${filePath}`;
         window.open(url, "_blank");
     };
 

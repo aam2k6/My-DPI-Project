@@ -24,7 +24,7 @@ export default function FreezeLockerConnection() {
 
    useEffect(() => {
     const token = Cookies.get('authToken');
-         fetch('http://172.16.192.201:8000/dpi-directory/', {
+         fetch('http://localhost:8000/dpi-directory/', {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -53,7 +53,7 @@ export default function FreezeLockerConnection() {
     const params = new URLSearchParams({ username: selectedUser.username });
 
     try {
-      const response = await fetch(`http://172.16.192.201:8000/get-lockers-user/?${params}`, {
+      const response = await fetch(`http://localhost:8000/get-lockers-user/?${params}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -83,7 +83,7 @@ export default function FreezeLockerConnection() {
   const fetchConnections = async () => {
     const token = Cookies.get('authToken');
     try {
-      const response = await fetch('http://172.16.192.201:8000/get-all-connections/', {
+      const response = await fetch('http://localhost:8000/get-all-connections/', {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -141,7 +141,7 @@ export default function FreezeLockerConnection() {
     const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("http://172.16.192.201:8000/freeze-unfreeze-locker/", {
+      const response = await fetch("http://localhost:8000/freeze-unfreeze-locker/", {
         method: "PUT",
         body: JSON.stringify({ locker_name: lockerName, username: selectedUser.username, action}),
         headers: {
@@ -186,7 +186,7 @@ export default function FreezeLockerConnection() {
     const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("http://172.16.192.201:8000/freeze-unfreeze-connection/", {
+      const response = await fetch("http://localhost:8000/freeze-unfreeze-connection/", {
         method: "PUT",
         //curruser is user obj
         body: JSON.stringify({ connection_id: connectionId, connection_name: connectionName, action}),

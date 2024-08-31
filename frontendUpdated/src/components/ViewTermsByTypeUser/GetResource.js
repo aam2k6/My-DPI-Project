@@ -34,7 +34,7 @@ export const GetResource = ({ username, lockerName, onSubmit }) =>{
           const token = Cookies.get('authToken');
         //   const params = new URLSearchParams({ username : username, locker_name: lockerName, obligation: obligation.labelName });
   
-          const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${lockerName}`, {
+          const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${lockerName}`, {
             method: 'GET',
             headers: {
               'Authorization': `Basic ${token}`,

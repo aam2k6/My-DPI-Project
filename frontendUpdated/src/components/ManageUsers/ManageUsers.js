@@ -26,7 +26,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
 
     const token = Cookies.get('authToken');
 
-    fetch('http://172.16.192.201:8000/dpi-directory/', {
+    fetch('http://localhost:8000/dpi-directory/', {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -68,7 +68,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
     const typeOfRole = (role === "sys_admin" || role === "system_admin") ? "admin/" : "moderator/"
     const token = Cookies.get('authToken');
 
-    const url = `http://172.16.192.201:8000/${typeOfAction}${typeOfRole}`;
+    const url = `http://localhost:8000/${typeOfAction}${typeOfRole}`;
     console.log("url", url);
     fetch(url, {
       method: 'PUT',

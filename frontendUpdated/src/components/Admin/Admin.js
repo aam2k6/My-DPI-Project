@@ -680,7 +680,7 @@ export const Admin = () => {
   const fetchUserLockers = async () => {
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`http://172.16.192.201:8000/get-lockers-user/`, {
+      const response = await fetch(`http://localhost:8000/get-lockers-user/`, {
         method: "GET",
         headers: {
           Authorization: `Basic ${token}`,

@@ -37,7 +37,7 @@ export const UploadResource = () => {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://172.16.192.201:8000/upload-resource/', {
+    fetch('http://localhost:8000/upload-resource/', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`

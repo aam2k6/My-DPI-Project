@@ -3369,39 +3369,34 @@ def delete_Update_Locker(request: HttpRequest):
             "description": value
         }
         """
-        user: CustomUser = request.user
-        actual_User = CustomUser.objects.filter(username=user.username)
-        if actual_User.exists():
-            locker_Name = request.data.get("locker_name")
-            if locker_Name is None:
-                return JsonResponse({"message": "Locker name is not provided."})
-            particular_User: CustomUser = actual_User.first()
-            locker_To_Be_Updated = Locker.objects.filter(
-                name=locker_Name, user=particular_User
-            )
-            if locker_To_Be_Updated.exists():
-                update_Locker: Locker = locker_To_Be_Updated.first()
-                new_locker_name = request.data.get("new_locker_name")
-                description = request.data.get("description")
-                username = request.data.get("username")
-                is_frozen = request.data.get("is_frozen")
-                new_User = CustomUser.objects.filter(username=username)
-                if new_User.exists():
-                    update_Locker.name = new_locker_name
-                    update_Locker.description = description
-                    update_Locker.is_frozen = is_frozen
-                    update_Locker.user = new_User
-                    update_Locker.save()
-                    return JsonResponse({"message": "Locker updated successfully."})
-                else:
-                    return JsonResponse(
-                        {"message": f"User with username = {username} does not exist."}
-                    )
+        data = request.data
+        locker_name = data.get("locker_name")
+        new_locker_name = data.get("new_locker_name")
+        new_description = data.get("description")
+        is_frozen = data.get("is_frozen")
+
+        if not locker_name:
+            return JsonResponse({
+                'success': False,
+                'error': 'Locker name must be provided.'
+            }, status=400)
+
+        locker = Locker.objects.filter(name=locker_name, user=request.user).first()
+        if locker:
+            if new_locker_name:
+                locker.name = new_locker_name
+            if new_description:
+                locker.description = new_description
+            if is_frozen is not None:
+                locker.is_frozen = is_frozen
+            locker.save()
+
+            return JsonResponse({"message": "Locker updated successfully."})
         else:
-            return JsonResponse(
-                {"message": f"Locker with name = {locker_name} does not exist."},
-                status=404
-            )
+            return JsonResponse({
+                'success': False,
+                'error': f"Locker with name = {locker_name} does not exist."
+            }, status=404)
 
     else:
         return JsonResponse({"message": "Request method should be either POST or PUT."})
@@ -3692,7 +3687,7 @@ def share_resource(request):
 @api_view(["PUT"])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def update_Connection(request:HttpRequest):
+def edit_Connection(request:HttpRequest):
     """
     Expected JSON (raw JSON data/form data):
     {
@@ -3737,7 +3732,7 @@ def get_terms_for_user(request):
             #CHANGED TO REQUEST.USER.USER_ID
             locker = Locker.objects.filter(name=locker_name, user_id=request.user.user_id).first()
             #CHANGED TO REQUEST.USER.USER_ID
-            locker = Locker.objects.filter(name=locker_name, user_id=request.user.user_id).first()
+            # locker = Locker.objects.filter(name=locker_name, user_id=request.user.user_id).first()
             if not locker:
                 print(f"Locker not found for user: {username}, locker name: {locker_name}")
                 return JsonResponse({"success": False, "error": "Locker not found"}, status=404)

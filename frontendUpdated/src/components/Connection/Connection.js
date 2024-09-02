@@ -17,6 +17,8 @@ export const Connection = () => {
     const [connectionDescription, setConnectionDescription] = useState(null);
     const [validity, setValidity] = useState(null); 
     const { locker_conn, setConnectionData } = useContext(ConnectionContext);
+    const [selectedLocker, setSelectedLocker] = useState(null);
+    const [lockers, setLockers] = useState([]);
 
     // const locker = location.state ? location.state.locker : null;
     // console.log("in connection", locker);
@@ -28,6 +30,32 @@ export const Connection = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const token = Cookies.get('authToken');
+
+        fetch('http://localhost:8000/get-lockers-user/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setLockers(data.lockers);
+                    if (!selectedLocker && data.lockers.length > 0) {
+                        setSelectedLocker(data.lockers[0]);
+                    }
+                } else {
+                    setError(data.message || data.error);
+                }
+            })
+            .catch(error => {
+                setError("An error occurred while fetching lockers.");
+                console.error("Error:", error);
+            });
+    }, [curruser]);
 
     const handleSubmit = (event) => {
         event.preventDefault();

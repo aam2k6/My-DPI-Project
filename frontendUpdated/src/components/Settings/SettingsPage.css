@@ -29,7 +29,6 @@
     font-size: 1.2rem;
     color: rgb(0, 0, 0);
     margin-bottom: 10px;
-    
 }
 
 .profile-info input {
@@ -61,4 +60,29 @@
 .profile-actions button:last-child {
     background-color: #007bff;
     color: white;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 80%; /* Ensure the wrapper has the same width as the input */
+}
+
+.password-wrapper input {
+    width: 100%; /* Full width to fit inside the wrapper */
+    padding: 8px 2.5rem 8px 8px; /* Add padding on the right for the eye icon */
+    font-size: 1.2rem;
+    border: 2px solid rgb(107, 120, 231);
+    border-radius: 4px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 1; /* Ensure the icon is clickable and above other elements */
+    color: rgb(107, 120, 231); /* Optional: change the color to match the input border */
 }

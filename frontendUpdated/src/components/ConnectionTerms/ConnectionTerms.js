@@ -5,14 +5,21 @@ import "./connectionTerms.css";
 
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
+import { ConnectionContext } from '../../ConnectionContext';
+
 import Navbar from '../Navbar/Navbar';
+import Panel from '../Panel/Panel';
 
 export const ConnectionTerms = () => {
     const navigate = useNavigate();
+    const { locker_conn, connectionData, setConnectionTermsData } = useContext(ConnectionContext);
 
     const location = useLocation();
-    const locker = location.state ? location.state.connectionData.lockerName : null;
-
+    // console.log("connection terms loc", location.state);
+    // const locker = location.state ? location.state.locker : null;
+    // const connectionData = location.state ? location.state.connectionData : null;
+    // console.log("connection terms locker", locker);
+    // console.log("connection terms connection data", connectionData);
     const initialFormData = {
         labelName: "",
         typeOfAction: "text",
@@ -26,7 +33,7 @@ export const ConnectionTerms = () => {
     const [formData, setFormData] = useState(initialFormData);
     const [obligations, setObligations] = useState([]); // Change to an array
     const [error, setError] = useState(null);
-    const { curruser, setUser } = useContext(usercontext);
+    const { curruser } = useContext(usercontext);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -64,7 +71,7 @@ export const ConnectionTerms = () => {
         const token = Cookies.get('authToken');
 
         const connectionTermsData = {
-            ...location.state.connectionData,
+            ...connectionData,
             obligations: obligations, // Now an array
             permissions: {
                 canShareMoreData: formData.canShareMore,
@@ -72,12 +79,14 @@ export const ConnectionTerms = () => {
             }
         };
 
+        setConnectionTermsData(connectionTermsData);
+
         console.log(connectionTermsData);
 
+        navigate("/connection");
 
 
-
-        fetch('http://172.16.192.201:8000/create-connection-type-and-terms/', {
+        fetch('http://localhost:8000/create-connection-type-and-terms/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -102,7 +111,7 @@ export const ConnectionTerms = () => {
 
 
     };
-
+    
     const handleHostPermissionsChange = (event) => {
         const { value, checked } = event.target;
 
@@ -139,7 +148,7 @@ export const ConnectionTerms = () => {
 
 
     const content = (
-    <><div className="navbarLockerName">Locker : {locker}</div>
+    <><div className="navbarLockerName">Locker : {locker_conn?.name}</div>
     <div className="navbarLockerOwner">Owner : {curruser.username}</div>
     </>
     );
@@ -147,9 +156,12 @@ export const ConnectionTerms = () => {
     return (
         <div>
             <Navbar content = {content} ></Navbar>
-            <div className="connectionTerms-heroContainer">
+            <div className="page-container">
+            <Panel />
+            <div className="Panelcontent">
+            <div className="connectionTerms-heroContainer-nonglobal">
                 <div className="main-heading">Guest Terms Of Service</div>
-
+                
                 <div className="parent-container">
                     <div className="parent-left-heading">
                         <div className="parent-left-heading-title">
@@ -267,6 +279,8 @@ export const ConnectionTerms = () => {
                     </div>
                 </div>
             </div>
+            </div>
+        </div>
         </div>
     );
 };

@@ -3,7 +3,7 @@
     color: rgb(44, 41, 41); /* Different color to distinguish from the name */
      margin-top: 2rem;;
     margin-left: 3rem;  
-    font-weight: bolder;
+    /* font-weight: bolder; */
 }
 .description7{
     font-size: 1.195rem; /* Slightly smaller font size for the description */
@@ -151,7 +151,7 @@
   .descriptionpage7 {
     font-size: 1.5625rem;
     
-    font-weight: bolder;
+    /* font-weight: bolder; */
 
   }
 
@@ -159,3 +159,30 @@
     font-size: 0.75rem;
     font-weight: 500;
   }
+
+  #track{
+    position: top;
+  }
+
+  .card {
+    position: relative; 
+    padding: 1rem;
+    border: 2px solid #007bff;
+    border-radius: 4px;
+    margin: 1rem;
+    background-color: #fff;
+  }
+  
+  #track {
+    position: absolute;
+    top: 0.5rem; 
+    right: 0.5rem; 
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  

@@ -29,6 +29,9 @@ import FreezeLockerConnection from "./components/FreezeLockerConnection/FreezeLo
 import CreateGlobalConnectionType from "./components/CreateGlobalConnectionType/CreateGlobalConnectionType";
 import SettingsPage from "./components/Settings/SettingsPage";
 
+
+import { ConnectionProvider } from "./ConnectionContext";
+
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 
 function App() {
@@ -60,7 +63,9 @@ function App() {
   return (
     <div className="App">
       <Router>
+      
         <usercontext.Provider value={{ curruser, setUser }}>
+        <ConnectionProvider>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route
@@ -247,6 +252,7 @@ function App() {
 
             <Route path="*" element={<h1>Page Not Found</h1>} />
           </Routes>
+          </ConnectionProvider>
         </usercontext.Provider>
       </Router>
     </div>

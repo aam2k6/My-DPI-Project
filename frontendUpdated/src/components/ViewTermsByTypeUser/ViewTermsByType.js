@@ -32,7 +32,7 @@
 // //             console.log("Inside fetch terms");
 // //             try {
 // //                 const token = Cookies.get('authToken');
-// //                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+// //                 const response = await fetch(`http://localhost:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 // //                     method: 'GET',
 // //                     headers: {
 // //                         'Content-Type': 'application/json',
@@ -113,7 +113,7 @@
 // //             const fetchResources = async () => {
 // //                 try {
 // //                     const token = Cookies.get('authToken');
-// //                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+// //                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 // //                         method: 'GET',
 // //                         headers: {
 // //                             'Authorization': `Basic ${token}`,
@@ -165,7 +165,7 @@
 
 // //         try {
 // //             const token = Cookies.get('authToken');
-// //             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+// //             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
 // //                 method: 'PATCH',
 // //                 headers: {
 // //                     'Content-Type': 'application/json',
@@ -288,7 +288,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+//                 const response = await fetch(`http://localhost:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -372,7 +372,7 @@
 //             const fetchResources = async () => {
 //                 try {
 //                     const token = Cookies.get('authToken');
-//                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+//                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 //                         method: 'GET',
 //                         headers: {
 //                             'Authorization': `Basic ${token}`,
@@ -424,7 +424,7 @@
 
 //         try {
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+//             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -521,8 +521,6 @@
 //     );
 // };
 
-
-
 // import React, { useContext, useEffect, useState } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
 // import { usercontext } from "../../usercontext";
@@ -554,7 +552,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+//                 const response = await fetch(`http://localhost:8000/show_terms/?username=${guestUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -639,7 +637,7 @@
 //             const fetchResources = async () => {
 //                 try {
 //                     const token = Cookies.get('authToken');
-//                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+//                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 //                         method: 'GET',
 //                         headers: {
 //                             'Authorization': `Basic ${token}`,
@@ -691,7 +689,7 @@
 
 //         try {
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+//             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -785,9 +783,6 @@
 //     );
 // };
 
-
-
-
 // import React, { useContext, useEffect, useState } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
 // import { usercontext } from "../../usercontext";
@@ -819,7 +814,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+//                 const response = await fetch(`http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -855,11 +850,8 @@
 //                 setError(err.message);
 //             }
 
-
-            
-        
 //         };
-        
+
 //         fetchTerms();
 //     }, []);
 
@@ -875,7 +867,7 @@
 //         const strippedValue = termValues[obligation.labelName]?.replace("; F", "");
 
 //         switch (obligation.typeOfAction) {
-            
+
 //             case 'text':
 //                 return (
 //                     <input
@@ -923,7 +915,7 @@
 //             const fetchResources = async () => {
 //                 try {
 //                     const token = Cookies.get('authToken');
-//                     const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+//                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
 //                         method: 'GET',
 //                         headers: {
 //                             'Authorization': `Basic ${token}`,
@@ -975,14 +967,14 @@
 
 //         try {
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+//             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
 //                     'Authorization': `Basic ${token}`
 //                 },
 //                 body: JSON.stringify(payload)
-                
+
 //             });
 
 //             console.log("payload", payload);
@@ -1071,13 +1063,683 @@
 //     );
 // };
 
+// import React, { useContext, useEffect, useState } from "react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { usercontext } from "../../usercontext";
+// import Cookies from 'js-cookie';
+// import "./ViewTermsByType.css";
+// import Navbar from "../Navbar/Navbar";
 
+// export const ViewTermsByType = () => {
+//     const navigate = useNavigate();
+//     const location = useLocation();
+//     const { curruser } = useContext(usercontext);
+//     const [showResources, setShowResources] = useState(false);
+//     const [selectedLocker, setSelectedLocker] = useState(null);
+//     const [error, setError] = useState(null);
+//     const [res, setRes] = useState(null);
+//     const [resources, setResources] = useState([]);
+//     const [termValues, setTermValues] = useState({});
+//     const [selectedResources, setSelectedResources] = useState({});
+//     const [currentLabelName, setCurrentLabelName] = useState(null);
+//     const [statuses, setStatuses] = useState({});  // To store the statuses
+
+//     const { connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, locker } = location.state || {};
+
+//     useEffect(() => {
+//         if (!curruser) {
+//             navigate('/');
+//             return;
+//         }
+
+//         const fetchTerms = async () => {
+//             try {
+//                 const token = Cookies.get('authToken');
+//                 const response = await fetch(`http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
+//                     method: 'GET',
+//                     headers: {
+//                         'Content-Type': 'application/json',
+//                         'Authorization': `Basic ${token}`
+//                     },
+//                 });
+//                 if (!response.ok) {
+//                     throw new Error('Failed to fetch terms');
+//                 }
+//                 const data = await response.json();
+//                 if (data.success) {
+//                     setRes(data.terms);
+//                     const initialValues = {};
+//                     const initialResources = {};
+//                     const statusMap = {};
+//                     data.terms.obligations.forEach(obligation => {
+//                         initialValues[obligation.labelName] = obligation.value || "";
+//                         statusMap[obligation.labelName] = obligation.value.substr(obligation.value.length - 1) === 'T' ? 'Approved' : obligation.value.substr(obligation.value.length - 1) === 'R' ? 'Rejected' : 'Pending';
+//                         if (obligation.typeOfAction === 'file' && obligation.value) {
+//                             const [document_name] = obligation.value.split(';');
+//                             initialResources[obligation.labelName] = { document_name, i_node_pointer: obligation.i_node_pointer };
+//                         }
+//                     });
+//                     setTermValues(initialValues);
+//                     setSelectedResources(initialResources);
+//                     setStatuses(statusMap);
+//                     console.log(initialValues);
+//                     console.log(initialResources);
+//                 } else {
+//                     setError(data.error || 'No terms found');
+//                 }
+//             } catch (err) {
+//                 setError(err.message);
+//             }
+//         };
+
+//         fetchTerms();
+//         // fetchStatus();
+//     }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
+
+//     const handleInputChange = (labelName, value) => {
+//         setTermValues(prev => ({
+//             ...prev,
+//             [labelName]: value
+//         }));
+//     };
+
+//     const renderInputField = (obligation) => {
+//         // console.log(termValues[obligation.labelName]);
+//         // const val = termValues[obligation.labelName];
+//         // const strippedValue = val;
+//         const strippedValue = termValues[obligation.labelName]?.replace("; F", "")?.replace("; T", "")?.replace(";T", "")?.replace(";F", "")?.replace(";R", "")?.replace("; R", "");
+
+//         switch (obligation.typeOfAction) {
+//             case 'text':
+//                 return (
+//                     <input
+//                         type="text"
+//                         placeholder="Enter value"
+//                         value={strippedValue || ""}
+//                         onChange={(e) => handleInputChange(obligation.labelName, e.target.value)}
+//                     />
+//                 );
+//             case 'file':
+//                 return (
+//                     <button onClick={() => handleButtonClick(obligation.labelName)}>
+//                         {selectedResources[obligation.labelName]?.document_name || "Upload File"}
+//                     </button>
+//                 );
+//             case 'date':
+//                 return (
+//                     <input
+//                         type="date"
+//                         value={strippedValue || ""}
+//                         onChange={(e) => handleInputChange(obligation.labelName, e.target.value)}
+//                     />
+//                 );
+//             default:
+//                 return null;
+//         }
+//     };
+
+//     const handleButtonClick = (labelName) => {
+//         setSelectedLocker(guestLockerName);
+//         setShowResources(true);
+//         setCurrentLabelName(labelName);
+//     };
+
+//     const handleResourceSelection = (resource) => {
+//         setSelectedResources(prev => ({
+//             ...prev,
+//             [currentLabelName]: resource
+//         }));
+//         setShowResources(false);
+//     };
+
+//     useEffect(() => {
+//         if (selectedLocker) {
+//             const fetchResources = async () => {
+//                 try {
+//                     const token = Cookies.get('authToken');
+//                     const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
+//                         method: 'GET',
+//                         headers: {
+//                             'Authorization': `Basic ${token}`,
+//                             'Content-Type': 'application/json'
+//                         }
+//                     });
+//                     if (!response.ok) {
+//                         throw new Error('Failed to fetch resources');
+//                     }
+//                     const data = await response.json();
+//                     if (data.success) {
+//                         setResources(data.resources);
+//                     } else {
+//                         setError(data.message || 'Failed to fetch resources');
+//                     }
+//                 } catch (error) {
+//                     console.error('Error fetching resources:', error);
+//                     setError('An error occurred while fetching resources');
+//                 }
+//             };
+//             fetchResources();
+//         }
+//     }, [selectedLocker]);
+
+//     const handleSubmit = async () => {
+//         const resourcesData = {
+//             Transfer: [
+//                 ...resources.map(resource => resource.i_node_pointer),
+//                 ...Object.values(termValues).filter(value => value.includes("documents/"))
+//             ]
+//         };
+
+//         console.log("1 termValues", termValues);
+//         console.log("1 selected Res", selectedResources);
+//         const payload = {
+//             connection_name: connectionName,
+//             host_locker_name: hostLockerName,
+//             guest_locker_name: guestLockerName,
+//             host_user_username: hostUserUsername,
+//             guest_user_username: guestUserUsername,
+
+//         terms_value: {
+
+//     ...Object.fromEntries(
+
+//         Object.entries(termValues).map(([key, value]) => {
+//             // Find the original obligation
+//             const obligation = res.obligations.find(ob => ob.labelName === key);
+//             const initialValue = obligation?.value || "";
+//             // Check if the value has changed
+//             console.log("val", value);
+//             if (value !== initialValue) {
+//                 return [key, `${value.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
+//             } else {
+//                 return [key, initialValue]; // Retain original value and status if not changed
+//             }
+//         })
+//     ),
+//     ...Object.fromEntries(
+//         Object.entries(selectedResources).map(([key, resource]) => {
+//             // Find the original resource
+//             const obligation = res.obligations.find(ob => ob.labelName === key);
+//             const initialResource = obligation?.value || "";
+
+//             // Check if the resource has changed
+//             if ((resource.i_node_pointer !== initialResource.split(";")[0])) {
+//                 return [key, `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
+//             } else {
+//                 return [key, initialResource]; // Retain original value and status if not changed
+//             }
+//         })
+//     ),
+// },
+// resources: resourcesData
+// };
+
+// console.log("2 termValues", termValues);
+// console.log("2 selected Res", selectedResources);
+
+//         try {
+//             const token = Cookies.get('authToken');
+//             const response = await fetch(`http://localhost:8000/update-connection-terms/`, {
+//                 method: 'PATCH',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'Authorization': `Basic ${token}`
+//                 },
+//                 body: JSON.stringify(payload)
+//             });
+
+//             if (!response.ok) {
+//                 throw new Error('Failed to update terms');
+//             }
+
+//             const data = await response.json();
+//             if (data.success) {
+//                 navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
+//             } else {
+//                 setError(data.error || 'Failed to update terms');
+//             }
+//         } catch (err) {
+//             setError(err.message);
+//         }
+//     };
+
+//     const content = (
+//         <>
+//             <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
+//             <div className="description">{curruser ? curruser.description : 'None'}</div>
+//         </>
+//     );
+
+//     return (
+//         <div>
+//             <Navbar content={content} />
+
+//             <div className={showResources ? "split-view" : ""}>
+//                 <div className="table-container">
+//                     <table>
+//                         <thead>
+//                             <tr>
+//                                 <th>Sno</th>
+//                                 <th>Name</th>
+//                                 <th>Enter value</th>
+//                                 <th>Restrictions</th>
+//                                 <th>Status</th> {/* New column for Status */}
+//                             </tr>
+//                         </thead>
+
+//                         <tbody>
+//                             {res?.obligations.map((obligation, index) => (
+//                                 <tr key={index}>
+//                                     <td>{index + 1}</td>
+//                                     <td>{obligation.labelName}</td>
+//                                     <td>{renderInputField(obligation)}</td>
+//                                     <td>{obligation.labelDescription}</td>
+//                                     <td>{statuses[obligation.labelName] || 'Pending'}</td> {/* Display status */}
+//                                 </tr>
+//                             ))}
+//                         </tbody>
+//                     </table>
+//                 </div>
+
+//                 {showResources && (
+//                     <div className="resource-container">
+//                         <h3>Select Resource for {currentLabelName}</h3>
+//                         {error && <p className="error">{error}</p>}
+
+//                         <ul>
+//                             {resources.map((resource, index) => (
+//                                 <li key={index}>
+//                                     <div>
+//                                         <label>
+//                                             <input
+//                                                 type="radio"
+//                                                 name="selectedResource"
+//                                                 value={resource.i_node_pointer}
+//                                                 checked={selectedResources[currentLabelName]?.i_node_pointer === resource.i_node_pointer}
+//                                                 onChange={() => handleResourceSelection(resource)}
+//                                             />
+//                                             {resource.document_name}
+//                                         </label>
+//                                     </div>
+//                                 </li>
+//                             ))}
+//                         </ul>
+//                         <button onClick={() => setShowResources(false)}>Select</button>
+//                     </div>
+//                 )}
+//             </div>
+
+//             <div>
+//                 <button onClick={handleSubmit}>Submit</button>
+//             </div>
+//         </div>
+//     );
+// };
+
+// import React, { useContext, useEffect, useState } from "react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { usercontext } from "../../usercontext";
+// import Cookies from "js-cookie";
+// import "./ViewTermsByType.css";
+// import Navbar from "../Navbar/Navbar";
+
+// export const ViewTermsByType = () => {
+//     const navigate = useNavigate();
+//     const location = useLocation();
+//     const { curruser } = useContext(usercontext);
+//     const [showResources, setShowResources] = useState(false);
+//     const [selectedLocker, setSelectedLocker] = useState(null);
+//     const [error, setError] = useState(null);
+//     const [res, setRes] = useState(null);
+//     const [resources, setResources] = useState([]);
+//     const [termValues, setTermValues] = useState({});
+//     const [selectedResources, setSelectedResources] = useState({});
+//     const [currentLabelName, setCurrentLabelName] = useState(null);
+//     const [statuses, setStatuses] = useState({}); // To store the statuses
+
+//     const {
+//         connectionName,
+//         hostLockerName,
+//         guestLockerName,
+//         hostUserUsername,
+//         guestUserUsername,
+//         locker,
+//     } = location.state || {};
+
+//     useEffect(() => {
+//         if (!curruser) {
+//             navigate("/");
+//             return;
+//         }
+
+//         const fetchTerms = async () => {
+//             try {
+//                 const token = Cookies.get("authToken");
+//                 const response = await fetch(
+//                     `http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`,
+//                     {
+//                         method: "GET",
+//                         headers: {
+//                             "Content-Type": "application/json",
+//                             Authorization: `Basic ${token}`,
+//                         },
+//                     }
+//                 );
+//                 if (!response.ok) {
+//                     throw new Error("Failed to fetch terms");
+//                 }
+//                 const data = await response.json();
+//                 if (data.success) {
+//                     console.log("term value", data);
+//                     setRes(data.terms);
+//                     const initialValues = {};
+//                     const initialResources = {};
+//                     const statusMap = {};
+//                     data.terms.obligations.forEach((obligation) => {
+//                         initialValues[obligation.labelName] = obligation.value || "";
+//                         statusMap[obligation.labelName] =
+//                             obligation.value.substr(obligation.value.length - 1) === "T"
+//                                 ? "Approved"
+//                                 : obligation.value.substr(obligation.value.length - 1) === "R"
+//                                     ? "Rejected"
+//                                     : "Pending";
+//                         if (obligation.typeOfAction === "file" && obligation.value) {
+//                             const [document_name] = obligation.value.split(";");
+//                             initialResources[obligation.labelName] = {
+//                                 document_name,
+//                                 i_node_pointer: obligation.i_node_pointer,
+//                             };
+//                         }
+//                     });
+//                     setTermValues(initialValues);
+//                     setSelectedResources(initialResources);
+//                     setStatuses(statusMap);
+//                     console.log(initialValues);
+//                     console.log(initialResources);
+//                 } else {
+//                     setError(data.error || "No terms found");
+//                 }
+//             } catch (err) {
+//                 setError(err.message);
+//             }
+//         };
+
+//         fetchTerms();
+//         // fetchStatus();
+//     }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
+
+//     const handleInputChange = (labelName, value) => {
+//         setTermValues((prev) => ({
+//             ...prev,
+//             [labelName]: value,
+//         }));
+//     };
+
+//     const renderInputField = (obligation) => {
+//         // console.log(termValues[obligation.labelName]);
+//         // const val = termValues[obligation.labelName];
+//         // const strippedValue = val;
+//         const strippedValue = termValues[obligation.labelName]
+//             ?.replace("; F", "")
+//             ?.replace("; T", "")
+//             ?.replace(";T", "")
+//             ?.replace(";F", "")
+//             ?.replace(";R", "")
+//             ?.replace("; R", "");
+
+//         switch (obligation.typeOfAction) {
+//             case "text":
+//                 return (
+//                     <input
+//                         type="text"
+//                         placeholder="Enter value"
+//                         value={strippedValue || ""}
+//                         onChange={(e) =>
+//                             handleInputChange(obligation.labelName, e.target.value)
+//                         }
+//                     />
+//                 );
+//             case "file":
+//                 return (
+//                     <button onClick={() => handleButtonClick(obligation.labelName)}>
+//                         {selectedResources[obligation.labelName]?.document_name ||
+//                             "Upload File"}
+//                     </button>
+//                 );
+//             case "date":
+//                 return (
+//                     <input
+//                         type="date"
+//                         value={strippedValue || ""}
+//                         onChange={(e) =>
+//                             handleInputChange(obligation.labelName, e.target.value)
+//                         }
+//                     />
+//                 );
+//             default:
+//                 return null;
+//         }
+//     };
+
+//     const handleButtonClick = (labelName) => {
+//         setSelectedLocker(guestLockerName);
+//         setShowResources(true);
+//         setCurrentLabelName(labelName);
+//     };
+
+//     const handleResourceSelection = (resource) => {
+//         setSelectedResources((prev) => ({
+//             ...prev,
+//             [currentLabelName]: resource,
+//         }));
+//         setShowResources(false);
+//     };
+
+//     useEffect(() => {
+//         if (selectedLocker) {
+//             const fetchResources = async () => {
+//                 try {
+//                     const token = Cookies.get("authToken");
+//                     const response = await fetch(
+//                         `http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`,
+//                         {
+//                             method: "GET",
+//                             headers: {
+//                                 Authorization: `Basic ${token}`,
+//                                 "Content-Type": "application/json",
+//                             },
+//                         }
+//                     );
+//                     if (!response.ok) {
+//                         throw new Error("Failed to fetch resources");
+//                     }
+//                     const data = await response.json();
+//                     if (data.success) {
+//                         setResources(data.resources);
+//                     } else {
+//                         setError(data.message || "Failed to fetch resources");
+//                     }
+//                 } catch (error) {
+//                     console.error("Error fetching resources:", error);
+//                     setError("An error occurred while fetching resources");
+//                 }
+//             };
+//             fetchResources();
+//         }
+//     }, [selectedLocker]);
+
+//     const handleSubmit = async () => {
+//         const resourcesData = {
+//             Transfer: [
+//                 ...resources.map((resource) => resource.i_node_pointer),
+//                 ...Object.values(termValues).filter((value) =>
+//                     value.includes("documents/")
+//                 ),
+//             ],
+//         };
+
+//         console.log("term", termValues);
+//         const payload = {
+//             connection_name: connectionName,
+//             host_locker_name: hostLockerName,
+//             guest_locker_name: guestLockerName,
+//             host_user_username: hostUserUsername,
+//             guest_user_username: guestUserUsername,
+
+//             terms_value: {
+
+//                 ...Object.fromEntries(
+//                     Object.entries(termValues).map(([key, value]) => {
+//                         console.log("Value of text:", value);
+//                         const obligation = res.obligations.find(ob => ob.labelName === key);
+//                         const initialValue = obligation?.value || "";
+                        
+//                         // Check if the field is a file
+//                         const isFileField = obligation.typeOfAction === "file";
+                
+//                         if (isFileField) {
+//                             const resource = selectedResources[key];
+//                             const initialResourcePointer = initialValue.split(";")[0]; // The original resource pointer
+                
+//                             // console.log("Resource Pointer:", resource?.i_node_pointer);
+//                             // console.log("Initial Resource Pointer:", initialResourcePointer);
+                
+//                             // If the resource pointer has changed, update it, else keep the original value
+//                             if (resource && resource.i_node_pointer && resource.i_node_pointer !== initialResourcePointer) {
+//                                 return [
+//                                     key,
+//                                     `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F` // Mark as Pending
+//                                 ];
+//                             } else {
+//                                 return [key, initialValue]; // Keep original value if the file hasn't been changed
+//                             }
+//                         } else if (value !== initialValue) {
+//                             // Mark text/date fields as "Pending" if changed
+//                             return [key, `${value.replace(/;[ ]?[TFR]$/, "")}; F`];
+//                         } else {
+//                             // Retain original value if not changed
+//                             return [key, initialValue];
+//                         }
+//                     })
+//                 ),
+                
+//             },
+//             resources: resourcesData,
+//         };
+
+//         try {
+//             const token = Cookies.get("authToken");
+//             const response = await fetch(
+//                 `http://localhost:8000/update-connection-terms/`,
+//                 {
+//                     method: "PATCH",
+//                     headers: {
+//                         "Content-Type": "application/json",
+//                         Authorization: `Basic ${token}`,
+//                     },
+//                     body: JSON.stringify(payload),
+//                 }
+//             );
+
+//             if (!response.ok) {
+//                 throw new Error("Failed to update terms");
+//             }
+
+//             const data = await response.json();
+//             if (data.success) {
+//                 navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
+//             } else {
+//                 setError(data.error || "Failed to update terms");
+//             }
+//         } catch (err) {
+//             setError(err.message);
+//         }
+//     };
+
+//     const content = (
+//         <>
+//             <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+//             <div className="description">
+//                 {curruser ? curruser.description : "None"}
+//             </div>
+//         </>
+//     );
+
+//     return (
+//         <div>
+//             <Navbar content={content} />
+
+//             <div className={showResources ? "split-view" : ""}>
+//                 <div className="table-container">
+//                     <table>
+//                         <thead>
+//                             <tr>
+//                                 <th>Sno</th>
+//                                 <th>Name</th>
+//                                 <th>Enter value</th>
+//                                 <th>Restrictions</th>
+//                                 <th>Status</th> {/* New column for Status */}
+//                             </tr>
+//                         </thead>
+
+//                         <tbody>
+//                             {res?.obligations.map((obligation, index) => (
+//                                 <tr key={index}>
+//                                     <td>{index + 1}</td>
+//                                     <td>{obligation.labelName}</td>
+//                                     <td>{renderInputField(obligation)}</td>
+//                                     <td>{obligation.labelDescription}</td>
+//                                     <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
+//                                     {/* Display status */}
+//                                 </tr>
+//                             ))}
+//                         </tbody>
+//                     </table>
+//                 </div>
+
+//                 {showResources && (
+//                     <div className="resource-container">
+//                         <h3>Select Resource for {currentLabelName}</h3>
+//                         {error && <p className="error">{error}</p>}
+
+//                         <ul>
+//                             {resources.map((resource, index) => (
+//                                 <li key={index}>
+//                                     <div>
+//                                         <label>
+//                                             <input
+//                                                 type="radio"
+//                                                 name="selectedResource"
+//                                                 value={resource.i_node_pointer}
+//                                                 checked={
+//                                                     selectedResources[currentLabelName]
+//                                                         ?.i_node_pointer === resource.i_node_pointer
+//                                                 }
+//                                                 onChange={() => handleResourceSelection(resource)}
+//                                             />
+//                                             {resource.document_name}
+//                                         </label>
+//                                     </div>
+//                                 </li>
+//                             ))}
+//                         </ul>
+//                         <button onClick={() => setShowResources(false)}>Select</button>
+//                     </div>
+//                 )}
+//             </div>
+
+//             <div>
+//                 <button onClick={handleSubmit}>Submit</button>
+//             </div>
+//         </div>
+//     );
+// };
 
 
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import "./ViewTermsByType.css";
 import Navbar from "../Navbar/Navbar";
 
@@ -1093,96 +1755,141 @@ export const ViewTermsByType = () => {
     const [termValues, setTermValues] = useState({});
     const [selectedResources, setSelectedResources] = useState({});
     const [currentLabelName, setCurrentLabelName] = useState(null);
-    const [statuses, setStatuses] = useState({});  // To store the statuses
-
-    const { connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, locker } = location.state || {};
+    const [statuses, setStatuses] = useState({}); // To store the statuses
+    // const [resourcesData, setResourcesData] = useState({
+    //     share: [],
+    //     transfer: [],
+    // });
+    
+    const {
+        connectionName,
+        hostLockerName,
+        guestLockerName,
+        hostUserUsername,
+        guestUserUsername,
+        locker,
+    } = location.state || {};
 
     useEffect(() => {
         if (!curruser) {
-            navigate('/');
+            navigate("/");
             return;
         }
 
         const fetchTerms = async () => {
             try {
-                const token = Cookies.get('authToken');
-                const response = await fetch(`http://172.16.192.201:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Basic ${token}`
-                    },
-                });
+                const token = Cookies.get("authToken");
+                const response = await fetch(
+                    `http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Basic ${token}`,
+                        },
+                    }
+                );
+
                 if (!response.ok) {
-                    throw new Error('Failed to fetch terms');
+                    throw new Error("Failed to fetch terms");
                 }
+
                 const data = await response.json();
+                // console.log("data", data);
                 if (data.success) {
-                    setRes(data.terms);
                     const initialValues = {};
                     const initialResources = {};
                     const statusMap = {};
-                    data.terms.obligations.forEach(obligation => {
+                    // const resourceMap = {
+                    //     share: [],
+                    //     transfer: []
+                    // };
+
+                    data.terms.obligations.forEach((obligation) => {
                         initialValues[obligation.labelName] = obligation.value || "";
-                        statusMap[obligation.labelName] = obligation.value.substr(obligation.value.length - 1) === 'T' ? 'Approved' : obligation.value.substr(obligation.value.length - 1) === 'R' ? 'Rejected' : 'Pending';
-                        if (obligation.typeOfAction === 'file' && obligation.value) {
-                            const [document_name] = obligation.value.split(';');
-                            initialResources[obligation.labelName] = { document_name, i_node_pointer: obligation.i_node_pointer };
+                        statusMap[obligation.labelName] =
+                            obligation.value.endsWith("T")
+                                ? "Approved"
+                                : obligation.value.endsWith("R")
+                                    ? "Rejected"
+                                    : "Pending";
+
+                        if (obligation.typeOfAction === "file" && obligation.value) {
+                            const [document_name] = obligation.value.split(";");
+                            initialResources[obligation.labelName] = {
+                                document_name,
+                                i_node_pointer: obligation.i_node_pointer,
+                                typeOfSharing: obligation.typeOfSharing 
+                            };
+
+                            // if (obligation.typeOfSharing === "transfer") {
+                            //     resourceMap.transfer.push(document_name);
+                            // } else if (obligation.typeOfSharing === "share") {
+                            //     resourceMap.share.push(document_name);
+                            // }
                         }
                     });
+
+                    setRes(data.terms);
                     setTermValues(initialValues);
                     setSelectedResources(initialResources);
                     setStatuses(statusMap);
-                    console.log(initialValues);
-                    console.log(initialResources);
+                    // setResourcesData({
+                    //     share: Object.values(initialResources).filter(res => res.typeOfSharing === "share").map(res => res.document_name),
+                    //     transfer: Object.values(initialResources).filter(res => res.typeOfSharing === "transfer").map(res => res.document_name),
+                    // });
+
+                    // console.log("resourceMap", resourceMap);
+                    console.log("initialResources", initialResources);
+                    // console.log(resourcesData);
                 } else {
-                    setError(data.error || 'No terms found');
+                    setError(data.error || "No terms found");
                 }
             } catch (err) {
                 setError(err.message);
             }
         };
 
-        
         fetchTerms();
-        // fetchStatus();
     }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
 
     const handleInputChange = (labelName, value) => {
-        setTermValues(prev => ({
+        setTermValues((prev) => ({
             ...prev,
-            [labelName]: value
+            [labelName]: value,
         }));
     };
 
     const renderInputField = (obligation) => {
-        // console.log(termValues[obligation.labelName]);
-        // const val = termValues[obligation.labelName];
-        // const strippedValue = val;
-        const strippedValue = termValues[obligation.labelName]?.replace("; F", "")?.replace("; T", "")?.replace(";T", "")?.replace(";F", "")?.replace(";R", "")?.replace("; R", "");
-
+        const strippedValue = termValues[obligation.labelName]
+            // ?.replace(/;[TFR]$/, "");
+            ?.replace(/;[ ]?[TFR]$/, "");
         switch (obligation.typeOfAction) {
-            case 'text':
+            case "text":
                 return (
                     <input
                         type="text"
                         placeholder="Enter value"
                         value={strippedValue || ""}
-                        onChange={(e) => handleInputChange(obligation.labelName, e.target.value)}
+                        onChange={(e) =>
+                            handleInputChange(obligation.labelName, e.target.value)
+                        }
                     />
                 );
-            case 'file':
+            case "file":
                 return (
                     <button onClick={() => handleButtonClick(obligation.labelName)}>
                         {selectedResources[obligation.labelName]?.document_name || "Upload File"}
                     </button>
                 );
-            case 'date':
+            case "date":
                 return (
                     <input
                         type="date"
                         value={strippedValue || ""}
-                        onChange={(e) => handleInputChange(obligation.labelName, e.target.value)}
+                        onChange={(e) =>
+                            handleInputChange(obligation.labelName, e.target.value)
+                        }
                     />
                 );
             default:
@@ -1197,9 +1904,9 @@ export const ViewTermsByType = () => {
     };
 
     const handleResourceSelection = (resource) => {
-        setSelectedResources(prev => ({
+        setSelectedResources((prev) => ({
             ...prev,
-            [currentLabelName]: resource
+            [currentLabelName]: resource,
         }));
         setShowResources(false);
     };
@@ -1208,121 +1915,166 @@ export const ViewTermsByType = () => {
         if (selectedLocker) {
             const fetchResources = async () => {
                 try {
-                    const token = Cookies.get('authToken');
-                    const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?locker_name=${selectedLocker}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Basic ${token}`,
-                            'Content-Type': 'application/json'
+                    const token = Cookies.get("authToken");
+                    const response = await fetch(
+                       `http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`,
+                        {
+                            method: "GET",
+                            headers: {
+                                Authorization: `Basic ${token}`,
+                                "Content-Type": "application/json",
+                            },
                         }
-                    });
+                    );
+
                     if (!response.ok) {
-                        throw new Error('Failed to fetch resources');
+                        throw new Error("Failed to fetch resources");
                     }
+
                     const data = await response.json();
                     if (data.success) {
                         setResources(data.resources);
                     } else {
-                        setError(data.message || 'Failed to fetch resources');
+                        setError(data.message || "Failed to fetch resources");
                     }
                 } catch (error) {
-                    console.error('Error fetching resources:', error);
-                    setError('An error occurred while fetching resources');
+                    setError("An error occurred while fetching resources");
                 }
             };
+
             fetchResources();
         }
     }, [selectedLocker]);
 
     const handleSubmit = async () => {
-        const resourcesData = {
-            Transfer: [
-                ...resources.map(resource => resource.i_node_pointer),
-                ...Object.values(termValues).filter(value => value.includes("documents/"))
-            ]
-        };
-
-        console.log("1 termValues", termValues);
-        console.log("1 selected Res", selectedResources);
-        const payload = {
-            connection_name: connectionName,
-            host_locker_name: hostLockerName,
-            guest_locker_name: guestLockerName,
-            host_user_username: hostUserUsername,
-            guest_user_username: guestUserUsername,
-
-        terms_value: {
-    
-
-    ...Object.fromEntries(
-        
-        Object.entries(termValues).map(([key, value]) => {
-            // Find the original obligation
-            const obligation = res.obligations.find(ob => ob.labelName === key);
-            const initialValue = obligation?.value || "";
-            // Check if the value has changed
-            console.log("val", value);
-            if (value !== initialValue) {
-                return [key, `${value.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
-            } else {
-                return [key, initialValue]; // Retain original value and status if not changed
-            }
-        })
-    ),
-    ...Object.fromEntries(
-        Object.entries(selectedResources).map(([key, resource]) => {
-            // Find the original resource
-            const obligation = res.obligations.find(ob => ob.labelName === key);
-            const initialResource = obligation?.value || "";
-
-            // Check if the resource has changed
-            if ((resource.i_node_pointer !== initialResource.split(";")[0])) {
-                return [key, `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F`]; // Mark as Pending if changed
-            } else {
-                return [key, initialResource]; // Retain original value and status if not changed
-            }
-        })
-    ),
-},
-resources: resourcesData
-};
-
-console.log("2 termValues", termValues);
-console.log("2 selected Res", selectedResources);
-
         try {
-            const token = Cookies.get('authToken');
-            const response = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Basic ${token}`
-                },
-                body: JSON.stringify(payload)
-            });
+            const newResourcesData = {
+                Transfer: [],
+                Share: [],
+            };
 
-            if (!response.ok) {
-                throw new Error('Failed to update terms');
+            console.log("res", res);
+            const termsValuePayload = {
+                ...Object.fromEntries(
+                    Object.entries(termValues).map(([key, value]) => {
+                        const obligation = res.obligations.find(ob => ob.labelName === key);
+                        const initialValue = obligation?.value || "";
+    
+                        if (obligation.typeOfAction === "file") {
+                            const resource = selectedResources[key];
+                            const initialResourcePointer = initialValue.split(";")[0];
+    
+                            if (resource && resource.i_node_pointer && resource.i_node_pointer !== initialResourcePointer) {
+                                // if (obligation.typeOfSharing === "transfer" && obligation.value.endsWith('T')) {
+                                    if (obligation.typeOfSharing === "transfer" ) {
+                                        //if (!updatedResourcesData.transfer.includes(resource.i_node_pointer)) {
+                                            // newResourcesData.Transfer.push(resource.i_node_pointer);
+                                       // }
+                                // } else if (obligation.typeOfSharing === "share" && obligation.value.endsWith('T')) {
+                                } else if (obligation.typeOfSharing === "share" ) {
+                                    //if (!updatedResourcesData.share.includes(resource.i_node_pointer)) {
+                                        // newResourcesData.Share.push(resource.i_node_pointer);
+                                    //}
+                                }
+    
+                                return [key, `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F`];
+                            } else {
+                                return [key, initialValue];
+                            }
+                        } else if (value !== initialValue) {
+                            return [key, `${value.replace(/;[ ]?[TFR]$/, "")}; F`];
+                        } else {
+                            return [key, initialValue];
+                        }
+                    })
+                ),
+            };
+            // setResourcesData(updatedResourcesData);
+            const payload = {
+                connection_name: connectionName,
+                host_locker_name: hostLockerName,
+                guest_locker_name: guestLockerName,
+                host_user_username: hostUserUsername,
+                guest_user_username: guestUserUsername,
+                terms_value: termsValuePayload,
+                resources: newResourcesData,
+            };
+            // console.log("resourcesData", payload.resources);
+            // console.log("resources", resources);
+            // console.log("termsValue", payload.terms_value);
+            console.log("payload", payload);
+            const token = Cookies.get("authToken");
+    
+            // if (resourcesData.Transfer.length > 0) {
+            //     const transferResponse = await fetch(`http://localhost:8000/transfer-resource/`, {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //             Authorization: `Basic ${token}`,
+            //         },
+            //         body: JSON.stringify({ ...payload, resources: resourcesData.Transfer }),
+            //     });
+    
+            //     if (!transferResponse.ok) {
+            //         throw new Error("Failed to transfer resources");
+            //     }
+            // }
+    
+            // if (resourcesData.Share.length > 0) {
+            //     const shareResponse = await fetch(`http://localhost:8000/share-resource/`, {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //             Authorization: `Basic ${token}`,
+            //         },
+            //         body: JSON.stringify({ ...payload, resources: resourcesData.Share }),
+            //     });
+    
+            //     if (!shareResponse.ok) {
+            //         throw new Error("Failed to share resources");
+            //     }
+            // }
+    
+            const updateResponse = await fetch(
+                `http://localhost:8000/update-connection-terms/`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Basic ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+    
+            if (!updateResponse.ok) {
+                throw new Error("Failed to update terms");
             }
-
-            const data = await response.json();
+    
+            const data = await updateResponse.json();
             if (data.success) {
                 navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
             } else {
-                setError(data.error || 'Failed to update terms');
+                throw new Error(data.error || "Failed to update terms");
             }
         } catch (err) {
+            console.error("Error during submission:", err);
             setError(err.message);
         }
     };
-
+    
+    
+    
     const content = (
         <>
-            <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
-            <div className="description">{curruser ? curruser.description : 'None'}</div>
+            <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+            <div className="description">
+                {curruser ? curruser.description : "None"}
+            </div>
         </>
     );
-
+    console.log("res without submit", res);
+    // console.log("resourcesData", resourcesData);
     return (
         <div>
             <Navbar content={content} />
@@ -1346,8 +2098,9 @@ console.log("2 selected Res", selectedResources);
                                     <td>{index + 1}</td>
                                     <td>{obligation.labelName}</td>
                                     <td>{renderInputField(obligation)}</td>
-                                    <td>{obligation.labelDescription}</td>
-                                    <td>{statuses[obligation.labelName] || 'Pending'}</td> {/* Display status */}
+                                    {/* <td>{obligation.labelDescription}</td> */}
+                                    <td>{obligation.hostPermissions ? obligation.hostPermissions.join(", ") : "None"}</td>
+                                    <td>{statuses[obligation.labelName] || "Pending"}</td> {/* Display status */}
                                 </tr>
                             ))}
                         </tbody>
@@ -1358,8 +2111,6 @@ console.log("2 selected Res", selectedResources);
                     <div className="resource-container">
                         <h3>Select Resource for {currentLabelName}</h3>
                         {error && <p className="error">{error}</p>}
-                        
-                        
 
                         <ul>
                             {resources.map((resource, index) => (
@@ -1370,7 +2121,10 @@ console.log("2 selected Res", selectedResources);
                                                 type="radio"
                                                 name="selectedResource"
                                                 value={resource.i_node_pointer}
-                                                checked={selectedResources[currentLabelName]?.i_node_pointer === resource.i_node_pointer}
+                                                checked={
+                                                    selectedResources[currentLabelName]
+                                                        ?.i_node_pointer === resource.i_node_pointer
+                                                }
                                                 onChange={() => handleResourceSelection(resource)}
                                             />
                                             {resource.document_name}

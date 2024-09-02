@@ -1,21 +1,25 @@
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from "react-router-dom";
+import { ConnectionContext } from '../../ConnectionContext';
 import { usercontext } from "../../usercontext";
+
 import "./connection.css";
 import Navbar from "../Navbar/Navbar";
+import Panel from "../Panel/Panel";
 
 export const Connection = () => {
     const navigate = useNavigate();
-    const [lockers, setLockers] = useState([]);
     const [error, setError] = useState(null);
-    const { curruser, setUser } = useContext(usercontext);
+    const { curruser} = useContext(usercontext);
     const location = useLocation();
-    const [selectedLocker, setSelectedLocker] = useState(null);
     const [connectionName, setConnectionName] = useState(null);
     const [connectionDescription, setConnectionDescription] = useState(null);
     const [validity, setValidity] = useState(null); 
+    const { locker_conn, setConnectionData } = useContext(ConnectionContext);
 
+    // const locker = location.state ? location.state.locker : null;
+    // console.log("in connection", locker);
 
     useEffect(() => {
         if (!curruser) {
@@ -24,59 +28,31 @@ export const Connection = () => {
         }
     }, []);
 
-    useEffect(() => {
-        const token = Cookies.get('authToken');
-
-        fetch('http://172.16.192.201:8000/get-lockers-user/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    setLockers(data.lockers);
-                    if (!selectedLocker && data.lockers.length > 0) {
-                        setSelectedLocker(data.lockers[0]);
-                    }
-                } else {
-                    setError(data.message || data.error);
-                }
-            })
-            .catch(error => {
-                setError("An error occurred while fetching lockers.");
-                console.error("Error:", error);
-            });
-    }, [curruser]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const connectionData = {
-            lockerName: selectedLocker ? selectedLocker.name : '',
+            lockerName: locker_conn?.name,
             connectionName,
             connectionDescription,
             validity
         };
 
-        console.log("Form submitted");
-        console.log(connectionData);
+        setConnectionData(connectionData);
 
-        navigate("/connectionTerms", { state: { connectionData } });
+        console.log("Form submitted");
+        console.log("in connection 2", connectionData, locker_conn);
+
+        navigate("/connectionTerms");
         // navigate("/connectionTerms", { state: { selectedLocker } });
     };
 
-    const handleLockerChange = (event) => {
-        const selectedLockerName = event.target.value;
-        const locker = lockers.find(l => l.name === selectedLockerName);
-        setSelectedLocker(locker);
-    };
 
     return (
         <div>
             <Navbar />
-                                
+            <Panel />  
+            <div className="Panelcontent">      
           <div className="connection-heroContainer">
                 <div className="connection-resourceHeading">Connection</div>
 
@@ -84,13 +60,9 @@ export const Connection = () => {
                     <form className="connection-lockerForm" onSubmit={handleSubmit}>
                         <label>
                             <span>Locker</span>
-                            <select name="lockerName" onChange={handleLockerChange}>
-                                {lockers.map(locker => (
-                                    <option key={locker.id} value={locker.name}>
-                                        {locker.name}
-                                    </option>
-                                ))}
-                            </select>
+                            <input
+                             value={locker_conn ? locker_conn.name : ''}  readOnly/>
+
                         </label>
 
                         <label>
@@ -126,6 +98,7 @@ export const Connection = () => {
                     </form>
                 </div>
             </div>
+            </div> 
         </div>
     );
 };

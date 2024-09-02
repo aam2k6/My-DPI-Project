@@ -30,7 +30,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
+//                 const response = await fetch(`http://localhost:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -54,7 +54,7 @@
 //         const fetchConnectionDetails = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
+//                 const response = await fetch(`http://localhost:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -120,7 +120,7 @@
     
 //             console.log("Request Body:", requestBody);
     
-//             const updateResponse = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+//             const updateResponse = await fetch(`http://localhost:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -159,7 +159,7 @@
 //         try {
 //             console.log("Resource accepted:", resource);
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://172.16.192.201:8000/transfer-resource`, {
+//             const response = await fetch(`http://localhost:8000/transfer-resource`, {
 //                 method: 'POST',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -195,7 +195,7 @@
     
 
 //     const handleResourceClick = (filePath) => {
-//         const url = `http://172.16.192.201:8000/media/documents/${filePath}`;
+//         const url = `http://localhost:8000/media/documents/${filePath}`;
 //         window.open(url, "_blank");
 //     };
 
@@ -317,7 +317,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
+//                 const response = await fetch(`http://localhost:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -341,7 +341,7 @@
 //         const fetchConnectionDetails = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
+//                 const response = await fetch(`http://localhost:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -407,7 +407,7 @@
     
 //             console.log("Request Body:", requestBody);
     
-//             const updateResponse = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+//             const updateResponse = await fetch(`http://localhost:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -446,7 +446,7 @@
 //         try {
 //             console.log("Resource accepted:", resource);
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://172.16.192.201:8000/transfer-resource`, {
+//             const response = await fetch(`http://localhost:8000/transfer-resource`, {
 //                 method: 'POST',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -482,7 +482,7 @@
     
 
 //     const handleResourceClick = (filePath) => {
-//         const url = `http://172.16.192.201:8000/media/documents/${filePath}`;
+//         const url = `http://localhost:8000/media/documents/${filePath}`;
 //         window.open(url, "_blank");
 //     };
 
@@ -594,7 +594,7 @@
 //         const fetchTerms = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
+//                 const response = await fetch(`http://localhost:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -618,7 +618,7 @@
 //         const fetchConnectionDetails = async () => {
 //             try {
 //                 const token = Cookies.get('authToken');
-//                 const response = await fetch(`http://172.16.192.201:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
+//                 const response = await fetch(`http://localhost:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
 //                     method: 'GET',
 //                     headers: {
 //                         'Content-Type': 'application/json',
@@ -684,7 +684,7 @@
     
 //             console.log("Request Body:", requestBody);
     
-//             const updateResponse = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+//             const updateResponse = await fetch(`http://localhost:8000/update-connection-terms/`, {
 //                 method: 'PATCH',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -723,7 +723,7 @@
 //         try {
 //             console.log("Resource accepted:", resource);
 //             const token = Cookies.get('authToken');
-//             const response = await fetch(`http://172.16.192.201:8000/transfer-resource`, {
+//             const response = await fetch(`http://localhost:8000/transfer-resource`, {
 //                 method: 'POST',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -758,7 +758,7 @@
 //     };
 
 //     const handleResourceClick = (filePath) => {
-//         const url = `http://172.16.192.201:8000/media/documents/${filePath}`;
+//         const url = `http://localhost:8000/media/documents/${filePath}`;
 //         window.open(url, "_blank");
 //     };
 
@@ -906,6 +906,10 @@ export const Guesttermsreview = () => {
     const [showTermsPopup, setShowTermsPopup] = useState(false);  // State for popup visibility
     const { connection, connectionType } = location.state || {};
     const [conndetails, setconndetails] = useState([]);
+    const [resourcesData, setResourcesData] = useState({
+        share: [],
+        transfer: [],
+    });
 
     useEffect(() => {
         if (!curruser) {
@@ -916,7 +920,7 @@ export const Guesttermsreview = () => {
         const fetchTerms = async () => {
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
+                const response = await fetch(`http://localhost:8000/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -942,7 +946,7 @@ export const Guesttermsreview = () => {
         const fetchConnectionDetails = async () => {
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`http://172.16.192.201:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
+                const response = await fetch(`http://localhost:8000/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -954,6 +958,7 @@ export const Guesttermsreview = () => {
                 }
                 const data = await response.json();
                 if (data.connections) {
+                    console.log("data", data);
                     setTermsValue(data.connections.terms_value || {});
                     setconndetails(data.connections);
 
@@ -972,13 +977,95 @@ export const Guesttermsreview = () => {
         fetchConnectionDetails();
     }, [curruser, connection, connectionType, navigate]);
 
-    const handleStatusChange = (index, status) => {
-        setStatuses(prevStatuses => ({
-            ...prevStatuses,
-            [index]: status
-        }));
-    };
 
+    // const handleStatusChange = (index, status, value, type, isFile) => {
+    //     if (value !== "") {
+    //         setStatuses(prevStatuses => {
+    //             const newStatuses = {
+    //                 ...prevStatuses,
+    //                 [index]: status
+    //             };
+    
+    //             setResourcesData(prevData => {
+    //                 // Create a new copy for both arrays to avoid unintended mutations
+    //                 const updatedResources = {
+    //                     transfer: [...prevData.transfer],
+    //                     share: [...prevData.share]
+    //                 };
+    
+    //                 // Check the type and isFile conditions separately
+    //                 if (isFile) {
+    //                     if (type === 'transfer') {
+    //                         if (status === 'approved' && !updatedResources.transfer.includes(value)) {
+    //                             updatedResources.transfer.push(value);
+    //                         } else if (status === 'rejected') {
+    //                             updatedResources.transfer = updatedResources.transfer.filter(item => item !== value);
+    //                         }
+    //                     } else if (type === 'share') {
+    //                         if (status === 'approved' && !updatedResources.share.includes(value)) {
+    //                             updatedResources.share.push(value);
+    //                         } else if (status === 'rejected') {
+    //                             updatedResources.share = updatedResources.share.filter(item => item !== value);
+    //                         }
+    //                     }
+    //                 }
+    
+    //                 return updatedResources; // Ensure returning the correct state
+    //             });
+    
+    //             return newStatuses;
+    //         });
+    //     } else {
+    //         alert("Value required in Enter Value field to either Approve or Reject");
+    //     }
+    // };
+
+
+    const handleStatusChange = (index, status, value, type, isFile) => {
+        if (value !== "") {
+            setStatuses(prevStatuses => {
+                // Update the statuses for the specific index
+                const newStatuses = {
+                    ...prevStatuses,
+                    [index]: status
+                };
+    
+                // Recalculate the resourcesData based on all statuses
+                setResourcesData(() => {
+                    // Initialize new arrays for transfer and share
+                    const newTransfer = [];
+                    const newShare = [];
+    
+                    // Iterate through all statuses to populate new arrays
+                    Object.keys(newStatuses).forEach(key => {
+                        const currentValue = termsValue[key]?.split(";")[0]; // Extract current value for the term
+                        const currentType = res.obligations.find(obligation => obligation.labelName === key)?.typeOfSharing;
+                        const currentIsFile = res.obligations.find(obligation => obligation.labelName === key)?.typeOfAction === 'file';
+    
+                        if (newStatuses[key] === 'approved' && currentValue && currentIsFile) {
+                            if (currentType === 'transfer') {
+                                newTransfer.push(currentValue);
+                            } else if (currentType === 'share') {
+                                newShare.push(currentValue);
+                            }
+                        }
+                    });
+    
+                    // Return the updated resourcesData
+                    return {
+                        transfer: newTransfer,
+                        share: newShare
+                    };
+                });
+    
+                return newStatuses;
+            });
+        } else {
+            alert("Value required in Enter Value field to either Approve or Reject");
+        }
+    };
+    
+    
     const handleSave = async () => {
         try {
             const token = Cookies.get('authToken');
@@ -988,11 +1075,16 @@ export const Guesttermsreview = () => {
                 acc[obligation.labelName] = `${resourceName};${status}`;
                 return acc;
             }, {});
+
+            console.log("terms_value", terms_value);
     
-            const resourcesToTransfer = Object.values(terms_value)
-                .filter(value => value.includes(";T"))
-                .map(value => value.split(";")[0]);
-    
+            // const resourcesToTransfer = Object.values(terms_value)
+            //     .filter(value => value.includes(";T"))
+            //     .map(value => value.split(";")[0]);
+
+            const resourcesToTransfer = resourcesData.transfer;
+            const resourcesToShare = resourcesData.share;
+
             const requestBody = {
                 "connection_name": conndetails.connection_name,
                 "host_locker_name": conndetails.host_locker.name,
@@ -1002,13 +1094,13 @@ export const Guesttermsreview = () => {
                 "terms_value": terms_value,
                 resources: {
                     Transfer: resourcesToTransfer,
-                    Share: []
+                    Share: resourcesToShare,
                 }
             };
     
             console.log("Request Body:", requestBody);
     
-            const updateResponse = await fetch(`http://172.16.192.201:8000/update-connection-terms/`, {
+            const updateResponse = await fetch(`http://localhost:8000/update-connection-terms/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1030,10 +1122,18 @@ export const Guesttermsreview = () => {
                 setError(updateData.error || 'Failed to save statuses');
             }
     
+            console.log("resources to transfer", resourcesToTransfer);
             // Transfer resources
             for (const resource of resourcesToTransfer) {
+                console.log("resource inside for", resource);
                 await handleAcceptResource(resource);
             }
+    
+
+            // for( const resource of resourcesToShare) {
+            //     await handleShareResource(resource);
+            // }
+            
     
             navigate('/home');
         } catch (err) {
@@ -1042,11 +1142,12 @@ export const Guesttermsreview = () => {
         }
     };
     
+    console.log("conndetials", conndetails);
     const handleAcceptResource = async (resource) => {
         try {
             console.log("Resource accepted:", resource);
             const token = Cookies.get('authToken');
-            const response = await fetch(`http://172.16.192.201:8000/transfer-resource`, {
+            const response = await fetch(`http://localhost:8000/transfer-resource/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1069,6 +1170,7 @@ export const Guesttermsreview = () => {
             }
     
             const data = await response.json();
+            console.log("transfer", data);
             if (data.success) {
                 alert('Resource transfer successful');
             } else {
@@ -1080,8 +1182,45 @@ export const Guesttermsreview = () => {
         }
     };
 
+    const handleShareResource = async (resource) => {
+        try {
+            const token = Cookies.get('authToken');
+            const response = await fetch(`http://localhost:8000/share-resource/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${token}`
+                },
+                body: JSON.stringify({
+                    connection_id: conndetails.connection_id,
+                    host_locker_name: conndetails.host_locker.name,
+                    guest_locker_name: conndetails.guest_locker.name,
+                    host_user_username: conndetails.host_user.username,
+                    guest_user_username: conndetails.guest_user.username,
+                    resource
+                }),
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Error Response:', errorText);
+                throw new Error('Failed to share resource');
+            }
+    
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to share resource');
+            }
+    
+        } catch (err) {
+            console.error('Error:', err.message);
+            throw err; // Rethrow error to be handled by the main try-catch
+        }
+    };
+
+
     const handleResourceClick = (filePath) => {
-        const url = `http://172.16.192.201:8000/media/documents/${filePath}`;
+        const url = `http://localhost:8000/media/documents/${filePath}`;
         window.open(url, "_blank");
     };
 
@@ -1193,7 +1332,7 @@ export const Guesttermsreview = () => {
                                     <td>
                                         <select
                                             value={statuses[obligation.labelName] || ''}
-                                            onChange={(e) => handleStatusChange(obligation.labelName, e.target.value)}
+                                            onChange={(e) => handleStatusChange(obligation.labelName, e.target.value, termsValue[obligation.labelName]?.split(";")[0], obligation.typeOfSharing, obligation.typeOfAction === 'file')}
                                         >
                                             <option value="">Select Status</option>
                                             <option value="approved">Approved</option>

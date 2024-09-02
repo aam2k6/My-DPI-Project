@@ -21,7 +21,7 @@
 // //     const token = Cookies.get('authToken');
 
 // //     // Fetch global connection types
-// //     fetch('http://172.16.192.201:8000/get-template-or-templates/', {
+// //     fetch('http://localhost:8000/get-template-or-templates/', {
 // //       method: 'GET',
 // //       headers: {
 // //         'Authorization': `Basic ${token}`,
@@ -120,7 +120,7 @@
 // //     const token = Cookies.get('authToken');
 
 // //     // Fetch global connection types
-// //     fetch('http://172.16.192.201:8000/get-template-or-templates/', {
+// //     fetch('http://localhost:8000/get-template-or-templates/', {
 // //       method: 'GET',
 // //       headers: {
 // //         'Authorization': `Basic ${token}`,
@@ -147,7 +147,7 @@
 // //       });
 
 // //     // Fetch connection terms
-// //     fetch('http://172.16.192.201:8000/get-connection-terms-for-global-template', {
+// //     fetch('http://localhost:8000/get-connection-terms-for-global-template', {
 // //       method: 'GET',
 // //       headers: {
 // //         'Authorization': `Basic ${token}`,
@@ -260,7 +260,7 @@
 //     const token = Cookies.get('authToken');
 
 //     // Fetch global connection types
-//     fetch('http://172.16.192.201:8000/get-template-or-templates/', {
+//     fetch('http://localhost:8000/get-template-or-templates/', {
 //       method: 'GET',
 //       headers: {
 //         'Authorization': `Basic ${token}`,
@@ -296,7 +296,7 @@
 
 //   //   const token = Cookies.get('authToken');
 
-//   //   fetch(`http://172.16.192.201:8000/get-connection-terms-for-global-template/?template_Id=${type.global_connection_type_template_id}`, {
+//   //   fetch(`http://localhost:8000/get-connection-terms-for-global-template/?template_Id=${type.global_connection_type_template_id}`, {
 //   //     method: 'GET',
 //   //     headers: {
 //   //       'Authorization': `Basic ${token}`,
@@ -335,7 +335,7 @@
 //     const token = Cookies.get('authToken');
 
   
-//     fetch(`http://172.16.192.201:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
+//     fetch(`http://localhost:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
 //       method: 'GET',
 //       headers: {
 //         'Authorization': `Basic ${token}`,
@@ -432,7 +432,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://172.16.192.201:8000/get-template-or-templates/', {
+    fetch('http://localhost:8000/get-template-or-templates/', {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -474,7 +474,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
   
-    fetch(`http://172.16.192.201:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
+    fetch(`http://localhost:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,

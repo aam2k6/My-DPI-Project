@@ -34,7 +34,7 @@
 //       console.log("Inside fetch terms");
 //       try {
 //         const token = Cookies.get('authToken');
-//         const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${curruser.username}&locker_name=${selectedLocker.name}&connection_name=Connection 1`, {
+//         const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=${selectedLocker.name}&connection_name=Connection 1`, {
 //           method: 'GET',
 //           headers: {
 //             'Content-Type': 'application/json',
@@ -98,7 +98,7 @@
 //     formData.append('consent', consent);
 
 //     try {
-//       const response = await fetch('http://172.16.192.201:8000/give_consent/', {
+//       const response = await fetch('http://localhost:8000/give_consent/', {
 //         method: 'POST',
 //         headers: {
 //           // 'Content-Type': 'application/json',
@@ -138,7 +138,7 @@
 //     formData.append('revoke_guest', revoke_guest);
 
 //     try {
-//       const response = await fetch('http://172.16.192.201:8000/revoke_consent/', {
+//       const response = await fetch('http://localhost:8000/revoke_consent/', {
 //         method: 'POST',
 //         headers: {
 //           // 'Content-Type': 'application/json',
@@ -330,7 +330,7 @@ export const CreateConnectionTerms = () => {
       console.log("Inside fetch terms");
       try {
         const token = Cookies.get('authToken');
-        const response = await fetch(`http://172.16.192.201:8000/show_terms/?username=${curruser.username}&locker_name=${selectedLocker.name}&connection_name=${connectionname}`, {
+        const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=${selectedLocker.name}&connection_name=${connectionname}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -369,7 +369,7 @@ export const CreateConnectionTerms = () => {
     formData.append('consent', consent);
 
     try {
-      const response = await fetch('http://172.16.192.201:8000/give_consent/', {
+      const response = await fetch('http://localhost:8000/give_consent/', {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',
@@ -409,7 +409,7 @@ export const CreateConnectionTerms = () => {
     formData.append('revoke_guest', revoke_guest);
 
     try {
-      const response = await fetch('http://172.16.192.201:8000/revoke_consent/', {
+      const response = await fetch('http://localhost:8000/revoke_consent/', {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',

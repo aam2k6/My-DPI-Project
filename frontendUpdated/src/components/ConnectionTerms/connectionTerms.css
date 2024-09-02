@@ -26,7 +26,7 @@
 
 
 /* Container Styles */
-.connectionTerms-heroContainer {
+.connectionTerms-heroContainer-nonglobal {
   border: 2px solid rgb(107, 120, 231);
   display: flex;
   padding: 2rem;
@@ -34,6 +34,8 @@
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
+  margin-left: 320px;
+  margin-top: auto;
 }
 
 /* Flexbox Container for Left and Right Columns */

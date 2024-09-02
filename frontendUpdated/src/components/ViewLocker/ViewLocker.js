@@ -33,7 +33,7 @@
 //       const token = Cookies.get('authToken');
 //       const params = new URLSearchParams({ locker_name: locker.name });
 
-//       const response = await fetch(`http://172.16.192.201:8000/connection_types/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -59,7 +59,7 @@
 //         const token = Cookies.get('authToken');
 //         const params = new URLSearchParams({ locker_name: locker.name });
 
-//         const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
+//         const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
 //           method: 'GET',
 //           headers: {
 //             'Authorization': `Basic ${token}`,
@@ -89,7 +89,7 @@
 //         const token = Cookies.get('authToken');
 //         const params = new URLSearchParams({ locker_name: locker.name });
 
-//         const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?${params}`, {
+//         const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
 //           method: 'GET',
 //           headers: {
 //             'Authorization': `Basic ${token}`,
@@ -139,7 +139,7 @@
 //         guest_user_username: connection.guest_user.username
 //       });
 
-//       const response = await fetch(`http://172.16.192.201:8000/get-terms-status/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/get-terms-status/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -174,7 +174,7 @@
 //   }
 
 //   const handleResourceClick = (filePath) => {
-//     const url = `http://172.16.192.201:8000/media/${filePath}`;
+//     const url = `http://localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
 //   };
 
@@ -365,7 +365,7 @@
 //       const token = Cookies.get('authToken');
 //       const params = new URLSearchParams({ locker_name: locker.name });
 
-//       const response = await fetch(`http://172.16.192.201:8000/connection_types/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -391,7 +391,7 @@
 //         const token = Cookies.get('authToken');
 //         const params = new URLSearchParams({ locker_name: locker.name });
 
-//         const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
+//         const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
 //           method: 'GET',
 //           headers: {
 //             'Authorization': `Basic ${token}`,
@@ -421,7 +421,7 @@
 //         const token = Cookies.get('authToken');
 //         const params = new URLSearchParams({ locker_name: locker.name });
 
-//         const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?${params}`, {
+//         const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
 //           method: 'GET',
 //           headers: {
 //             'Authorization': `Basic ${token}`,
@@ -471,7 +471,7 @@
 //         guest_user_username: connection.guest_user.username
 //       });
 
-//       const response = await fetch(`http://172.16.192.201:8000/get-terms-status/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/get-terms-status/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -506,7 +506,7 @@
 //   }
 
 //   const handleResourceClick = (filePath) => {
-//     const url = `http://172.16.192.201:8000/media/${filePath}`;
+//     const url = `http://localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
 //   };
 
@@ -710,7 +710,7 @@
 //     try {
 //       const token = Cookies.get('authToken');
 //       const params = new URLSearchParams({ locker_name: locker.name });
-//       const response = await fetch(`http://172.16.192.201:8000/connection_types/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -732,7 +732,7 @@
 //     try {
 //       const token = Cookies.get('authToken');
 //       const params = new URLSearchParams({ locker_name: locker.name });
-//       const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -760,7 +760,7 @@
 //     try {
 //       const token = Cookies.get('authToken');
 //       const params = new URLSearchParams({ locker_name: locker.name });
-//       const response = await fetch(`http://172.16.192.201:8000/get-resources-user-locker/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/get-resources-user-locker/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -798,7 +798,7 @@
 //         host_user_username: connection.host_user.username,
 //         guest_user_username: connection.guest_user.username
 //       });
-//       const response = await fetch(`http://172.16.192.201:8000/get-terms-status/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/get-terms-status/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -852,7 +852,7 @@
 //   }
 
 //   const handleResourceClick = (filePath) => {
-//     const url = `http://172.16.192.201:8000/media/${filePath}`;
+//     const url = `http://localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
 //   };
 
@@ -1027,20 +1027,12 @@ export const ViewLocker = () => {
     }
   }, [locker]);
 
-  useEffect(() => {
-    if (locker) {
-      fetchResources();
-      fetchConnections();
-      fetchOtherConnections();
-    }
-  }, [locker]);
-
   const fetchOtherConnections = async () => {
     try {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
       const response = await fetch(
-        `http://172.16.192.201:8000/connection_types/?${params}`,
+        `http://localhost:8000/connection_types/?${params}`,
         {
           method: "GET",
           headers: {
@@ -1065,7 +1057,7 @@ export const ViewLocker = () => {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
       const response = await fetch(
-        `http://172.16.192.201:8000/get-connections-user-locker/?${params}`,
+        `http://localhost:8000/get-connections-user-locker/?${params}`,
         {
           method: "GET",
           headers: {
@@ -1118,7 +1110,7 @@ export const ViewLocker = () => {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
       const response = await fetch(
-        `http://172.16.192.201:8000/get-resources-user-locker/?${params}`,
+        `http://localhost:8000/get-resources-user-locker/?${params}`,
         {
           method: "GET",
           headers: {
@@ -1159,7 +1151,7 @@ export const ViewLocker = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `http://172.16.192.201:8000/get-terms-status/?${params}`,
+        `http://localhost:8000/get-terms-status/?${params}`,
         {
           method: "GET",
           headers: {
@@ -1216,7 +1208,7 @@ export const ViewLocker = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `http://172.16.192.201:8000/media/${filePath}`;
+    const url = `http://localhost:8000/media/${filePath}`;
     window.open(url, "_blank");
   };
 
@@ -1328,7 +1320,7 @@ export const ViewLocker = () => {
                   <div key={connection.connection_type_id} className="viewlockerconnections" onClick={() => handleConnectionClick(connection)}>
 
 
-                    <h4 id='connectiontype'> <div><u>{index + 1}.{connection.connection_type_name}  
+                    <h4 id='connectiontype'> <div><u>{index + 1}. {connection.connection_type_name}  
 </u> (  users:  {connection.incoming_count} )</div></h4>
         
                   </div>
@@ -1370,7 +1362,7 @@ export const ViewLocker = () => {
                         Valid Until:{" "}
                         {new Date(connection.validity_time).toLocaleString()}
                       </div>
-                      <div className="tracker">
+                      <div className="tracker-pg3">
                         <button
                           onClick={() => handleTracker(connection)}
                           style={{ backgroundColor: color }}
@@ -1432,7 +1424,7 @@ export const ViewLocker = () => {
 //       const token = Cookies.get('authToken');
 //       const params = new URLSearchParams({ locker_name: locker.name });
 
-//       const response = await fetch(`http://172.16.192.201:8000/connection_types/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/connection_types/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -1458,7 +1450,7 @@ export const ViewLocker = () => {
 //         const token = Cookies.get('authToken');
 //         const params = new URLSearchParams({ locker_name: locker.name });
 
-//         const response = await fetch(`http://172.16.192.201:8000/get-connections-user-locker/?${params}`, {
+//         const response = await fetch(`http://localhost:8000/get-connections-user-locker/?${params}`, {
 //           method: 'GET',
 //           headers: {
 //             'Authorization': `Basic ${token}`,
@@ -1538,7 +1530,7 @@ export const ViewLocker = () => {
 //         guest_user_username: connection.guest_user.username
 //       });
 
-//       const response = await fetch(`http://172.16.192.201:8000/get-terms-status/?${params}`, {
+//       const response = await fetch(`http://localhost:8000/get-terms-status/?${params}`, {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Basic ${token}`,
@@ -1577,7 +1569,7 @@ export const ViewLocker = () => {
 //   }
 
 //   const handleResourceClick = (filePath) => {
-//     const url = `http://172.16.192.201:8000/media/${filePath}`;
+//     const url = `http://localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
 //   };
 

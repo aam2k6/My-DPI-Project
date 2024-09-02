@@ -27,7 +27,7 @@ export const Login = () => {
         // Log form values to ensure they're being set correctly
         console.log("Form Values: ", { username, password, description });
 
-        const url = isSignup ? 'http://172.16.192.201:8000/signup-user/' : 'http://172.16.192.201:8000/login-user/';
+        const url = isSignup ? 'http://localhost:8000/signup-user/' : 'http://localhost:8000/login-user/';
         const headers = {};
 
         if (!isSignup) {

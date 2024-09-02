@@ -14,6 +14,7 @@ export const Guestusers = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredConnections, setFilteredConnections] = useState([]);
+  const [trackerData, setTrackerData] = useState({});
 
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
@@ -36,7 +37,7 @@ export const Guestusers = () => {
       host_user_username: curruser.username
     });
 
-    fetch(`http://172.16.192.201:8000/get-guest-user-connection/?${params.toString()}`, {
+    fetch(`http://localhost:8000/get-guest-user-connection/?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -53,6 +54,7 @@ export const Guestusers = () => {
         if (data.connections) {
           setConnections(data.connections);
           setFilteredConnections(data.connections);
+          fetchAllTrackerData(data.connections);
         } else {
           setError("No connections found.");
         }
@@ -63,6 +65,76 @@ export const Guestusers = () => {
       });
   }, [curruser, navigate, locker, connectionType]);
 
+
+  const fetchAllTrackerData = (outgoingConnections) => {
+    outgoingConnections.forEach((connection) => {
+      fetchTrackerData(connection);
+    });
+  };
+
+  const fetchTrackerData = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `http://localhost:8000/get-terms-status/?${params}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        // console.log("view locker", data);
+        setTrackerData((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+
+  const getStatusColor = (tracker) => {
+    const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
+    if (tracker.count_T === totalObligations && tracker.count_R === 0) {
+      return "green";
+    } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  const calculateRatio = (tracker) => {
+    const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
+    return totalObligations > 0
+      ? `${tracker.filled}/${totalObligations}`
+      : "0/0";
+  };
+
   const handleSearch = (event) => {
     event.preventDefault();
     const results = connections.filter(connection =>
@@ -72,26 +144,26 @@ export const Guestusers = () => {
   };
 
   const handleConnectionClick = (connection) => {
-    navigate("/guest-terms-review", { state: { connection ,connectionType} });
+    navigate("/guest-terms-review", { state: { connection, connectionType } });
   };
 
 
   const content = (
     <>
-            {connectionType && (
-            <>
-              <div className="navbarBrand">{connectionType.connection_type_name} </div>
-              <div className="description">{connectionType.connection_description}</div>
-              <div id='conntentguest'>Created On: {new Date(connectionType.created_time).toLocaleDateString()}</div>
-              <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div>
-            </>
-          )}
+      {connectionType && (
+        <>
+          <div className="navbarBrand">{connectionType.connection_type_name} </div>
+          <div className="description">{connectionType.connection_description}</div>
+          <div id='conntentguest'>Created On: {new Date(connectionType.created_time).toLocaleDateString()}</div>
+          <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div>
+        </>
+      )}
     </>
   );
-
+  // console.log(filteredConnections);
   return (
     <div>
-      <Navbar content = {content}/>
+      <Navbar content={content} />
       <div className="page5heroContainer">
         <h4 className='guestusers'>Guest Users</h4>
         <div className="search">
@@ -108,19 +180,32 @@ export const Guestusers = () => {
         <div className="page5container">
           {error && <div className="error">{error}</div>}
           {filteredConnections.length > 0 ? (
-            filteredConnections.map((connection, index) => (
-              <div key={index} className="card">
-                <h4>{connection.guest_user.username}</h4>
-                <p>{connection.guest_user.description}</p>
-                <p> Locker: {connection.guest_locker.name}</p>
-                <button
-                  className='cardButton'
-                  onClick={() => handleConnectionClick(connection)}
-                >
-                  View Details
-                </button>
-              </div>
-            ))
+            filteredConnections.map((connection, index) => {
+              const tracker = trackerData[connection.connection_id];
+              const color = tracker ? getStatusColor(tracker) : "gray";
+              const ratio = tracker
+                ? calculateRatio(tracker)
+                : "Loading...";
+              return (
+                <div key={index} className="card">
+                  <h4>{connection.guest_user.username}</h4>
+                  <p>{connection.guest_user.description}</p>
+                  <p> Locker: {connection.guest_locker.name}</p>
+                  <button
+                    className='cardButton'
+                    onClick={() => handleConnectionClick(connection)}
+                  >
+                    View Details
+                  </button>
+                  <button id = "track"
+                    onClick={() => handleConnectionClick(connection)}
+                    style={{ backgroundColor: color }}
+                  >
+                    {ratio}
+                  </button >
+                </div>
+              );
+            })
           ) : (
             <p>No guest users found.</p>
           )}

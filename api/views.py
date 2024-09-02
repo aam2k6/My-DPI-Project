@@ -2305,6 +2305,9 @@ def transfer_resource(request):
             except Connection.DoesNotExist:
                 return JsonResponse({'success': False, 'error': 'Connection not found'}, status=404)
 
+            # Track whether any transfer was successful
+            transfer_successful = False
+
             # Iterate over terms_value to find documents with "; T" or ";T"
             for key, value in connection.terms_value.items():
                 value = value.strip()
@@ -2318,11 +2321,14 @@ def transfer_resource(request):
                             resource.owner = host_user
                             resource.locker = host_locker
                             resource.save()
-                            return JsonResponse({'success': True, 'message': 'Transfer successful'}, status=200)
+                            transfer_successful = True  # Mark at least one transfer as successful
                         except Resource.DoesNotExist:
                             continue
-        
-            return JsonResponse({'success': False, 'message': 'No valid document found for transfer'}, status=404)
+
+            if transfer_successful:
+                return JsonResponse({'success': True, 'message': 'Transfer successful'}, status=200)
+            else:
+                return JsonResponse({'success': False, 'message': 'No valid document found for transfer'}, status=404)
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
@@ -3448,6 +3454,9 @@ def share_resource(request):
                     {"success": False, "error": "Connection not found"}, status=404
                 )
 
+            # Flag to check if any resource was shared successfully
+            any_shared = False
+
             # Iterate over terms_value to find documents with "; T" or ";T"
             for key, value in connection.terms_value.items():
                 value = value.strip()
@@ -3470,17 +3479,20 @@ def share_resource(request):
                                 connection=connection,
                                 operator_constraints={"view_only": True},
                             )
-                            return JsonResponse(
-                                {"success": True, "message": "Resource shared successfully"},
-                                status=200,
-                            )
+                            any_shared = True
                         except Resource.DoesNotExist:
                             continue
 
-            return JsonResponse(
-                {"success": False, "message": "No valid document found for sharing"},
-                status=404,
-            )
+            if any_shared:
+                return JsonResponse(
+                    {"success": True, "message": "Resources shared successfully"},
+                    status=200,
+                )
+            else:
+                return JsonResponse(
+                    {"success": False, "message": "No valid document found for sharing"},
+                    status=404,
+                )
 
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=500)

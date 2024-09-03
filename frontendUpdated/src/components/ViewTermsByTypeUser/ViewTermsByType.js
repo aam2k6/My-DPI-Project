@@ -1392,6 +1392,7 @@ export const ViewTermsByType = () => {
                 {curruser ? curruser.description : "None"}</div>
                 <br></br>
             <div className="connection-details">Connection Name: {connectionName} <br></br>
+            {/* //{connection.description}<br></br> */}
                 Host: {hostUserUsername} &lt;&gt;Guest: {guestUserUsername}</div>
             
         </>

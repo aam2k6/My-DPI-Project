@@ -470,6 +470,7 @@ const content = (
   <>
   <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
   <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionName)}   </div>
+  {/* <div className="navbarBrand">{(connection_description)}   </div> */}
   <div className="description"></div>
   </>
   

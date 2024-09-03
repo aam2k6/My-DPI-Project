@@ -166,5 +166,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CRONJOBS = [
     ('*/5 * * * *', 'api.tasks.check_connections_valid_until'),
-    ('*/5 * * * *', 'api.tasks.transfer_resource_Cron_Job')
 ]

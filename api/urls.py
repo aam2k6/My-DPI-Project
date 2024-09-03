@@ -46,9 +46,12 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                #path("share-resource/", view=views.share_Resource_Create_Vnode, name="share_resource"),
                path("share-resource/", views.share_resource, name="share_resource"),
                path("update-delete-locker/", views.delete_Update_Locker, name="update_delete_locker"),
-               path("update-connection/", view=views.update_Connection, name='update-connection'),
                path("get-terms-value/", view=views.get_terms_for_user, name='get-terms-value'),
                path('get-outgoing-connections/', views.get_outgoing_connections_to_locker, name='get_outgoing_connections_to_locker'),
+               path("edit-delete-connectiontype/", view=views.edit_delete_connectiontype_details, name='edit-connection'),
+               path("update-connectiontermsonly/", view=views.update_connection_termsONLY, name='update-connectiontermsonly'),
+
+
 
 
 

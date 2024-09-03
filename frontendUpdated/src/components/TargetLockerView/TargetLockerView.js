@@ -887,6 +887,19 @@ export const TargetLockerView = () => {
       </div>
     </>
   );
+  const handleInfo = (connection) => {
+    navigate("/show-connection-terms", {
+      state: {
+        //connectionId: connection.connection_id,
+        connectionName: connection.connection_name,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: locker,
+      },
+    });
+  };
 
   const handleConnectionClick = (connection) => {
     navigate("/make-connection", {
@@ -942,6 +955,9 @@ export const TargetLockerView = () => {
                       </h4>
                     </div>
                     <div id="availconntype">
+                      Description: {connection.connection_description}
+                    </div>
+                    <div id="availconntype">
                       Created On: {new Date(connection.created_time).toLocaleDateString()}
                     </div>
                     <div id="availconntype">
@@ -969,12 +985,22 @@ export const TargetLockerView = () => {
     return (
       <div className="page7myconnections" key={index}>
         <div id="conntent">
-          <h2>{connection.connection_name}</h2>
-          <div>{connection.host_locker.name} &lt;&gt; {connection.guest_locker.name}</div>
+          <h2
+            onClick={() => handleTracker(connection)}
+            style={{ textDecoration: "underline", cursor: "pointer" }}
+          >
+            {connection.connection_name}
+          </h2>
+          <div>
+            {connection.host_user.username} &lt;&gt;{" "}
+            {connection.guest_user.username}
+          </div>
           <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
           <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
         </div>
         <div className="tracker">
+        <button className="info-button1" onClick={() => handleInfo(connection)}> i </button>
+
           <button
             onClick={() => handleTracker(connection)}
             style={{ backgroundColor: color }}

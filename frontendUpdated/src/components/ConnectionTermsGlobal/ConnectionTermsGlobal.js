@@ -12,36 +12,8 @@ export const ConnectionTermsGlobal = () => {
   const location = useLocation(); // Get the state passed from the previous page
   const { connectionTypeName, connectionTypeDescription, existingTerms } = location.state || {};
 
-  useEffect(() => {
-    if (location.state) {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        globalName: connectionTypeName || "",
-        globalDescription: connectionTypeDescription || "",
-      }));
-      console.log("existing terms ", existingTerms);
-      if (existingTerms && existingTerms.length > 0) {
-      // Map existing terms to the formData structure
-      const mappedTerms = existingTerms.map((term) => ({
-        labelName: term.data_element_name || "", // Map data_element_name to labelName
-        typeOfAction: term.data_type || "text",
-        typeOfSharing: term.sharing_type || "share",
-        labelDescription: term.description || "",
-        hostPermissions: term.host_permissions || [],
-        // canShareMore: term.permissions.canShareMoreData,
-        // canDownload: term.permissions.canDownloadData,
-        canShareMore: false,
-        canDownload: false,
-        globalName: connectionTypeName || "",
-        globalDescription: connectionTypeDescription || "",
-      }));
-      setObligations(mappedTerms);
-      }
-    }
-  }, [location.state]);
-
-
-  const initialFormData = {
+  // Separate states for global and obligation form data
+  const initialObligationForm = {
     labelName: "",
     typeOfAction: "text",
     typeOfSharing: "share",
@@ -49,41 +21,83 @@ export const ConnectionTermsGlobal = () => {
     hostPermissions: [],
     canShareMore: false,
     canDownload: false,
+  };
+
+  const initialGlobalForm = {
     globalName: "",
     globalDescription: "",
   };
-  const [formData, setFormData] = useState(initialFormData);
-  const [obligations, setObligations] = useState([]); // Change to an array
+
+  const [globalFormData, setGlobalFormData] = useState(initialGlobalForm);
+  const [obligationFormData, setObligationFormData] = useState(initialObligationForm);
+  const [obligations, setObligations] = useState([]); // Obligations array
   const [error, setError] = useState(null);
   const { curruser, setUser } = useContext(usercontext);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleInputChange = (event) => {
+  useEffect(() => {
+    if (location.state) {
+      setGlobalFormData({
+        globalName: connectionTypeName || "",
+        globalDescription: connectionTypeDescription || "",
+      });
+
+      console.log("existing terms ", existingTerms);
+      if (existingTerms && existingTerms.length > 0) {
+        // Map existing terms to the obligations structure
+        const mappedTerms = existingTerms.map((term) => ({
+          labelName: term.data_element_name || "",
+          typeOfAction: term.data_type || "text",
+          typeOfSharing: term.sharing_type || "share",
+          labelDescription: term.description || "",
+          hostPermissions: term.host_permissions || [],
+          canShareMore: false,
+          canDownload: false,
+        }));
+        setObligations(mappedTerms);
+      }
+    }
+  }, [location.state, connectionTypeName, connectionTypeDescription, existingTerms]);
+
+  const { globalName, globalDescription } = globalFormData;
+
+  // Handle changes for global fields
+  const handleGlobalChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
+    setGlobalFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle changes for obligation fields
+  const handleObligationChange = (event) => {
+    const { name, value } = event.target;
+    setObligationFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
-    setFormData({
-      ...formData,
+    setObligationFormData((prev) => ({
+      ...prev,
       [name]: checked,
-    });
+    }));
   };
 
   const handleAddObligation = () => {
-    if (formData.labelName.trim() !== "") {
-      setObligations([...obligations, { ...formData }]);
-      setFormData(initialFormData);
+    if (obligationFormData.labelName.trim() !== "") {
+      setObligations([...obligations, { ...obligationFormData }]);
+      setObligationFormData(initialObligationForm); // Reset only obligation fields
+    } else {
+      alert("Label Name is required to add an obligation.");
     }
   };
 
   const handleLoadObligation = (index) => {
-
-    setFormData(obligations[index]);
+    setObligationFormData(obligations[index]);
   };
 
   const handleRemoveObligation = (index) => {
@@ -93,10 +107,7 @@ export const ConnectionTermsGlobal = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (
-      formData.globalName.trim() === "" ||
-      formData.globalDescription.trim() === ""
-    ) {
+    if (globalName.trim() === "" || globalDescription.trim() === "") {
       alert("Please fill out both the Name and Description fields.");
       return; // Prevent form submission if fields are empty
     }
@@ -106,20 +117,20 @@ export const ConnectionTermsGlobal = () => {
     const connectionTermsData = {
       connection_terms_obligations: obligations,
       connection_terms_permissions: {
-        canShareMoreData: formData.canShareMore,
-        canDownloadData: formData.canDownload,
+        canShareMoreData: obligationFormData.canShareMore,
+        canDownloadData: obligationFormData.canDownload,
       },
     };
 
     console.log(connectionTermsData);
-    console.log(formData.globalName);
-    console.log(formData.globalDescription);
+    console.log(globalName);
+    console.log(globalDescription);
 
     fetch("http://localhost:8000/create-global-terms/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${token}`, // Include your authentication token
+        Authorization: `Basic ${token}`, // Corrected template literal
       },
       body: JSON.stringify(connectionTermsData),
     })
@@ -132,13 +143,13 @@ export const ConnectionTermsGlobal = () => {
       })
       .then((data) => {
         console.log("Global terms created successfully.");
-
+        navigate("/create-global-connection-type");
         // Extract terms_id from the response
         const termsIDs = data.terms.map((term) => term.terms_id);
 
         const globalTemplateData = {
-          global_connection_type_name: formData.globalName,
-          global_connection_type_description: formData.globalDescription,
+          global_connection_type_name: globalName,
+          global_connection_type_description: globalDescription,
           global_terms_IDs: termsIDs,
         };
 
@@ -149,7 +160,7 @@ export const ConnectionTermsGlobal = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${token}`, // Include your authentication token
+            Authorization: `Basic ${token}`, // Corrected template literal
           },
           body: JSON.stringify(globalTemplateData),
         });
@@ -174,8 +185,8 @@ export const ConnectionTermsGlobal = () => {
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
 
-    setFormData((prevFormData) => {
-      let updatedPermissions = prevFormData.hostPermissions;
+    setObligationFormData((prev) => {
+      let updatedPermissions = prev.hostPermissions;
 
       if (checked) {
         if (!updatedPermissions.includes(value)) {
@@ -193,41 +204,18 @@ export const ConnectionTermsGlobal = () => {
       );
 
       return {
-        ...prevFormData,
+        ...prev,
         hostPermissions: updatedPermissions,
       };
     });
   };
-
-  // const handleHomeClick = () => {
-  //   navigate("/home");
-  // };
-
-  // const handleDPIDirectory = () => {
-  //   navigate("/dpi-directory");
-  // };
-
-  // const handleAdmin = () => {
-  //   navigate("/admin");
-  // };
-
-  // const handleLogout = () => {
-  //   Cookies.remove("authToken");
-  //   localStorage.removeItem("curruser");
-  //   setUser(null);
-  //   navigate("/");
-  // };
-
-  // const toggleDropdown = () => {
-  //   setIsOpen(!isOpen);
-  // };
 
   useEffect(() => {
     if (!curruser) {
       navigate("/");
       return;
     }
-  }, [curruser]);
+  }, [curruser, navigate]);
 
   const token = Cookies.get("authToken");
 
@@ -236,14 +224,15 @@ export const ConnectionTermsGlobal = () => {
       <Navbar />
 
       <div className="connectionTerms-heroContainer">
+        {/* Global Name and Description */}
         <label className="obligation-label">
           <span>Name</span>
           <input
             type="text"
             name="globalName"
             placeholder="Global Connection Type Name"
-            value={formData.globalName}
-            onChange={handleInputChange}
+            value={globalFormData.globalName}
+            onChange={handleGlobalChange}
           />
         </label>
 
@@ -253,8 +242,8 @@ export const ConnectionTermsGlobal = () => {
             type="text"
             name="globalDescription"
             placeholder="Description"
-            value={formData.globalDescription}
-            onChange={handleInputChange}
+            value={globalFormData.globalDescription}
+            onChange={handleGlobalChange}
           />
         </label>
 
@@ -286,8 +275,8 @@ export const ConnectionTermsGlobal = () => {
                     type="text"
                     name="labelName"
                     placeholder="Label of data shared"
-                    value={formData.labelName}
-                    onChange={handleInputChange}
+                    value={obligationFormData.labelName}
+                    onChange={handleObligationChange}
                   />
                 </label>
 
@@ -296,8 +285,8 @@ export const ConnectionTermsGlobal = () => {
                   <select
                     className="Title"
                     name="typeOfAction"
-                    value={formData.typeOfAction}
-                    onChange={handleInputChange}
+                    value={obligationFormData.typeOfAction}
+                    onChange={handleObligationChange}
                   >
                     <option value="text">Add Value</option>
                     <option value="file">Upload File</option>
@@ -317,8 +306,8 @@ export const ConnectionTermsGlobal = () => {
                   <select
                     className="Title"
                     name="typeOfSharing"
-                    value={formData.typeOfSharing}
-                    onChange={handleInputChange}
+                    value={obligationFormData.typeOfSharing}
+                    onChange={handleObligationChange}
                   >
                     <option value="share">Share</option>
                     <option value="transfer">Transfer</option>
@@ -329,31 +318,29 @@ export const ConnectionTermsGlobal = () => {
                     ?
                     <span className="tooltiptext">
                       <span>
-                        Transfer: You are transferring ownership of this
-                        resource. You will no longer have access to this
-                        resource after this operation.
+                        Transfer: You are transferring ownership of this resource.
+                        You will no longer have access to this resource after this
+                        operation.
                       </span>
-                      <br></br>
+                      <br />
                       <span>
-                        Confer: You are going to transfer ownership of the
-                        resource, but the recipient cannot modify the contents
-                        of what you have conferred. You still have rights over
-                        this resource.
+                        Confer: You are going to transfer ownership of the resource,
+                        but the recipient cannot modify the contents of what you have
+                        conferred. You still have rights over this resource.
                       </span>
-                      <br></br>
+                      <br />
                       <span>
-                        Share: You are not transferring ownership of this
-                        resource, but the recipient can view your resource. The
-                        recipient cannot do anything else.
+                        Share: You are not transferring ownership of this resource,
+                        but the recipient can view your resource. The recipient cannot
+                        do anything else.
                       </span>
-                      <br></br>
+                      <br />
                       <span>
-                        Collateral: You are temporarily transferring ownership
-                        to the recipient. After this operation, you cannot
-                        change anything in the resource and can use this as
-                        agreed with the recipient.
+                        Collateral: You are temporarily transferring ownership to the
+                        recipient. After this operation, you cannot change anything in
+                        the resource and can use this as agreed with the recipient.
                       </span>
-                      <br></br>
+                      <br />
                     </span>
                   </span>
                 </label>
@@ -364,8 +351,8 @@ export const ConnectionTermsGlobal = () => {
                     type="text"
                     name="labelDescription"
                     placeholder="Description of the obligation"
-                    value={formData.labelDescription}
-                    onChange={handleInputChange}
+                    value={obligationFormData.labelDescription}
+                    onChange={handleObligationChange}
                   />
                 </label>
 
@@ -376,7 +363,7 @@ export const ConnectionTermsGlobal = () => {
                       <input
                         type="checkbox"
                         value="reshare"
-                        checked={formData.hostPermissions.includes("reshare")}
+                        checked={obligationFormData.hostPermissions.includes("reshare")}
                         onChange={handleHostPermissionsChange}
                       />
                       Reshare
@@ -385,7 +372,7 @@ export const ConnectionTermsGlobal = () => {
                       <input
                         type="checkbox"
                         value="download"
-                        checked={formData.hostPermissions.includes("download")}
+                        checked={obligationFormData.hostPermissions.includes("download")}
                         onChange={handleHostPermissionsChange}
                       />
                       Download
@@ -394,7 +381,7 @@ export const ConnectionTermsGlobal = () => {
                       <input
                         type="checkbox"
                         value="aggregate"
-                        checked={formData.hostPermissions.includes("aggregate")}
+                        checked={obligationFormData.hostPermissions.includes("aggregate")}
                         onChange={handleHostPermissionsChange}
                       />
                       Aggregate
@@ -416,7 +403,7 @@ export const ConnectionTermsGlobal = () => {
                   <input
                     type="checkbox"
                     name="canShareMore"
-                    checked={formData.canShareMore}
+                    checked={obligationFormData.canShareMore}
                     onChange={handleCheckboxChange}
                   />
                 </label>
@@ -428,7 +415,7 @@ export const ConnectionTermsGlobal = () => {
                   <input
                     type="checkbox"
                     name="canDownload"
-                    checked={formData.canDownload}
+                    checked={obligationFormData.canDownload}
                     onChange={handleCheckboxChange}
                   />
                 </label>

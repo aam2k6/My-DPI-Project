@@ -140,6 +140,31 @@
   border: 2px solid rgb(107, 120, 231);
   background-color: #f9f9f9;
 }
+.info-button {
+  background-color: white; /* White background for the button */
+  color: black; /* Black text color */
+  border: 2px solid black; /* Black border */
+  border-radius: 50%; /* Round shape */
+  padding: 0.5rem; /* Padding to ensure size */
+  cursor: pointer; /* Pointer cursor on hover */
+  display: inline-flex; /* Center the "i" within the circle */
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Align items horizontally */
+  width: 2rem; /* Width to make it circular */
+  height: 2rem; /* Height to make it circular */
+  font-size: 1rem; /* Font size of the "i" */
+  margin-left: 2rem; /* Adjust the spacing as needed */
+}
+
+.info-button:hover {
+  background-color: #333; /* Darker background on hover */
+  color: white; /* White text color on hover */
+}
+
+.page7myconnections .tracker {
+  margin-left: 2rem; /* Space between content and tracker */
+}
+
 
 .tracker button {
   padding: 0.5rem;

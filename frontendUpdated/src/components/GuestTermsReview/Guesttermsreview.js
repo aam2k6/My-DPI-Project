@@ -801,9 +801,9 @@ export const Guesttermsreview = () => {
             }
     
 
-            // for( const resource of resourcesToShare) {
-            //     await handleShareResource(resource);
-            // }
+            for( const resource of resourcesToShare) {
+                await handleShareResource(resource);
+            }
             
     
             navigate('/home');
@@ -860,7 +860,7 @@ export const Guesttermsreview = () => {
                     'Authorization': `Basic ${token}`
                 },
                 body: JSON.stringify({
-                    connection_id: conndetails.connection_id,
+                    connection_name: conndetails.connection_name,
                     host_locker_name: conndetails.host_locker.name,
                     guest_locker_name: conndetails.guest_locker.name,
                     host_user_username: conndetails.host_user.username,
@@ -950,8 +950,14 @@ export const Guesttermsreview = () => {
 
     const content = (
         <>
-            <div className="navbarBrand">{curruser ? curruser.username : 'None'}</div>
-            <div className="description">{curruser ? curruser.description : 'None'}</div>
+            <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+            <div className="description">
+                {curruser ? curruser.description : "None"}</div>
+                <br></br>
+                <div className="connection-details">
+            Connection Name: {conndetails?.connection_name || "Loading..."} <br />
+            Host: {conndetails?.host_user?.username || "Loading..."} &lt;&gt; Guest: {conndetails?.guest_user?.username || "Loading..."}
+        </div>
         </>
     );
 

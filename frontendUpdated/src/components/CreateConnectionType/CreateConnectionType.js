@@ -179,7 +179,8 @@ const content = (
         <Navbar content = {content} />
         
             <div className="page12typeofconn">
-                {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} (Connection) ({curruser.username }&lt;&gt; {parentUser.username})</div>}
+                {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username }&lt;&gt; {parentUser.username})</div>}
+                Description:{selectedConnectionType.connection_description}
             </div>
             <div className="page12parentconnections">
                 <div className="page12hostlocker">

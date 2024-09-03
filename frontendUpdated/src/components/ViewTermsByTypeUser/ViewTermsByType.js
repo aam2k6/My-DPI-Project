@@ -1389,8 +1389,11 @@ export const ViewTermsByType = () => {
         <>
             <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
             <div className="description">
-                {curruser ? curruser.description : "None"}
-            </div>
+                {curruser ? curruser.description : "None"}</div>
+                <br></br>
+            <div className="connection-details">Connection Name: {connectionName} <br></br>
+                Host: {hostUserUsername} &lt;&gt;Guest: {guestUserUsername}</div>
+            
         </>
     );
     console.log("res without submit", res);

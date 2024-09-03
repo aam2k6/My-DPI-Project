@@ -837,7 +837,7 @@ export const TargetLockerView = () => {
 
   const handleClick = () => {
     navigate("/make-connection", {
-      state: { hostuser: parentUser, hostlocker: locker },
+      state: { hostuser: parentUser, hostlocker: locker, selectedConnectionType: null, },
     });
   };
 

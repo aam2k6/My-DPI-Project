@@ -312,8 +312,8 @@ export const CreateConnectionTerms = () => {
   const [message, setMessage] = useState("");
   const [res, setRes] = useState(null);
   const [consentData, setConsentData] = useState(null);
-  const { selectedConnectionType, selectedLocker, parentUser, locker ,connectionname} = location.state || {};
-
+  const { connectionName, hostLockerName, connectionTypeName, hostUserUsername ,locker} = location.state || {};
+ 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -330,7 +330,7 @@ export const CreateConnectionTerms = () => {
       console.log("Inside fetch terms");
       try {
         const token = Cookies.get('authToken');
-        const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=${selectedLocker.name}&connection_name=${connectionname}`, {
+        const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=${locker.name}&connection_name=${connectionName}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -360,12 +360,12 @@ export const CreateConnectionTerms = () => {
     const consent = true;
 
     const formData = new FormData();
-    formData.append('connection_name', connectionname);
-    formData.append('connection_type_name', selectedConnectionType.connection_type_name);
+    formData.append('connection_name', connectionName);
+    formData.append('connection_type_name', connectionTypeName);
     formData.append('guest_username', curruser.username)
-    formData.append('guest_lockername', selectedLocker.name); //rohiths locker
-    formData.append('host_username', parentUser.username);
-    formData.append('host_lockername', locker.name); //logged in users locker(iiitb)
+    formData.append('guest_lockername', locker.name); //rohiths locker
+    formData.append('host_username', hostUserUsername);
+    formData.append('host_lockername', hostLockerName); //logged in users locker(iiitb)
     formData.append('consent', consent);
 
     try {
@@ -399,12 +399,12 @@ export const CreateConnectionTerms = () => {
     const revoke_host = false;
 
     const formData = new FormData();
-    formData.append('connection_name', connectionname);
-    formData.append('connection_type_name', selectedConnectionType.connection_type_name);
+    formData.append('connection_name', connectionName);
+    formData.append('connection_type_name', connectionTypeName);
     formData.append('guest_username', curruser.username);
-    formData.append('guest_lockername', selectedLocker.name);
-    formData.append('host_username', parentUser.username);
-    formData.append('host_lockername', locker.name);
+    formData.append('guest_lockername', locker.name);
+    formData.append('host_username', hostUserUsername);
+    formData.append('host_lockername', hostLockerName);
     formData.append('revoke_host', revoke_host);
     formData.append('revoke_guest', revoke_guest);
 
@@ -468,8 +468,8 @@ export const CreateConnectionTerms = () => {
 
 const content = (
   <>
-  <div className="navbarBrand">{capitalizeFirstLetter(selectedConnectionType.connection_type_name)} ({capitalizeFirstLetter(parentUser.username)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
-  <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionname)}   </div>
+  <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
+  <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionName)}   </div>
   <div className="description"></div>
   </>
   
@@ -480,14 +480,14 @@ const content = (
       <Navbar content = {content}/>
 
       <div className="page13parent">
-        <div className="page13host1">Host : {capitalizeFirstLetter(parentUser.username)}</div>
+        <div className="page13host1">Host : {capitalizeFirstLetter(hostUserUsername)}</div>
         <div className="page13requestor">Requestor :{capitalizeFirstLetter(curruser.username)}</div>
 
       </div>
 
       <div className="page13parent">
-        <div className="page13host2">Locker:{capitalizeFirstLetter(locker.name)}</div>
-        <div className="page13requestor">Locker :{capitalizeFirstLetter(selectedLocker.name)}</div>
+        <div className="page13host2">Locker:{capitalizeFirstLetter(hostLockerName)}</div>
+        <div className="page13requestor">Locker :{capitalizeFirstLetter(locker.name)}</div>
 
       </div>
       <div className="page13container">

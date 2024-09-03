@@ -60,3 +60,8 @@
   font-size: large;
   font-weight: 500;
 }
+
+.noBold{
+  font-weight: normal;
+  font-size: x-large;
+}

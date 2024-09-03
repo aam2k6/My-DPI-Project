@@ -93,7 +93,7 @@ export const CreateConnectionType = () => {
         setSelectedConnectionType(connectionType);
     };
 
-
+    console.log("locker", locker.name);
    const handleNextClick = async (event) => {
     event.preventDefault();
     console.log('Next button clicked');
@@ -137,7 +137,7 @@ export const CreateConnectionType = () => {
             // console.error(HTTP error! Status: ${response.status});
             // throw new Error(HTTP error! Status: ${response.status});
         }
-        
+       
         const data = await response.json();
         const connectionname=`${locker.name}:${selectedLocker.name}-${selectedConnectionType.connection_type_name}`;
         console.log('Response data:', data);
@@ -145,13 +145,15 @@ export const CreateConnectionType = () => {
             console.log('Navigation to show connection terms');
             navigate('/show-connection-terms', {
                 state: {
-                    selectedConnectionType,
-                    selectedLocker,
-                    parentUser,
-                    locker,
-                    connectionname
+                    connectionTypeName: selectedConnectionType.connection_type_name,
+                    locker : selectedLocker,
+                    hostUserUsername: parentUser.username,
+                    hostLockerName: locker.name,
+                    connectionName : connectionname
                 }
+                
             });
+            
         } else {
             console.error('Server error:', data.error);
             setError(data.error || 'Failed to create connection');
@@ -179,8 +181,8 @@ const content = (
         <Navbar content = {content} />
         
             <div className="page12typeofconn">
-                {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username }&lt;&gt; {parentUser.username})</div>}
-                Description:{selectedConnectionType.connection_description}
+                {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username }&lt;&gt; {parentUser.username}) <p className = "noBold">Description: {selectedConnectionType.connection_description}</p></div> }
+                
             </div>
             <div className="page12parentconnections">
                 <div className="page12hostlocker">

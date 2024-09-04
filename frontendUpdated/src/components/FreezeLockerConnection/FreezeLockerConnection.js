@@ -5,6 +5,7 @@ import Navbar from "../Navbar/Navbar";
 import { usercontext } from '../../usercontext';
 import Cookies from 'js-cookie';
 import Sidebar from "../Sidebar/Sidebar";
+import { frontend_host } from "../../config.js";
 
 
 export default function FreezeLockerConnection() {
@@ -24,7 +25,7 @@ export default function FreezeLockerConnection() {
 
    useEffect(() => {
     const token = Cookies.get('authToken');
-         fetch('http://localhost:8000/dpi-directory/', {
+         fetch('http://host/dpi-directory/'.replace(/host/g, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -53,7 +54,7 @@ export default function FreezeLockerConnection() {
     const params = new URLSearchParams({ username: selectedUser.username });
 
     try {
-      const response = await fetch(`http://localhost:8000/get-lockers-user/?${params}`, {
+      const response = await fetch(`http://host/get-lockers-user/?${params}`.replace(/host/g, frontend_host), {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -83,7 +84,7 @@ export default function FreezeLockerConnection() {
   const fetchConnections = async () => {
     const token = Cookies.get('authToken');
     try {
-      const response = await fetch('http://localhost:8000/get-all-connections/', {
+      const response = await fetch('http://host/get-all-connections/'.replace(/host/g, frontend_host), {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -141,7 +142,7 @@ export default function FreezeLockerConnection() {
     const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("http://localhost:8000/freeze-unfreeze-locker/", {
+      const response = await fetch("http://host/freeze-unfreeze-locker/".replace(/host/g, frontend_host), {
         method: "PUT",
         body: JSON.stringify({ locker_name: lockerName, username: selectedUser.username, action}),
         headers: {
@@ -186,7 +187,7 @@ export default function FreezeLockerConnection() {
     const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("http://localhost:8000/freeze-unfreeze-connection/", {
+      const response = await fetch("http://host/freeze-unfreeze-connection/".replace(/host/g, frontend_host), {
         method: "PUT",
         //curruser is user obj
         body: JSON.stringify({ connection_id: connectionId, connection_name: connectionName, action}),

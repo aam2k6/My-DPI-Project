@@ -4,6 +4,7 @@ import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import "./page2.css";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 
 export const CreateLocker = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export const CreateLocker = () => {
     data.append('description', description);
 
     // Send data to the backend
-    fetch('http://localhost:8000/create-locker/', {
+    fetch('http://host/create-locker/'.replace(/host/g, frontend_host), {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`, // Add token to the headers

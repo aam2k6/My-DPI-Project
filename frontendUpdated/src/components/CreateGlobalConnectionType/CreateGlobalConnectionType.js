@@ -417,6 +417,7 @@ import './CreateGlobalConnectionType.css';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
+import { frontend_host } from '../../config';
 
 export default function CreateGlobalConnectionType() {
   const [connectionTypes, setConnectionTypes] = useState([]);
@@ -432,7 +433,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://localhost:8000/get-template-or-templates/', {
+    fetch('http://host/get-template-or-templates/'.replace(/host/g, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -474,7 +475,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
   
-    fetch(`http://localhost:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
+    fetch(`http://host/get-connection-terms-for-global-template/?template_Id=${template_Id}`.replace(/host/g, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,

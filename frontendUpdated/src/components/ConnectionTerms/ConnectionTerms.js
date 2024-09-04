@@ -9,6 +9,7 @@ import { ConnectionContext } from '../../ConnectionContext';
 
 import Navbar from '../Navbar/Navbar';
 import Panel from '../Panel/Panel';
+import { frontend_host } from '../../config';
 
 export const ConnectionTerms = () => {
     const navigate = useNavigate();
@@ -86,7 +87,7 @@ export const ConnectionTerms = () => {
         navigate("/connection");
 
 
-        fetch('http://localhost:8000/create-connection-type-and-terms/', {
+        fetch('http://host/create-connection-type-and-terms/'.replace(/host/g, frontend_host), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import './login.css';
 import { useNavigate } from 'react-router-dom';
 import { usercontext } from '../../usercontext';
+import { frontend_host } from '../../config';
 
 export const Login = () => {
     const [username, setUsername] = useState("");
@@ -27,7 +28,7 @@ export const Login = () => {
         // Log form values to ensure they're being set correctly
         console.log("Form Values: ", { username, password, description });
 
-        const url = isSignup ? 'http://localhost:8000/signup-user/' : 'http://localhost:8000/login-user/';
+        const url = isSignup ? 'http://host/signup-user/'.replace(/host/g, frontend_host) : 'http://host/login-user/'.replace(/host/g, frontend_host);
         const headers = {};
 
         if (!isSignup) {

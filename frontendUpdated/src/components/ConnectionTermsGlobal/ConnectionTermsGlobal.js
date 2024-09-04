@@ -6,6 +6,7 @@ import Navbar from "../Navbar/Navbar";
 
 import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
+import { frontend_host } from "../../config";
 
 export const ConnectionTermsGlobal = () => {
   const navigate = useNavigate();
@@ -126,7 +127,7 @@ export const ConnectionTermsGlobal = () => {
     console.log(globalName);
     console.log(globalDescription);
 
-    fetch("http://localhost:8000/create-global-terms/", {
+    fetch("http://host/create-global-terms/".replace(/host/g, frontend_host), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -156,7 +157,7 @@ export const ConnectionTermsGlobal = () => {
         console.log(globalTemplateData);
 
         // Trigger the second API call with the terms_ids
-        return fetch("http://localhost:8000/add-global-template/", {
+        return fetch("http:/host/add-global-template/".replace(/host/g, frontend_host), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

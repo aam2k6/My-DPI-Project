@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import "./page4.css";
 import Navbar from '../Navbar/Navbar';
+import { frontend_host } from '../../config';
 
 
 export const UploadResource = () => {
@@ -37,7 +38,7 @@ export const UploadResource = () => {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://localhost:8000/upload-resource/', {
+    fetch('http://host/upload-resource/'.replace(/host/g, frontend_host), {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`

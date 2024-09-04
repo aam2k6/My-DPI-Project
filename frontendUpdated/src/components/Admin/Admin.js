@@ -534,6 +534,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./Admin.css";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal"; // Import the Modal component
+import { frontend_host } from "../../config";
 
 export const Admin = () => {
   const location = useLocation();
@@ -591,7 +592,7 @@ export const Admin = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/update-delete-locker/`, {
+      const response = await fetch(`http://host/update-delete-locker/`.replace(/host/g, frontend_host), {
         method: "PUT",
         headers: {
           Authorization: `Basic ${token}`,

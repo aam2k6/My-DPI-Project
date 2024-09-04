@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { useParams, useLocation } from 'react-router-dom';
+import { frontend_host } from '../../config';
 
 export const GetResource = ({ username, lockerName, onSubmit }) =>{
     const [selectedResources, setSelectedResources] = useState([]);
@@ -34,7 +35,7 @@ export const GetResource = ({ username, lockerName, onSubmit }) =>{
           const token = Cookies.get('authToken');
         //   const params = new URLSearchParams({ username : username, locker_name: lockerName, obligation: obligation.labelName });
   
-          const response = await fetch(`http://localhost:8000/get-resources-user-locker/?locker_name=${lockerName}`, {
+          const response = await fetch(`http://host/get-resources-user-locker/?locker_name=${lockerName}`.replace(/host/g, frontend_host), {
             method: 'GET',
             headers: {
               'Authorization': `Basic ${token}`,

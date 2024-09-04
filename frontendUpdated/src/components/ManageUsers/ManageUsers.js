@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Modal from '../Modal/Modal';
+import { frontend_host } from '../../config';
 
 export default function ManageUsers({ role }) {  // Role can be 'moderator' or 'admin'
   const [users, setUsers] = useState([]);
@@ -26,7 +27,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
 
     const token = Cookies.get('authToken');
 
-    fetch('http://localhost:8000/dpi-directory/', {
+    fetch('http://host:8000/dpi-directory/'.replace(/host/g, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -68,7 +69,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
     const typeOfRole = (role === "sys_admin" || role === "system_admin") ? "admin/" : "moderator/"
     const token = Cookies.get('authToken');
 
-    const url = `http://localhost:8000/${typeOfAction}${typeOfRole}`;
+    const url = `http://host:8000/${typeOfAction}${typeOfRole}`.replace(/host/g, frontend_host);
     console.log("url", url);
     fetch(url, {
       method: 'PUT',

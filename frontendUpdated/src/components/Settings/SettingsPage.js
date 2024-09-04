@@ -127,6 +127,7 @@ import Cookies from 'js-cookie';
 import './SettingsPage.css';
 import Navbar from '../Navbar/Navbar';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Using FontAwesome icons
+import { frontend_host } from '../../config';
 
 export default function SettingsPage() {
     const { curruser, setUser } = useContext(usercontext);
@@ -164,7 +165,7 @@ export default function SettingsPage() {
 
         console.log("Updated User Data: ", updatedUser);
         const token = Cookies.get('authToken');
-        fetch('http://localhost:8000/signup-user/', {
+        fetch('http://host/signup-user/'.replace(/host/g, frontend_host), {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,

@@ -331,6 +331,7 @@ import Cookies from "js-cookie";
 import { useLocation, useParams } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 
 export const ViewLocker = () => {
   const location = useLocation();
@@ -364,7 +365,7 @@ export const ViewLocker = () => {
       const [connectionsResponse, otherConnectionsResponse] = await Promise.all(
         [
           fetch(
-            `http://localhost:8000/get-connections-user-locker/?${params}`,
+            `http://host/get-connections-user-locker/?${params}`.replace(/host/g, frontend_host),
             {
               method: "GET",
               headers: {
@@ -373,7 +374,7 @@ export const ViewLocker = () => {
               },
             }
           ),
-          fetch(`http://localhost:8000/connection_types/?${params}`, {
+          fetch(`http://host/connection_types/?${params}`.replace(/host/g, frontend_host), {
             method: "GET",
             headers: {
               Authorization: `Basic ${token}`,
@@ -439,7 +440,7 @@ export const ViewLocker = () => {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
       const response = await fetch(
-        `http://localhost:8000/get-resources-user-locker/?${params}`,
+        `http://host/get-resources-user-locker/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -480,7 +481,7 @@ export const ViewLocker = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `http://localhost:8000/get-terms-status/?${params}`,
+        `http://host/get-terms-status/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -537,7 +538,7 @@ export const ViewLocker = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `http://localhost:8000/media/${filePath}`;
+    const url = `http://host/media/${filePath}`.replace(/host/g, frontend_host);
     window.open(url, "_blank");
   };
 

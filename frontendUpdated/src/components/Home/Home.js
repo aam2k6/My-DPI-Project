@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 //import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg"; 
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 
 // Helper function to capitalize the first letter of a string
 const capitalizeFirstLetter = (string) => {
@@ -33,7 +34,7 @@ export const Home = () => {
         const token = Cookies.get('authToken');
         console.log('Fetching lockers with token:', token);
 
-        const response = await fetch('http://localhost:8000/get-lockers-user/', {
+        const response = await fetch('http://host/get-lockers-user/'.replace(/host/g, frontend_host), {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,

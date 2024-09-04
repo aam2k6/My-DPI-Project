@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
+import { frontend_host } from '../../config';
 
 
 export const DPIdirectory = () => {
@@ -24,7 +25,7 @@ export const DPIdirectory = () => {
     const token = Cookies.get('authToken');
 
 
-    fetch('http://localhost:8000/dpi-directory/', {
+    fetch('http://host/dpi-directory/'.replace(/host/g, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,

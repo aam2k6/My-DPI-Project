@@ -4,6 +4,7 @@ import "./page6.css";
 import Cookies from "js-cookie"; 
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 
 export const TargetUserView = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export const TargetUserView = () => {
         console.log('Fetching lockers with params:', params.toString());
         console.log('User object:', user);
 
-        const response = await fetch(`http://localhost:8000/get-lockers-user/?${params}`, {
+        const response = await fetch(`http://host/get-lockers-user/?${params}`.replace(/host/g, frontend_host), {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,

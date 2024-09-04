@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
+import { frontend_host } from '../../config';
 
 export const CreateConnectionType = () => {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ export const CreateConnectionType = () => {
         }
 
         const token = Cookies.get('authToken');
-        fetch('http://localhost:8000/get-lockers-user/', {
+        fetch('http://host/get-lockers-user/'.replace(/host/g, frontend_host), {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`,
@@ -56,7 +57,7 @@ export const CreateConnectionType = () => {
         if (parentUser && locker) {
             const token = Cookies.get('authToken');
             const params = new URLSearchParams({ guest_locker_name: locker.name, guest_username: parentUser.username });
-            fetch(`http://localhost:8000/get-other-connection-types/?${params}`, {
+            fetch(`http://host/get-other-connection-types/?${params}`.replace(/host/g, frontend_host), {
                 method: 'GET',
                 headers: {
                     'Authorization': `Basic ${token}`,
@@ -124,7 +125,7 @@ export const CreateConnectionType = () => {
 
     try {
         console.log('Sending request to create connection');
-        const response = await fetch('http://localhost:8000/create-new-connection/', {
+        const response = await fetch('http://host/create-new-connection/'.replace(/host/g, frontend_host), {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${token}`,

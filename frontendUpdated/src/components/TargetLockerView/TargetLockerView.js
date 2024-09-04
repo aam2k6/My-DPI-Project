@@ -664,6 +664,7 @@ import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import "./page7.css";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 
 export const TargetLockerView = () => {
   const navigate = useNavigate();
@@ -731,7 +732,7 @@ export const TargetLockerView = () => {
         guest_locker_name: locker.name,
       });
       const response = await fetch(
-        `http://localhost:8000/get-other-connection-types/?${params}`,
+        `http://host/get-other-connection-types/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -759,7 +760,7 @@ export const TargetLockerView = () => {
         host_locker_name: locker.name,
       });
       const response = await fetch(
-        `http://localhost:8000/get-outgoing-connections/?${params}`,
+        `http://host/get-outgoing-connections/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -799,7 +800,7 @@ export const TargetLockerView = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `http://localhost:8000/get-terms-status/?${params}`,
+        `http://host/get-terms-status/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -842,7 +843,7 @@ export const TargetLockerView = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `http://localhost:8000/media/${filePath}`;
+    const url = `http://host/media/${filePath}`.replace(/host/g, frontend_host);
     window.open(url, "_blank");
   };
 

@@ -1063,6 +1063,7 @@ import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import "./ViewTermsByType.css";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 
 export const ViewTermsByType = () => {
     const navigate = useNavigate();
@@ -1101,7 +1102,7 @@ export const ViewTermsByType = () => {
             try {
                 const token = Cookies.get("authToken");
                 const response = await fetch(
-                    `http://localhost:8000/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`,
+                    `http://host/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`.replace(/host/g, frontend_host),
                     {
                         method: "GET",
                         headers: {
@@ -1238,7 +1239,7 @@ export const ViewTermsByType = () => {
                 try {
                     const token = Cookies.get("authToken");
                     const response = await fetch(
-                        `http://localhost:8000/get-resources-user-locker/?locker_name=${selectedLocker}`,
+                        `http://host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(/host/g, frontend_host),
                         {
                             method: "GET",
                             headers: {
@@ -1356,7 +1357,7 @@ export const ViewTermsByType = () => {
             // }
     
             const updateResponse = await fetch(
-                `http://localhost:8000/update-connection-terms/`,
+                `http://host/update-connection-terms/`.replace(/host/g, frontend_host),
                 {
                     method: "PATCH",
                     headers: {

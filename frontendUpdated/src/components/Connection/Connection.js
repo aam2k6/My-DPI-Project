@@ -7,6 +7,7 @@ import { usercontext } from "../../usercontext";
 import "./connection.css";
 import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
+import { frontend_host } from "../../config";
 
 export const Connection = () => {
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ export const Connection = () => {
     useEffect(() => {
         const token = Cookies.get('authToken');
 
-        fetch('http://localhost:8000/get-lockers-user/', {
+        fetch('http://host/get-lockers-user/'.replace(/host/g, frontend_host), {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`,

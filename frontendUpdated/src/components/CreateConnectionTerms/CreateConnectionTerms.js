@@ -301,6 +301,7 @@ import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 // import res from "./object";
 
 export const CreateConnectionTerms = () => {
@@ -330,7 +331,7 @@ export const CreateConnectionTerms = () => {
       console.log("Inside fetch terms");
       try {
         const token = Cookies.get('authToken');
-        const response = await fetch(`http://localhost:8000/show_terms/?username=${curruser.username}&locker_name=${locker.name}&connection_name=${connectionName}`, {
+        const response = await fetch(`http://host/show_terms/?username=${curruser.username}&locker_name=${locker.name}&connection_name=${connectionName}`.replace(/host/g, frontend_host), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -369,7 +370,7 @@ export const CreateConnectionTerms = () => {
     formData.append('consent', consent);
 
     try {
-      const response = await fetch('http://localhost:8000/give_consent/', {
+      const response = await fetch('http://host/give_consent/'.replace(/host/g, frontend_host), {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',
@@ -409,7 +410,7 @@ export const CreateConnectionTerms = () => {
     formData.append('revoke_guest', revoke_guest);
 
     try {
-      const response = await fetch('http://localhost:8000/revoke_consent/', {
+      const response = await fetch('http://host/revoke_consent/'.replace(/host/g, frontend_host), {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',

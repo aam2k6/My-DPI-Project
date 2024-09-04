@@ -37,7 +37,7 @@ export const Guestusers = () => {
       host_user_username: curruser.username
     });
 
-    fetch(`http://localhost:8000/get-guest-user-connection/?${params.toString()}`, {
+    fetch(`http://172.16.192.201:8000/get-guest-user-connection/?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -83,7 +83,7 @@ export const Guestusers = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `http://localhost:8000/get-terms-status/?${params}`,
+        `http://172.16.192.201:8000/get-terms-status/?${params}`,
         {
           method: "GET",
           headers: {

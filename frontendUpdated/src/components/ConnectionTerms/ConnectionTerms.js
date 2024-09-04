@@ -86,7 +86,7 @@ export const ConnectionTerms = () => {
         navigate("/connection");
 
 
-        fetch('http://localhost:8000/create-connection-type-and-terms/', {
+        fetch('http://172.16.192.201:8000/create-connection-type-and-terms/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

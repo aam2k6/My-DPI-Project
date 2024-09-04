@@ -126,7 +126,7 @@ export const ConnectionTermsGlobal = () => {
     console.log(globalName);
     console.log(globalDescription);
 
-    fetch("http://localhost:8000/create-global-terms/", {
+    fetch("http://172.16.192.201:8000/create-global-terms/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -156,7 +156,7 @@ export const ConnectionTermsGlobal = () => {
         console.log(globalTemplateData);
 
         // Trigger the second API call with the terms_ids
-        return fetch("http://localhost:8000/add-global-template/", {
+        return fetch("http://172.16.192.201:8000/add-global-template/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -1,0 +1,67 @@
+.page12typeofconn {
+  font-size: 1.95rem;
+  font-weight: bolder;
+  margin-left: 3rem;
+}
+
+.page12hostlocker {
+  font-size: 1.25rem;
+  width: 25rem;
+  height: 4rem;
+  margin-top: 3rem;
+  margin-left: 1rem;
+  margin-right: 1rem; /* Adjusted to be more centered */
+  padding: 1rem;
+  border: 2px solid rgb(107, 120, 231);
+}
+
+.page12parentconnections {
+  display: flex;
+  align-items: flex-start; /* Adjusted alignment */
+  margin-left: 3rem;
+}
+
+.page12hostlocker div {
+  margin-bottom:  0.5rem;
+}
+
+.page12paragraph {
+  margin-top: 7rem;
+  margin-left: 3rem;
+  font-size: 1.25rem;
+  padding: 2rem; /* Added padding for better spacing */
+  width: 50rem;
+  height: auto; /* Adjusted height for content flexibility */
+  background-color: #f4f6f8;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between; /* Flexbox to align content and button */
+  align-items: center; /* Center-align items vertically */
+}
+
+.page12paragraph button {
+  background-color: #007bff;
+  color: #fff;
+  width: 5rem;
+  border: none;
+  padding: 1rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: bolder;
+}
+
+.page12paragraph button:hover {
+  background-color: #0056b3; /* Darker color on hover */
+}
+
+.createconnectionmylock {
+  margin-top: 4rem;
+  font-size: large;
+  font-weight: 500;
+}
+
+.noBold{
+  font-weight: normal;
+  font-size: x-large;
+}

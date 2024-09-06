@@ -7,6 +7,7 @@ export const GetResource = ({ username, lockerName, onSubmit }) =>{
     const [selectedResources, setSelectedResources] = useState([]);
     const [error, setError] = useState(null);
     const [resources, setResources] = useState([]);
+    const [vnode_resources, setVnodeResources] = useState([]);
     console.log(lockerName);
     
 

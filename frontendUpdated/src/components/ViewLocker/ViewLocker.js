@@ -222,7 +222,7 @@
 //     navigate('/show-guest-users', { state: { connection, locker } });
 //   }
 
-  
+
 
 //   const content = (
 //     <><div className="navbarBrand">{locker ? `Locker: ${locker.name}` : 'Locker'}</div></>
@@ -349,13 +349,17 @@ export const ViewLocker = () => {
   const [otherConnections, setOtherConnections] = useState([]);
   const [trackerData, setTrackerData] = useState({});
 
+  const [VnodeResources, setVnodeResources] = useState([]);
+
   useEffect(() => {
     if (locker) {
       fetchConnectionsAndOtherConnections(); // Combine the two fetches
       fetchResources(); // Keep resources fetch separate
+      fetchVnodeResources();
     }
   }, [locker]);
 
+  console.log("locker", locker);
   const fetchConnectionsAndOtherConnections = async () => {
     try {
       const token = Cookies.get("authToken");
@@ -453,6 +457,7 @@ export const ViewLocker = () => {
         throw new Error("Failed to fetch resources");
       }
       const data = await response.json();
+      console.log("resour", data);
       if (data.success) {
         setResources(data.resources);
       } else {
@@ -463,6 +468,42 @@ export const ViewLocker = () => {
       setError("An error occurred while fetching resources");
     }
   };
+
+  const fetchVnodeResources = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({ host_locker_id: locker.locker_id });
+      const response = await fetch(
+        `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch resources");
+      }
+
+      const data = await response.json();
+      console.log("vnodes", data.data);
+
+      //if (data.success) {
+      setVnodeResources(data.data);
+      //} else {
+      //setError(data.message || "Failed to fetch resources");
+      //}
+      //} 
+
+    } catch (error) {
+      console.error("Error fetching resources:", error);
+      setError("An error occurred while fetching resources");
+    }
+  };
+
+
 
   const fetchAllTrackerData = (outgoingConnections) => {
     outgoingConnections.forEach((connection) => {
@@ -517,7 +558,7 @@ export const ViewLocker = () => {
 
   const getStatusColor = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
-    if (tracker.count_T === totalObligations && tracker.count_R === 0 ) {
+    if (tracker.count_T === totalObligations && tracker.count_R === 0) {
       return "green";
     } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
       return "red";
@@ -574,7 +615,7 @@ export const ViewLocker = () => {
   const handleInfo = (connection) => {
     // Split the connection_name by the hyphen and take the last part as the connection_type_name
     const connectionTypeName = connection.connection_name.split('-').pop().trim();
-  
+
     console.log("Navigating with state:", {
       connectionName: connection.connection_name,
       hostLockerName: connection.host_locker?.name,
@@ -582,7 +623,7 @@ export const ViewLocker = () => {
       hostUserUsername: connection.host_user?.username,
       locker: locker,
     });
-  
+
     navigate("/show-connection-terms", {
       state: {
         connectionName: connection.connection_name,
@@ -593,11 +634,11 @@ export const ViewLocker = () => {
       },
     });
   };
-  
-  
-  
-  
-  
+
+
+
+
+
 
 
   const content = (
@@ -607,6 +648,8 @@ export const ViewLocker = () => {
       </div>
     </>
   );
+  console.log("res vnode", VnodeResources);
+  console.log("res", resources);
 
   return (
     <div>
@@ -626,7 +669,7 @@ export const ViewLocker = () => {
             </div>
             <div className="container-3 clearfix">
               <div className="aa">
-                {resources.length > 0 ? (
+                {(resources.length > 0) ? (
                   resources.map((resource, index) => (
                     <div key={resource.resource_id} className="resource-item">
                       <div className="resource-details">
@@ -636,7 +679,7 @@ export const ViewLocker = () => {
                             handleResourceClick(resource.i_node_pointer)
                           }
                         >
-                          {index + 1}. {resource.document_name}
+                           {resource.document_name}
                         </div>
                         <div className="public-private">
                           {resource.type === "private" ? (
@@ -658,90 +701,163 @@ export const ViewLocker = () => {
                       </div>
                     </div>
                   ))
+                  
+                  ): (
+                    <p>No resources found.</p>
+            )}
+
+                  {(VnodeResources.length > 0) ? (
+
+                  [...VnodeResources].map((resource, index) => (
+                <div key={resource.resource.resource_id} className="resource-item">
+                  <div className="resource-details">
+                    <div
+                      id="documents-byShare"
+                      onClick={() =>
+                        handleResourceClick(resource.resource.i_node_pointer)
+                      }
+                    >
+                       {resource.resource.document_name}
+                    </div>
+                    <div className="public-private">
+                      {resource.resource.type === "private" ? (
+                        <>
+                          Private - Shared with:
+                          {resource.resource.connections.map((connection, index) => (
+                            <span key={connection.connection_id}>
+                              {connection.host_user.username}
+                              {index < resource.connections.length - 1
+                                ? ", "
+                                : ""}
+                            </span>
+                          ))}
+                        </>
+                      ) : (
+                        "Public"
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                ))
+
+                  //   VnodeResources.map((resource, index) => (
+                  //     <div key={resource.resource_id} className="resource-item">
+                  //       <div className="resource-details">
+                  //         <div
+                  //           id="documents"
+                  //           onClick={() => 
+                  //             handleResourceClick(resource.i_node_pointer)
+                  //           }
+                  //         >
+                  //           {index + 1}. {resource.document_name}
+                  //         </div>
+                  //         <div className="public-private">
+                  //           {resource.type === "private" ? (
+                  //             <>
+                  //               Private - Shared with:
+                  //               {resource.connections.map((connection, index) => (
+                  //                 <span key={connection.connection_id}>
+                  //                   {connection.host_user.username}
+                  //                   {index < resource.connections.length - 1
+                  //                     ? ", "
+                  //                     : ""}
+                  //                 </span>
+                  //               ))}
+                  //             </>
+                  //           ) : (
+                  //             "Public"
+                  //           )}
+                  //         </div>
+                  //       </div>
+                  //     </div>
+                  // ))
+                      
+                
+                  ): (
+                        <p>No Shared resources found.</p>
+                )}
+                </div>
+              </div>
+              <button className="page3button">Share</button>
+              &nbsp;&nbsp;&nbsp;
+              <button className="page3button" onClick={handleUploadResource}>
+                Upload resource
+              </button>
+            </div>
+            <div className="b">
+              <h3 id="mycon">My Connections:</h3>
+              <h4 id="headingconnection">Incoming Connection types</h4>
+              <div className="conn">
+                {otherConnections.length > 0 ? (
+                  otherConnections.map((connection, index) => (
+                    <div key={connection.connection_type_id} className="viewlockerconnections" onClick={() => handleConnectionClick(connection)}>
+
+
+                      <h4 id='connectiontype'> <div><u>{index + 1}. {connection.connection_type_name}
+                      </u> (  users:  {connection.incoming_count} )</div></h4>
+
+                    </div>
+                  ))
                 ) : (
-                  <p>No resources found.</p>
+                  <p>No connections found.</p>
                 )}
               </div>
+
+              <h4 id="headingconnection">Outgoing Connections</h4>
+              <div className="conn">
+                {connections.outgoing_connections.length > 0 ? (
+                  connections.outgoing_connections.map((connection, index) => {
+                    const tracker = trackerData[connection.connection_id];
+                    const color = tracker ? getStatusColor(tracker) : "gray";
+                    const ratio = tracker ? calculateRatio(tracker) : "Loading...";
+
+                    return (
+                      <div
+                        key={connection.connection_id}
+                        className="viewlockerconnections"
+                      >
+                        <div id="conntent">
+                          {/* Making the connection name clickable */}
+                          <button
+                            className="connection-name-button"
+                            onClick={() => handleTracker(connection)}
+                            style={{ textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit" }}
+                          >
+                            {index + 1}. {connection.connection_name}
+                          </button>
+                        </div>
+                        <div id="conntent">
+                          {connection.host_user.username} &lt;&gt; {connection.guest_user.username}
+                        </div>
+                        <div id="conntent">
+                          Created On: {new Date(connection.created_time).toLocaleString()}
+                        </div>
+                        <div id="conntent">
+                          Valid Until: {new Date(connection.validity_time).toLocaleString()}
+                        </div>
+                        <div className="Lockertracker">
+                          <button className="info-button" onClick={() => handleInfo(connection)}> i </button>
+                          <button
+                            onClick={() => handleTracker(connection)}
+                            style={{ backgroundColor: color }}
+                          >
+                            {ratio}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No outgoing connections found.</p>
+                )}
+              </div>
+
             </div>
-            <button className="page3button">Share</button>
-            &nbsp;&nbsp;&nbsp;
-            <button className="page3button" onClick={handleUploadResource}>
-              Upload resource
-            </button>
-          </div>
-          <div className="b">
-            <h3 id="mycon">My Connections:</h3>
-            <h4 id="headingconnection">Incoming Connection types</h4>
-            <div className="conn">
-              {otherConnections.length > 0 ? (
-                otherConnections.map((connection, index) => (
-                  <div key={connection.connection_type_id} className="viewlockerconnections" onClick={() => handleConnectionClick(connection)}>
-
-
-                    <h4 id='connectiontype'> <div><u>{index + 1}. {connection.connection_type_name}  
-</u> (  users:  {connection.incoming_count} )</div></h4>
-        
-                  </div>
-                ))
-              ) : (
-                <p>No connections found.</p>
-              )}
-            </div>
-
-            <h4 id="headingconnection">Outgoing Connections</h4>
-            <div className="conn">
-  {connections.outgoing_connections.length > 0 ? (
-    connections.outgoing_connections.map((connection, index) => {
-      const tracker = trackerData[connection.connection_id];
-      const color = tracker ? getStatusColor(tracker) : "gray";
-      const ratio = tracker ? calculateRatio(tracker) : "Loading...";
-
-      return (
-        <div
-          key={connection.connection_id}
-          className="viewlockerconnections"
-        >
-          <div id="conntent">
-            {/* Making the connection name clickable */}
-            <button
-              className="connection-name-button"
-              onClick={() => handleTracker(connection)}
-              style={{ textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit" }}
-            >
-              {index + 1}. {connection.connection_name}
-            </button>
-          </div>
-          <div id="conntent">
-            {connection.host_user.username} &lt;&gt; {connection.guest_user.username}
-          </div>
-          <div id="conntent">
-            Created On: {new Date(connection.created_time).toLocaleString()}
-          </div>
-          <div id="conntent">
-            Valid Until: {new Date(connection.validity_time).toLocaleString()}
-          </div>
-          <div className="Lockertracker">
-            <button className="info-button" onClick={() => handleInfo(connection)}> i </button>
-            <button
-              onClick={() => handleTracker(connection)}
-              style={{ backgroundColor: color }}
-            >
-              {ratio}
-            </button>
-          </div>
-        </div>
-      );
-    })
-  ) : (
-    <p>No outgoing connections found.</p>
-  )}
-</div>
-
           </div>
         </div>
       </div>
-    </div>
-  );
+      );
 
 
 };

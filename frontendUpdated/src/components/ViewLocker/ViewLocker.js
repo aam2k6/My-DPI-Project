@@ -440,7 +440,7 @@ export const ViewLocker = () => {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
       const response = await fetch(
-        `host/get-resources-user-locker/?${params}`.replace(/host/g, frontend_host),
+        `host/get-resources-user-locker/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -481,7 +481,7 @@ export const ViewLocker = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/g, frontend_host),
+        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -538,7 +538,7 @@ export const ViewLocker = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `host/media/${filePath}`.replace(/host/g, frontend_host);
+    const url = `host/media/${filePath}`.replace(/host/, frontend_host);
     window.open(url, "_blank");
   };
 

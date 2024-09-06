@@ -456,13 +456,12 @@ export const CreateConnectionTerms = () => {
       return (
         <div className="permissions">
           <ul>
-            <li>{canShareMoreData && <div>You can share more data.</div>}</li>
-            <li>{canDownloadData && <div>You can download data.</div>}</li>
+            {canShareMoreData && <li>You can share more data.</li> }
+            {canDownloadData && <li>You can download data.</li> }
           </ul>
 
         </div>
       );
-
     }
     return null;
   };

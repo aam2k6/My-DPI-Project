@@ -34,7 +34,7 @@ export const Connection = () => {
     useEffect(() => {
         const token = Cookies.get('authToken');
 
-        fetch('host/get-lockers-user/'.replace(/host/g, frontend_host), {
+        fetch('host/get-lockers-user/'.replace(/host/, frontend_host), {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`,

@@ -165,7 +165,7 @@ export default function SettingsPage() {
 
         console.log("Updated User Data: ", updatedUser);
         const token = Cookies.get('authToken');
-        fetch('host/signup-user/'.replace(/host/g, frontend_host), {
+        fetch('host/signup-user/'.replace(/host/, frontend_host), {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,

@@ -25,7 +25,7 @@ export const DPIdirectory = () => {
     const token = Cookies.get('authToken');
 
 
-    fetch('host/dpi-directory/'.replace(/host/g, frontend_host), {
+    fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,

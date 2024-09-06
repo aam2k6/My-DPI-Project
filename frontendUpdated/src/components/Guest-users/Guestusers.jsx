@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import "./guestuser.css";
 import Navbar from '../Navbar/Navbar';
+import { frontend_host } from '../../config';
 
 export const Guestusers = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export const Guestusers = () => {
       host_user_username: curruser.username
     });
 
-    fetch(`172.16.192.201:8000/get-guest-user-connection/?${params.toString()}`, {
+    fetch(`host/get-guest-user-connection/?${params.toString()}`.replace(/host/, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -83,7 +84,7 @@ export const Guestusers = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `https://anumati1.iiitb.ac.in/get-terms-status/?${params}`,
+        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {

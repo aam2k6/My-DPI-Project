@@ -27,7 +27,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
 
     const token = Cookies.get('authToken');
 
-    fetch('host:8000/dpi-directory/'.replace(/host/g, frontend_host), {
+    fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -69,7 +69,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
     const typeOfRole = (role === "sys_admin" || role === "system_admin") ? "admin/" : "moderator/"
     const token = Cookies.get('authToken');
 
-    const url = `host/${typeOfAction}${typeOfRole}`.replace(/host/g, frontend_host);
+    const url = `host/${typeOfAction}${typeOfRole}`.replace(/host/, frontend_host);
     console.log("url", url);
     fetch(url, {
       method: 'PUT',

@@ -704,7 +704,7 @@ export const TargetLockerView = () => {
         username: parentUser.username,
       });
       const response = await fetch(
-        `localhost:8000/get-public-resources?${params}`,
+        `host/get-public-resources?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -760,7 +760,8 @@ export const TargetLockerView = () => {
         host_locker_name: locker.name,
       });
       const response = await fetch(
-        `host/get-outgoing-connections/?${params}`.replace(/host/g, frontend_host),
+        `host/get-outgoing-connections/?${params}`.replace(/host/
+        , frontend_host),
         {
           method: "GET",
           headers: {
@@ -800,7 +801,7 @@ export const TargetLockerView = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/g, frontend_host),
+        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -843,7 +844,7 @@ export const TargetLockerView = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `host/media/${filePath}`.replace(/host/g, frontend_host);
+    const url = `host/media/${filePath}`.replace(/host/, frontend_host);
     window.open(url, "_blank");
   };
 

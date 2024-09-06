@@ -87,7 +87,7 @@ export const ConnectionTerms = () => {
         navigate("/connection");
 
 
-        fetch('host/create-connection-type-and-terms/'.replace(/host/g, frontend_host), {
+        fetch('host/create-connection-type-and-terms/'.replace(/host/, frontend_host), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

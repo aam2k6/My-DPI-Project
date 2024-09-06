@@ -34,7 +34,7 @@ export const Home = () => {
         const token = Cookies.get('authToken');
         console.log('Fetching lockers with token:', token);
 
-        const response = await fetch('host/get-lockers-user/'.replace(/host/g, frontend_host), {
+        const response = await fetch('host/get-lockers-user/'.replace(/host/, frontend_host), {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,
@@ -107,11 +107,11 @@ export const Home = () => {
             lockers.map(locker => (
               <div key={locker.locker_id} className="page1-locker">
                 <h4>{locker.name}</h4>
-                <p className="description2">{locker.description}</p>
+                
                 {locker.is_frozen === false && <button id="openLockerBtn" onClick={() => handleClick(locker)}>Open</button>}
                 {locker.is_frozen === true && <button id="openLockerBtn">Frozen</button>}
     
-                
+                <p className="description2">{locker.description}</p>
                
               </div>
             ))

@@ -42,7 +42,7 @@ export const TargetUserView = () => {
         console.log('Fetching lockers with params:', params.toString());
         console.log('User object:', user);
 
-        const response = await fetch(`host/get-lockers-user/?${params}`.replace(/host/g, frontend_host), {
+        const response = await fetch(`host/get-lockers-user/?${params}`.replace(/host/, frontend_host), {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,
@@ -101,12 +101,13 @@ export const TargetUserView = () => {
             allLockers.map(lockers => (
               <div key={lockers.locker_id} className="page6-locker">
                 <h4>{lockers.name}</h4>
-                <p className="description2">{lockers.description}</p>
+                
                 {lockers.is_frozen === false && <button id="docsBtn" onClick={() => handleLockersClick(lockers)}>
                   Open
                 </button>} 
                 {lockers.is_frozen === true && <button id="docsBtn">Frozen</button> }
                 
+                <p className="description2">{lockers.description}</p>
               </div>
             ))
           ) : (

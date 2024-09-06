@@ -38,7 +38,7 @@ export const UploadResource = () => {
 
     const token = Cookies.get('authToken');
 
-    fetch('host/upload-resource/'.replace(/host/g, frontend_host), {
+    fetch('host/upload-resource/'.replace(/host/, frontend_host), {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`

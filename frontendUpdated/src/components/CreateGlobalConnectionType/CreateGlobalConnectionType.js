@@ -21,7 +21,7 @@
 // //     const token = Cookies.get('authToken');
 
 // //     // Fetch global connection types
-// //     fetch('http://localhost:8000/get-template-or-templates/', {
+// //     fetch('localhost:8000/get-template-or-templates/', {
 // //       method: 'GET',
 // //       headers: {
 // //         'Authorization': `Basic ${token}`,
@@ -120,7 +120,7 @@
 // //     const token = Cookies.get('authToken');
 
 // //     // Fetch global connection types
-// //     fetch('http://localhost:8000/get-template-or-templates/', {
+// //     fetch('localhost:8000/get-template-or-templates/', {
 // //       method: 'GET',
 // //       headers: {
 // //         'Authorization': `Basic ${token}`,
@@ -147,7 +147,7 @@
 // //       });
 
 // //     // Fetch connection terms
-// //     fetch('http://localhost:8000/get-connection-terms-for-global-template', {
+// //     fetch('localhost:8000/get-connection-terms-for-global-template', {
 // //       method: 'GET',
 // //       headers: {
 // //         'Authorization': `Basic ${token}`,
@@ -260,7 +260,7 @@
 //     const token = Cookies.get('authToken');
 
 //     // Fetch global connection types
-//     fetch('http://localhost:8000/get-template-or-templates/', {
+//     fetch('localhost:8000/get-template-or-templates/', {
 //       method: 'GET',
 //       headers: {
 //         'Authorization': `Basic ${token}`,
@@ -296,7 +296,7 @@
 
 //   //   const token = Cookies.get('authToken');
 
-//   //   fetch(`http://localhost:8000/get-connection-terms-for-global-template/?template_Id=${type.global_connection_type_template_id}`, {
+//   //   fetch(`localhost:8000/get-connection-terms-for-global-template/?template_Id=${type.global_connection_type_template_id}`, {
 //   //     method: 'GET',
 //   //     headers: {
 //   //       'Authorization': `Basic ${token}`,
@@ -335,7 +335,7 @@
 //     const token = Cookies.get('authToken');
 
   
-//     fetch(`http://localhost:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
+//     fetch(`localhost:8000/get-connection-terms-for-global-template/?template_Id=${template_Id}`, {
 //       method: 'GET',
 //       headers: {
 //         'Authorization': `Basic ${token}`,
@@ -433,7 +433,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
 
-    fetch('http://host/get-template-or-templates/'.replace(/host/g, frontend_host), {
+    fetch('host/get-template-or-templates/'.replace(/host/g, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -475,7 +475,7 @@ export default function CreateGlobalConnectionType() {
 
     const token = Cookies.get('authToken');
   
-    fetch(`http://host/get-connection-terms-for-global-template/?template_Id=${template_Id}`.replace(/host/g, frontend_host), {
+    fetch(`host/get-connection-terms-for-global-template/?template_Id=${template_Id}`.replace(/host/g, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,

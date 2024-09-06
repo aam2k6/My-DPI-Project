@@ -1,2 +1,2 @@
-var frontend_host = "172.16.192.201:8000";
+var frontend_host = "https://anumati1.iiitb.ac.in";
 export {frontend_host};

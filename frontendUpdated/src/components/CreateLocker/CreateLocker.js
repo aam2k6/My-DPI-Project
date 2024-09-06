@@ -23,7 +23,7 @@ export const CreateLocker = () => {
     data.append('description', description);
 
     // Send data to the backend
-    fetch('http://host/create-locker/'.replace(/host/g, frontend_host), {
+    fetch('host/create-locker/'.replace(/host/g, frontend_host), {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`, // Add token to the headers

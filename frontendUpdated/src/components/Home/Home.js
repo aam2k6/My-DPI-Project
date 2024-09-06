@@ -34,7 +34,7 @@ export const Home = () => {
         const token = Cookies.get('authToken');
         console.log('Fetching lockers with token:', token);
 
-        const response = await fetch('http://host/get-lockers-user/'.replace(/host/g, frontend_host), {
+        const response = await fetch('host/get-lockers-user/'.replace(/host/g, frontend_host), {
           method: 'GET',
           headers: {
             'Authorization': `Basic ${token}`,

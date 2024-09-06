@@ -40,7 +40,7 @@
 //         username: parentUser.username,
 //       });
 //       const response = await fetch(
-//         `http://localhost:8000/get-public-resources?${params}`,
+//         `localhost:8000/get-public-resources?${params}`,
 //         {
 //           method: "GET",
 //           headers: {
@@ -68,7 +68,7 @@
 //         guest_locker_name: locker.name,
 //       });
 //       const response = await fetch(
-//         `http://localhost:8000/get-other-connection-types/?${params}`,
+//         `localhost:8000/get-other-connection-types/?${params}`,
 //         {
 //           method: "GET",
 //           headers: {
@@ -101,7 +101,7 @@
 
 //   //     console.log("params",locker.name, parentUser.username);
 //   //     const response = await fetch(
-//   //       `http://localhost:8000/get-connections-user-locker/?${params}`,
+//   //       `localhost:8000/get-connections-user-locker/?${params}`,
 //   //       {
 //   //         method: "GET",
 //   //         headers: {
@@ -153,7 +153,7 @@
 //         host_username: parentUser.username,
 //         host_locker_name: locker.name,
 //       });
-//       const response = await fetch(`http://localhost:8000/get-outgoing-connections/?${params}`, {
+//       const response = await fetch(`localhost:8000/get-outgoing-connections/?${params}`, {
 //         method: "GET",
 //         headers: {
 //           Authorization: `Basic ${token}`,
@@ -186,7 +186,7 @@
 //   };
 
 //   const handleResourceClick = (filePath) => {
-//     const url = `http://localhost:8000/media/${filePath}`;
+//     const url = `localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
 //   };
 
@@ -367,7 +367,7 @@
 //         username: parentUser.username,
 //       });
 //       const response = await fetch(
-//         `http://localhost:8000/get-public-resources?${params}`,
+//         `localhost:8000/get-public-resources?${params}`,
 //         {
 //           method: "GET",
 //           headers: {
@@ -395,7 +395,7 @@
 //         guest_locker_name: locker.name,
 //       });
 //       const response = await fetch(
-//         `http://localhost:8000/get-other-connection-types/?${params}`,
+//         `localhost:8000/get-other-connection-types/?${params}`,
 //         {
 //           method: "GET",
 //           headers: {
@@ -424,7 +424,7 @@
 //         host_locker_name: locker.name,
 //       });
 //       const response = await fetch(
-//         `http://localhost:8000/get-outgoing-connections/?${params}`,
+//         `localhost:8000/get-outgoing-connections/?${params}`,
 //         {
 //           method: "GET",
 //           headers: {
@@ -463,7 +463,7 @@
 //         guest_user_username: connection.guest_user.username,
 //       });
 //       const response = await fetch(
-//         `http://localhost:8000/get-terms-status/?${params}`,
+//         `localhost:8000/get-terms-status/?${params}`,
 //         {
 //           method: "GET",
 //           headers: {
@@ -500,7 +500,7 @@
 //   };
 
 //   const handleResourceClick = (filePath) => {
-//     const url = `http://localhost:8000/media/${filePath}`;
+//     const url = `localhost:8000/media/${filePath}`;
 //     window.open(url, "_blank");
 //   };
 
@@ -704,7 +704,7 @@ export const TargetLockerView = () => {
         username: parentUser.username,
       });
       const response = await fetch(
-        `http://localhost:8000/get-public-resources?${params}`,
+        `localhost:8000/get-public-resources?${params}`,
         {
           method: "GET",
           headers: {
@@ -732,7 +732,7 @@ export const TargetLockerView = () => {
         guest_locker_name: locker.name,
       });
       const response = await fetch(
-        `http://host/get-other-connection-types/?${params}`.replace(/host/g, frontend_host),
+        `host/get-other-connection-types/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -760,7 +760,7 @@ export const TargetLockerView = () => {
         host_locker_name: locker.name,
       });
       const response = await fetch(
-        `http://host/get-outgoing-connections/?${params}`.replace(/host/g, frontend_host),
+        `host/get-outgoing-connections/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -800,7 +800,7 @@ export const TargetLockerView = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `http://host/get-terms-status/?${params}`.replace(/host/g, frontend_host),
+        `host/get-terms-status/?${params}`.replace(/host/g, frontend_host),
         {
           method: "GET",
           headers: {
@@ -843,7 +843,7 @@ export const TargetLockerView = () => {
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `http://host/media/${filePath}`.replace(/host/g, frontend_host);
+    const url = `host/media/${filePath}`.replace(/host/g, frontend_host);
     window.open(url, "_blank");
   };
 

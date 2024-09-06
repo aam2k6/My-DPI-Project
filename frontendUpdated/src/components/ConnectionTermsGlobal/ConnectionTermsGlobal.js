@@ -127,7 +127,7 @@ export const ConnectionTermsGlobal = () => {
     console.log(globalName);
     console.log(globalDescription);
 
-    fetch("http://host/create-global-terms/".replace(/host/g, frontend_host), {
+    fetch("host/create-global-terms/".replace(/host/g, frontend_host), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

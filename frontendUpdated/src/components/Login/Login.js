@@ -28,7 +28,7 @@ export const Login = () => {
         // Log form values to ensure they're being set correctly
         console.log("Form Values: ", { username, password, description });
 
-        const url = isSignup ? 'http://host/signup-user/'.replace(/host/g, frontend_host) : 'http://host/login-user/'.replace(/host/g, frontend_host);
+        const url = isSignup ? 'host/signup-user/'.replace(/host/g, frontend_host) : 'host/login-user/'.replace(/host/g, frontend_host);
         const headers = {};
 
         if (!isSignup) {

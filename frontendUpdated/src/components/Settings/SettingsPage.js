@@ -39,7 +39,7 @@
 
 //         console.log("Updated User Data: ", updatedUser);
 //         const token = Cookies.get('authToken');
-//         fetch('http://localhost:8000/signup-user/', {
+//         fetch('localhost:8000/signup-user/', {
 //             method: 'PUT',
 //             headers: {
 //                 'Authorization': `Bearer ${token}`,
@@ -165,7 +165,7 @@ export default function SettingsPage() {
 
         console.log("Updated User Data: ", updatedUser);
         const token = Cookies.get('authToken');
-        fetch('http://host/signup-user/'.replace(/host/g, frontend_host), {
+        fetch('host/signup-user/'.replace(/host/g, frontend_host), {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,

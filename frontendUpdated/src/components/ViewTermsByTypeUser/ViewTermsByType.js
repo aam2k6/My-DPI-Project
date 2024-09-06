@@ -1239,7 +1239,7 @@ export const ViewTermsByType = () => {
                 try {
                     const token = Cookies.get("authToken");
                     const response = await fetch(
-                        `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(/host/g, frontend_host),
+                        `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(/host/, frontend_host),
                         {
                             method: "GET",
                             headers: {

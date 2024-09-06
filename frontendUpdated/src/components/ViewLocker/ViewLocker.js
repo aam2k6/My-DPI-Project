@@ -365,7 +365,7 @@ export const ViewLocker = () => {
       const [connectionsResponse, otherConnectionsResponse] = await Promise.all(
         [
           fetch(
-            `host/get-connections-user-locker/?${params}`.replace(/host/g, frontend_host),
+            `host/get-connections-user-locker/?${params}`.replace(/host/, frontend_host),
             {
               method: "GET",
               headers: {
@@ -374,7 +374,7 @@ export const ViewLocker = () => {
               },
             }
           ),
-          fetch(`host/connection_types/?${params}`.replace(/host/g, frontend_host), {
+          fetch(`host/connection_types/?${params}`.replace(/host/, frontend_host), {
             method: "GET",
             headers: {
               Authorization: `Basic ${token}`,

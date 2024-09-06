@@ -410,7 +410,7 @@ export const CreateConnectionTerms = () => {
     formData.append('revoke_guest', revoke_guest);
 
     try {
-      const response = await fetch('host/revoke_consent/'.replace(/host/g, frontend_host), {
+      const response = await fetch('host/revoke_consent/'.replace(/host/, frontend_host), {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',

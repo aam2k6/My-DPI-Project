@@ -732,7 +732,7 @@ export const TargetLockerView = () => {
         guest_locker_name: locker.name,
       });
       const response = await fetch(
-        `host/get-other-connection-types/?${params}`.replace(/host/g, frontend_host),
+        `host/get-other-connection-types/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -760,8 +760,7 @@ export const TargetLockerView = () => {
         host_locker_name: locker.name,
       });
       const response = await fetch(
-        `host/get-outgoing-connections/?${params}`.replace(/host/
-        , frontend_host),
+        `host/get-outgoing-connections/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {

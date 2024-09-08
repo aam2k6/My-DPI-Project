@@ -136,6 +136,7 @@ class ConnectionSerializer(serializers.ModelSerializer):
             "is_frozen",
             "terms_value",
             "resources",
+            "consent_given"
         ]
         fields = [
             "connection_id",
@@ -154,6 +155,7 @@ class ConnectionSerializer(serializers.ModelSerializer):
             "is_frozen",
             "terms_value",
             "resources",
+            "consent_given"
         ]
 
 

@@ -14,9 +14,9 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                path('connection_types/', views.get_connection_type_by_user_by_locker, name='get_connection_types'),
                path('create-new-connection/', views.create_new_connection, name='create_new_connection'),
                path('login-user/', views.login_view, name='login'),
-               path('show_terms/', show_terms, name='show_terms'),
-               path('give_consent/', views.give_consent, name='give_consent'),
-               path('revoke_consent/', revoke_consent, name='revoke_consent'),
+               path('show-terms/', show_terms, name='show-terms'),
+               path('give-consent/', views.give_consent, name='give-consent'),
+               path('revoke-consent/', revoke_consent, name='revoke-consent'),
                path('get-connections-user-locker/', views.get_connection_by_user_by_locker, name='get-connections-user-locker'),
                #path("get-connections-user/",views.get_connection_by_user,name="get-connections-user"),
                path("get-all-connections/",views.get_all_connections,name="get-all-connections"),
@@ -50,6 +50,8 @@ urlpatterns = [path('dpi-directory/', views.dpi_directory, name='dpi-directory')
                path('get-outgoing-connections/', views.get_outgoing_connections_to_locker, name='get_outgoing_connections_to_locker'),
                path("edit-delete-connectiontype/", view=views.edit_delete_connectiontype_details, name='edit-connection'),
                path("update-connectiontermsonly/", view=views.update_connection_termsONLY, name='update-connectiontermsonly'),
+               path("get-consent/", view=views.get_consent_status, name='get-consent')
+
 
 
 

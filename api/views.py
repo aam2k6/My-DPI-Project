@@ -969,7 +969,7 @@ def show_terms(request):
 @permission_classes([IsAuthenticated])
 def give_consent(request):
     """
-    Give consent for a connection.
+    Give consent for a connection and store consent date in the database.
 
     Parameters:
     - request: HttpRequest object containing metadata about the request.
@@ -1033,13 +1033,7 @@ def give_consent(request):
             )
         except ConnectionType.DoesNotExist:
             return JsonResponse(
-                {
-                    "success": False,
-                    "error": "Connection type not found: {}".format(
-                        connection_type_name
-                    ),
-                },
-                status=404,
+                {"success": False, "error": f"Connection type not found: {connection_type_name}"}, status=404
             )
 
         # Fetch the connection using the connection name, connection type, guest user, and host user
@@ -1051,49 +1045,42 @@ def give_consent(request):
                 host_user=host_user,
             )
         except Connection.DoesNotExist:
-            return JsonResponse(
-                {"success": False, "error": "Connection not found"}, status=404
-            )
+            return JsonResponse({"success": False, "error": "Connection not found"}, status=404)
 
         # Check if the requesting user is the guest user
         if request.user != guest_user:
-            return JsonResponse(
-                {"success": False, "error": "Permission denied"}, status=403
-            )
+            return JsonResponse({"success": False, "error": "Permission denied"}, status=403)
 
-        # Update the consent status
-        connection.requester_consent = consent.lower() in ["true", "1", "t", "y", "yes"]
+        # Update the consent status and save consent date
+        consent_status = consent.lower() in ["true", "1", "t", "y", "yes"]
+        connection.requester_consent = consent_status
+
+        if consent_status:
+            # Set the consent given date to now
+            connection.consent_given = datetime.now()
+
+            # Use the validity_time already set in the connection model
+            validity_date = connection.validity_time
+
+        # Save the connection after updating
         connection.save()
-
-        # Get the consent given date and the validity date from the connection
-        consent_given_date = datetime.now()
-        validity_date = connection.validity_time
 
         return JsonResponse(
             {
                 "success": True,
                 "message": "Consent status updated successfully",
-                "consent_given_date": consent_given_date.strftime(
-                    "%B %d, %Y, %I:%M %p"
-                ),
+                "consent_given_date": connection.consent_given.strftime("%B %d, %Y, %I:%M %p"),
                 "valid_until": validity_date.strftime("%B %d, %Y, %I:%M %p"),
             },
             status=200,
         )
     except CustomUser.DoesNotExist as e:
-        return JsonResponse(
-            {"success": False, "error": "User not found: {}".format(str(e))}, status=404
-        )
+        return JsonResponse({"success": False, "error": f"User not found: {str(e)}"}, status=404)
     except Locker.DoesNotExist as e:
-        return JsonResponse(
-            {"success": False, "error": "Locker not found: {}".format(str(e))},
-            status=404,
-        )
+        return JsonResponse({"success": False, "error": f"Locker not found: {str(e)}"}, status=404)
     except Exception as e:
-        return JsonResponse(
-            {"success": False, "error": "An error occurred: {}".format(str(e))},
-            status=400,
-        )
+        return JsonResponse({"success": False, "error": f"An error occurred: {str(e)}"}, status=400)
+
 
 
 @csrf_exempt
@@ -3777,3 +3764,118 @@ def update_connection_termsONLY(request):
 
     return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
 
+@csrf_exempt
+@api_view(["GET"])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_consent_status(request):
+    """
+    Get consent status for a specific connection.
+
+    Query Parameters:
+    - connection_name: The name of the connection.
+    - connection_type_name: The name of the connection type.
+    - guest_username: The username of the guest user.
+    - guest_lockername: The name of the guest locker.
+    - host_username: The username of the host user.
+    - host_lockername: The name of the host locker.
+
+    Returns:
+    - JsonResponse: A JSON object containing consent status, consent given date, and validity date.
+
+    Response Codes:
+    - 200: Successful retrieval of consent status.
+    - 400: Bad request (if data is invalid or connection not found).
+    - 401: Request User not authenticated.
+    - 404: Specified connection, user, or locker not found.
+    - 405: Request method not allowed (if not GET).
+    """
+    if request.method != "GET":
+        return JsonResponse(
+            {"success": False, "error": "Invalid request method"}, status=405
+        )
+
+    connection_name = request.GET.get("connection_name")
+    connection_type_name = request.GET.get("connection_type_name")
+    guest_username = request.GET.get("guest_username")
+    guest_lockername = request.GET.get("guest_lockername")
+    host_username = request.GET.get("host_username")
+    host_lockername = request.GET.get("host_lockername")
+
+    if None in [
+        connection_name,
+        connection_type_name,
+        guest_username,
+        guest_lockername,
+        host_username,
+        host_lockername,
+    ]:
+        return JsonResponse(
+            {"success": False, "error": "All fields are required"}, status=400
+        )
+
+    try:
+        guest_user = CustomUser.objects.get(username=guest_username)
+        guest_locker = Locker.objects.get(name=guest_lockername, user=guest_user)
+        host_user = CustomUser.objects.get(username=host_username)
+        host_locker = Locker.objects.get(name=host_lockername, user=host_user)
+
+        # Fetch the connection type
+        try:
+            connection_type = ConnectionType.objects.get(
+                connection_type_name__iexact=connection_type_name
+            )
+        except ConnectionType.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "error": "Connection type not found"}, status=404
+            )
+
+        # Fetch the connection
+        try:
+            connection = Connection.objects.get(
+                connection_name=connection_name,
+                connection_type=connection_type,
+                guest_user=guest_user,
+                host_user=host_user,
+            )
+        except Connection.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "error": "Connection not found"}, status=404
+            )
+
+        consent_status = connection.requester_consent
+        consent_given = connection.consent_given
+        validity_date = connection.validity_time
+
+        return JsonResponse(
+            {
+                "success": True,
+                "connection_name": connection_name,
+                "connection_type_name": connection_type_name,
+                "consent_status": consent_status,
+                "consent_given": consent_given.strftime(
+                    "%B %d, %Y, %I:%M %p"
+                )
+                if consent_given
+                else "Not provided",
+                "valid_until": validity_date.strftime("%B %d, %Y, %I:%M %p")
+                if validity_date
+                else "Not provided",
+            },
+            status=200,
+        )
+
+    except CustomUser.DoesNotExist as e:
+        return JsonResponse(
+            {"success": False, "error": "User not found: {}".format(str(e))}, status=404
+        )
+    except Locker.DoesNotExist as e:
+        return JsonResponse(
+            {"success": False, "error": "Locker not found: {}".format(str(e))},
+            status=404,
+        )
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "error": "An error occurred: {}".format(str(e))},
+            status=400,
+        )

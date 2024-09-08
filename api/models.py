@@ -91,6 +91,7 @@ class Connection(models.Model):
     terms_value = models.JSONField(default=dict)
     validity_time = models.DateTimeField(default=default_validity_time)
     created_time = models.DateTimeField(auto_now_add=True)
+    consent_given = models.DateTimeField()
 
     def __str__(self):
         return self.connection_name

@@ -663,7 +663,11 @@ export const ViewLocker = () => {
           <div className="loc">
             <span className="desc">
               {locker ? ` ${locker.description}` : "Description"}
-              
+              <QRCode
+                title="Locker QR Code"
+                value={locker.name}
+                size = {100}
+                    />
             </span>
           </div>
           

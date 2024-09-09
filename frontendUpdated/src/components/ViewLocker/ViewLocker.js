@@ -468,11 +468,12 @@ export const ViewLocker = () => {
       setError("An error occurred while fetching resources");
     }
   };
-
+  console.log(locker);
   const fetchVnodeResources = async () => {
     try {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ host_locker_id: locker.locker_id });
+      
       const response = await fetch(
         `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
         {
@@ -488,6 +489,7 @@ export const ViewLocker = () => {
       }
 
       const data = await response.json();
+      console.log("data", data);
       console.log("vnodes", data.data);
 
       //if (data.success) {
@@ -684,7 +686,8 @@ export const ViewLocker = () => {
                         <div className="public-private">
                           {resource.type === "private" ? (
                             <>
-                              Private - Shared with:
+                            Private
+                              {/* Private - Shared with:
                               {resource.connections.map((connection, index) => (
                                 <span key={connection.connection_id}>
                                   {connection.host_user.username}
@@ -692,7 +695,7 @@ export const ViewLocker = () => {
                                     ? ", "
                                     : ""}
                                 </span>
-                              ))}
+                              ))} */}
                             </>
                           ) : (
                             "Public"
@@ -703,7 +706,7 @@ export const ViewLocker = () => {
                   ))
                   
                   ): (
-                    <p>No resources found.</p>
+                    <p className="not-found">No resources found.</p>
             )}
 
                   {(VnodeResources.length > 0) ? (
@@ -722,15 +725,16 @@ export const ViewLocker = () => {
                     <div className="public-private">
                       {resource.resource.type === "private" ? (
                         <>
-                          Private - Shared with:
-                          {resource.resource.connections.map((connection, index) => (
+                          {/* Private - Shared with: */}
+                          Private
+                          {/* {resource.resource.connections.map((connection, index) => (
                             <span key={connection.connection_id}>
                               {connection.host_user.username}
                               {index < resource.connections.length - 1
                                 ? ", "
                                 : ""}
                             </span>
-                          ))}
+                          ))} */}
                         </>
                       ) : (
                         "Public"
@@ -740,47 +744,14 @@ export const ViewLocker = () => {
                 </div>
 
                 ))
-
-                  //   VnodeResources.map((resource, index) => (
-                  //     <div key={resource.resource_id} className="resource-item">
-                  //       <div className="resource-details">
-                  //         <div
-                  //           id="documents"
-                  //           onClick={() => 
-                  //             handleResourceClick(resource.i_node_pointer)
-                  //           }
-                  //         >
-                  //           {index + 1}. {resource.document_name}
-                  //         </div>
-                  //         <div className="public-private">
-                  //           {resource.type === "private" ? (
-                  //             <>
-                  //               Private - Shared with:
-                  //               {resource.connections.map((connection, index) => (
-                  //                 <span key={connection.connection_id}>
-                  //                   {connection.host_user.username}
-                  //                   {index < resource.connections.length - 1
-                  //                     ? ", "
-                  //                     : ""}
-                  //                 </span>
-                  //               ))}
-                  //             </>
-                  //           ) : (
-                  //             "Public"
-                  //           )}
-                  //         </div>
-                  //       </div>
-                  //     </div>
-                  // ))
-                      
                 
                   ): (
-                        <p>No Shared resources found.</p>
+                        <p  className="not-found">No Shared resources found.</p>
                 )}
                 </div>
               </div>
-              <button className="page3button">Share</button>
-              &nbsp;&nbsp;&nbsp;
+              {/* <button className="page3button">Share</button>
+              &nbsp;&nbsp;&nbsp; */}
               <button className="page3button" onClick={handleUploadResource}>
                 Upload resource
               </button>

@@ -55,7 +55,7 @@ export const Login = () => {
                 }
             } else {
                 console.error("Error:", data.error);
-                alert(data.error);
+                alert("Invalid Credentials" || data.error);
             }
         })
         .catch(error => {

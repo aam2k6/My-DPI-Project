@@ -1464,7 +1464,7 @@ export const ViewTermsByType = () => {
             </div>
 
             <div>
-                <button onClick={handleSubmit}>Submit</button>
+                {<button onClick={handleSubmit}>Submit</button>}
             </div>
         </div>
     );

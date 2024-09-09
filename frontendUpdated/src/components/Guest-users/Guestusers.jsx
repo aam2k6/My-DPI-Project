@@ -179,7 +179,7 @@ export const Guestusers = () => {
           </form>
         </div>
         <div className="page5container">
-          {error && <div className="error">{error}</div>}
+          {/* {error && <div className="error">{error}</div>} */}
           {filteredConnections.length > 0 ? (
             filteredConnections.map((connection, index) => {
               const tracker = trackerData[connection.connection_id];

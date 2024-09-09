@@ -149,8 +149,8 @@ export const ConnectionTerms = () => {
 
 
     const content = (
-    <><div className="navbarLockerName">Locker : {locker_conn?.name}</div>
-    <div className="navbarLockerOwner">Owner : {curruser.username}</div>
+    <><div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
+    <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
     </>
     );
 

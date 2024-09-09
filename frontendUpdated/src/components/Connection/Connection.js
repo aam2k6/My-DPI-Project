@@ -76,10 +76,15 @@ export const Connection = () => {
         // navigate("/connectionTerms", { state: { selectedLocker } });
     };
 
+    const content = (
+        <><div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
+        <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
+        </>
+        );
 
     return (
         <div>
-            <Navbar />
+            <Navbar content = {content}></Navbar>
             <Panel />  
             <div className="Panelcontent">      
           <div className="connection-heroContainer">

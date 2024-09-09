@@ -171,6 +171,9 @@
   flex: 1;
 }
 
+.not-found{
+  margin-left: 2rem;
+}
 
 .res {
   margin-left: 2rem;

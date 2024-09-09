@@ -49,7 +49,7 @@ from django.views.decorators.http import require_POST
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_datetime
 from datetime import datetime
-
+from collections import defaultdict
 
 @csrf_exempt
 @api_view(["POST"])
@@ -1081,8 +1081,6 @@ def give_consent(request):
     except Exception as e:
         return JsonResponse({"success": False, "error": f"An error occurred: {str(e)}"}, status=400)
 
-
-
 @csrf_exempt
 @api_view(["POST"])
 @authentication_classes([BasicAuthentication])
@@ -1176,13 +1174,7 @@ def revoke_consent(request):
             )
         except ConnectionType.DoesNotExist:
             return JsonResponse(
-                {
-                    "success": False,
-                    "error": "Connection type not found: {}".format(
-                        connection_type_name
-                    ),
-                },
-                status=404,
+                {"success": False, "error": f"Connection type not found: {connection_type_name}"}, status=404
             )
 
         # Retrieve the connection
@@ -1204,6 +1196,9 @@ def revoke_consent(request):
                 {"success": False, "error": "Permission denied"}, status=403
             )
 
+        # Set requester_consent to False
+        connection.requester_consent = False
+
         # Update the revocation status based on the provided flags
         if revoke_host:
             connection.revoke_host = True
@@ -1220,21 +1215,16 @@ def revoke_consent(request):
 
     except CustomUser.DoesNotExist as e:
         return JsonResponse(
-            {"success": False, "error": "User not found: {}".format(str(e))}, status=404
+            {"success": False, "error": f"User not found: {str(e)}"}, status=404
         )
     except Locker.DoesNotExist as e:
         return JsonResponse(
-            {"success": False, "error": "Locker not found: {}".format(str(e))},
-            status=404,
+            {"success": False, "error": f"Locker not found: {str(e)}"}, status=404
         )
     except Exception as e:
         return JsonResponse(
-            {"success": False, "error": "An error occurred: {}".format(str(e))},
-            status=400,
+            {"success": False, "error": f"An error occurred: {str(e)}"}, status=400
         )
-
-from collections import defaultdict
-from collections import defaultdict
 
 @csrf_exempt
 @api_view(["GET"])

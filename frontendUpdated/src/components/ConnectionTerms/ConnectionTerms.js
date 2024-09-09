@@ -9,6 +9,7 @@ import { ConnectionContext } from '../../ConnectionContext';
 
 import Navbar from '../Navbar/Navbar';
 import Panel from '../Panel/Panel';
+import Modal from '../Modal/Modal.jsx';
 import { frontend_host } from '../../config';
 
 export const ConnectionTerms = () => {
@@ -35,6 +36,8 @@ export const ConnectionTerms = () => {
     const [obligations, setObligations] = useState([]); // Change to an array
     const [error, setError] = useState(null);
     const { curruser } = useContext(usercontext);
+    const [modalMessage, setModalMessage] = useState({message: "", type: ""});
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -43,6 +46,11 @@ export const ConnectionTerms = () => {
             [name]: value,
         });
     };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setModalMessage({message: "", type: ""});
+      };
 
     const handleCheckboxChange = (event) => {
         const { name, checked } = event.target;
@@ -69,6 +77,15 @@ export const ConnectionTerms = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        if (obligations.length === 0) {
+            setError("At least one obligation must be added.");
+            setModalMessage({ message: "At least one obligation must be added.", type: 'info' });
+            setIsModalOpen(true);
+            return;  
+        }
+
+
         const token = Cookies.get('authToken');
 
         const connectionTermsData = {
@@ -156,6 +173,7 @@ export const ConnectionTerms = () => {
 
     return (
         <div>
+            {isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
             <Navbar content = {content} ></Navbar>
             <div className="page-container">
             <Panel />

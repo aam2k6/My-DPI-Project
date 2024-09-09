@@ -1102,7 +1102,7 @@ export const ViewTermsByType = () => {
             try {
                 const token = Cookies.get("authToken");
                 const response = await fetch(
-                    `host/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`.replace(/host/g, frontend_host),
+                    `host/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`.replace(/host/, frontend_host),
                     {
                         method: "GET",
                         headers: {
@@ -1239,7 +1239,7 @@ export const ViewTermsByType = () => {
                 try {
                     const token = Cookies.get("authToken");
                     const response = await fetch(
-                        `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(/host/g, frontend_host),
+                        `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(/host/, frontend_host),
                         {
                             method: "GET",
                             headers: {
@@ -1357,7 +1357,7 @@ export const ViewTermsByType = () => {
             // }
     
             const updateResponse = await fetch(
-                `host/update-connection-terms/`.replace(/host/g, frontend_host),
+                `host/update-connection-terms/`.replace(/host/, frontend_host),
                 {
                     method: "PATCH",
                     headers: {
@@ -1464,7 +1464,7 @@ export const ViewTermsByType = () => {
             </div>
 
             <div>
-                <button onClick={handleSubmit}>Submit</button>
+                {<button onClick={handleSubmit}>Submit</button>}
             </div>
         </div>
     );

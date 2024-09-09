@@ -87,7 +87,7 @@ export const ConnectionTerms = () => {
         navigate("/connection");
 
 
-        fetch('host/create-connection-type-and-terms/'.replace(/host/g, frontend_host), {
+        fetch('host/create-connection-type-and-terms/'.replace(/host/, frontend_host), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -149,8 +149,8 @@ export const ConnectionTerms = () => {
 
 
     const content = (
-    <><div className="navbarLockerName">Locker : {locker_conn?.name}</div>
-    <div className="navbarLockerOwner">Owner : {curruser.username}</div>
+    <><div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
+    <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
     </>
     );
 

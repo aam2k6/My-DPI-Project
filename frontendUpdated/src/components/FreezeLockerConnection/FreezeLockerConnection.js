@@ -25,7 +25,7 @@ export default function FreezeLockerConnection() {
 
    useEffect(() => {
     const token = Cookies.get('authToken');
-         fetch('host/dpi-directory/'.replace(/host/g, frontend_host), {
+         fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -54,7 +54,7 @@ export default function FreezeLockerConnection() {
     const params = new URLSearchParams({ username: selectedUser.username });
 
     try {
-      const response = await fetch(`host/get-lockers-user/?${params}`.replace(/host/g, frontend_host), {
+      const response = await fetch(`host/get-lockers-user/?${params}`.replace(/host/, frontend_host), {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -84,7 +84,7 @@ export default function FreezeLockerConnection() {
   const fetchConnections = async () => {
     const token = Cookies.get('authToken');
     try {
-      const response = await fetch('host/get-all-connections/'.replace(/host/g, frontend_host), {
+      const response = await fetch('host/get-all-connections/'.replace(/host/, frontend_host), {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
@@ -142,7 +142,7 @@ export default function FreezeLockerConnection() {
     const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("host/freeze-unfreeze-locker/".replace(/host/g, frontend_host), {
+      const response = await fetch("host/freeze-unfreeze-locker/".replace(/host/, frontend_host), {
         method: "PUT",
         body: JSON.stringify({ locker_name: lockerName, username: selectedUser.username, action}),
         headers: {
@@ -187,7 +187,7 @@ export default function FreezeLockerConnection() {
     const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("host/freeze-unfreeze-connection/".replace(/host/g, frontend_host), {
+      const response = await fetch("host/freeze-unfreeze-connection/".replace(/host/, frontend_host), {
         method: "PUT",
         //curruser is user obj
         body: JSON.stringify({ connection_id: connectionId, connection_name: connectionName, action}),

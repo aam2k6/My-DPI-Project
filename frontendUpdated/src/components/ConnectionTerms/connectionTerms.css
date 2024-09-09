@@ -1,8 +1,8 @@
 /* General Styles */
-.navbarLockerName, .navbarLockerOwner {
+.navbarLockerName-terms, .navbarLockerOwner-terms {
   font-weight: bolder;
   font-size: 1.5625rem;
-  margin-left: 2rem;
+  margin-left: 20rem;
 }
 
 .descriptionLocker {

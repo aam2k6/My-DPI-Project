@@ -81,11 +81,11 @@
   }
 
   .description2{
-    font-size: 0.995rem; /* Slightly smaller font size for the description */
-    color: rgb(44, 41, 41); /* Different color to distinguish from the name */
-    /* margin-left: 2rem; */
-    position: absolute;
-    margin-top: inherit;
+    font-size: 0.995rem; 
+    color: rgb(44, 41, 41); 
+    display: block;
+    margin-top: 0.5rem;
+    width: 100%;
   }
 
 
@@ -193,6 +193,7 @@
     align-items: center;
     justify-content: space-between;
     margin-top: 5rem;
+    flex-wrap: wrap;
     font-size: 1.45rem;
   }
   

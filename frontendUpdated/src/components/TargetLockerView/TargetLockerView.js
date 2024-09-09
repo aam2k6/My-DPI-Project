@@ -665,6 +665,7 @@ import Cookies from "js-cookie";
 import "./page7.css";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
+import Modal from '../Modal/Modal.jsx';
 
 export const TargetLockerView = () => {
   const navigate = useNavigate();
@@ -682,7 +683,8 @@ export const TargetLockerView = () => {
 
   const [outgoingConnections, setOutgoingConnections] = useState([]); // State for outgoing connections
   const [trackerData, setTrackerData] = useState({}); // State for tracker data
-
+  const [modalMessage, setModalMessage] = useState({message: "", type: ""});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!curruser) {
@@ -696,6 +698,11 @@ export const TargetLockerView = () => {
     }
   }, [curruser, navigate, parentUser, locker]);
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalMessage({message: "", type: ""});
+  };
+
   const fetchResources = async () => {
     try {
       const token = Cookies.get("authToken");
@@ -704,7 +711,7 @@ export const TargetLockerView = () => {
         username: parentUser.username,
       });
       const response = await fetch(
-        `localhost:8000/get-public-resources?${params}`,
+        `host/get-public-resources?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -732,7 +739,7 @@ export const TargetLockerView = () => {
         guest_locker_name: locker.name,
       });
       const response = await fetch(
-        `host/get-other-connection-types/?${params}`.replace(/host/g, frontend_host),
+        `host/get-other-connection-types/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -760,7 +767,7 @@ export const TargetLockerView = () => {
         host_locker_name: locker.name,
       });
       const response = await fetch(
-        `host/get-outgoing-connections/?${params}`.replace(/host/g, frontend_host),
+        `host/get-outgoing-connections/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -800,7 +807,7 @@ export const TargetLockerView = () => {
         guest_user_username: connection.guest_user.username,
       });
       const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/g, frontend_host),
+        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -837,13 +844,19 @@ export const TargetLockerView = () => {
   };
 
   const handleClick = () => {
-    navigate("/make-connection", {
-      state: { hostuser: parentUser, hostlocker: locker, selectedConnectionType: null, },
-    });
+    if(otherConnections.length > 0){
+      navigate("/make-connection", {
+        state: { hostuser: parentUser, hostlocker: locker, selectedConnectionType: null, },
+      });
+    }
+    else{
+      setModalMessage({ message: "No available connection types found. Cannot create a new connection.", type: 'info' });
+      setIsModalOpen(true);
+    }
   };
 
   const handleResourceClick = (filePath) => {
-    const url = `host/media/${filePath}`.replace(/host/g, frontend_host);
+    const url = `host/media/${filePath}`.replace(/host/, frontend_host);
     window.open(url, "_blank");
   };
 
@@ -888,7 +901,9 @@ export const TargetLockerView = () => {
       </div>
     </>
   );
+  
   const handleInfo = (connection) => {
+    const connectionTypeName = connection.connection_name.split('-').pop().trim();
     navigate("/show-connection-terms", {
       state: {
         //connectionId: connection.connection_id,
@@ -898,6 +913,7 @@ export const TargetLockerView = () => {
         hostUserUsername: connection.host_user?.username,
         guestUserUsername: connection.guest_user?.username,
         locker: locker,
+        connectionTypeName,
       },
     });
   };
@@ -913,7 +929,9 @@ export const TargetLockerView = () => {
   };
 
   return (
+    
     <div>
+      <>{isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}</>
       <Navbar content={content} />
       <div className="page7description">
         <div className="descriptionpage7">{locker?.description}</div>
@@ -1015,10 +1033,11 @@ export const TargetLockerView = () => {
 ) : (
   <p id="noconnfound">No outgoing connections found.</p>
 )}
-
+  
         </div>
       </div>
     </div>
+    
   );
 };
 

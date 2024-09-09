@@ -7,6 +7,7 @@ export const GetResource = ({ username, lockerName, onSubmit }) =>{
     const [selectedResources, setSelectedResources] = useState([]);
     const [error, setError] = useState(null);
     const [resources, setResources] = useState([]);
+    const [vnode_resources, setVnodeResources] = useState([]);
     console.log(lockerName);
     
 
@@ -35,7 +36,7 @@ export const GetResource = ({ username, lockerName, onSubmit }) =>{
           const token = Cookies.get('authToken');
         //   const params = new URLSearchParams({ username : username, locker_name: lockerName, obligation: obligation.labelName });
   
-          const response = await fetch(`host/get-resources-user-locker/?locker_name=${lockerName}`.replace(/host/g, frontend_host), {
+          const response = await fetch(`host/get-resources-user-locker/?locker_name=${lockerName}`.replace(/host/, frontend_host), {
             method: 'GET',
             headers: {
               'Authorization': `Basic ${token}`,

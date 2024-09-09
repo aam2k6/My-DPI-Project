@@ -488,6 +488,7 @@ import { usercontext } from "../../usercontext";
 import Cookies from 'js-cookie';
 import "./Guesttermsreview.css";
 import Navbar from "../Navbar/Navbar";
+import { frontend_host } from "../../config";
 
 export const Guesttermsreview = () => {
     const navigate = useNavigate();
@@ -516,7 +517,7 @@ export const Guesttermsreview = () => {
         const fetchTerms = async () => {
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`https://anumati1.iiitb.ac.in/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`, {
+                const response = await fetch(`host/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`.replace(/host/, frontend_host), {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -541,7 +542,7 @@ export const Guesttermsreview = () => {
         const fetchConnectionDetails = async () => {
             try {
                 const token = Cookies.get('authToken');
-                const response = await fetch(`https://anumati1.iiitb.ac.in/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`, {
+                const response = await fetch(`host/get-connection-details?connection_type_name=${connectionType.connection_type_name}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`.replace(/host/, frontend_host), {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -695,7 +696,7 @@ export const Guesttermsreview = () => {
     
             console.log("Request Body:", requestBody);
     
-            const updateResponse = await fetch(`https://anumati1.iiitb.ac.in/update-connection-terms/`, {
+            const updateResponse = await fetch(`host/update-connection-terms/`.replace(/host/, frontend_host), {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -741,7 +742,7 @@ export const Guesttermsreview = () => {
     const handleAcceptResource = async (resource) => {
         try {
             const token = Cookies.get('authToken');
-            const response = await fetch(`https://anumati1.iiitb.ac.in/transfer-resource/`, {
+            const response = await fetch(`host/transfer-resource/`.replace(/host/, frontend_host), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -777,7 +778,7 @@ export const Guesttermsreview = () => {
     const handleShareResource = async (resource) => {
         try {
             const token = Cookies.get('authToken');
-            const response = await fetch(`https://anumati1.iiitb.ac.in/share-resource/`, {
+            const response = await fetch(`host/share-resource/`.replace(/host/, frontend_host), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -812,7 +813,7 @@ export const Guesttermsreview = () => {
 
 
     const handleResourceClick = (filePath) => {
-        const url = `https://anumati1.iiitb.ac.in/media/documents/${filePath}`;
+        const url = `host/media/documents/${filePath}`.replace(/host/, frontend_host);
         window.open(url, "_blank");
     };
 

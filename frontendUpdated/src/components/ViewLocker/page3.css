@@ -161,6 +161,20 @@
   font-size: 1.25rem;
   flex: 1;
 }
+
+#documents-byShare {
+  text-decoration: underline;
+  color: rgb(255, 38, 0);
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  font-size: 1.25rem;
+  flex: 1;
+}
+
+.not-found{
+  margin-left: 2rem;
+}
+
 .res {
   margin-left: 2rem;
   font-size: 1.45rem;
@@ -184,7 +198,12 @@
 }
 
 #documents:hover {
-  color: red;
+  color: rgb(0, 0, 210);
+  cursor: pointer;
+}
+
+#documents-byShare:hover {
+  color: rgb(155, 26, 3);
   cursor: pointer;
 }
 

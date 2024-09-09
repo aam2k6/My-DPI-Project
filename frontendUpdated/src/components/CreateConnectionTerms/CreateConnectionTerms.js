@@ -301,6 +301,7 @@ import Cookies from 'js-cookie';
 import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
+import Modal from '../Modal/Modal.jsx';
 import { frontend_host } from "../../config";
 // import res from "./object";
 
@@ -309,17 +310,57 @@ export const CreateConnectionTerms = () => {
   const location = useLocation();
   const { curruser, setUser } = useContext(usercontext);
   const [error, setError] = useState(null);
-  const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
+  const [Iagree, setIagree] = useState( ); // Step 2: Create a state variable
   const [message, setMessage] = useState("");
   const [res, setRes] = useState(null);
   const [consentData, setConsentData] = useState(null);
+  const [modalMessage, setModalMessage] = useState({message: "", type: ""});
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { connectionName, hostLockerName, connectionTypeName, hostUserUsername ,locker} = location.state || {};
- 
+  console.log(connectionName, hostLockerName, connectionTypeName, hostUserUsername ,locker);
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalMessage({message: "", type: ""});
+  };
+
+  const checkConsentStatus = async () => {
+    try {
+      const token = Cookies.get('authToken');
+      const queryParams = new URLSearchParams({
+        connection_name: connectionName,
+        connection_type_name: connectionTypeName,
+        guest_username: curruser.username,
+        guest_lockername: locker.name,
+        host_username: hostUserUsername,
+        host_lockername: hostLockerName,
+      });
+  
+      const response = await fetch(`host/get-consent/?${queryParams.toString()}`.replace(/host/, frontend_host), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${token}`
+        },
+      });
+  
+      const data = await response.json();
+      if (data.success) {
+        setConsentData(data);
+        console.log(data);
+        setIagree(data.consent_status ? "1" : "0");
+      } else {
+        setMessage(data.error || "Failed to check consent status.");
+      }
+    } catch (error) {
+      setMessage("Error while checking consent status.");
+      console.error(error);
+    }
+  };
+  
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -331,7 +372,7 @@ export const CreateConnectionTerms = () => {
       console.log("Inside fetch terms");
       try {
         const token = Cookies.get('authToken');
-        const response = await fetch(`host/show_terms/?username=${curruser.username}&locker_name=${locker.name}&connection_name=${connectionName}`.replace(/host/g, frontend_host), {
+        const response = await fetch(`host/show_terms/?username=${curruser.username}&locker_name=${locker.name}&connection_name=${connectionName}`.replace(/host/, frontend_host), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -353,13 +394,15 @@ export const CreateConnectionTerms = () => {
       }
     };
 
+
+
     fetchTerms();
+    checkConsentStatus();
   }, []);
 
   const handleIagreebutton = async () => {
     const token = Cookies.get('authToken');
     const consent = true;
-
     const formData = new FormData();
     formData.append('connection_name', connectionName);
     formData.append('connection_type_name', connectionTypeName);
@@ -370,7 +413,7 @@ export const CreateConnectionTerms = () => {
     formData.append('consent', consent);
 
     try {
-      const response = await fetch('host/give_consent/'.replace(/host/g, frontend_host), {
+      const response = await fetch('host/give-consent/'.replace(/host/, frontend_host), {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',
@@ -380,25 +423,32 @@ export const CreateConnectionTerms = () => {
       });
 
       const data = await response.json();
+      console.log("give consent", data);
       if (data.success) {
-        setMessage("Consent given successfully.");
-        console.log(message);
-        setConsentData(data);
+        setModalMessage({ message: "Consent given successfully.", type: 'success' });
+        console.log("give consent",data);
+        // setConsentData(data);
         setIagree("1");
+        await checkConsentStatus();
+        setConsentData({
+          consent_given: data.consent_given_date,
+          valid_until: data.valid_until,
+        });
       } else {
-        setMessage(data.error || "An error occurred while giving consent.");
+        setModalMessage({ message: data.error || "An error occurred while giving consent.", type: 'failure' });
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("An error occurred while giving consent.");
+      setModalMessage({ message:"An error occurred while giving consent.", type: 'failure'});
     }
+    setIsModalOpen(true);
   };
 
   const handleRevokebutton = async () => {
     const token = Cookies.get('authToken');
     const revoke_guest = false;
     const revoke_host = false;
-
+    const consent = false;
     const formData = new FormData();
     formData.append('connection_name', connectionName);
     formData.append('connection_type_name', connectionTypeName);
@@ -408,9 +458,10 @@ export const CreateConnectionTerms = () => {
     formData.append('host_lockername', hostLockerName);
     formData.append('revoke_host', revoke_host);
     formData.append('revoke_guest', revoke_guest);
+    formData.append('consent', consent);
 
     try {
-      const response = await fetch('host/revoke_consent/'.replace(/host/g, frontend_host), {
+      const response = await fetch('host/revoke-consent/'.replace(/host/, frontend_host), {
         method: 'POST',
         headers: {
           // 'Content-Type': 'application/json',
@@ -420,18 +471,21 @@ export const CreateConnectionTerms = () => {
       });
 
       const data = await response.json();
+      console.log("revoke consent", data);
       if (data.success) {
-        setMessage("Consent revoked successfully.");
-        console.log(message);
+        // setMessage("Consent revoked successfully.");
+        setModalMessage({message: "Consent revoked successfully." ,type: 'success'})
+        // console.log(message);
         // setConsentData(data);
         setIagree("0");
       } else {
-        setMessage(data.error || "An error occurred while revoking consent.");
+        setModalMessage({message: data.error || "An error occurred while revoking consent.", type: 'failure'});
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("An error occurred while revoking consent.");
+      setModalMessage({messgae: "An error occurred while revoking consent.", type: 'failure'});
     }
+    setIsModalOpen(true);
 
   }
 
@@ -456,31 +510,41 @@ export const CreateConnectionTerms = () => {
       return (
         <div className="permissions">
           <ul>
-            <li>{canShareMoreData && <div>You can share more data.</div>}</li>
-            <li>{canDownloadData && <div>You can download data.</div>}</li>
+            {canShareMoreData && <li>You can share more data.</li> }
+            {canDownloadData && <li>You can download data.</li> }
           </ul>
 
         </div>
       );
-
     }
     return null;
   };
 
 const content = (
-  <>
-  <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
-  <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionName)}   </div>
-  {/* <div className="navbarBrand">{(connection_description)}   </div> */}
-  <div className="description"></div>
-  </>
+  // <>
+  // <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
+  // <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionName)}   </div>
+  // {/* <div className="navbarBrand">{(connection_description)}   </div> */}
+  // <div className="description"></div>
+  // </>
+          <>
+          <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+          <div className="description">
+              {curruser ? curruser.description : "None"}</div>
+              <br></br>
+          <div className="connection-details">Connection Name: {connectionName} <br></br>
+          {/* //{connection.description}<br></br> */}
+              Host: {hostUserUsername} &lt;&gt;Guest: {curruser.username}</div>
+          
+      </>
   
 );
 
+  console.log("I agree", Iagree);
   return (
     <div>
       <Navbar content = {content}/>
-
+{/* 
       <div className="page13parent">
         <div className="page13host1">Host : {capitalizeFirstLetter(hostUserUsername)}</div>
         <div className="page13requestor">Requestor :{capitalizeFirstLetter(curruser.username)}</div>
@@ -491,7 +555,7 @@ const content = (
         <div className="page13host2">Locker:{capitalizeFirstLetter(hostLockerName)}</div>
         <div className="page13requestor">Locker :{capitalizeFirstLetter(locker.name)}</div>
 
-      </div>
+      </div> */}
       <div className="page13container">
 
 
@@ -505,25 +569,25 @@ const content = (
 
           <div className="page13headterms">Your Rights </div>
           <div className="page13lowerterms">{renderPermissions()}</div>
-
         </div>
       </div>
+      {isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
 
 
       {
         Iagree === "0" &&
         <div >
           <div className="page13button"> <button className="page13iagree0button" onClick={handleIagreebutton}> I  Agree </button></div>
-          <div>
+          {/* <div>
             {message && <div className="message">{message}</div>}
-          </div>
+          </div> */}
         </div>
       }
 
       {
-        Iagree === "1" &&
+        Iagree === "1" && 
         <div className="page13parent13state1" >
-          <div className="page13consent">Consent Given on : {consentData.consent_given_date}
+          <div className="page13consent">Consent Given on : {consentData.consent_given}
             <br />
             Consent valid Until : {consentData.valid_until}
           </div>
@@ -537,5 +601,6 @@ const content = (
 
   );
 }
+
 
 

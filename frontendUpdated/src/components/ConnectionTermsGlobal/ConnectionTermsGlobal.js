@@ -157,7 +157,7 @@ export const ConnectionTermsGlobal = () => {
         console.log(globalTemplateData);
 
         // Trigger the second API call with the terms_ids
-        return fetch("http:/host/add-global-template/".replace(/host/g, frontend_host), {
+        return fetch("host/add-global-template/".replace(/host/, frontend_host), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

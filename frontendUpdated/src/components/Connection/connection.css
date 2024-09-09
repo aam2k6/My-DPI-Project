@@ -1,8 +1,8 @@
-.navbarLockerName, .navbarLockerOwner {
-    font-weight: bolder;
-    font-size: 1.5625rem;
-    margin-left: 2rem;
-  }
+.navbarLockerName-terms, .navbarLockerOwner-terms {
+  font-weight: bolder;
+  font-size: 1.5625rem;
+  margin-left: 20rem;
+}
 
 .descriptionLocker{
     margin: 3rem; 

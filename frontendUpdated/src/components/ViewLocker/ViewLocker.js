@@ -666,11 +666,7 @@ export const ViewLocker = () => {
               
             </span>
           </div>
-          <QRCode
-                title="Locker QR Code"
-                value={locker.name}
-                size = {100}
-                    />
+          
         </div>
         <div className="container-2 clearfix">
           <div className="a">

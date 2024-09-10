@@ -11,7 +11,9 @@
      
     margin-left: 2rem;  
 }
-
+#conntentguest{
+  margin-left:2rem;
+}
 .page7description {
     display: flex;
     /* align-items: center;     Align items vertically in the center */

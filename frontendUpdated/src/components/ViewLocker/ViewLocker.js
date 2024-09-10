@@ -843,8 +843,9 @@ export const ViewLocker = () => {
     // Split the connection_name by the hyphen and take the last part as the connection_type_name
     const connectionTypeName = connection.connection_name
       .split("-")
-      .pop()
+      .shift()
       .trim();
+      console.log("conntype",connectionTypeName)
 
     console.log("Navigating with state:", {
       connectionName: connection.connection_name,
@@ -1023,8 +1024,8 @@ export const ViewLocker = () => {
                               </button>
                             </div>
                             <div id="conntent">
-                              {connection.host_user.username} &lt;&gt;{" "}
-                              {connection.guest_user.username}
+                              {connection.guest_user.username} &lt;&gt;{" "}
+                              {connection.host_user.username}
                             </div>
                             <div id="conntent">
                               Created On:{" "}

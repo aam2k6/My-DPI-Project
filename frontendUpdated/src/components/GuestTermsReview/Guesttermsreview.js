@@ -404,7 +404,7 @@ export const Guesttermsreview = () => {
                 <div className="connection-details">
             Connection Name: {conndetails?.connection_name || "Loading..."} <br />
             {conndetails?.connection_description}<br></br>
-            Host: {conndetails?.host_user?.username || "Loading..."} --&gt; Guest: {conndetails?.guest_user?.username || "Loading..."}
+            Guest: {conndetails?.guest_user?.username || "Loading..."} --&gt; Host: {conndetails?.host_user?.username || "Loading..."}
         </div>
         </>
     );

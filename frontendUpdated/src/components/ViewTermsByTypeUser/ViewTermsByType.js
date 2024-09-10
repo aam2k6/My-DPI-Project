@@ -337,7 +337,7 @@ export const ViewTermsByType = () => {
                 <br></br>
             <div className="connection-details">Connection Name: {connectionName} <br></br>
             {/* //{connection.description}<br></br> */}
-                Host: {hostUserUsername} --&gt;Guest: {guestUserUsername}</div>
+                Guest: {guestUserUsername} --&gt;Host: {hostUserUsername}</div>
             
         </>
     );

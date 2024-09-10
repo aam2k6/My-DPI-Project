@@ -657,13 +657,12 @@ export const ViewLocker = () => {
     <div>
       <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
       <div className="container">
+      <div className="locker-description">
+            {locker ? ` ${locker.description}` : "Description"}
+          </div>
         <div className="locker-name">
           <QRCode title="Locker QR Code" value={locker.name} size={100} />
-          <div className="loc">
-            <span className="desc">
-              {locker ? ` ${locker.description}` : "Description"}
-            </span>
-          </div>
+        
         </div>
         <div className="container-2 clearfix">
           <div className="a">
@@ -748,7 +747,7 @@ export const ViewLocker = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="not-found">No Shared resources found.</p>
+                  <p className="not-found"></p>
                 )}
               </div>
             </div>
@@ -773,7 +772,7 @@ export const ViewLocker = () => {
                       {" "}
                       <div>
                         <u>
-                          {index + 1}. {connection.connection_type_name}
+                          {connection.connection_type_name}
                         </u>{" "}
                         ( users: {connection.incoming_count} )
                       </div>
@@ -814,7 +813,7 @@ export const ViewLocker = () => {
                             color: "inherit",
                           }}
                         >
-                          {index + 1}. {connection.connection_name}
+                          {connection.connection_name}
                         </button>
                       </div>
                       <div id="conntent">

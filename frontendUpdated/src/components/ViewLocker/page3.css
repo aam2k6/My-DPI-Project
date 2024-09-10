@@ -153,6 +153,12 @@
   margin-bottom: 3rem;
   margin-left: 4rem;
 }
+.locker-description{
+  margin-top: -2rem;
+  margin-left:3rem;
+  margin-bottom:1rem;
+  font-size:1.25rem;
+}
 #documents {
   text-decoration: underline;
   color: blue;

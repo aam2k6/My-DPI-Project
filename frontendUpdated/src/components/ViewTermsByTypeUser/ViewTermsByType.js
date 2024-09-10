@@ -1384,6 +1384,7 @@ export const ViewTermsByType = () => {
         }
     };
     
+    console.log("resources list", resources);
     
     
     const content = (

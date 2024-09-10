@@ -355,6 +355,7 @@ export const ViewLocker = () => {
   }, [locker]);
 
   console.log("locker", locker);
+  console.log("resources", resources);
   const fetchConnectionsAndOtherConnections = async () => {
     try {
       const token = Cookies.get("authToken");

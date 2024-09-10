@@ -301,7 +301,7 @@ export const CreateConnectionTerms = () => {
   const location = useLocation();
   const { curruser, setUser } = useContext(usercontext);
   const [error, setError] = useState(null);
-  const [Iagree, setIagree] = useState(); // Step 2: Create a state variable
+  const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
   const [message, setMessage] = useState("");
   const [res, setRes] = useState(null);
   const [consentData, setConsentData] = useState(null);

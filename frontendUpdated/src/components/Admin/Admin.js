@@ -200,31 +200,55 @@ export const Admin = () => {
 
   return (
     <div>
-      
-      <Navbar content = {content}/>
+      <Navbar content={content} />
       <button onClick={gotopage12createconnection} className="admin-btn">
         Create New Connection Type
       </button>
-
+  
       <div className="page8parent">
         <div className="descriptionadmin">Existing Connections Type</div>
         {filteredConnections.length > 0 ? (
           filteredConnections.map((connection) => (
-            <div
-              key={connection.connection_type_id}
-              className="page8connections"
-            >
-              <h4>{connection.connection_type_name}</h4>
+            
+            <div key={connection.connection_type_id} className="page8connections">
+              {/* Make connection name clickable */}
+              <h4
+                className="clickable-connection-name"
+                onClick={() =>{
+                  console.log("Navigating with the following data:");
+                  console.log("Connection Type Name:", connection.connection_type_name);
+                  console.log("Host Locker Name:", locker.name);
+                  console.log("Host User Username:", curruser ?.username);
+                  console.log("Locker:", locker);
+                  navigate("/display-terms", {
+                    state: {
+                      //connectionName: connection.connection_name,
+                      connectionTypeName: connection.connection_type_name,
+                      hostLockerName: locker.name,
+                      hostUserUsername: curruser ?.username,
+                      locker: locker,
+                    },
+                  })}
+                }
+                style={{
+                  //textDecoration: "underline",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  color: "inherit",
+                }}
+              >
+                {connection.connection_type_name}
+              </h4>
               <p>{connection.connection_description}</p>
               <div>
-                <p>Created On:{" "} {new Date(connection.created_time).toLocaleDateString()}</p>
-               
+                <p>Created On:{" "}{new Date(connection.created_time).toLocaleDateString()}</p>
               </div>
               <div>
-                <p>Valid Until:{" "} {new Date(connection.validity_time).toLocaleDateString()}</p>
-                
+                <p>Valid Until:{" "}{new Date(connection.validity_time).toLocaleDateString()}</p>
               </div>
-
+  
               <button>Edit</button>
             </div>
           ))
@@ -232,7 +256,7 @@ export const Admin = () => {
           <p>No connections found.</p>
         )}
       </div>
-
+      
       <div className="page8parent">
         <div className="descriptionadmin">Locker</div>
         {filteredLockers.length > 0 ? (

@@ -839,6 +839,16 @@ export const ViewLocker = () => {
   const handleConnectionClick = (connection) => {
     navigate("/show-guest-users", { state: { connection, locker } });
   };
+  const handleIncomingInfo = (connection) => {
+    navigate("/display-terms", {
+      state: {
+        hostLockerName: connection.host_locker?.name,
+        connectionTypeName: connection.connection_type_name,
+        hostUserUsername: connection.host_user?.username,
+        locker: locker,
+      },
+    });
+  };
   const handleInfo = (connection) => {
     // Split the connection_name by the hyphen and take the last part as the connection_type_name
     const connectionTypeName = connection.connection_name
@@ -964,31 +974,47 @@ export const ViewLocker = () => {
               </div>
             </div>
             <div className="tab-content">
-              {activeTab === 'incoming' && (
-                <div className="tab-panel">
-                  <h4 id="headingconnection">Incoming Connection types</h4>
-                  <div className="conn">
-                    {otherConnections.length > 0 ? (
-                      otherConnections.map((connection, index) => (
-                        <div
-                          key={connection.connection_type_id}
-                          className="viewlockerconnections"
-                          onClick={() => handleConnectionClick(connection)}
-                        >
-                          <h4 id="connectiontype">
-                            <div>
-                              <u>{connection.connection_type_name}</u>{" "}
-                              ( users: {connection.incoming_count} )
-                            </div>
-                          </h4>
-                        </div>
-                      ))
-                    ) : (
-                      <p>No connections found.</p>
-                    )}
-                  </div>
-                </div>
-              )}
+            {activeTab === 'incoming' && (
+  <div className="tab-panel">
+    <h4 id="headingconnection">Incoming Connection types</h4>
+    <div className="conn">
+      {otherConnections.length > 0 ? (
+        otherConnections.map((connection) => (
+          <div
+            key={connection.connection_type_id}
+            className="viewlockerconnections"
+          >
+            <h4 id="connectiontype">
+              <button
+                className="connection-name-button"
+                onClick={() => handleConnectionClick(connection)}
+                style={{
+                  textDecoration: "underline",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  color: "inherit",
+                }}
+              >
+                <u>{connection.connection_type_name}</u>
+              </button>
+              {" "} (users: {connection.incoming_count})
+            </h4>
+            <button
+              className="info-button2"
+              onClick={() => handleIncomingInfo(connection)}
+            >
+              i
+            </button>
+          </div>
+        ))
+      ) : (
+        <p>No connections found.</p>
+      )}
+    </div>
+  </div>
+)}
 
               {activeTab === 'outgoing' && (
                 <div className="tab-panel">

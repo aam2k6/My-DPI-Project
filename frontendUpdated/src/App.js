@@ -28,6 +28,7 @@ import ManageUsers from "./components/ManageUsers/ManageUsers";
 import FreezeLockerConnection from "./components/FreezeLockerConnection/FreezeLockerConnection";
 import CreateGlobalConnectionType from "./components/CreateGlobalConnectionType/CreateGlobalConnectionType";
 import SettingsPage from "./components/Settings/SettingsPage";
+import {Displayterms }from "./components/Displayterms/Displayterms";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 
@@ -247,6 +248,14 @@ function App() {
             element = {
               <ProtectedRoute>
                 <SettingsPage />
+              </ProtectedRoute>
+            }
+            />
+            <Route
+            path = "/display-terms"
+            element = {
+              <ProtectedRoute>
+                <Displayterms/>
               </ProtectedRoute>
             }
             />

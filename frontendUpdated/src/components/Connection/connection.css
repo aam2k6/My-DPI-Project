@@ -60,6 +60,9 @@
     width: 55%;
     
   }
+  #kerak{
+    margin-left: 1.2rem;
+  }
   
   .connection-lockerForm button {
     background-color: #007bff;

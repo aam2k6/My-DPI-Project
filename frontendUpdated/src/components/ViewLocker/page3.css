@@ -153,6 +153,12 @@
   margin-bottom: 3rem;
   margin-left: 4rem;
 }
+.locker-description{
+  margin-top: -4rem;
+  margin-left:3rem;
+  margin-bottom:1rem;
+  font-size:1.15rem;
+}
 #documents {
   text-decoration: underline;
   color: blue;
@@ -315,4 +321,54 @@ overflow-x: auto;
 
 .info-button:hover {
   background-color: #333; /* Slightly lighter black on hover */
+}
+
+
+.info-button2 {
+  background-color: white;
+  color: black;
+  border: 2px solid black;
+  border-radius: 50%;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+  margin-top: -3rem;
+  margin-left: 30rem; /* Add some space to the left of the button */
+}
+
+.info-button2:hover {
+  background-color: #333; /* Slightly lighter black on hover */
+}
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #ccc;
+}
+
+.tab-header {
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-right: 5px;
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.3s;
+}
+
+.tab-header.active {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.tab-content {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.tab-panel {
+  display: block;
 }

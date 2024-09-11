@@ -116,7 +116,7 @@ export const CreateConnectionType = () => {
 
     const formData = new FormData();
     formData.append('connection_type_name', selectedConnectionType.connection_type_name);
-    formData.append('connection_name', `${locker.name}:${selectedLocker.name}-${selectedConnectionType.connection_type_name}`);
+    formData.append('connection_name', `${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`);
     formData.append('connection_description', selectedConnectionType.connection_description);
     formData.append('host_locker_name', locker.name);
     formData.append('guest_locker_name', selectedLocker.name);
@@ -140,7 +140,7 @@ export const CreateConnectionType = () => {
         }
        
         const data = await response.json();
-        const connectionname=`${locker.name}:${selectedLocker.name}-${selectedConnectionType.connection_type_name}`;
+        const connectionname=`${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`;
         console.log('Response data:', data);
         if (data.success) {
             console.log('Navigation to show connection terms');

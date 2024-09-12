@@ -576,7 +576,7 @@ export const CreateConnectionTerms = () => {
       <div className="connection-details">
         Connection Name: {connectionName} <br></br>
         {/* //{connection.description}<br></br> */}
-        Host: {hostUserUsername} &lt;&gt;Guest: {curruser.username}
+        Guest: {curruser.username} --&gt; Host: {hostUserUsername} 
       </div>
     </>
   );

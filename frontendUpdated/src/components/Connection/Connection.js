@@ -111,7 +111,7 @@ export const Connection = () => {
 
                         <label>
                             <span>Description </span>
-                            <input
+                            <input id="kerak"
                                 type="text"
                                 name="lockerDescription"
                                 placeholder="Description"

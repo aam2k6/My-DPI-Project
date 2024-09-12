@@ -9,7 +9,6 @@ import { faBell } from '@fortawesome/free-solid-svg-icons'; // Importing the bel
 import { frontend_host } from "../../config";
 
 export default function Navbar({ content, lockerAdmin, lockerObj }) {
-  // Helper function to capitalize the first letter of a string
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -31,51 +30,57 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   };
 
   const handleLogout = () => {
-    // Clear cookies
     Cookies.remove("authToken");
-    // Clear local storage
     localStorage.removeItem("curruser");
-    // Set user context to null
     setUser(null);
-    // Redirect to login page
     navigate("/");
   };
 
-  // Fetch notifications when component loads
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(
-          "host/get-notifications/".replace(/host/, frontend_host),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+    fetchNotifications();
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          setError(errorData.error || "Failed to fetch notifications");
-          return;
-        }
-
-        const data = await response.json();
-        if (data.success) {
-          setNotifications(data.notifications || []);
-        } else {
-          setError(data.message || data.error);
-        }
-      } catch (error) {
-        setError("An error occurred while fetching notifications.");
+    const handleStorageChange = (e) => {
+      if (e.key === 'notifications') {
+        const updatedNotifications = JSON.parse(localStorage.getItem('notifications')) || [];
+        setNotifications(updatedNotifications);
       }
     };
 
-    fetchNotifications();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(
+        "host/get-notifications/".replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to fetch notifications");
+        return;
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setNotifications(data.notifications || []);
+        localStorage.setItem("notifications", JSON.stringify(data.notifications || []));
+      } else {
+        setError(data.message || data.error);
+      }
+    } catch (error) {
+      setError("An error occurred while fetching notifications.");
+    }
+  };
 
   const handleSettings = () => {
     navigate("/settings-page");
@@ -97,8 +102,40 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
     navigate("/freeze-locker-connection");
   };
 
-  const toggleNotifications = () => {
+  const toggleNotifications = async () => {
     setIsNotificationsOpen(!isNotificationsOpen);
+
+    if (!isNotificationsOpen) {
+      await markAllNotificationsAsRead();
+    }
+  };
+
+  const markAllNotificationsAsRead = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(
+        "host/mark-all-notifications-read/".replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Update local notifications state and local storage
+        const updatedNotifications = notifications.map((notif) => ({ ...notif, read: true }));
+        setNotifications(updatedNotifications);
+        localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to mark notifications as read");
+      }
+    } catch (error) {
+      setError("An error occurred while marking notifications as read.");
+    }
   };
 
   const markNotificationAsRead = async (id) => {
@@ -116,9 +153,11 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
       );
 
       if (response.ok) {
-        setNotifications(notifications.map((notif) =>
+        const updatedNotifications = notifications.map((notif) =>
           notif.id === id ? { ...notif, read: true } : notif
-        ));
+        );
+        setNotifications(updatedNotifications);
+        localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Failed to mark notification as read");
@@ -147,8 +186,12 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
         <ul className="navbarFirstLink">
           <li>
             <div className="notification-icon" onClick={toggleNotifications}>
-            <FontAwesomeIcon icon={faBell} className="notification-bell" size="2x" />
-            {notifications.some((n) => !n.read) && (
+              <FontAwesomeIcon
+                icon={faBell}
+                className="notification-bell"
+                size="2x"
+              />
+              {notifications.some((n) => !n.read) && (
                 <span className="notification-badge">
                   {notifications.filter((n) => !n.read).length}
                 </span>
@@ -156,30 +199,32 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
             </div>
 
             {isNotificationsOpen && (
-  <div className="notification-dropdown">
-    <h3>Notifications</h3>
-    {notifications.length > 0 ? (
-      notifications.map((notification) => (
-        <div
-          key={notification.id}
-          className={`notification-box ${notification.read ? 'read' : 'unread'}`}
-          onClick={() => markNotificationAsRead(notification.id)}
-        >
-          <p>
-            <b>{notification.guest_user} </b> 
-            has requested for Locker <b>{notification.host_locker_name} </b>
-            from the connection <b>{notification.connection_type_name}</b>
-          </p>
-          <p>
-            {new Date(notification.created_at).toLocaleString()}
-          </p>
-        </div>
-      ))
-    ) : (
-      <p>No notifications found.</p>
-    )}
-  </div>
-)}
+              <div className="notification-dropdown">
+                <h3>Notifications</h3>
+                {notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`notification-box ${
+                        notification.read ? "read" : "unread"
+                      }`}
+                      onClick={() => markNotificationAsRead(notification.id)}
+                    >
+                      <p>
+                        <b>{notification.guest_user} </b> has requested for
+                        Locker <b>{notification.host_locker_name} </b> from the
+                        connection <b>{notification.connection_type_name}</b>
+                      </p>
+                      <p>
+                        {new Date(notification.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No notifications found.</p>
+                )}
+              </div>
+            )}
           </li>
         </ul>
 
@@ -223,19 +268,15 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
 
                 {(curruser.user_type === "sys_admin" ||
                   curruser.user_type === "system_admin") && (
-                  <>
-                    <button onClick={handleAdminSettings}>
-                      System Admin Settings
-                    </button>
-                  </>
+                  <button onClick={handleAdminSettings}>
+                    System Admin Settings
+                  </button>
                 )}
 
                 {curruser.user_type === "moderator" && (
-                  <>
-                    <button onClick={handleModeratorSettings}>
-                      Moderator Settings
-                    </button>
-                  </>
+                  <button onClick={handleModeratorSettings}>
+                    Moderator Settings
+                  </button>
                 )}
 
                 <button onClick={handleSettings}>Settings</button>

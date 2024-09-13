@@ -1,3 +1,4 @@
+// //working
 // import React, { useContext, useEffect, useState } from "react";
 // import { useLocation, useNavigate } from "react-router-dom";
 
@@ -7,113 +8,10 @@
 // import { usercontext } from "../../usercontext";
 // import { ConnectionContext } from "../../ConnectionContext";
 
-// <<<<<<< HEAD
-// import Navbar from '../Navbar/Navbar';
-// import Panel from '../Panel/Panel';
-// import Modal from '../Modal/Modal.jsx';
-// import { frontend_host } from '../../config';
-
-// export const ConnectionTerms = () => {
-//     const navigate = useNavigate();
-//     const { locker_conn, connectionData, setConnectionTermsData } = useContext(ConnectionContext);
-
-//     const location = useLocation();
-//     // console.log("connection terms loc", location.state);
-//     // const locker = location.state ? location.state.locker : null;
-//     // const connectionData = location.state ? location.state.connectionData : null;
-//     // console.log("connection terms locker", locker);
-//     // console.log("connection terms connection data", connectionData);
-//     const initialFormData = {
-//         labelName: "",
-//         typeOfAction: "text",
-//         typeOfSharing: "share",
-//         labelDescription: "",
-//         hostPermissions: [],
-//         canShareMore: false,
-//         canDownload: false,
-//     };
-
-//     const [formData, setFormData] = useState(initialFormData);
-//     const [obligations, setObligations] = useState([]); // Change to an array
-//     const [error, setError] = useState(null);
-//     const { curruser } = useContext(usercontext);
-//     const [modalMessage, setModalMessage] = useState({message: "", type: ""});
-//     const [isModalOpen, setIsModalOpen] = useState(false);
-
-//     const handleInputChange = (event) => {
-//         const { name, value } = event.target;
-//         setFormData({
-//             ...formData,
-//             [name]: value,
-//         });
-//     };
-
-//     const handleCloseModal = () => {
-//         setIsModalOpen(false);
-//         setModalMessage({message: "", type: ""});
-//       };
-
-//     const handleCheckboxChange = (event) => {
-//         const { name, checked } = event.target;
-//         setFormData({
-//             ...formData,
-//             [name]: checked,
-//         });
-//     };
-
-//     const handleAddObligation = () => {
-//         if (formData.labelName.trim() !== "") {
-//             setObligations([...obligations, { ...formData }]);
-//             setFormData(initialFormData);
-//         }
-//     };
-
-//     const handleLoadObligation = (index) => {
-//         setFormData(obligations[index]);
-//     };
-
-//     const handleRemoveObligation = (index) => {
-//         setObligations(obligations.filter((_, i) => i !== index));
-//     };
-
-//     const handleSubmit = (event) => {
-//         event.preventDefault();
-
-//         if (obligations.length === 0) {
-//             setError("At least one obligation must be added.");
-//             setModalMessage({ message: "At least one obligation must be added.", type: 'info' });
-//             setIsModalOpen(true);
-//             return;
-//         }
-
-//         const token = Cookies.get('authToken');
-
-//         const connectionTermsData = {
-//             ...connectionData,
-//             obligations: obligations, // Now an array
-//             permissions: {
-//                 canShareMoreData: formData.canShareMore,
-//                 canDownloadData: formData.canDownload
-//             }
-//         };
-
-//         setConnectionTermsData(connectionTermsData);
-
-//         console.log(connectionTermsData);
-
-//         navigate("/connection");
-
-//         fetch('host/create-connection-type-and-terms/'.replace(/host/, frontend_host), {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Authorization': `Basic ${token}`, // Include your authentication token
-//             },
-//             body: JSON.stringify(connectionTermsData),
-// =======
 // import Navbar from "../Navbar/Navbar";
 // import Panel from "../Panel/Panel";
 // import { frontend_host } from "../../config";
+// import Modal from "../Modal/Modal.jsx";
 
 // export const ConnectionTerms = () => {
 //   const navigate = useNavigate();
@@ -144,10 +42,15 @@
 //   const [globalTemplates, setGlobalTemplates] = useState([]); // To store global templates
 //   const [selectedTemplateIds, setSelectedTemplateIds] = useState([]); // To store selected template IDs
 //   const [isDropdownVisible, setDropdownVisible] = useState(false); // To toggle dropdown visibility
+//   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
+//   const [isModalOpen, setIsModalOpen] = useState(false);
 
 //   const fetchGlobalTemplates = () => {
 //     const token = Cookies.get("authToken");
-//     fetch(`http://${frontend_host}/get-template-or-templates/`, {
+//     fetch("host/get-template-or-templates/".replace(
+//         /host/,
+//         frontend_host
+//       ), {
 //       method: "GET",
 //       headers: {
 //         Authorization: `Basic ${token}`,
@@ -178,7 +81,10 @@
 //     const token = Cookies.get("authToken");
 //     selectedTemplateIds.forEach((templateId) => {
 //       fetch(
-//         `http://${frontend_host}/get-connection-terms-for-global-template/?template_Id=${templateId}`,
+//         `host/get-connection-terms-for-global-template/?template_Id=${templateId}`.replace(
+//             /host/,
+//             frontend_host
+//           ),
 //         {
 //           method: "GET",
 //           headers: {
@@ -198,7 +104,6 @@
 //             canDownload: false,
 //           }));
 //           setObligations((prev) => [...prev, ...newObligations]);
-// >>>>>>> c1c7f3b2e283890549ac8c39489bbe15741be069
 //         })
 //         .catch((error) => {
 //           setError(`Failed to fetch obligations for template ID ${templateId}`);
@@ -213,6 +118,11 @@
 //       ...formData,
 //       [name]: value,
 //     });
+//   };
+
+//   const handleCloseModal = () => {
+//     setIsModalOpen(false);
+//     setModalMessage({ message: "", type: "" });
 //   };
 
 //   const handleCheckboxChange = (event) => {
@@ -240,56 +150,80 @@
 
 //   const handleSubmit = (event) => {
 //     event.preventDefault();
+  
+//     if (obligations.length === 0) {
+//       setError("At least one obligation must be added.");
+//       setModalMessage({
+//         message: "At least one obligation must be added.",
+//         type: "info",
+//       });
+//       setIsModalOpen(true); // Open modal with info message.
+//       return;
+//     }
+  
 //     const token = Cookies.get("authToken");
-
+  
 //     const connectionTermsData = {
 //       ...connectionData,
-//       obligations: obligations, // Now an array
+//       obligations: obligations,
 //       permissions: {
 //         canShareMoreData: formData.canShareMore,
 //         canDownloadData: formData.canDownload,
 //       },
 //     };
-
+  
 //     setConnectionTermsData(connectionTermsData);
-
-//     console.log(connectionTermsData);
-
-//     navigate("/connection");
-
-//     fetch(
-//       "http://host/create-connection-type-and-terms/".replace(
-//         /host/,
-//         frontend_host
-//       ),
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Basic ${token}`, // Include your authentication token
-//         },
-//         body: JSON.stringify(connectionTermsData),
-//       }
-//     )
-//       .then((response) => response.json())
-//       .then((data) => {
-//         if (data.success) {
-//           console.log(
-//             data.connection_type_message,
-//             data.connection_terms_message
-//           );
-//           navigate("/admin");
+  
+//     fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Basic ${token}`,
+//       },
+//       body: JSON.stringify(connectionTermsData),
+//     })
+//       .then((response) => response.json().then((data) => ({ status: response.status, data })))
+//       .then(({ status, data }) => {
+//         if (status === 201) {
+//           // Success case: show success modal and reset form if needed.
+//           setModalMessage({
+//             message: "Connection Type successfully created!",
+//             type: "success",
+//           });
+//           setIsModalOpen(true);
+//           navigate("/admin"); 
+//           // Optionally, reset the form after successful creation.
+//         } else if (status === 400 && data.error.includes("already exists")) {
+//           // Handle the case where the connection type already exists.
+//           setError("Connection type with this name already exists in the same locker.");
+//           setModalMessage({
+//             message: "Connection type with this name already exists in the same locker.",
+//             type: "error",
+//           });
+//           setIsModalOpen(true);
+          
 //         } else {
+//           // General error handling.
 //           console.error("Error:", data.error);
 //           setError(data.error);
+//           setModalMessage({
+//             message: data.error,
+//             type: "error",
+//           });
+//           setIsModalOpen(true); // Open modal with error message.
 //         }
 //       })
 //       .catch((error) => {
 //         console.error("Error:", error);
 //         setError("An error occurred while submitting the data.");
+//         setModalMessage({
+//           message: "An error occurred while submitting the data.",
+//           type: "error",
+//         });
+//         setIsModalOpen(true); // Open modal with error message.
 //       });
 //   };
-
+  
 //   const handleHostPermissionsChange = (event) => {
 //     const { value, checked } = event.target;
 
@@ -329,127 +263,14 @@
 
 //   const content = (
 //     <>
-//       <div className="navbarLockerName">Locker : {locker_conn?.name}</div>
-//       <div className="navbarLockerOwner">Owner : {curruser.username}</div>
+//       <div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
+//       <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
 //     </>
-// <<<<<<< HEAD
-//     );
-
-//     return (
-//         <div>
-//             {isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
-//             <Navbar content = {content} ></Navbar>
-//             <div className="page-container">
-//             <Panel />
-//             <div className="Panelcontent">
-//             <div className="connectionTerms-heroContainer-nonglobal">
-//                 <div className="main-heading">Guest Terms Of Service</div>
-
-//                 <div className="parent-container">
-//                     <div className="parent-left-heading">
-//                         <div className="parent-left-heading-title">
-//                             <div className="connectionTerms-resourceHeading">Guest Obligations</div>
-//                             <button className="handle-obligation" type="button" onClick={handleAddObligation}>Add Obligations</button>
-//                         </div>
-
-//                         <div className="connectionTerms-lockerForm">
-//                             <form className="connectionTerms-lockerForm" onSubmit={handleSubmit}>
-//                                 <label className="obligation-label">
-//                                     <span>Label</span>
-//                                     <input type="text" name="labelName" placeholder="Label of data shared" value={formData.labelName} onChange={handleInputChange} />
-//                                 </label>
-
-//                                 <label className="obligation-label">
-//                                     <span >Type of Action</span>
-//                                     <select className="Title" name="typeOfAction" value={formData.typeOfAction} onChange={handleInputChange}>
-//                                         <option value="text">Add Value</option>
-//                                         <option value="file">Upload File</option>
-//                                         <option value="date">Add Date</option>
-//                                     </select>
-//                                     <span className="tooltip">?
-//                                         <span className="tooltiptext">Choose the action type: Share, Transfer, Confer, or Collateral.</span>
-//                                     </span>
-//                                 </label>
-
-//                                 <label className="obligation-label">
-//                                     <span>Type of Sharing</span>
-//                                     <select className="Title" name="typeOfSharing" value={formData.typeOfSharing} onChange={handleInputChange} >
-//                                         <option value="share">Share</option>
-//                                         <option value="transfer">Transfer</option>
-//                                         <option value="confer">Confer</option>
-//                                         <option value="collateral">Collateral</option>
-//                                     </select>
-//                                     <span className="tooltip">?
-//                                         <span className="tooltiptext">
-//                                             <span>Transfer: You are transferring ownership of this resource. You will no longer have access to this resource after this operation.</span><br></br>
-//                                             <span>Confer: You are going to transfer ownership of the resource, but the recipient cannot modify the contents of what you have conferred. You still have rights over this resource.</span><br></br>
-//                                             <span>Share: You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.</span><br></br>
-//                                             <span>Collateral: You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource and can use this as agreed with the recipient.</span><br></br>
-//                                         </span>
-//                                     </span>
-//                                 </label>
-
-//                                 <label className="obligation-label">
-//                                     <span>Description</span>
-//                                     <input type="text" name="labelDescription" placeholder="Description of the obligation" value={formData.labelDescription} onChange={handleInputChange} />
-//                                 </label>
-
-//                                 <label className="obligation-label">
-//                                     <span>Host Permissions</span>
-//                                     <div className="multiselect-container">
-//                                         <label key="reshare">
-//                                             <input
-//                                                 type="checkbox"
-//                                                 value="reshare"
-//                                                 checked={formData.hostPermissions.includes("reshare")}
-//                                                 onChange={handleHostPermissionsChange}
-//                                             />
-//                                             Reshare
-//                                         </label>
-//                                         <label key="download">
-//                                             <input
-//                                                 type="checkbox"
-//                                                 value="download"
-//                                                 checked={formData.hostPermissions.includes("download")}
-//                                                 onChange={handleHostPermissionsChange}
-//                                             />
-//                                             Download
-//                                         </label>
-//                                         <label key="aggregate">
-//                                             <input
-//                                                 type="checkbox"
-//                                                 value="aggregate"
-//                                                 checked={formData.hostPermissions.includes("aggregate")}
-//                                                 onChange={handleHostPermissionsChange}
-//                                             />
-//                                             Aggregate
-//                                         </label>
-//                                     </div>
-//                                     <span className="tooltip">?
-//                                         <span className="tooltiptext">Select host permissions: Reshare, Download, or Aggregate.</span>
-//                                     </span>
-//                                 </label>
-
-//                                 <h2>Permissions</h2>
-//                                 <label className="permission-label" key="canShareMore">
-//                                     <span className="permission-labels">Can the guest share more data</span>
-//                                     <input type="checkbox" name="canShareMore" checked={formData.canShareMore} onChange={(handleCheckboxChange)} />
-//                                 </label>
-
-//                                 <label className="permission-label" key="canDownload">
-//                                     <span className="permission-labels">Can they download the data</span>
-//                                     <input type="checkbox" name="canDownload" checked={formData.canDownload} onChange={(handleCheckboxChange)} />
-//                                 </label>
-
-//                                 <div className="connectionTerms-btn">
-//                                     <button type="submit">Submit</button>
-//                                 </div>
-//                             </form>
-// =======
 //   );
 
 //   return (
 //     <div>
+//         {isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
 //       <Navbar content={content}></Navbar>
 //       <div className="page-container">
 //         <Panel />
@@ -500,7 +321,6 @@
 //                             {template.global_connection_type_name} (ID:{" "}
 //                             {template.global_connection_type_template_id})
 //                           </label>
-// >>>>>>> c1c7f3b2e283890549ac8c39489bbe15741be069
 //                         </div>
 //                       ))}
 //                       <button onClick={handleFetchObligations}>
@@ -707,7 +527,7 @@
 //     </div>
 //   );
 // };
-
+//noworking
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -753,28 +573,32 @@ export const ConnectionTerms = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false); // To toggle dropdown visibility
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false
 
-  const fetchGlobalTemplates = () => {
-    const token = Cookies.get("authToken");
-    fetch("host/get-template-or-templates/".replace(
-        /host/,
-        frontend_host
-      ), {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${token}`,
-      },
+  );
+
+
+const fetchGlobalTemplates = () => {
+  const token = Cookies.get("authToken");
+  fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${token}`,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Fetched Templates:", data); // Log the fetched data
+      setGlobalTemplates(data.data); // Store fetched templates
+      setDropdownVisible(true); // Show dropdown
     })
-      .then((response) => response.json())
-      .then((data) => {
-        setGlobalTemplates(data.data); // Store fetched templates
-        setDropdownVisible(true); // Show dropdown
-      })
-      .catch((error) => {
-        setError("Failed to fetch templates");
-      });
-  };
-
+    .catch((error) => {
+      console.error("Error fetching templates:", error);
+      setError("Failed to fetch templates");
+    });
+};
+;
+  
   const handleTemplateSelection = (templateId) => {
     setSelectedTemplateIds((prev) => {
       const updatedIds = prev.includes(templateId)
@@ -791,9 +615,9 @@ export const ConnectionTerms = () => {
     selectedTemplateIds.forEach((templateId) => {
       fetch(
         `host/get-connection-terms-for-global-template/?template_Id=${templateId}`.replace(
-            /host/,
-            frontend_host
-          ),
+          /host/,
+          frontend_host
+        ),
         {
           method: "GET",
           headers: {
@@ -820,6 +644,7 @@ export const ConnectionTerms = () => {
     });
     setDropdownVisible(false); // Hide dropdown after fetching
   };
+  
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -854,8 +679,28 @@ export const ConnectionTerms = () => {
   };
 
   const handleRemoveObligation = (index) => {
-    setObligations(obligations.filter((_, i) => i !== index));
+    const removedObligation = obligations[index];
+  
+    // Remove the obligation
+    const updatedObligations = obligations.filter((_, i) => i !== index);
+  
+    // Update the obligations state
+    setObligations(updatedObligations);
+  
+    // Clear the form if the removed obligation is the one currently loaded in the form
+    if (
+      formData.labelName === removedObligation.labelName &&
+      formData.labelDescription === removedObligation.labelDescription &&
+      formData.typeOfAction === removedObligation.typeOfAction &&
+      formData.typeOfSharing === removedObligation.typeOfSharing &&
+      formData.hostPermissions.join(",") === removedObligation.hostPermissions.join(",") &&
+      formData.canShareMore === removedObligation.canShareMore &&
+      formData.canDownload === removedObligation.canDownload
+    ) {
+      setFormData(initialFormData);
+    }
   };
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -976,74 +821,76 @@ export const ConnectionTerms = () => {
       <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
     </>
   );
+  
 
   return (
-    <div>
-        {isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
+    <>
+      {isModalOpen && (
+        <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />
+      )}
       <Navbar content={content}></Navbar>
       <div className="page-container">
         <Panel />
         <div className="Panelcontent">
           <div className="connectionTerms-heroContainer-nonglobal">
             <div className="main-heading">Guest Terms Of Service</div>
-
             <div className="parent-container">
               <div className="parent-left-heading">
                 <div className="parent-left-heading-title">
-                  <div className="connectionTerms-resourceHeading">
-                    Guest Obligations
-                  </div>
-                  <button
-                    className="handle-obligation"
-                    type="button"
-                    onClick={handleAddObligation}
-                  >
+                  <div className="connectionTerms-resourceHeading">Guest Obligations</div>
+                  <button className="handle-obligation" type="button" onClick={handleAddObligation}>
                     Add Obligations
                   </button>
                   <button
                     className="import-template-btn"
-                    onClick={fetchGlobalTemplates}
+                    onClick={() => {
+                      fetchGlobalTemplates();
+                      setIsTemplateModalOpen(true);
+                    }}
                   >
                     Import Global Connection Template
                   </button>
+                  {isTemplateModalOpen && (
+  <Modal
+    message="Select Global Templates"
+    onClose={() => setIsTemplateModalOpen(false)}
+    type="info"
+  >
+    <div className="template-selection-container">
+      {globalTemplates.length > 0 ? (
+        <>
+          <label>Select Templates:</label>
+          {globalTemplates.map((template) => (
+            <div key={template.global_connection_type_template_id}>
+              <label>
+                <input
+                  type="checkbox"
+                  value={template.global_connection_type_template_id}
+                  checked={selectedTemplateIds.includes(template.global_connection_type_template_id)}
+                  onChange={() =>
+                    handleTemplateSelection(template.global_connection_type_template_id)
+                  }
+                />
+                {template.global_connection_type_name} (ID: {template.global_connection_type_template_id})
+                {/* <br />
+                {template.global_connection_type_description} */}
+              </label>
+            </div>
+          ))}
+          <button onClick={handleFetchObligations}>Add Selected Templates</button>
+        </>
+      ) : (
+        <div>Loading templates...</div>
+      )}
+    </div>
+  </Modal>
+)}
 
-                  {isDropdownVisible && (
-                    <div className="template-dropdown">
-                      <label>Select Templates:</label>
-                      {globalTemplates.map((template) => (
-                        <div key={template.global_connection_type_template_id}>
-                          <label>
-                            <input
-                              type="checkbox"
-                              value={
-                                template.global_connection_type_template_id
-                              }
-                              checked={selectedTemplateIds.includes(
-                                template.global_connection_type_template_id
-                              )}
-                              onChange={() =>
-                                handleTemplateSelection(
-                                  template.global_connection_type_template_id
-                                )
-                              }
-                            />
-                            {template.global_connection_type_name} (ID:{" "}
-                            {template.global_connection_type_template_id})
-                          </label>
-                        </div>
-                      ))}
-                      <button onClick={handleFetchObligations}>
-                        Add Selected Templates
-                      </button>
-                    </div>
-                  )}
+
                 </div>
 
                 <div className="connectionTerms-lockerForm">
-                  <form
-                    className="connectionTerms-lockerForm"
-                    onSubmit={handleSubmit}
-                  >
+                  <form className="connectionTerms-lockerForm" onSubmit={handleSubmit}>
                     <label className="obligation-label">
                       <span>Label</span>
                       <input
@@ -1070,8 +917,7 @@ export const ConnectionTerms = () => {
                       <span className="tooltip">
                         ?
                         <span className="tooltiptext">
-                          Choose the action type: Share, Transfer, Confer, or
-                          Collateral.
+                          Choose the action type: Share, Transfer, Confer, or Collateral.
                         </span>
                       </span>
                     </label>
@@ -1093,31 +939,21 @@ export const ConnectionTerms = () => {
                         ?
                         <span className="tooltiptext">
                           <span>
-                            Transfer: You are transferring ownership of this
-                            resource. You will no longer have access to this
-                            resource after this operation.
+                            Transfer: You are transferring ownership of this resource. You will no longer have access to this resource after this operation.
                           </span>
-                          <br></br>
+                          <br />
                           <span>
-                            Confer: You are going to transfer ownership of the
-                            resource, but the recipient cannot modify the
-                            contents of what you have conferred. You still have
-                            rights over this resource.
+                            Confer: You are going to transfer ownership of the resource, but the recipient cannot modify the contents of what you have conferred. You still have rights over this resource.
                           </span>
-                          <br></br>
+                          <br />
                           <span>
-                            Share: You are not transferring ownership of this
-                            resource, but the recipient can view your resource.
-                            The recipient cannot do anything else.
+                            Share: You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.
                           </span>
-                          <br></br>
+                          <br />
                           <span>
-                            Collateral: You are temporarily transferring
-                            ownership to the recipient. After this operation,
-                            you cannot change anything in the resource and can
-                            use this as agreed with the recipient.
+                            Collateral: You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource and can use this as agreed with the recipient.
                           </span>
-                          <br></br>
+                          <br />
                         </span>
                       </span>
                     </label>
@@ -1140,9 +976,7 @@ export const ConnectionTerms = () => {
                           <input
                             type="checkbox"
                             value="reshare"
-                            checked={formData.hostPermissions.includes(
-                              "reshare"
-                            )}
+                            checked={formData.hostPermissions.includes("reshare")}
                             onChange={handleHostPermissionsChange}
                           />
                           Reshare
@@ -1151,9 +985,7 @@ export const ConnectionTerms = () => {
                           <input
                             type="checkbox"
                             value="download"
-                            checked={formData.hostPermissions.includes(
-                              "download"
-                            )}
+                            checked={formData.hostPermissions.includes("download")}
                             onChange={handleHostPermissionsChange}
                           />
                           Download
@@ -1162,9 +994,7 @@ export const ConnectionTerms = () => {
                           <input
                             type="checkbox"
                             value="aggregate"
-                            checked={formData.hostPermissions.includes(
-                              "aggregate"
-                            )}
+                            checked={formData.hostPermissions.includes("aggregate")}
                             onChange={handleHostPermissionsChange}
                           />
                           Aggregate
@@ -1173,17 +1003,14 @@ export const ConnectionTerms = () => {
                       <span className="tooltip">
                         ?
                         <span className="tooltiptext">
-                          Select host permissions: Reshare, Download, or
-                          Aggregate.
+                          Select host permissions: Reshare, Download, or Aggregate.
                         </span>
                       </span>
                     </label>
 
                     <h2>Permissions</h2>
                     <label className="permission-label" key="canShareMore">
-                      <span className="permission-labels">
-                        Can the guest share more data
-                      </span>
+                      <span className="permission-labels">Can the guest share more data</span>
                       <input
                         type="checkbox"
                         name="canShareMore"
@@ -1193,9 +1020,7 @@ export const ConnectionTerms = () => {
                     </label>
 
                     <label className="permission-label" key="canDownload">
-                      <span className="permission-labels">
-                        Can they download the data
-                      </span>
+                      <span className="permission-labels">Can they download the data</span>
                       <input
                         type="checkbox"
                         name="canDownload"
@@ -1233,6 +1058,6 @@ export const ConnectionTerms = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

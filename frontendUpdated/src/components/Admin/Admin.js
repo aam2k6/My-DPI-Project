@@ -26,6 +26,15 @@ export const Admin = () => {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [modalMessage, setModalMessage] = useState(null); // State for modal message
+  const {
+    connectionName,
+    hostLockerName,
+    connectionTypeName,
+    connectionDescription,
+    createdtime,
+    validitytime,
+    hostUserUsername,
+  } = location.state || {};
 
   useEffect(() => {
     if (!curruser) {
@@ -310,7 +319,10 @@ export const Admin = () => {
                   console.log("Navigating with the following data:");
                   console.log(
                     "Connection Type Name:",
-                    connection.connection_type_name
+                    connection.connection_type_name,
+                    connection.connectionDescription,
+                    connection.created_time,
+                    connection.validity_time
                   );
                   console.log("Host Locker Name:", locker.name);
                   console.log("Host User Username:", curruser?.username);
@@ -321,7 +333,12 @@ export const Admin = () => {
                       hostLockerName: locker.name,
                       hostUserUsername: curruser?.username,
                       locker: locker,
+                      connectionDescription:connection.connection_description,
+                      createdtime:connection.created_time,
+                      validitytime:connection.validity_time
+
                     },
+                    
                   });
                 }}
                 style={{

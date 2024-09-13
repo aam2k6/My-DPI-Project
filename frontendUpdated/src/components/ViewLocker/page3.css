@@ -266,10 +266,10 @@ overflow-x: auto;
   margin-left: 1rem;
 }
 #connectiontype{
-   color: #007bff;
+  color: #007bff;
   font-size: 1rem;
   font-weight: 500;
-  margin-left: 1rem;
+  margin-left: 0rem;
 
 }
 #connectiontype :hover{
@@ -291,7 +291,22 @@ overflow-x: auto;
   border: 1px solid #ccc;
   padding: 1rem;
   margin-bottom: 1rem;
-  position: relative; /* Ensure the container is positioned relatively */
+  position: relative;
+}
+
+#connectiontype {
+  color: #007bff;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 1rem;
+}
+.connection-description {
+  font-size: 1rem;
+  color: rgb(44, 41, 41);
+  margin-left: 1rem;
+  margin-top: 0.25rem; /* Slight gap to avoid too much space between the name and description */
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
 }
 .Lockertracker {
   position: absolute;
@@ -338,7 +353,7 @@ overflow-x: auto;
   height: 2rem;
   font-size: 1rem;
   margin-top: -3rem;
-  margin-left: 30rem; /* Add some space to the left of the button */
+  margin-left: auto; /* Align to the right */
 }
 
 .info-button2:hover {

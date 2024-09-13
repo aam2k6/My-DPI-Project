@@ -16,9 +16,14 @@ export const Displayterms = () => {
     connectionName,
     hostLockerName,
     connectionTypeName,
+    connectionDescription,
+    createdtime,
+    validitytime,
     hostUserUsername,
     locker,
   } = location.state || {};
+  console.log("Location State:", location.state);
+
 
   console.log(
     connectionName,
@@ -112,15 +117,19 @@ export const Displayterms = () => {
       <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
-      <div className="connection-details">
-        <h4>Connection Type Name: {connectionTypeName} </h4><br />
-      </div>
+    
     </>
   );
 
   return (
     <div>
       <Navbar content={content} />
+      <div className="connection-details">
+        <h4>Connection Type Name: {connectionTypeName}</h4>
+        {connectionDescription}
+        <br></br>Created on:{new Date(createdtime).toLocaleString()}
+        <br></br>Valid until: {new Date(validitytime).toLocaleString()}
+      </div>
       <div className="page13container">
         <p>
           <u>Terms of connection</u>

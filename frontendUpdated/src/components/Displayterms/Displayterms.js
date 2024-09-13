@@ -124,7 +124,7 @@ export const Displayterms = () => {
   return (
     <div>
       <Navbar content={content} />
-      <div className="connection-details">
+      <div className="connection-details1">
         <h4>Connection Type Name: {connectionTypeName}</h4>
         {connectionDescription}
         <br></br>Created on:{new Date(createdtime).toLocaleString()}

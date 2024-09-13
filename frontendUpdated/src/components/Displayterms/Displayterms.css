@@ -118,10 +118,12 @@
     align-items: flex-start;
   }
 
-  .connection-details{
+  .connection-details1{
     font-size: large;
     margin-left: 2rem;
+    margin-top: -4rem;
   }
+
   
   .description {
     font-size: 0.995rem; /* Slightly smaller font size for the description */

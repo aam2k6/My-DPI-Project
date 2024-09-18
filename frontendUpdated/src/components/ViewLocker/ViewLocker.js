@@ -818,6 +818,7 @@ export const ViewLocker = () => {
     navigate("/view-terms-by-type", {
       state: {
         connectionName: connection.connection_name,
+        connectionDescription:connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         guestLockerName: connection.guest_locker?.name,
         hostUserUsername: connection.host_user?.username,
@@ -871,6 +872,7 @@ export const ViewLocker = () => {
     navigate("/show-connection-terms", {
       state: {
         connectionName: connection.connection_name,
+        connectionDescription:connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         connectionTypeName, // Pass the extracted connection_type_name
         hostUserUsername: connection.host_user?.username,

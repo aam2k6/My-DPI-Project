@@ -286,6 +286,417 @@
 //   );
 // }
 
+// import "./CreateConnectionTerms.css";
+// import React, { useContext, useEffect, useState } from "react";
+// import Cookies from "js-cookie";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { usercontext } from "../../usercontext";
+// import Navbar from "../Navbar/Navbar";
+// import Modal from "../Modal/Modal.jsx";
+// import { frontend_host } from "../../config";
+// // import res from "./object";
+
+// export const CreateConnectionTerms = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { curruser, setUser } = useContext(usercontext);
+//   const [error, setError] = useState(null);
+//   const [Iagree, setIagree] = useState("0"); // Step 2: Create a state variable
+//   const [message, setMessage] = useState("");
+//   const [res, setRes] = useState(null);
+//   const [consentData, setConsentData] = useState(null);
+//   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const {
+//     connectionName,
+//     hostLockerName,
+//     connectionTypeName,
+//     hostUserUsername,
+//     locker,
+//   } = location.state || {};
+//   console.log(
+//     connectionName,
+//     hostLockerName,
+//     connectionTypeName,
+//     hostUserUsername,
+//     locker
+//   );
+
+//   const capitalizeFirstLetter = (string) => {
+//     if (!string) return "";
+//     return string.charAt(0).toUpperCase() + string.slice(1);
+//   };
+
+//   const handleCloseModal = () => {
+//     setIsModalOpen(false);
+//     setModalMessage({ message: "", type: "" });
+//   };
+
+//   const checkConsentStatus = async () => {
+//     try {
+//       const token = Cookies.get("authToken");
+//       const queryParams = new URLSearchParams({
+//         connection_name: connectionName,
+//         connection_type_name: connectionTypeName,
+//         guest_username: curruser.username,
+//         guest_lockername: locker.name,
+//         host_username: hostUserUsername,
+//         host_lockername: hostLockerName,
+//       });
+
+//       const response = await fetch(
+//         `host/get-consent/?${queryParams.toString()}`.replace(
+//           /host/,
+//           frontend_host
+//         ),
+//         {
+//           method: "GET",
+//           headers: {
+//             Authorization: `Basic ${token}`,
+//           },
+//         }
+//       );
+
+//       const data = await response.json();
+//       if (data.success) {
+//         setConsentData(data);
+//         console.log(data);
+//         setIagree(data.consent_status ? "1" : "0");
+//       } else {
+//         setMessage(data.error || "Failed to check consent status.");
+//       }
+//     } catch (error) {
+//       setMessage("Error while checking consent status.");
+//       console.error(error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (!curruser) {
+//       navigate("/");
+//       return;
+//     }
+
+//     //fetch terms from the api
+//     const fetchTerms = async () => {
+//       console.log("Inside fetch terms");
+//       try {
+//         const token = Cookies.get("authToken");
+    
+//         let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
+//         console.log("Final API URL:", apiUrl);
+    
+//         const response = await fetch(apiUrl, {
+//           method: "GET",
+//           headers: {
+//             "Content-Type": "application/json",
+//             Authorization: `Basic ${token}`,
+//           },
+//         });
+    
+//         if (!response.ok) {
+//           throw new Error("Failed to fetch terms");
+//         }
+    
+//         const data = await response.json();
+    
+//         if (data.success) {
+//           setRes(data.data); // Update to set data.data instead of data
+//           console.log("Terms Response Data:", data.data);
+//         } else {
+//           setError(data.error || "No terms found");
+//         }
+//       } catch (err) {
+//         setError(err.message);
+//       }
+//     };
+    
+
+//     fetchTerms();
+//     checkConsentStatus();
+//   }, []);
+
+//   const handleIagreebutton = async () => {
+//     const token = Cookies.get('authToken');
+//     const consent = true;
+//     const formData = new FormData();
+//     formData.append('connection_name', connectionName);
+//     formData.append('connection_type_name', connectionTypeName);
+//     formData.append('guest_username', curruser.username);
+//     formData.append('guest_lockername', locker.name); // Guest locker
+//     formData.append('host_username', hostUserUsername);
+//     formData.append('host_lockername', hostLockerName); // Host locker
+//     formData.append('consent', consent);
+
+//     try {
+//         const response = await fetch('host/give-consent/'.replace(/host/, frontend_host), {
+//             method: 'POST',
+//             headers: {
+//                 'Authorization': `Basic ${token}`,
+//             },
+//             body: formData,
+//         });
+
+//         const data = await response.json();
+//         console.log('Consent data:', data);
+
+//         if (data.success) {
+//             // Create connection after consent
+//             await createConnection();
+
+//             setModalMessage({
+//                 message: 'Consent given and connection created successfully.',
+//                 type: 'success',
+//             });
+//             setIagree("1");
+//             setConsentData({
+//                 consent_given: data.consent_given_date,
+//                 valid_until: data.valid_until,
+//             });
+//         } else {
+//             setModalMessage({
+//                 message: data.error || 'An error occurred while giving consent.',
+//                 type: 'failure',
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Error:', error);
+//         setModalMessage({
+//             message: 'An error occurred while giving consent.',
+//             type: 'failure',
+//         });
+//     }
+//     setIsModalOpen(true);
+// };
+
+// const createConnection = async () => {
+//     const token = Cookies.get('authToken');
+//     const formData = new FormData();
+//     formData.append('connection_type_name', connectionTypeName);
+//     formData.append('connection_name', connectionName);
+//     formData.append('connection_description', ''); // Add description if needed
+//     formData.append('host_locker_name', hostLockerName);
+//     formData.append('guest_locker_name', locker.name);
+//     formData.append('host_user_username', hostUserUsername);
+//     formData.append('guest_user_username', curruser.username);
+
+//     try {
+//         const response = await fetch('host/create-new-connection/'.replace(/host/, frontend_host), {
+//             method: 'POST',
+//             headers: {
+//                 'Authorization': `Basic ${token}`,
+//             },
+//             body: formData,
+//         });
+
+//         const data = await response.json();
+//         console.log('Create connection response:', data);
+//         if (!data.success) {
+//             throw new Error(data.error || 'Failed to create connection.');
+//         }
+//     } catch (error) {
+//         console.error('Error creating connection:', error);
+//         setModalMessage({
+//             message: 'An error occurred while creating the connection.',
+//             type: 'failure',
+//         });
+//         setIsModalOpen(true);
+//     }
+// };
+
+
+//   const handleRevokebutton = async () => {
+//     const token = Cookies.get("authToken");
+//     const revoke_guest = false;
+//     const revoke_host = false;
+//     const consent = false;
+//     const formData = new FormData();
+//     formData.append("connection_name", connectionName);
+//     formData.append("connection_type_name", connectionTypeName);
+//     formData.append("guest_username", curruser.username);
+//     formData.append("guest_lockername", locker.name);
+//     formData.append("host_username", hostUserUsername);
+//     formData.append("host_lockername", hostLockerName);
+//     formData.append("revoke_host", revoke_host);
+//     formData.append("revoke_guest", revoke_guest);
+//     formData.append("consent", consent);
+
+//     try {
+//       const response = await fetch(
+//         "host/revoke-consent/".replace(/host/, frontend_host),
+//         {
+//           method: "POST",
+//           headers: {
+//             // 'Content-Type': 'application/json',
+//             Authorization: `Basic ${token}`,
+//           },
+//           body: formData,
+//         }
+//       );
+
+//       const data = await response.json();
+//       console.log("revoke consent", data);
+//       if (data.success) {
+//         // setMessage("Consent revoked successfully.");
+//         setModalMessage({
+//           message: "Consent revoked successfully.",
+//           type: "success",
+//         });
+//         // console.log(message);
+//         // setConsentData(data);
+//         setIagree("0");
+//       } else {
+//         setModalMessage({
+//           message: data.error || "An error occurred while revoking consent.",
+//           type: "failure",
+//         });
+//       }
+//     } catch (error) {
+//       console.error("Error:", error);
+//       setModalMessage({
+//         messgae: "An error occurred while revoking consent.",
+//         type: "failure",
+//       });
+//     }
+//     setIsModalOpen(true);
+//     // navigate(`/target-locker-view`);
+//   };
+
+//   const renderObligations = () => {
+//     if (res && res.obligations && Array.isArray(res.obligations)) {
+//       return (
+//         <div>
+//           <ul>
+//             {res.obligations.map((term, index) => (
+//               <li key={index}>
+//                 {term.typeOfSharing} - {term.labelName} ({term.labelDescription})
+//               </li>
+//             ))}
+//           </ul>
+//         </div>
+//       );
+//     }
+//     return <p>No obligations available.</p>;
+//   };
+  
+//   const renderPermissions = () => {
+//     if (res && res.permissions) {
+//       const { canShareMoreData, canDownloadData } = res.permissions;
+//       return (
+//         <div className="permissions">
+//           <h3>Your Permissions</h3>
+//           <ul>
+//             {canShareMoreData ? <li>You can share more data.</li> : <li>You cannot share more data.</li>}
+//             {canDownloadData ? <li>You can download data.</li> : <li>You cannot download data.</li>}
+//           </ul>
+//         </div>
+//       );
+//     }
+//     return <p>No permissions available.</p>;
+//   };
+  
+
+
+
+//   const content = (
+//     // <>
+//     // <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
+//     // <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionName)}   </div>
+//     // {/* <div className="navbarBrand">{(connection_description)}   </div> */}
+//     // <div className="description"></div>
+//     // </>
+//     <>
+//       <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+//       <div className="description">
+//         {curruser ? curruser.description : "None"}
+//       </div>
+//       <br></br>
+//       <div className="connection-details">
+//         Connection Name: {connectionName} <br></br>
+//         {/* //{connection.description}<br></br> */}
+//         Guest: {curruser.username} --&gt; Host: {hostUserUsername} 
+//       </div>
+//     </>
+//   );
+
+//   console.log("I agree", Iagree);
+//   return (
+//     <div>
+//       <Navbar content={content} />
+//       {/* 
+//       <div className="page13parent">
+//         <div className="page13host1">Host : {capitalizeFirstLetter(hostUserUsername)}</div>
+//         <div className="page13requestor">Requestor :{capitalizeFirstLetter(curruser.username)}</div>
+
+//       </div>
+
+//       <div className="page13parent">
+//         <div className="page13host2">Locker:{capitalizeFirstLetter(hostLockerName)}</div>
+//         <div className="page13requestor">Locker :{capitalizeFirstLetter(locker.name)}</div>
+
+//       </div> */}
+//       <div className="page13container">
+//         <p>
+//           <u>Terms of connection</u>
+//         </p>
+
+//         <div className="page13subparent">
+//           <div className="page13headterms">Your Obligations </div>
+//           <div className="page13lowerterms">{renderObligations()}</div>
+
+//           <div className="page13headterms">Your Rights </div>
+//           <div className="page13lowerterms">{renderPermissions()}</div>
+//         </div>
+//       </div>
+//       {isModalOpen && (
+//         <Modal
+//           message={modalMessage.message}
+//           onClose={handleCloseModal}
+//           type={modalMessage.type}
+//         />
+//       )}
+
+//       {Iagree === "0" && (
+//         <div>
+//           <div className="page13button">
+//             {" "}
+//             <button
+//               className="page13iagree0button"
+//               onClick={handleIagreebutton}
+//             >
+//               {" "}
+//               I Agree{" "}
+//             </button>
+//           </div>
+//           {/* <div>
+//             {message && <div className="message">{message}</div>}
+//           </div> */}
+//         </div>
+//       )}
+
+//       {Iagree === "1" && (
+//         <div className="page13parent13state1">
+//           <div className="page13consent">
+//             Consent Given on : {consentData.consent_given}
+//             <br />
+//             Consent valid Until : {consentData.valid_until}
+//           </div>
+//           <div className="page13button">
+//             {" "}
+//             <button
+//               className="page13iagree1button"
+//               onClick={handleRevokebutton}
+//             >
+//               {" "}
+//               Revoke{" "}
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+//connadjust
 import "./CreateConnectionTerms.css";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -312,12 +723,14 @@ export const CreateConnectionTerms = () => {
     hostLockerName,
     connectionTypeName,
     hostUserUsername,
+    connectionDescription,
     locker,
   } = location.state || {};
   console.log(
     connectionName,
     hostLockerName,
     connectionTypeName,
+    connectionDescription,
     hostUserUsername,
     locker
   );
@@ -382,26 +795,27 @@ export const CreateConnectionTerms = () => {
       console.log("Inside fetch terms");
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(
-          `host/show_terms/?username=${curruser.username}&locker_name=${locker.name}&connection_name=${connectionName}`.replace(
-            /host/,
-            frontend_host
-          ),
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Basic ${token}`, // Adjust if using a different authentication method
-            },
-          }
-        );
+    
+        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
+        console.log("Final API URL:", apiUrl);
+    
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`,
+          },
+        });
+    
         if (!response.ok) {
           throw new Error("Failed to fetch terms");
         }
+    
         const data = await response.json();
+    
         if (data.success) {
-          setRes(data.terms);
-          console.log(data.terms);
+          setRes(data.data); // Update to set data.data instead of data
+          console.log("Terms Response Data:", data.data);
         } else {
           setError(data.error || "No terms found");
         }
@@ -409,68 +823,83 @@ export const CreateConnectionTerms = () => {
         setError(err.message);
       }
     };
+    
 
     fetchTerms();
     checkConsentStatus();
   }, []);
 
   const handleIagreebutton = async () => {
-    const token = Cookies.get("authToken");
+    const token = Cookies.get('authToken');
     const consent = true;
-    const formData = new FormData();
-    formData.append("connection_name", connectionName);
-    formData.append("connection_type_name", connectionTypeName);
-    formData.append("guest_username", curruser.username);
-    formData.append("guest_lockername", locker.name); //rohiths locker
-    formData.append("host_username", hostUserUsername);
-    formData.append("host_lockername", hostLockerName); //logged in users locker(iiitb)
-    formData.append("consent", consent);
 
     try {
-      const response = await fetch(
-        "host/give-consent/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            // 'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
-          },
-          body: formData,
-        }
-      );
+        // First, create the connection
+        const createResponse = await fetch('host/create-new-connection/'.replace(/host/, frontend_host), {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${token}`,
+            },
+            body: new URLSearchParams({
+                connection_type_name: connectionTypeName,
+                connection_name: connectionName,
+                connection_description: connectionDescription, // Add description if needed
+                host_locker_name: hostLockerName,
+                guest_locker_name: locker.name,
+                host_user_username: hostUserUsername,
+                guest_user_username: curruser.username
+            })
+        });
 
-      const data = await response.json();
-      console.log("give consent", data);
-      if (data.success) {
-        setModalMessage({
-          message: "Consent given successfully.",
-          type: "success",
+        const createData = await createResponse.json();
+        if (!createData.success) {
+            throw new Error(createData.error || 'Failed to create connection.');
+        }
+
+        // Now give consent
+        const consentResponse = await fetch('host/give-consent/'.replace(/host/, frontend_host), {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${token}`,
+            },
+            body: new URLSearchParams({
+                connection_name: connectionName,
+                connection_type_name: connectionTypeName,
+                guest_username: curruser.username,
+                guest_lockername: locker.name,
+                host_username: hostUserUsername,
+                host_lockername: hostLockerName,
+                consent: consent.toString()
+            })
         });
-        console.log("give consent", data);
-        // setConsentData(data);
-        setIagree("1");
-        await checkConsentStatus();
-        setConsentData({
-          consent_given: data.consent_given_date,
-          valid_until: data.valid_until,
-        });
-        // navigate(`/target-locker-view`);
-      } else {
-        setModalMessage({
-          message: data.error || "An error occurred while giving consent.",
-          type: "failure",
-        });
-      }
+
+        const consentData = await consentResponse.json();
+        if (consentData.success) {
+            setModalMessage({
+                message: 'Consent given and connection created successfully.',
+                type: 'success',
+            });
+            setIagree("1");
+            setConsentData({
+                consent_given: consentData.consent_given_date,
+                valid_until: consentData.valid_until,
+            });
+        } else {
+            setModalMessage({
+                message: consentData.error || 'An error occurred while giving consent.',
+                type: 'failure',
+            });
+        }
     } catch (error) {
-      console.error("Error:", error);
-      setModalMessage({
-        message: "An error occurred while giving consent.",
-        type: "failure",
-      });
+        console.error('Error:', error);
+        setModalMessage({
+            message: 'An error occurred while giving consent.',
+            type: 'failure',
+        });
     }
     setIsModalOpen(true);
-    // navigate(`/target-locker-view`);
-  };
+};
+
 
   const handleRevokebutton = async () => {
     const token = Cookies.get("authToken");
@@ -530,35 +959,40 @@ export const CreateConnectionTerms = () => {
   };
 
   const renderObligations = () => {
-    if (res && res.obligations) {
-      return res.obligations.map((obligation, index) => (
-        <div key={index}>
+    if (res && res.obligations && Array.isArray(res.obligations)) {
+      return (
+        <div>
           <ul>
-            <li>
-              {obligation.typeOfSharing} {obligation.labelName}
-            </li>
+            {res.obligations.map((term, index) => (
+              <li key={index}>
+                {term.typeOfSharing} - {term.labelName}
+              </li>
+            ))}
           </ul>
         </div>
-      ));
-    } else {
-      return <p>No obligations available.</p>;
+      );
     }
+    return <p>No obligations available.</p>;
   };
-
+  
   const renderPermissions = () => {
     if (res && res.permissions) {
       const { canShareMoreData, canDownloadData } = res.permissions;
       return (
         <div className="permissions">
+          {/* <h3>Your Permissions</h3> */}
           <ul>
-            {canShareMoreData && <li>You can share more data.</li>}
-            {canDownloadData && <li>You can download data.</li>}
+            {canShareMoreData ? <li>You can share more data.</li> : <li>You cannot share more data.</li>}
+            {canDownloadData ? <li>You can download data.</li> : <li>You cannot download data.</li>}
           </ul>
         </div>
       );
     }
-    return null;
+    return <p>No permissions available.</p>;
   };
+  
+
+
 
   const content = (
     // <>
@@ -575,7 +1009,7 @@ export const CreateConnectionTerms = () => {
       <br></br>
       <div className="connection-details">
         Connection Name: {connectionName} <br></br>
-        {/* //{connection.description}<br></br> */}
+        {connectionDescription}<br></br>
         Guest: {curruser.username} --&gt; Host: {hostUserUsername} 
       </div>
     </>
@@ -606,7 +1040,7 @@ export const CreateConnectionTerms = () => {
           <div className="page13headterms">Your Obligations </div>
           <div className="page13lowerterms">{renderObligations()}</div>
 
-          <div className="page13headterms">Your Rights </div>
+          <div className="page13headterms">Your Permissions </div>
           <div className="page13lowerterms">{renderPermissions()}</div>
         </div>
       </div>

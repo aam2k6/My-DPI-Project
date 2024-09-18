@@ -27,6 +27,7 @@ export const ViewTermsByType = () => {
     
     const {
         connectionName,
+        connectionDescription,
         hostLockerName,
         guestLockerName,
         hostUserUsername,
@@ -336,7 +337,7 @@ export const ViewTermsByType = () => {
                 {curruser ? curruser.description : "None"}</div>
                 <br></br>
             <div className="connection-details">Connection Name: {connectionName} <br></br>
-            {/* //{connection.description}<br></br> */}
+            {connectionDescription}<br></br>
                 Guest: {guestUserUsername} --&gt;Host: {hostUserUsername}</div>
             
         </>

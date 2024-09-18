@@ -95,75 +95,31 @@ export const CreateConnectionType = () => {
     };
 
     console.log("locker", locker.name);
-   const handleNextClick = async (event) => {
-    event.preventDefault();
-    console.log('Next button clicked');
-
-    const token = Cookies.get('authToken');
-    if (!selectedConnectionType || !parentUser || !curruser || !locker || !selectedLocker) {
-        console.error('Missing necessary data to create connection');
-        setError("Required data is missing.");
-        return;
-    }
-
-    console.log('All necessary data is available:', {
-        selectedConnectionType,
-        parentUser,
-        curruser,
-        locker,
-        selectedLocker
-    });
-
-    const formData = new FormData();
-    formData.append('connection_type_name', selectedConnectionType.connection_type_name);
-    formData.append('connection_name', `${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`);
-    formData.append('connection_description', selectedConnectionType.connection_description);
-    formData.append('host_locker_name', locker.name);
-    formData.append('guest_locker_name', selectedLocker.name);
-    formData.append('host_user_username', parentUser.username);
-    formData.append('guest_user_username', curruser.username);
-
-    try {
-        console.log('Sending request to create connection');
-        const response = await fetch('host/create-new-connection/'.replace(/host/, frontend_host), {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${token}`,
-            },
-            body: formData
+    const handleNextClick = (event) => {
+        event.preventDefault(); // Prevent the default form submission
+    
+        // Ensure all required data is present
+        if (!selectedConnectionType || !parentUser || !curruser || !locker || !selectedLocker) {
+            console.error('Missing necessary data to proceed');
+            setError("Required data is missing.");
+            return;
+        }
+    
+        console.log('Navigating to show connection terms');
+    
+        // Navigate to the terms page with state data
+        navigate('/show-connection-terms', {
+            state: {
+                connectionTypeName: selectedConnectionType.connection_type_name,
+                connectionDescription:selectedConnectionType.connection_description,
+                locker: selectedLocker,
+                hostUserUsername: parentUser.username,
+                hostLockerName: locker.name,
+                connectionName: `${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`
+            }
         });
-
-        console.log('Request sent, awaiting response');
-        if (!response.ok) {
-            // console.error(HTTP error! Status: ${response.status});
-            // throw new Error(HTTP error! Status: ${response.status});
-        }
-       
-        const data = await response.json();
-        const connectionname=`${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`;
-        console.log('Response data:', data);
-        if (data.success) {
-            console.log('Navigation to show connection terms');
-            navigate('/show-connection-terms', {
-                state: {
-                    connectionTypeName: selectedConnectionType.connection_type_name,
-                    locker : selectedLocker,
-                    hostUserUsername: parentUser.username,
-                    hostLockerName: locker.name,
-                    connectionName : connectionname
-                }
-                
-            });
-            
-        } else {
-            console.error('Server error:', data.error);
-            setError(data.error || 'Failed to create connection');
-        }
-    } catch (error) {
-        console.error("Fetch error:", error);
-        setError("An error occurred while creating the connection.");
-    }
-};
+    };
+    
 
 console.log(connectionTypes);
 const content = (

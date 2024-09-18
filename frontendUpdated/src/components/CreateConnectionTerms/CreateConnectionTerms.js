@@ -843,7 +843,7 @@ export const CreateConnectionTerms = () => {
             body: new URLSearchParams({
                 connection_type_name: connectionTypeName,
                 connection_name: connectionName,
-                connection_description: connectionDescription, // Add description if needed
+                connection_description: connectionDescription, 
                 host_locker_name: hostLockerName,
                 guest_locker_name: locker.name,
                 host_user_username: hostUserUsername,

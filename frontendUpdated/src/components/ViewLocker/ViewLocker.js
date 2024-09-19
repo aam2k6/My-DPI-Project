@@ -817,6 +817,7 @@ export const ViewLocker = () => {
   const handleTracker = (connection) => {
     navigate("/view-terms-by-type", {
       state: {
+        connection_id: connection.connection_id,
         connectionName: connection.connection_name,
         hostLockerName: connection.host_locker?.name,
         guestLockerName: connection.guest_locker?.name,
@@ -989,7 +990,7 @@ export const ViewLocker = () => {
                 className="connection-name-button"
                 onClick={() => handleConnectionClick(connection)}
                 style={{
-                  textDecoration: "underline",
+                  textDecoration: "none",
                   background: "none",
                   border: "none",
                   padding: 0,

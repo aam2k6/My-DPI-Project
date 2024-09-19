@@ -819,6 +819,7 @@ export const ViewLocker = () => {
       state: {
         connection_id: connection.connection_id,
         connectionName: connection.connection_name,
+        connectionDescription:connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         guestLockerName: connection.guest_locker?.name,
         hostUserUsername: connection.host_user?.username,
@@ -845,6 +846,9 @@ export const ViewLocker = () => {
       state: {
         hostLockerName: connection.host_locker?.name,
         connectionTypeName: connection.connection_type_name,
+        connectionDescription:connection.connection_description,
+        createdtime:connection.created_time,
+        validitytime:connection.validity_time,
         hostUserUsername: connection.host_user?.username,
         locker: locker,
       },
@@ -869,6 +873,7 @@ export const ViewLocker = () => {
     navigate("/show-connection-terms", {
       state: {
         connectionName: connection.connection_name,
+        connectionDescription:connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         connectionTypeName, // Pass the extracted connection_type_name
         hostUserUsername: connection.host_user?.username,
@@ -976,6 +981,60 @@ export const ViewLocker = () => {
             </div>
             <div className="tab-content">
             {activeTab === 'incoming' && (
+              <div className="tab-panel">
+  <h4 id="headingconnection">Incoming Connection types</h4>
+  <div className="conn">
+    {otherConnections.length > 0 ? (
+      otherConnections.map((connection) => (
+        <div
+          key={connection.connection_type_id}
+          className="viewlockerconnections"
+        >
+          <h4 id="connectiontype">
+            <button
+              className="connection-name-button"
+              onClick={() => handleConnectionClick(connection)}
+              style={{
+                textDecoration: "underline",
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+                color: "inherit",
+              }}
+            >
+              <u>{connection.connection_type_name}</u>
+            </button>
+            {" "} (users: {connection.incoming_count})
+          </h4>
+          <button
+            className="info-button2"
+            onClick={() => handleIncomingInfo(connection)}
+          >
+            i
+          </button>
+          <div id="conntent">
+                {connection.connection_description}
+              </div>
+              <div id="conntent">
+                Created On:{" "}
+                {new Date(connection.created_time).toLocaleString()}
+              </div>
+              <div id="conntent">
+                Valid Until:{" "}
+                {new Date(connection.validity_time).toLocaleString()}
+              </div>
+                           
+
+ 
+        </div>
+      ))
+    ) : (
+      <p>No connections found.</p>
+    )}
+  </div>
+</div>
+
   <div className="tab-panel">
     <h4 id="headingconnection">Incoming Connection types</h4>
     <div className="conn">
@@ -1051,8 +1110,8 @@ export const ViewLocker = () => {
                               </button>
                             </div>
                             <div id="conntent">
-                              {connection.guest_user.username} &lt;&gt;{" "}
-                              {connection.host_user.username}
+                              {connection.guest_locker.name} &lt;&gt;{" "}
+                              {connection.host_locker.name}
                             </div>
                             <div id="conntent">
                               Created On:{" "}

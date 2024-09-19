@@ -16,6 +16,7 @@ const capitalizeFirstLetter = (string) => {
 export const Home = () => {
   const navigate = useNavigate();
   const [lockers, setLockers] = useState([]);
+  const [notifications, setNotifications] = useState([]);  // New state for notifications
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const { curruser } = useContext(usercontext);
@@ -67,8 +68,38 @@ export const Home = () => {
 
     if (curruser) {
       fetchLockers();
+      fetchNotifications();  // Fetch notifications when fetching lockers
     }
   }, [curruser]);
+
+    // Fetch notifications for the user
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const response = await fetch('host/get-notifications/'.replace(/host/, frontend_host), {
+          method: 'GET',
+          headers: {
+            'Authorization': `Basic ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          setError(errorData.error || 'Failed to fetch notifications');
+          return;
+        }
+  
+        const data = await response.json();
+        if (data.success) {
+          setNotifications(data.notifications || []);
+        } else {
+          setError(data.message || data.error);
+        }
+      } catch (error) {
+        setError("An error occurred while fetching notifications.");
+      }
+    };  
 
   const handleNewLockerClick = () => {
     navigate('/create-locker');
@@ -119,6 +150,24 @@ export const Home = () => {
             <p>No lockers found.</p>
           )}
         </div>
+
+        {/* <div className="allLockers">
+        <h3>My Notifications</h3>
+          {notifications.length > 0 ? (
+            notifications.map(notification => (
+              <div key={notification.id} className="notification-box">
+                <p>
+                  Notification from <b>{notification.guest_user}</b> 
+                  to <b>{notification.host_user}</b> 
+                  for connection <b>{notification.connection_name}</b>
+                </p>
+                <p>{new Date(notification.created_at).toLocaleString()}</p>
+              </div>
+            ))
+          ) : (
+            <p>No notifications found.</p>
+          )}
+        </div>         */}
       </div>
     </div>
   );

@@ -747,13 +747,15 @@ export const CreateConnectionTerms = () => {
   };
 
   const checkConsentStatus = async () => {
+    console.log("guestlocker",locker)
+    console.log("host",hostLockerName)
     try {
       const token = Cookies.get("authToken");
       const queryParams = new URLSearchParams({
         connection_name: connectionName,
         connection_type_name: connectionTypeName,
         guest_username: curruser.username,
-        guest_lockername: locker.name,
+        guest_lockername: locker,
         host_username: hostUserUsername,
         host_lockername: hostLockerName,
       });

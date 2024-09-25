@@ -725,6 +725,7 @@ export const CreateConnectionTerms = () => {
     hostUserUsername,
     connectionDescription,
     locker,
+  
   } = location.state || {};
   console.log(
     connectionName,
@@ -832,7 +833,16 @@ export const CreateConnectionTerms = () => {
   const handleIagreebutton = async () => {
     const token = Cookies.get('authToken');
     const consent = true;
-
+    console.log("Locker Name:", locker); // Verify locker details
+    if (!locker || !locker.name) {
+      console.error("Locker is undefined or doesn't have a name.");
+      setModalMessage({
+        message: 'Locker information is missing.',
+        type: 'failure',
+      });
+      setIsModalOpen(true);
+      return;
+    }
     try {
         // First, create the connection
         const createResponse = await fetch('host/create-new-connection/'.replace(/host/, frontend_host), {

@@ -188,6 +188,7 @@ export const Admin = () => {
         }
       );
       const data = await response.json();
+      console.log(data);
       if (data.success) {
         setOtherConnections(data.connection_types);
       } else {

@@ -260,6 +260,10 @@ overflow-x: auto;
   width: 100%;
 }
 
+.connection-name-button{
+  font-size: medium;
+  font-weight:normal;
+}
 #headingconnection{
   font-size: 1rem;
   font-weight: bolder;

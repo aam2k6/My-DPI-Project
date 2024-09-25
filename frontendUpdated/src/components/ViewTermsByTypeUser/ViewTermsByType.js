@@ -19,6 +19,7 @@ export const ViewTermsByType = () => {
     const [termValues, setTermValues] = useState({});
     const [selectedResources, setSelectedResources] = useState({});
     const [currentLabelName, setCurrentLabelName] = useState(null);
+    const [VnodeResources, setVnodeResources] = useState([]);
     const [statuses, setStatuses] = useState({}); // To store the statuses
     // const [resourcesData, setResourcesData] = useState({
     //     share: [],
@@ -141,6 +142,8 @@ export const ViewTermsByType = () => {
                     />
                 );
             case "file":
+                console.log("name", selectedResources[obligation.labelName]?.document_name);
+                console.log("name 2", selectedResources);
                 return (
                     <button onClick={() => handleButtonClick(obligation.labelName)}>
                         {selectedResources[obligation.labelName]?.document_name ||
@@ -206,9 +209,105 @@ export const ViewTermsByType = () => {
                 }
             };
 
+            const fetchVnodeResources = async () => {
+                try {
+                  const token = Cookies.get("authToken");
+                  const params = new URLSearchParams({ host_locker_id: locker.locker_id });
+            
+                  const response = await fetch(
+                    `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
+                    {
+                      method: "GET",
+                      headers: {
+                        Authorization: `Basic ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
+                  if (!response.ok) {
+                    throw new Error("Failed to fetch resources");
+                  }
+            
+                  const data = await response.json();
+                  console.log("data", data);
+                  console.log("vnodes", data.data);
+            
+                  //if (data.success) {
+                  setVnodeResources(data.data);
+                  //} else {
+                  //setError(data.message || "Failed to fetch resources");
+                  //}
+                  //}
+                } catch (error) {
+                  console.error("Error fetching resources:", error);
+                  setError("An error occurred while fetching resources");
+                }
+              };
+
+              
             fetchResources();
+            fetchVnodeResources();
         }
     }, [selectedLocker]);
+     
+
+      const combinedResources = [...resources];
+      VnodeResources.forEach(vnode => {
+        combinedResources.push(vnode.resource); 
+      });
+
+
+    // const fetchCombinedResources = async () => {
+    //     try {
+    //         const token = Cookies.get("authToken");
+    //         const lockerResponse = await fetch(
+    //             `host/get-resource-by-user-by-locker/?locker_name=${selectedLocker}`.replace(/host/, frontend_host),
+    //             {
+    //                 method: "GET",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: `Basic ${token}`,
+    //                 },
+    //             }
+    //         );
+    //         const vnodeResponse = await fetch(
+    //             `host/get-vnodes/?host_locker_id=${locker.locker_id}`.replace(/host/, frontend_host),
+    //             {
+    //                 method: "GET",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: `Basic ${token}`,
+    //                 },
+    //             }
+    //         );
+
+    //         if (!lockerResponse.ok || !vnodeResponse.ok) {
+    //             throw new Error("Failed to fetch resources");
+    //         }
+
+    //         const lockerData = await lockerResponse.json();
+    //         const vnodeData = await vnodeResponse.json();
+    //         if (lockerData.success && vnodeData.data) {
+    //             console.log(vnodeData.data);
+    //             const combinedResources = [
+    //                 ...lockerData.resources,
+    //                 ...vnodeData.data
+    //             ];
+    //             setResources(combinedResources);
+    //         } else {
+    //             setError("Failed to fetch combined resources");
+    //         }
+    //     } catch (error) {
+    //         setError("An error occurred while fetching resources");
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     if (selectedLocker) {
+    //         fetchCombinedResources();
+    //     }
+    // }, [selectedLocker]);
+
 
     const handleSubmit = async () => {
         try {
@@ -226,6 +325,7 @@ export const ViewTermsByType = () => {
     
                         if (obligation.typeOfAction === "file") {
                             const resource = selectedResources[key];
+                            console.log("resource in payload", resource);
                             const initialResourcePointer = initialValue.split(";")[0];
     
                             if (resource && resource.i_node_pointer && resource.i_node_pointer !== initialResourcePointer) {
@@ -240,7 +340,7 @@ export const ViewTermsByType = () => {
                                         // newResourcesData.Share.push(resource.i_node_pointer);
                                     //}
                                 }
-    
+                                
                                 return [key, `${resource.i_node_pointer.replace(/;[ ]?[TFR]$/, "")}; F`];
                             } else {
                                 return [key, initialValue];
@@ -343,6 +443,8 @@ export const ViewTermsByType = () => {
         </>
     );
     console.log("res without submit", res);
+    console.log("resources normal", resources);
+    console.log("combined", resources);
     // console.log("resourcesData", resourcesData);
     return (
         <div>
@@ -382,14 +484,14 @@ export const ViewTermsByType = () => {
                         {error && <p className="error">{error}</p>}
 
                         <ul>
-                            {resources.map((resource, index) => (
+                            {combinedResources.map((resource, index) => (
                                 <li key={index}>
                                     <div>
                                         <label>
                                             <input
                                                 type="radio"
                                                 name="selectedResource"
-                                                value={resource.i_node_pointer}
+                                                value={resource.document_name} //i changed here
                                                 checked={
                                                     selectedResources[currentLabelName]
                                                         ?.i_node_pointer === resource.i_node_pointer

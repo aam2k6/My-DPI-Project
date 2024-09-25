@@ -1323,6 +1323,7 @@ export const TargetLockerView = () => {
     navigate("/view-terms-by-type", {
       state: {
         connectionName: connection.connection_name,
+        connectionDescription:connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         guestLockerName: connection.guest_locker?.name,
         hostUserUsername: connection.host_user?.username,
@@ -1353,7 +1354,8 @@ export const TargetLockerView = () => {
 
   const handleInfo = (connection) => {
         console.log("conn in i", connection);
-        const connectionTypeName = connection.connection_name.split('-').pop().trim();
+        const connectionTypeName = connection.connection_name.split('-').shift().trim();
+        console.log(connectionTypeName)
         navigate("/show-connection-terms", {
           state: {
             //connectionId: connection.connection_id,
@@ -1364,6 +1366,7 @@ export const TargetLockerView = () => {
             guestUserUsername: connection.guest_user?.username,
             locker: locker,
             connectionTypeName,
+            connectionDescription:connection.connection_description,
           },
         });
       };

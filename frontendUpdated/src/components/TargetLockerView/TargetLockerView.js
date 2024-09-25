@@ -1356,6 +1356,7 @@ export const TargetLockerView = () => {
         console.log("conn in i", connection);
         const connectionTypeName = connection.connection_name.split('-').shift().trim();
         console.log(connectionTypeName)
+        console.log("lock",connection.guest_locker?.name);
         navigate("/show-connection-terms", {
           state: {
             //connectionId: connection.connection_id,
@@ -1364,7 +1365,7 @@ export const TargetLockerView = () => {
             guestLockerName: connection.guest_locker?.name,
             hostUserUsername: connection.host_user?.username,
             guestUserUsername: connection.guest_user?.username,
-            locker: locker,
+            locker:connection.guest_locker?.name ,
             connectionTypeName,
             connectionDescription:connection.connection_description,
           },

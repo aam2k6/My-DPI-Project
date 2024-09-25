@@ -1,127 +1,167 @@
-/* body {
-    background-repeat: no-repeat;
-    background-size: cover;
-} */
-/* 
-.popup-form {
-    display: none;
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgba(217, 217, 217, 1);
+    height: 100vh;  
+    overflow: hidden; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginpage {
+    width: 100vw;  
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+}
+
+.headerlogin {
     position: fixed;
-    left: 0;
     top: 0;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    z-index: 9999;
-}
-.obg-form {
-    display: block;
-    position: fixed;
-    top: 20vh;
-    left: 25vw;
-    width: 50vw;
-    height: 50vh;
-    z-index: 9999;
+    z-index: 1000;
+    text-align: center;
+    background-color: rgba(23, 22, 75, 1);
+    display: 'flex';
+     justify-content: 'space-between';
+     align-items: 'center';
 }
 
-.popup-form-content {
-    background-color: #fefefe;
-    margin: 15vh auto;
-    padding: 10px;
-    border: 1px solid #888;
-    width: 400px;
-    max-width: 90%;
-    border-radius: 10px;
+.headerlogin h1 {
+    margin-left: 0rem;
+    margin-top: 0rem;
+    font-size: 3rem;
+    color: #ffffff;
+    height: 4rem;
+    text-align: center;
+    background-color: rgba(23, 22, 75); 
+    flex: 1;
 }
 
-.obligation-label {
-    text-align: left;
+.form-headers{
+    margin-top: 2rem;
+    margin-left: 15rem;
+    margin-bottom: 6rem;
 }
 
-.obligation-container {
-    padding: 5px;
-    align-items: center;
-    height: 40%;
+.containerlogin{
+    margin-top: 5rem;
+    border-radius: 5rem;
+    border: 2rem solid rgba(23, 22, 75);
+    height: 30rem;
+    width: 40rem;
 }
 
-.input-obligation {
-    width: 51%;
-    padding: 5px;
-    margin: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: #e9e9e9;
+.signup-form{
+    margin-top:2rem;
 }
 
-.close {
-    color: #623a3a;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer; */
+.form-input{
+    font-size: large;
+   margin-bottom: 2rem;
+    margin-left: 8rem;
+}
 
+.submit-btnlogin1{
+    margin-left: 14rem;
+    margin-right: 3rem;
+    padding: 0.5rem;
+    
+}
+.submit-btnlogin2{
+   padding:0.5rem;
+}
+#form-inplogin1 input{
+    margin-left: 1.75rem;
+}
 
-    /* .loginpage{
-        display: flex;
-        justify-content: center;
-        align-items: center;
+#form-inplogin2 input{
+   margin-left: 1.45rem;
+}
+#form-inplogin3 input{
+   margin-left: 0.65rem;
+}
+
+/* Media Queries for Mobile (412px width) */
+@media screen and (max-width: 412px) {
+
+    .loginpage {
+        width: 100vw;
         height: 100vh;
-        background-color: rgba(217, 217, 217, 1); Ensuring background color as in your original code */
-         /* Remove default margin
-  
-    } */
+        padding: 1rem;  
+        box-sizing: border-box;
+    }
 
-    .headerlogin{
-        position: fixed; 
-        top: 0;
-        left: 0;
-         /* margin-bottom: 5rem; */
-         width: 100% ;
-         z-index: 1000;
-     
-     }
-     .form-headers{
-         
-         margin-top: 2rem;
-         margin-left: 15rem;
-         margin-bottom: 6rem;
-     }
-     .containerlogin{
-         margin-top: 10rem;
-         border-radius: 5rem;
-         border: 2rem solid rgba(23, 22, 75);
-         height: 30rem;
-         width: 40rem;
-         /* display: flex;
-         flex-direction: column;
-         justify-content: center; */
-         /* align-items: center; */
-      margin-left: 55vb;   
-     }
-     .signup-form{
-         margin-top:2rem;
-     }
-     .form-input{
-         font-size: large;
-        margin-bottom: 2rem;
-         margin-left: 8rem;
-     }
-     .submit-btnlogin1{
-         margin-left: 14rem;
-         margin-right: 3rem;
-         padding: 0.5rem;
-         
-     }
-     .submit-btnlogin2{
-        padding:0.5rem;
-     }
-     #form-inplogin1 input{
-         margin-left: 1.75rem;
-     }
- 
-     #form-inplogin2 input{
-        margin-left: 1.45rem;
-     }
-     #form-inplogin3 input{
-        margin-left: 0.65rem;
-     }
+    .headerlogin {
+        padding: 0.5rem;
+        justify-content: center;  
+    }
+
+    .headerlogin h1 {
+        font-size: 2rem;  
+        padding: 0.5rem 0;  
+        text-align: center;
+    }
+
+    .form-headers {
+        margin-top: 1rem;
+        margin-left: 1rem;  
+        margin-bottom: 1rem;
+        text-align: center;
+        font-size: 0.7rem;
+    }
+
+    .containerlogin {
+        width: 90%;  
+        height: auto;  
+        margin-top: 3rem;  
+        padding: 1.5rem;  
+        border-radius: 1.5rem;  
+        border-width: 0.75rem;  
+        box-sizing: border-box;
+    }
+
+    .signup-form {
+        width: 100%;  
+        margin-top: 1rem;
+        padding: 0;
+    }
+
+    .form-input {
+        font-size: 1rem;  
+        margin-bottom: 1rem;
+        margin-left: 0;  
+        width: 100%;  
+    }
+
+    .submit-btnlogin1 {
+        width: 40%;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0.5rem;
+        font-size: 1rem;
+        text-align: center;
+        margin-left: 1rem;
+    }
+
+    .submit-btnlogin2 {
+        width: 40%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        text-align: center;
+        margin-left: 1rem;
+    }
+
+    #form-inplogin1 input,
+    #form-inplogin2 input,
+    #form-inplogin3 input {
+        margin-left: 0;  
+        width: 100%;  
+        padding: 0.2rem;
+        box-sizing: border-box;
+    }
+}
+

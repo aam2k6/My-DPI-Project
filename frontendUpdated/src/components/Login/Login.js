@@ -66,8 +66,8 @@ export const Login = () => {
 
     return (
         <div className='loginpage'>
-            <div className="headerlogin" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1 style={{ marginLeft: '0rem', marginTop: '0rem', fontSize: '3rem', backgroundColor: 'rgba(23, 22, 75)', color: '#ffffff', textAlign: 'center', flex: 1, height: '6rem' }}>
+            <div className="headerlogin" >
+                <h1>
                     Consent Management System
                 </h1>
             </div>

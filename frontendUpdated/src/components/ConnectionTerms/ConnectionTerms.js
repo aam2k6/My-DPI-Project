@@ -557,6 +557,7 @@ export const ConnectionTerms = () => {
     labelName: "",
     typeOfAction: "text",
     typeOfSharing: "share",
+    purpose:"",
     labelDescription: "",
     hostPermissions: [],
     canShareMore: false,
@@ -631,6 +632,7 @@ const fetchGlobalTemplates = () => {
             labelName: term.data_element_name,
             typeOfAction: term.data_type,
             typeOfSharing: term.sharing_type,
+            purpose:term.purpose,
             labelDescription: term.description,
             hostPermissions: term.host_permissions,
             canShareMore: false,
@@ -693,6 +695,7 @@ const fetchGlobalTemplates = () => {
       formData.labelDescription === removedObligation.labelDescription &&
       formData.typeOfAction === removedObligation.typeOfAction &&
       formData.typeOfSharing === removedObligation.typeOfSharing &&
+      formData.purpose === removedObligation.purpose &&
       formData.hostPermissions.join(",") === removedObligation.hostPermissions.join(",") &&
       formData.canShareMore === removedObligation.canShareMore &&
       formData.canDownload === removedObligation.canDownload
@@ -956,6 +959,16 @@ const fetchGlobalTemplates = () => {
                           <br />
                         </span>
                       </span>
+                    </label>
+                    <label className="obligation-label">
+                      <span>Purpose</span>
+                      <input
+                        type="text"
+                        name="purpose"
+                        placeholder="purpose of collecting data"
+                        value={formData.purpose}
+                        onChange={handleInputChange}
+                      />
                     </label>
 
                     <label className="obligation-label">

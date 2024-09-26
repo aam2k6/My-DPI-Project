@@ -457,6 +457,7 @@ export const ViewTermsByType = () => {
                             <tr>
                                 <th>Sno</th>
                                 <th>Name</th>
+                                <th>purpose</th>
                                 <th>Enter value</th>
                                 <th>Host Privileges</th>
                                 <th>Status</th> {/* New column for Status */}
@@ -468,6 +469,7 @@ export const ViewTermsByType = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{obligation.labelName}</td>
+                                    <td>{obligation.purpose}</td>
                                     <td>{renderInputField(obligation)}</td>
                                     {/* <td>{obligation.labelDescription}</td> */}
                                     <td>{obligation.hostPermissions ? obligation.hostPermissions.join(", ") : "None"}</td>

@@ -18,6 +18,7 @@ export const ConnectionTermsGlobal = () => {
     labelName: "",
     typeOfAction: "text",
     typeOfSharing: "share",
+    purpose: "",
     labelDescription: "",
     hostPermissions: [],
     canShareMore: false,
@@ -50,6 +51,7 @@ export const ConnectionTermsGlobal = () => {
           labelName: term.data_element_name || "",
           typeOfAction: term.data_type || "text",
           typeOfSharing: term.sharing_type || "share",
+          purpose:term.purpose,
           labelDescription: term.description || "",
           hostPermissions: term.host_permissions || [],
           canShareMore: false,
@@ -345,6 +347,16 @@ export const ConnectionTermsGlobal = () => {
                     </span>
                   </span>
                 </label>
+                <label className="obligation-label">
+          <span>Purpose</span>
+          <input
+            type="text"
+            name="purpose"
+            placeholder="purpose of fata"
+            value={globalFormData.purpose}
+            onChange={handleGlobalChange}
+          />
+        </label>
 
                 <label className="obligation-label">
                   <span>Description</span>

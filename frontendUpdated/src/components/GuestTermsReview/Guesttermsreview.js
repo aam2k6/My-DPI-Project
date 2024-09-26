@@ -434,6 +434,7 @@ export const Guesttermsreview = () => {
                                 <th>Sno</th>
                                 <th>Name</th>
                                 <th>Data Element</th>
+                                <th>Purpose</th>
                                 <th>Host Privileges</th>
                                 <th>Status</th>
                             </tr>
@@ -450,6 +451,7 @@ export const Guesttermsreview = () => {
                                             </a>
                                         ) : "None"}
                                     </td>
+                                    <td>{obligation.purpose}</td>
                                     <td>{obligation.hostPermissions ? obligation.hostPermissions.join(", ") : "None"}</td>
                                     <td>
                                         <select

@@ -24,6 +24,8 @@ export const Guesttermsreview = () => {
         share: [],
         transfer: [],
     });
+    const [permissionsData, setPermissionsData] = useState([]);
+
 
     useEffect(() => {
         if (!curruser) {
@@ -48,6 +50,11 @@ export const Guesttermsreview = () => {
                 if (data.success) {
                     setRes(data.terms);
                     setResources(data.terms.resources || []);
+    
+                    // Fetch permissions data if canShareMoreData is true
+                    if (data.terms.permissions.canShareMoreData) {
+                        await fetchPermissionsData();
+                    }
                 } else {
                     setError(data.error || 'No terms found');
                 }
@@ -55,7 +62,38 @@ export const Guesttermsreview = () => {
                 setError(err.message);
             }
         };
-
+        const fetchPermissionsData = async () => {
+            try {
+                const token = Cookies.get('authToken');
+                const connectionId = connection.connection_id; // Assume you have a connection ID
+                const response = await fetch(`host/get-extra-data?connection_id=${connectionId}`.replace(/host/, frontend_host), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Basic ${token}`
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch permissions data');
+                }
+                const data = await response.json();
+                if (data.success) {
+                    // Create an array from the shared_more_data_terms object
+                    const sharedData = Object.entries(data.shared_more_data_terms).map(([key, value], index) => ({
+                        sno: index + 1,
+                        labelName: key,
+                        dataElement: value.enter_value,
+                        purpose: value.purpose,
+                    }));
+                    setPermissionsData(sharedData);
+                } else {
+                    setError(data.error || 'No permissions data found');
+                }
+            } catch (err) {
+                setError(err.message);
+            }
+        };
+        
         const fetchConnectionDetails = async () => {
             try {
                 const token = Cookies.get('authToken');
@@ -394,6 +432,39 @@ export const Guesttermsreview = () => {
         }
         return null;
     };
+    const renderPermissionsTable = () => {
+        if (permissionsData.length > 0) {
+            return (
+                <div className="permissions-table">
+                    <h3>User Permissions</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sno</th>
+                                <th>Label Name</th>
+                                <th>Data Element</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {permissionsData.map((permission) => (
+                                <tr key={permission.sno}>
+                                    <td>{permission.sno}</td>
+                                    <td>{permission.labelName}</td>
+                                    <td>
+                                        {permission.dataElement || "None"} {/* Display "None" if empty */}
+                                    </td>
+                                    <td>{permission.purpose || "None"}</td> {/* Display "None" if empty */}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+    };
+    
+
 
     const content = (
         <>
@@ -412,7 +483,7 @@ export const Guesttermsreview = () => {
     return (
         <div>
             <Navbar content={content} />
-
+    
             <div className={showResources ? "split-view" : ""}>
                 <div className="table-container">
                     <button onClick={openTermsPopup} className="view-terms-link">View Terms</button>
@@ -467,6 +538,10 @@ export const Guesttermsreview = () => {
                             ))}
                         </tbody>
                     </table>
+    
+                    {/* Permissions Table Rendered Here */}
+                    {renderPermissionsTable()}
+    
                 </div>
                 {showResources && (
                     <div className="resource-container">
@@ -487,6 +562,7 @@ export const Guesttermsreview = () => {
             </div>
         </div>
     );
+    
 };
 
 export default Guesttermsreview;

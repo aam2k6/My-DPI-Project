@@ -977,8 +977,8 @@ export const CreateConnectionTerms = () => {
           <ul>
             {res.obligations.map((term, index) => (
               <li key={index}>
-                {term.typeOfSharing} - {term.labelName}
-              </li>
+      {term.typeOfSharing} - {term.labelName} (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 ? term.hostPermissions.join(", ") : "None"})
+      </li>
             ))}
           </ul>
         </div>

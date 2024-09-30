@@ -392,7 +392,7 @@ export const Guesttermsreview = () => {
                     <h3>Obligations</h3>
                     <ul>
                         {res.obligations.map((obligation, index) => (
-                            <li key={index}>{obligation.typeOfSharing} - {obligation.labelName}</li>
+                            <li key={index}>{obligation.typeOfSharing} - {obligation.labelName} (Host Privilege: {obligation.hostPermissions && obligation.hostPermissions.length > 0 ? obligation.hostPermissions.join(", ") : "None"})</li>
                         ))}
                     </ul>
                 </div>
@@ -406,7 +406,7 @@ export const Guesttermsreview = () => {
             const { canShareMoreData, canDownloadData } = res.permissions;
             return (
                 <div className="permissions">
-                    <h3>Permissive</h3>
+                    <h3>Permissions</h3>
                     <ul>
                         {canShareMoreData && <li>You can share more data.</li>}
                         {canDownloadData && <li>You can download data.</li>}

@@ -1041,6 +1041,17 @@ const fetchGlobalTemplates = () => {
                         onChange={handleCheckboxChange}
                       />
                     </label>
+                    <h2>Forbidden</h2>
+                    <label className="permission-label">
+  <span>Unilateral connection not possible</span>
+  <input
+    type="checkbox"
+    name="forbidden"
+    checked={formData.forbidden}
+    onChange={handleCheckboxChange}
+  />
+</label>
+
 
                     <div className="connectionTerms-btn">
                       <button type="submit">Submit</button>

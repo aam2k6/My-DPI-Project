@@ -416,22 +416,25 @@ export const Guesttermsreview = () => {
         }
         return null;
     };
+const renderForbidden = () => {
+    if (res && res.forbidden) {
+      return (
+        
+        <div className="permissions">
 
-    const renderForbidden = () => {
-        if (res && res.forbidden) {
-            return (
-                <div className="forbidden">
-                    <h3>Forbidden</h3>
-                    <ul>
-                        {res.forbidden.map((item, index) => (
-                            <li key={index}>{item}</li>
-                        ))}
-                    </ul>
-                </div>
-            );
-        }
-        return null;
-    };
+         <h3>Forbidden</h3>
+          <ul>
+          {res.forbidden.map((term, index) => (
+            <li key={index}>
+              {term.labelDescription}
+            </li>
+          ))}
+        </ul>
+      </div>)
+    }
+    return <p>No forbidden terms available.</p>;
+  };
+
     const renderPermissionsTable = () => {
         if (permissionsData.length > 0) {
             return (

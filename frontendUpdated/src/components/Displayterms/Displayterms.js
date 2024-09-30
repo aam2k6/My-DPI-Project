@@ -248,6 +248,20 @@ export const Displayterms = () => {
     }
     return <p>No permissions available.</p>;
   };
+  const renderForbidden = () => {
+    if (res && res.forbidden) {
+      return (
+        <ul>
+          {res.forbidden.map((term, index) => (
+            <li key={index}>
+              {term.labelDescription}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    return <p>No forbidden terms available.</p>;
+  };
 
   const content = (
     <>
@@ -278,6 +292,9 @@ export const Displayterms = () => {
 
           <div className="page13headterms">Your Permissions</div>
           <div className="page13lowerterms">{renderPermissions()}</div>
+
+          <div className="page13headterms">Your Prohibitions</div>
+          <div className="page13lowerterms">{renderForbidden()}</div>
         </div>
       </div>
     </div>

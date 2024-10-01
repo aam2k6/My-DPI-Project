@@ -498,6 +498,10 @@ const renderForbidden = () => {
                                 {renderObligations()}
                                 {renderPermissions()}
                                 {renderForbidden()}
+                                <div className="permissions">
+                    <h3>Default Host Privileges</h3>
+                    By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+                </div>
                             </div>
                         </div>
                     )}

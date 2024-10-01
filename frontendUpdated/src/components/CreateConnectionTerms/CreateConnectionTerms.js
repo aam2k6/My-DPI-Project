@@ -1072,6 +1072,8 @@ export const CreateConnectionTerms = () => {
           <div className="page13headterms">Your Prohibitions</div>
           <div className="page13lowerterms">{renderForbidden()}</div>
         </div>
+        <div className="page13headterms">Default Host Privileges</div>
+        By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
       </div>
       {isModalOpen && (
         <Modal

@@ -425,6 +425,7 @@ export default function CreateGlobalConnectionType() {
   const navigate = useNavigate();
   const { curruser } = useContext(usercontext);
 
+
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -478,34 +479,36 @@ export default function CreateGlobalConnectionType() {
     fetch(`host/get-connection-terms-for-global-template/?template_Id=${template_Id}`.replace(/host/, frontend_host), {
       method: 'GET',
       headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json'
+          'Authorization': `Basic ${token}`,
+          'Content-Type': 'application/json'
       }
-    })
-    .then(response => {
-        if (!response.ok) {
+  })
+  .then(response => {
+      if (!response.ok) {
           throw new Error(`Failed to fetch connection terms. Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Connection Terms Data:', data); // Debugging log
-        if (data.data) {
+      }
+      return response.json();
+  })
+  .then(data => {
+      console.log('Connection Terms Data:', data); // Log the complete data
+      if (data.data) {
+          // Assuming 'data.data' is the expected structure for your terms
           navigate('/ConnectionTermsGlobal', {
-            state: {
-              connectionTypeName: type.global_connection_type_name,
-              connectionTypeDescription: type.global_connection_type_description,
-              existingTerms: data.data,
-            }
+              state: {
+                  connectionTypeName: type.global_connection_type_name,
+                  connectionTypeDescription: type.global_connection_type_description,
+                  existingTerms: data.data,
+              }
           });
-        } else {
+      } else {
           setError('No terms data found.');
-        }
-      })
-    .catch(error => {
-        console.error("Error fetching terms data:", error);
-        setError("An error occurred while fetching terms data.");
-    });
+      }
+  })
+  .catch(error => {
+      console.error("Error fetching terms data:", error);
+      setError("An error occurred while fetching terms data.");
+  });
+  
 };
 
   return (

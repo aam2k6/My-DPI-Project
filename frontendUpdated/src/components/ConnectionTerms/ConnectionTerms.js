@@ -628,22 +628,33 @@ const fetchGlobalTemplates = () => {
       )
         .then((response) => response.json())
         .then((data) => {
-          const newObligations = data.data.map((term) => ({
-            labelName: term.data_element_name,
-            typeOfAction: term.data_type,
-            typeOfSharing: term.sharing_type,
-            purpose:term.purpose,
-            labelDescription: term.description,
-            hostPermissions: term.host_permissions,
-            canShareMore: false,
-            canDownload: false,
-          }));
-          setObligations((prev) => [...prev, ...newObligations]);
+          if (data.success) {
+            const { obligations, permissions, forbidden } = data.data;
+  
+            // Combine obligations, permissions, and forbidden into a single array or separate arrays
+            setObligations((prev) => [
+              ...prev, 
+              ...obligations, // Add the fetched obligations
+            ]);
+  
+            // Handle permissions
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              canShareMore: permissions.canShareMoreData,
+              canDownload: permissions.canDownloadData,
+            }));
+  
+            // Handle forbidden terms (you can also update another state for forbidden terms)
+            // if you want to show them somewhere else.
+          } else {
+            setError("Failed to fetch obligations for the selected template.");
+          }
         })
         .catch((error) => {
           setError(`Failed to fetch obligations for template ID ${templateId}`);
         });
     });
+  
     setDropdownVisible(false); // Hide dropdown after fetching
   };
   
@@ -1043,7 +1054,7 @@ const fetchGlobalTemplates = () => {
                     </label>
                     <h2>Forbidden</h2>
                     <label className="permission-label">
-  <span>Unilateral connection not possible</span>
+  <span>You cannot unilaterally close the connection</span>
   <input
     type="checkbox"
     name="forbidden"

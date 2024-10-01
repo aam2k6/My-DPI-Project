@@ -23,6 +23,8 @@ export const ConnectionTermsGlobal = () => {
     hostPermissions: [],
     canShareMore: false,
     canDownload: false,
+    forbidden: false, // Add forbidden state
+
   };
 
   const initialGlobalForm = {
@@ -39,28 +41,30 @@ export const ConnectionTermsGlobal = () => {
 
   useEffect(() => {
     if (location.state) {
-      setGlobalFormData({
-        globalName: connectionTypeName || "",
-        globalDescription: connectionTypeDescription || "",
-      });
+        setGlobalFormData({
+            globalName: connectionTypeName || "",
+            globalDescription: connectionTypeDescription || "",
+        });
 
-      console.log("existing terms ", existingTerms);
-      if (existingTerms && existingTerms.length > 0) {
-        // Map existing terms to the obligations structure
-        const mappedTerms = existingTerms.map((term) => ({
-          labelName: term.data_element_name || "",
-          typeOfAction: term.data_type || "text",
-          typeOfSharing: term.sharing_type || "share",
-          purpose:term.purpose,
-          labelDescription: term.description || "",
-          hostPermissions: term.host_permissions || [],
-          canShareMore: false,
-          canDownload: false,
-        }));
-        setObligations(mappedTerms);
-      }
+        const { forbidden, obligations } = existingTerms || {};
+        console.log("existing terms ", forbidden, obligations); // Debugging logs
+
+        if (obligations && obligations.length > 0) {
+            setObligations(obligations.map((term) => ({
+                labelName: term.labelName || "",
+                typeOfAction: term.typeOfAction || "text",
+                typeOfSharing: term.typeOfSharing || "share",
+                purpose: term.purpose || "",
+                labelDescription: term.labelDescription || "",
+                hostPermissions: term.hostPermissions || [],
+                canShareMore: false,
+                canDownload: false,
+                forbidden: false,
+            })));
+        }
     }
-  }, [location.state, connectionTypeName, connectionTypeDescription, existingTerms]);
+}, [location.state, connectionTypeName, connectionTypeDescription, existingTerms]);
+
 
   const { globalName, globalDescription } = globalFormData;
 
@@ -100,8 +104,25 @@ export const ConnectionTermsGlobal = () => {
   };
 
   const handleLoadObligation = (index) => {
-    setObligationFormData(obligations[index]);
-  };
+    const obligationToLoad = obligations[index];
+
+    // Assuming you have access to the existing permissions and forbidden states
+    const { permissions, forbidden } = existingTerms || {};
+
+    setObligationFormData((prev) => ({
+        ...prev,
+        labelName: obligationToLoad.labelName || "",
+        typeOfAction: obligationToLoad.typeOfAction || "text",
+        typeOfSharing: obligationToLoad.typeOfSharing || "share",
+        purpose: obligationToLoad.purpose || "",
+        labelDescription: obligationToLoad.labelDescription || "",
+        hostPermissions: obligationToLoad.hostPermissions || [],
+        canShareMore: permissions?.canShareMoreData || false, // Check from the global permissions
+        canDownload: permissions?.canDownloadData || false, // Check from the global permissions
+        forbidden: forbidden.length > 0, // If there are forbidden terms, set it to true
+    }));
+};
+
 
   const handleRemoveObligation = (index) => {
     setObligations(obligations.filter((_, i) => i !== index));
@@ -123,13 +144,14 @@ export const ConnectionTermsGlobal = () => {
         canShareMoreData: obligationFormData.canShareMore,
         canDownloadData: obligationFormData.canDownload,
       },
+      forbidden: obligationFormData.forbidden, // Include forbidden state in form submission
+
     };
 
     console.log(connectionTermsData);
     console.log(globalName);
     console.log(globalDescription);
-
-    fetch("host/create-global-terms/".replace(/host/g, frontend_host), {
+    fetch(`${frontend_host}/create-global-terms/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +160,7 @@ export const ConnectionTermsGlobal = () => {
       body: JSON.stringify(connectionTermsData),
     })
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 200 || response.status === 201) {
           return response.json();
         } else {
           throw new Error("Failed to create global terms");
@@ -147,43 +169,39 @@ export const ConnectionTermsGlobal = () => {
       .then((data) => {
         console.log("Global terms created successfully.");
         navigate("/create-global-connection-type");
-        // Extract terms_id from the response
         const termsIDs = data.terms.map((term) => term.terms_id);
-
+  
         const globalTemplateData = {
-          global_connection_type_name: globalName,
-          global_connection_type_description: globalDescription,
+          global_connection_type_name: globalFormData.globalName,
+          global_connection_type_description: globalFormData.globalDescription,
           global_terms_IDs: termsIDs,
         };
-
-        console.log(globalTemplateData);
-
-        // Trigger the second API call with the terms_ids
-        return fetch("host/add-global-template/".replace(/host/, frontend_host), {
+  
+        return fetch(`${frontend_host}/add-global-template/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${token}`, // Corrected template literal
+            Authorization: `Basic ${token}`,
           },
           body: JSON.stringify(globalTemplateData),
         });
       })
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 200 || response.status === 201) {
           return response.json();
         } else {
           throw new Error("Failed to add global template");
         }
       })
-      .then((data) => {
+      .then(() => {
         alert("Global template added successfully.");
-        // navigate("/admin");
       })
       .catch((error) => {
         console.error("Error:", error);
         setError("An error occurred while submitting the data.");
       });
   };
+
 
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
@@ -352,8 +370,8 @@ export const ConnectionTermsGlobal = () => {
           <input
             type="text"
             name="purpose"
-            placeholder="purpose of fata"
-            value={globalFormData.purpose}
+            placeholder="purpose of data"
+            value={obligationFormData.purpose}
             onChange={handleGlobalChange}
           />
         </label>
@@ -432,6 +450,17 @@ export const ConnectionTermsGlobal = () => {
                     onChange={handleCheckboxChange}
                   />
                 </label>
+               
+                    <h2>Forbidden</h2>
+                    <label className="permission-label">
+  <span>You cannot unilaterally close the connection</span>
+  <input
+    type="checkbox"
+    name="forbidden"
+    checked={obligationFormData.forbidden}
+    onChange={handleCheckboxChange}
+  />
+</label>
 
                 <div className="connectionTerms-btn">
                   <button type="submit">Submit</button>

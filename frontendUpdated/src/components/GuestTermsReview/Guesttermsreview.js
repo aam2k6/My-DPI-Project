@@ -408,8 +408,8 @@ export const Guesttermsreview = () => {
                 <div className="permissions">
                     <h3>Permissions</h3>
                     <ul>
-                        {canShareMoreData && <li>You can share more data.</li>}
-                        {canDownloadData && <li>You can download data.</li>}
+                    {canShareMoreData ? <li>You can share more data.</li> : <li>You cannot share more data.</li>}
+                    {canDownloadData ? <li>You can download data.</li> : <li>You cannot download data.</li>}
                     </ul>
                 </div>
             );

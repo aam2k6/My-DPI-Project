@@ -547,6 +547,7 @@ export const ViewTermsByType = () => {
     //     share: [],
     //     transfer: [],
     // });
+    const [permissionsData, setPermissionsData] = useState([]);
     
     const {
         connectionName,
@@ -556,6 +557,7 @@ export const ViewTermsByType = () => {
         hostUserUsername,
         guestUserUsername,
         locker,
+        connection_id,
     } = location.state || {};
 
     useEffect(() => {
@@ -622,13 +624,14 @@ export const ViewTermsByType = () => {
                     setSelectedResources(initialResources);
                     setPermissions(data.terms.permissions); // Set permissions
                     setStatuses(statusMap);
+                    console.log("data initial", data);
                     // setResourcesData({
                     //     share: Object.values(initialResources).filter(res => res.typeOfSharing === "share").map(res => res.document_name),
                     //     transfer: Object.values(initialResources).filter(res => res.typeOfSharing === "transfer").map(res => res.document_name),
                     // });
 
                     // console.log("resourceMap", resourceMap);
-                    console.log("initialResources", initialResources);
+                    // console.log("initialResources", initialResources);
                     // console.log(resourcesData);
                 } else {
                     setError(data.error || "No terms found");
@@ -637,8 +640,42 @@ export const ViewTermsByType = () => {
                 setError(err.message);
             }
         };
+        const fetchPermissionsData = async () => {
+            try {
+                const token = Cookies.get('authToken');
+                const connectionId = connection_id;
+                const response = await fetch(`host/get-extra-data?connection_id=${connectionId}`.replace(/host/, frontend_host), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Basic ${token}`
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch permissions data');
+                }
+                const data = await response.json();
+                if (data.success) {
+                    // Create an array from the shared_more_data_terms object
+                    const sharedData = Object.entries(data.shared_more_data_terms).map(([key, value], index) => ({
+                        sno: index + 1,
+                        labelName: key,
+                        dataElement: value.enter_value,
+                        purpose: value.purpose,
+                        action: value.typeOfValue,
+                    }));
+                    setPermissionsData(sharedData);
+                } else {
+                    setError(data.error || 'No permissions data found');
+                }
+            } catch (err) {
+                setError(err.message);
+            }
+        };
 
+        fetchPermissionsData();
         fetchTerms();
+
     }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
 
     const handleInputChange = (labelName, value) => {
@@ -648,6 +685,7 @@ export const ViewTermsByType = () => {
         }));
     };
 
+    console.log("permissionsData", permissionsData);
     const renderInputField = (obligation) => {
         const strippedValue = termValues[obligation.labelName]
             // ?.replace(/;[TFR]$/, "");
@@ -665,8 +703,8 @@ export const ViewTermsByType = () => {
                     />
                 );
             case "file":
-                console.log("name", selectedResources[obligation.labelName]?.document_name);
-                console.log("name 2", selectedResources);
+                // console.log("name", selectedResources[obligation.labelName]?.document_name);
+                // console.log("name 2", selectedResources);
                 return (
                     <button onClick={() => handleButtonClick(obligation.labelName)}>
                         {selectedResources[obligation.labelName]?.document_name ||
@@ -752,8 +790,8 @@ export const ViewTermsByType = () => {
                   }
             
                   const data = await response.json();
-                  console.log("data", data);
-                  console.log("vnodes", data.data);
+                //   console.log("data", data);
+                //   console.log("vnodes", data.data);
             
                   //if (data.success) {
                   setVnodeResources(data.data);
@@ -831,6 +869,7 @@ export const ViewTermsByType = () => {
     //     }
     // }, [selectedLocker]);
 
+    
 
     const handleSubmit = async () => {
         try {
@@ -839,7 +878,21 @@ export const ViewTermsByType = () => {
                 Share: [],
             };
 
-            console.log("res", res);
+
+    // Traverse through permissionsData
+    const canShareMoreData = termValues["canShareMoreData"] || {};
+    permissionsData.forEach(permission => {
+        const { labelName, dataElement, purpose, action } = permission;
+       
+
+        canShareMoreData[labelName] = {
+            enter_value: dataElement,
+            purpose: purpose,
+            typeOfValue: action
+        };
+    });
+            
+            console.log("check2", canShareMoreData);
             const termsValuePayload = {
                 ...Object.fromEntries(
                     Object.entries(termValues).map(([key, value]) => {
@@ -848,7 +901,7 @@ export const ViewTermsByType = () => {
     
                         if (obligation.typeOfAction === "file") {
                             const resource = selectedResources[key];
-                            console.log("resource in payload", resource);
+                            // console.log("resource in payload", resource);
                             const initialResourcePointer = initialValue.split(";")[0];
     
                             if (resource && resource.i_node_pointer && resource.i_node_pointer !== initialResourcePointer) {
@@ -876,6 +929,13 @@ export const ViewTermsByType = () => {
                     })
                 ),
             };
+
+            const updatedTermsValue = {
+                ...termsValuePayload,  // Update all the terms that have changed
+                "canShareMoreData": canShareMoreData,  // Keep canShareMoreData intact
+            };
+
+            const token = Cookies.get("authToken");
             // setResourcesData(updatedResourcesData);
             const payload = {
                 connection_name: connectionName,
@@ -883,14 +943,14 @@ export const ViewTermsByType = () => {
                 guest_locker_name: guestLockerName,
                 host_user_username: hostUserUsername,
                 guest_user_username: guestUserUsername,
-                terms_value: termsValuePayload,
+                terms_value: updatedTermsValue,
                 resources: newResourcesData,
             };
             // console.log("resourcesData", payload.resources);
             // console.log("resources", resources);
             // console.log("termsValue", payload.terms_value);
             console.log("payload", payload);
-            const token = Cookies.get("authToken");
+            
     
             // if (resourcesData.Transfer.length > 0) {
             //     const transferResponse = await fetch(`localhost:8000/transfer-resource/`, {
@@ -950,9 +1010,8 @@ export const ViewTermsByType = () => {
         }
     };
     
-    console.log("resources list", resources);
+    // console.log("resources list", resources);
     // State for storing user inputs for moreDataTerms
-const [moreDataTermValues, setMoreDataTermValues] = useState({});
 const [moreDataTerms, setMoreDataTerms] = useState([]);
 // Function to handle changes in the permission table
 const handleMoreDataInputChange = (index, field, value) => {
@@ -977,9 +1036,7 @@ const handleActionTypeChange = (index, newType) => {
 };
 
 // Function to handle form submission
-const handleMoreSubmit = async (e) => {
-    e.preventDefault();
-
+const handleMoreSubmit = async () => {
     // Build extraDataArray from moreDataTerms
     const extraDataArray = moreDataTerms.map((term) => ({
         labelName: term.labelName || "", // If labelName is not provided, use an empty string
@@ -995,9 +1052,10 @@ const handleMoreSubmit = async (e) => {
         host_user_username: hostUserUsername,
         guest_user_username: guestUserUsername,
         extra_data: extraDataArray,
+        
     };
 
-    console.log("Request Body:", JSON.stringify(requestBody, null, 2));
+    // console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
     try {
         const token = Cookies.get("authToken");
@@ -1017,6 +1075,7 @@ const handleMoreSubmit = async (e) => {
         const data = await response.json();
         if (data.success) {
             alert("Data updated successfully!");
+            navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
         } else {
             alert(data.error || "Error updating data");
         }
@@ -1063,11 +1122,11 @@ const handlePermissionChange = (index, value) => {
             
         </>
     );
-    console.log("res without submit", res);
-    console.log("resources normal", resources);
-    console.log("combined", resources);
-    console.log('Obligations:', res?.obligations);
-console.log('Additional Terms:', res?.moreDataTerms);
+//     console.log("res without submit", res);
+//     console.log("resources normal", resources);
+//     console.log("combined", resources);
+//     console.log('Obligations:', res?.obligations);
+// console.log('Additional Terms:', res?.moreDataTerms);
 
     // console.log("resourcesData", resourcesData);
     return (
@@ -1127,11 +1186,23 @@ console.log('Additional Terms:', res?.moreDataTerms);
                     <th>Name</th>
                     <th>Purpose</th>
                     <th>Action Type</th> 
-                    <th>Enter Value</th>
+                    <th>Value</th>
                     <th>Remove</th>
                 </tr>
             </thead>
             <tbody>
+            {permissionsData.map((permission) => (
+                                <tr key={permission.sno}>
+                                    <td>{permission.sno}</td>
+                                    <td>{permission.labelName}</td>
+                                    <td>{permission.purpose || "None"}</td> {/* Display "None" if empty */}
+                                    <td>{permission.action}</td>
+                                    <td>
+                                        {permission.dataElement || "None"} {/* Display "None" if empty */}
+                                    </td>
+                                    <td>None</td>
+                                </tr>
+                            ))}
                 {moreDataTerms.map((term, index) => (
                     <tr key={index}>
                         <td>{index + 1}</td>
@@ -1164,7 +1235,7 @@ console.log('Additional Terms:', res?.moreDataTerms);
                             </select>
                         </td>
                         <td>
-                            {/* Conditionally render based on action type */}
+                        
                             {term.type === 'text' && (
                                 <input
                                     type="text"
@@ -1194,7 +1265,7 @@ console.log('Additional Terms:', res?.moreDataTerms);
                             <button onClick={() => removeMoreDataTerm(index)}>Remove</button>
                         </td>
                     </tr>
-                ))}
+                ))} 
             </tbody>
         </table>
 

@@ -216,26 +216,32 @@ export const Guesttermsreview = () => {
         }
     };
     
-    
     const handleSave = async () => {
         try {
             const token = Cookies.get('authToken');
-            const terms_value = res?.obligations.reduce((acc, obligation, index) => {
+    
+            // Create the terms_value object from the obligations
+            const terms_value = res?.obligations.reduce((acc, obligation) => {
+                // Determine the status for the current obligation
                 const status = statuses[obligation.labelName] === 'approved' ? 'T' : statuses[obligation.labelName] === 'rejected' ? 'R' : 'F';
                 const resourceName = termsValue[obligation.labelName]?.split(";")[0] || "";
+                // Add to terms_value with the status
                 acc[obligation.labelName] = `${resourceName};${status}`;
                 return acc;
             }, {});
-
+    
+            // Preserve the existing canShareMoreData structure without overriding other terms
+            if (termsValue?.canShareMoreData) {
+                terms_value.canShareMoreData = { 
+                    ...termsValue.canShareMoreData 
+                };
+            }
+    
             console.log("terms_value", terms_value);
     
-            // const resourcesToTransfer = Object.values(terms_value)
-            //     .filter(value => value.includes(";T"))
-            //     .map(value => value.split(";")[0]);
-
             const resourcesToTransfer = resourcesData.transfer;
             const resourcesToShare = resourcesData.share;
-
+    
             const requestBody = {
                 "connection_name": conndetails.connection_name,
                 "host_locker_name": conndetails.host_locker.name,
@@ -273,18 +279,15 @@ export const Guesttermsreview = () => {
                 setError(updateData.error || 'Failed to save statuses');
             }
     
-            console.log("resources to transfer", resourcesToTransfer);
             // Transfer resources
             for (const resource of resourcesToTransfer) {
-                console.log("resource inside for", resource);
                 await handleAcceptResource(resource);
             }
     
-
-            for( const resource of resourcesToShare) {
+            // Share resources
+            for (const resource of resourcesToShare) {
                 await handleShareResource(resource);
-            }
-            
+            } 
     
             navigate('/home');
         } catch (err) {
@@ -293,6 +296,7 @@ export const Guesttermsreview = () => {
         }
     };
     
+
     console.log("conndetials", conndetails);
     const handleAcceptResource = async (resource) => {
         try {
@@ -467,7 +471,44 @@ const renderForbidden = () => {
         }
     };
     
-
+    const navigateToConnectionDetails = (connection) => {
+        console.log("print", connection); // Log the connection object
+    
+        // Access connection_type_name safely
+        const connectionTypeName = connection.connection_type_name 
+            ? connection.connection_type_name.split("-").shift().trim() 
+            : undefined;
+    
+        const connectionDescription = connection.connection_description;
+    
+        // Use the owner_locker and owner_user from the connection object
+        const hostLockerName = conndetails?.host_locker?.name; // Assuming lockerData has a 'name' property
+        const hostUserUsername = connection.owner_user;
+    
+        const connectionName = conndetails.connection_name;
+    
+        // Log the names to verify they're being retrieved correctly
+        console.log("Host Locker Name:", hostLockerName);
+        console.log("Host User Username:", hostUserUsername);
+        console.log("Connection Type:", connectionTypeName);
+        console.log("Description:", connectionDescription);
+        console.log("Connection Name:", connectionName);
+        
+        navigate("/display-terms", {
+            state: {
+                connectionTypeName: connectionTypeName,
+                hostLockerName: hostLockerName,
+                connectionName: connectionName, 
+                connectionDescription: connectionDescription,
+                createdtime: connection.created_time,
+                validitytime: connection.validity_time,
+                hostUserUsername: hostUserUsername, 
+                locker: connection.owner_locker, 
+            },
+        });
+        
+    };
+    
 
     const content = (
         <>
@@ -476,7 +517,16 @@ const renderForbidden = () => {
                 {curruser ? curruser.description : "None"}</div>
                 <br></br>
                 <div className="connection-details">
-            Connection Name: {conndetails?.connection_name || "Loading..."} <br />
+            Connection Name: {conndetails?.connection_name || "Loading..."} 
+            <button
+        className="info-button"
+        onClick={() => navigateToConnectionDetails(connectionType)}
+        title="Show Connection Terms"
+        style={{ marginLeft: "10px", cursor: "pointer", background: "transparent", border: "none" }}
+      >
+        <i className="fa fa-info-circle" style={{ fontSize: '16px' }}></i>
+      </button>
+      <br></br>
             {conndetails?.connection_description}<br></br>
             Guest: {conndetails?.guest_user?.username || "Loading..."} --&gt; Host: {conndetails?.host_user?.username || "Loading..."}
         </div>

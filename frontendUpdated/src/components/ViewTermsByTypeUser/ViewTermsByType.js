@@ -652,7 +652,7 @@ export const ViewTermsByType = () => {
                     },
                 });
                 if (!response.ok) {
-                    throw new Error('Failed to fetch permissions data');
+                    throw new Error('');
                 }
                 const data = await response.json();
                 if (data.success) {
@@ -1103,6 +1103,33 @@ const updateTerm = (index, field, value) => {
         return updatedTerms;
     });
 };
+
+const navigateToConnectionTerms = (connection) => {
+    console.log("print",connection)
+    // Check if connection is a string
+    if (typeof connection === 'string') {
+      const connectionName = connection; // Treat the string as the connection_name
+      const connectionTypeName = connectionName.split("-").shift().trim();
+  
+      console.log("conntype", connectionTypeName);
+  
+      navigate("/show-connection-terms", {
+        state: {
+          connectionName: connectionName, // Pass the string as connectionName
+          connectionDescription:connectionDescription,
+          hostLockerName: hostLockerName,
+          connectionTypeName,
+          hostUserUsername: hostUserUsername,
+          locker: locker.name,
+        },
+      });
+    } else {
+      console.error("Expected connection to be a string, but received:", connection);
+    }
+  };
+  
+  
+  
 const handlePermissionChange = (index, value) => {
     const newPermissions = [...permissions];
     newPermissions[index] = value;
@@ -1116,7 +1143,16 @@ const handlePermissionChange = (index, value) => {
             <div className="description">
                 {curruser ? curruser.description : "None"}</div>
                 <br></br>
-            <div className="connection-details">Connection Name: {connectionName} <br></br>
+            <div className="connection-details">Connection Name: {connectionName}
+            <button
+        className="info-button"
+        onClick={() => navigateToConnectionTerms(connectionName)}
+        title="Show Connection Terms"
+        style={{ marginLeft: "10px", cursor: "pointer", background: "transparent", border: "none" }}
+      >
+        <i className="fa fa-info-circle" style={{ fontSize: '16px' }}></i>
+      </button>
+      <br></br>
             {connectionDescription}<br></br>
                 Guest: {guestUserUsername} --&gt;Host: {hostUserUsername}</div>
             
@@ -1171,6 +1207,39 @@ const handlePermissionChange = (index, value) => {
             </div>
             </div>
             <div>
+                
+                
+            {showResources && (
+                    <div className="resource-container">
+                        <h3>Select Resource for {currentLabelName}</h3>
+                        {error && <p className="error">{error}</p>}
+
+                        <ul>
+                            {combinedResources.map((resource, index) => (
+                                <li key={index}>
+                                    <div>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name="selectedResource"
+                                                value={resource.document_name} //i changed here
+                                                checked={
+                                                    selectedResources[currentLabelName]
+                                                        ?.i_node_pointer === resource.i_node_pointer
+                                                }
+                                                onChange={() => handleResourceSelection(resource)}
+                                            />
+                                            {resource.document_name}
+                                        </label>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => setShowResources(false)}>Select</button>
+                    </div>
+                )}
+            </div>
+
 
             {/* Adding space below the submit button */}
             <div style={{ marginBottom: '20px' }}></div>
@@ -1281,45 +1350,12 @@ const handlePermissionChange = (index, value) => {
 
 </div>
 
-                
-                {showResources && (
-                    <div className="resource-container">
-                        <h3>Select Resource for {currentLabelName}</h3>
-                        {error && <p className="error">{error}</p>}
-
-                        <ul>
-                            {combinedResources.map((resource, index) => (
-                                <li key={index}>
-                                    <div>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="selectedResource"
-                                                value={resource.document_name} //i changed here
-                                                checked={
-                                                    selectedResources[currentLabelName]
-                                                        ?.i_node_pointer === resource.i_node_pointer
-                                                }
-                                                onChange={() => handleResourceSelection(resource)}
-                                            />
-                                            {resource.document_name}
-                                        </label>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => setShowResources(false)}>Select</button>
-                    </div>
-                )}
-            </div>
-
 
            
         </div>
         
     );
 };
-
 
 
 

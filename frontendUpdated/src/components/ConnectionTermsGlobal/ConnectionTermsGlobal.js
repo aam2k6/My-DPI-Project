@@ -12,6 +12,8 @@ export const ConnectionTermsGlobal = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Get the state passed from the previous page
   const { connectionTypeName, connectionTypeDescription, existingTerms } = location.state || {};
+  const [purpose, setPurpose] = useState(""); // Ensure it's initialized
+
 
   // Separate states for global and obligation form data
   const initialObligationForm = {
@@ -119,7 +121,7 @@ export const ConnectionTermsGlobal = () => {
         hostPermissions: obligationToLoad.hostPermissions || [],
         canShareMore: permissions?.canShareMoreData || false, // Check from the global permissions
         canDownload: permissions?.canDownloadData || false, // Check from the global permissions
-        forbidden: forbidden.length > 0, // If there are forbidden terms, set it to true
+        forbidden: forbidden, // If there are forbidden terms, set it to true
     }));
 };
 
@@ -368,13 +370,12 @@ export const ConnectionTermsGlobal = () => {
                 <label className="obligation-label">
           <span>Purpose</span>
           <input
-            type="text"
-            name="purpose"
-            placeholder="purpose of data"
-            value={obligationFormData.purpose}
-            onChange={handleGlobalChange}
-          />
-        </label>
+  type="text"
+  name="purpose"
+  value={obligationFormData.purpose}
+  onChange={(e) => setObligationFormData({...obligationFormData, purpose: e.target.value})}
+/>
+</label>
 
                 <label className="obligation-label">
                   <span>Description</span>

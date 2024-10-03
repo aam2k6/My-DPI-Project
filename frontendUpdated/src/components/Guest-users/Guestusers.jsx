@@ -148,12 +148,45 @@ export const Guestusers = () => {
     navigate("/guest-terms-review", { state: { connection, connectionType } });
   };
 
-
+  
+  const navigateToConnDetails = (connection) => {
+    console.log("print", connection); // Log the connection object
+  
+    const connectionName = connection.connection_type_name; 
+    const connectionDescription = connection.connection_description;
+    
+    console.log("Navigating with:", {
+      connectionName,
+      connectionDescription,
+    });
+  
+    navigate("/display-terms", {
+      state: {
+        connectionTypeName: connectionName, // Extracted from connection object
+        hostLockerName: connection.host_locker?.name,
+        connectionTypeName: connection.connection_type_name,
+        connectionDescription:connection.connection_description,
+        createdtime:connection.created_time,
+        validitytime:connection.validity_time,
+        hostUserUsername: connection.host_user?.username,
+        locker: locker,
+      },
+    });
+  };
+  
   const content = (
     <>
       {connectionType && (
         <>
-          <div className="navbarBrand">{connectionType.connection_type_name} </div>
+          <div className="navbarBrand">{connectionType.connection_type_name} 
+          <button
+        className="info-button"
+        onClick={() => navigateToConnDetails(connectionType)}
+        title="Show Connection Terms"
+        style={{ marginLeft: "10px", cursor: "pointer", background: "transparent", border: "none" }}
+      >
+        <i className="fa fa-info-circle" style={{ fontSize: '16px' }}></i>
+      </button></div>
           <div className="description">{connectionType.connection_description}</div>
           <div id='conntentguest'>Created On: {new Date(connectionType.created_time).toLocaleDateString()}</div>
           <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div>

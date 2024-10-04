@@ -33,12 +33,15 @@ export const CreateLocker = () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          console.log("Locker created:", data);
+          console.log('Locker created:', data);
           // Redirect to another page or show success message
           navigate('/home');
+        } else if (data.error === 'Locker with this name already exists') {
+          // Handle case where locker with same name exists
+          alert('A locker with this name already exists. Please choose a different name.');
         } else {
-          console.error("Error:", data.error);
-          // Show error message
+          console.error('Error:', data.error);
+          // Show error message for other cases
           alert(data.error);
         }
       })

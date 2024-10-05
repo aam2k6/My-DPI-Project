@@ -233,6 +233,7 @@ export const Home = () => {
       return;
     }
   }, [curruser, navigate]);
+  
 
   useEffect(() => {
     const fetchLockers = async () => {

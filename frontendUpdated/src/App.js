@@ -30,6 +30,8 @@ import CreateGlobalConnectionType from "./components/CreateGlobalConnectionType/
 import SettingsPage from "./components/Settings/SettingsPage";
 import {Displayterms }from "./components/Displayterms/Displayterms";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import GlobalTermsView from './components/GlobalTermsView/GlobalTermsView'; // Import the new component
+
 
 
 import { ConnectionProvider } from "./ConnectionContext";
@@ -259,6 +261,8 @@ function App() {
               </ProtectedRoute>
             }
             />
+            <Route path="/GlobalTermsView" element={<GlobalTermsView />} /> {/* Add the new route */}
+
 
             <Route path="*" element={<h1>Page Not Found</h1>} />
           </Routes>

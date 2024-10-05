@@ -410,6 +410,145 @@
 //   );
 // }
 
+// import React, { useState, useEffect, useContext } from 'react';
+// import Sidebar from '../Sidebar/Sidebar';
+// import Navbar from '../Navbar/Navbar';
+// import './CreateGlobalConnectionType.css';
+// import { useNavigate } from 'react-router-dom';
+// import Cookies from 'js-cookie';
+// import { usercontext } from "../../usercontext";
+// import { frontend_host } from '../../config';
+
+// export default function CreateGlobalConnectionType() {
+//   const [connectionTypes, setConnectionTypes] = useState([]);
+//   const [error, setError] = useState(null);
+//   const navigate = useNavigate();
+//   const { curruser } = useContext(usercontext);
+
+
+//   useEffect(() => {
+//     if (!curruser) {
+//       navigate('/');
+//       return;
+//     }
+
+//     const token = Cookies.get('authToken');
+
+//     fetch('host/get-template-or-templates/'.replace(/host/, frontend_host), {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': `Basic ${token}`,
+//         'Content-Type': 'application/json'
+//       }
+//     })
+//       .then(response => {
+//         if (!response.ok) {
+//           throw new Error('Failed to fetch connection types');
+//         }
+//         return response.json();
+//       })
+//       .then(data => {
+//         if (data.data) {
+//           setConnectionTypes(data.data);
+//         } else {
+//           setError('No connection types found.');
+//         }
+//       })
+//       .catch(error => {
+//         setError("An error occurred while fetching connection types.");
+//         console.error("Error fetching connection types:", error);
+//       });
+//   }, [curruser, navigate]);
+
+//   const handleAddNewConnectionType = () => {
+//     navigate('/ConnectionTermsGlobal');
+//   };
+
+//   const handleConnectionTypeClick = (type) => {
+//     const template_Id = type.global_connection_type_template_id; // Make sure this is not undefined or null
+//     console.log("Selected Connection Type:", type); // Debugging log
+//     console.log("template_Id:", template_Id); // Debugging log to check template_Id
+    
+//     if (!template_Id) {
+//         setError("Template ID is missing or invalid.");
+//         return;
+//     }
+
+//     const token = Cookies.get('authToken');
+  
+//     fetch(`host/get-connection-terms-for-global-template/?template_Id=${template_Id}`.replace(/host/, frontend_host), {
+//       method: 'GET',
+//       headers: {
+//           'Authorization': `Basic ${token}`,
+//           'Content-Type': 'application/json'
+//       }
+//   })
+//   .then(response => {
+//       if (!response.ok) {
+//           throw new Error(`Failed to fetch connection terms. Status: ${response.status}`);
+//       }
+//       return response.json();
+//   })
+//   .then(data => {
+//       console.log('Connection Terms Data:', data); // Log the complete data
+//       if (data.data) {
+//           // Assuming 'data.data' is the expected structure for your terms
+//           navigate('/ConnectionTermsGlobal', {
+//               state: {
+//                   connectionTypeName: type.global_connection_type_name,
+//                   connectionTypeDescription: type.global_connection_type_description,
+//                   existingTerms: data.data,
+//               }
+//           });
+//       } else {
+//           setError('No terms data found.');
+//       }
+//   })
+//   .catch(error => {
+//       console.error("Error fetching terms data:", error);
+//       setError("An error occurred while fetching terms data.");
+//   });
+  
+// };
+
+//   return (
+//     <div className='manage-connection-page'>
+//       <Navbar />
+//       <Sidebar />
+//       <div className='manage-connection-content'>
+//         <h1>SYSTEM ADMIN SETTINGS</h1> 
+
+//         <h2>Existing Global Connection Types</h2> 
+//         {error && <p className="error">{error}</p>}
+//         {connectionTypes.length > 0 ? (
+//           <ol className='connection-list'>
+//             {connectionTypes.map(type => (
+//               <li 
+//                 key={type.global_connection_type_template_id} 
+//                 className='connection-item'
+//               >
+//                 <span 
+//                   className="connection-link"
+//                   onClick={() => handleConnectionTypeClick(type)}
+//                 >
+//                   {type.global_connection_type_name}
+//                 </span><br />
+//               </li>
+//             ))}
+//           </ol>
+//         ) : (
+//           <p>No global connection types found.</p>
+//         )}
+        
+//         <div className="add-connection-type-container">
+//           <button className="add-connection-type-button" onClick={handleAddNewConnectionType}>
+//             Add New Global Connection Type
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 import React, { useState, useEffect, useContext } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Navbar from '../Navbar/Navbar';
@@ -424,7 +563,6 @@ export default function CreateGlobalConnectionType() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { curruser } = useContext(usercontext);
-
 
   useEffect(() => {
     if (!curruser) {
@@ -465,51 +603,22 @@ export default function CreateGlobalConnectionType() {
   };
 
   const handleConnectionTypeClick = (type) => {
-    const template_Id = type.global_connection_type_template_id; // Make sure this is not undefined or null
-    console.log("Selected Connection Type:", type); // Debugging log
-    console.log("template_Id:", template_Id); // Debugging log to check template_Id
-    
+    const template_Id = type.global_connection_type_template_id;
+
     if (!template_Id) {
-        setError("Template ID is missing or invalid.");
-        return;
+      setError("Template ID is missing or invalid.");
+      return;
     }
 
-    const token = Cookies.get('authToken');
-  
-    fetch(`host/get-connection-terms-for-global-template/?template_Id=${template_Id}`.replace(/host/, frontend_host), {
-      method: 'GET',
-      headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
+    // Navigate to GlobalConnectionTerms component
+    navigate('/GlobalTermsView', {
+      state: {
+        connectionTypeName: type.global_connection_type_name,
+        connectionTypeDescription: type.global_connection_type_description,
+        template_Id: template_Id
       }
-  })
-  .then(response => {
-      if (!response.ok) {
-          throw new Error(`Failed to fetch connection terms. Status: ${response.status}`);
-      }
-      return response.json();
-  })
-  .then(data => {
-      console.log('Connection Terms Data:', data); // Log the complete data
-      if (data.data) {
-          // Assuming 'data.data' is the expected structure for your terms
-          navigate('/ConnectionTermsGlobal', {
-              state: {
-                  connectionTypeName: type.global_connection_type_name,
-                  connectionTypeDescription: type.global_connection_type_description,
-                  existingTerms: data.data,
-              }
-          });
-      } else {
-          setError('No terms data found.');
-      }
-  })
-  .catch(error => {
-      console.error("Error fetching terms data:", error);
-      setError("An error occurred while fetching terms data.");
-  });
-  
-};
+    });
+  };
 
   return (
     <div className='manage-connection-page'>

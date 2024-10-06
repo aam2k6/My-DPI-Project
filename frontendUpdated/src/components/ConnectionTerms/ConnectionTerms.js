@@ -714,7 +714,7 @@ const fetchGlobalTemplates = () => {
       setFormData(initialFormData);
     }
   };
-  
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -740,6 +740,7 @@ const fetchGlobalTemplates = () => {
       },
     };
   
+    console.log("data",connectionTermsData);
     setConnectionTermsData(connectionTermsData);
   
     fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {

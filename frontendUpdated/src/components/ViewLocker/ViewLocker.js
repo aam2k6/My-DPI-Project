@@ -1,5 +1,3 @@
-
-
 // // //tabcode
 // // import React, { useContext, useEffect, useState } from "react";
 // // import "./page3.css";
@@ -29,7 +27,6 @@
 
 // //   const [VnodeResources, setVnodeResources] = useState([]);
 // //   const [activeTab, setActiveTab] = useState("incoming");
-
 
 // //   useEffect(() => {
 // //     if (locker) {
@@ -361,7 +358,7 @@
 // //         <div className="locker-description">
 // //           {locker ? ` ${locker.description}` : "Description"}
 // //         </div>
-       
+
 // //         <div className="container-2 clearfix">
 // //           <div className="a">
 // //             <div className="res">
@@ -484,9 +481,7 @@
 // //                 Valid Until:{" "}
 // //                 {new Date(connection.validity_time).toLocaleString()}
 // //               </div>
-                           
 
- 
 // //         </div>
 // //       ))
 // //     ) : (
@@ -581,8 +576,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
-import { QrReader } from 'react-qr-reader';
-
+import { QrReader } from "react-qr-reader";
 
 export const ViewLocker = () => {
   const location = useLocation();
@@ -604,7 +598,6 @@ export const ViewLocker = () => {
 
   const [VnodeResources, setVnodeResources] = useState([]);
   const [activeTab, setActiveTab] = useState("incoming");
-
 
   useEffect(() => {
     if (locker) {
@@ -853,16 +846,23 @@ export const ViewLocker = () => {
   };
 
   const handleTracker = (connection) => {
+    console.log("navigate", {
+      connection,
+      guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
+  });
     navigate("/view-terms-by-type", {
       state: {
         connection_id: connection.connection_id,
         connectionName: connection.connection_name,
-        connectionDescription:connection.connection_description,
+        connectionDescription: connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         guestLockerName: connection.guest_locker?.name,
         hostUserUsername: connection.host_user?.username,
         guestUserUsername: connection.guest_user?.username,
         locker: locker,
+        guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
       },
     });
   };
@@ -884,9 +884,9 @@ export const ViewLocker = () => {
       state: {
         hostLockerName: connection.host_locker?.name,
         connectionTypeName: connection.connection_type_name,
-        connectionDescription:connection.connection_description,
-        createdtime:connection.created_time,
-        validitytime:connection.validity_time,
+        connectionDescription: connection.connection_description,
+        createdtime: connection.created_time,
+        validitytime: connection.validity_time,
         hostUserUsername: connection.host_user?.username,
         locker: locker,
       },
@@ -898,7 +898,7 @@ export const ViewLocker = () => {
       .split("-")
       .shift()
       .trim();
-      // console.log("conntype",connectionTypeName)
+    // console.log("conntype",connectionTypeName)
 
     console.log("Navigating with state:", {
       connectionName: connection.connection_name,
@@ -911,11 +911,51 @@ export const ViewLocker = () => {
     navigate("/show-connection-terms", {
       state: {
         connectionName: connection.connection_name,
-        connectionDescription:connection.connection_description,
+        connectionDescription: connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         connectionTypeName, // Pass the extracted connection_type_name
         hostUserUsername: connection.host_user?.username,
         locker: locker.name,
+        showConsent: false,
+        guest_locker_id: connection.guest_locker?.id,
+        host_locker_id: connection.host_locker?.id,
+
+      },
+    });
+  };
+
+  const handleConsentAndInfo = (connection) => {
+    // Split the connection_name by the hyphen and take the last part as the connection_type_name
+    const connectionTypeName = connection.connection_name
+      .split("-")
+      .shift()
+      .trim();
+    // console.log("conntype",connectionTypeName)
+
+    console.log("Navigating with state:", {
+      connectionName: connection.connection_name,
+      hostLockerName: connection.host_locker?.name,
+      connectionTypeName, // Pass the extracted connection_type_name
+      hostUserUsername: connection.host_user?.username,
+      locker: locker,
+      guest_locker_id: connection.guest_locker?.id,
+        host_locker_id: connection.host_locker?.id,
+        connection_id : connection.connection_id,
+    });
+
+    navigate("/show-connection-terms", {
+      state: {
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker?.name,
+        connectionTypeName, // Pass the extracted connection_type_name
+        // connectionTypeName: connection.connection_type_name,
+        hostUserUsername: connection.host_user?.username,
+        locker: locker.name,
+        showConsent: true,
+        guest_locker_id: connection.guest_locker?.id,
+        host_locker_id: connection.host_locker?.id,
+        connection_id : connection.connection_id,
       },
     });
   };
@@ -936,7 +976,7 @@ export const ViewLocker = () => {
         console.log("Scanned QR Data:", parsedData);
 
         // Navigate and reload the page after navigating
-        navigate('/show-connection-terms', {
+        navigate("/show-connection-terms", {
           state: {
             connectionTypeName: parsedData.connection_type_name,
             connectionDescription: parsedData.connection_description,
@@ -944,7 +984,11 @@ export const ViewLocker = () => {
             hostUserUsername: parsedData.host_username,
             hostLockerName: parsedData.host_locker_name,
             connectionName: parsedData.connection_name,
-          }
+            connection_id: parsedData.connection_id,
+            showConsent: true,
+            guest_locker_id: parsedData.guest_locker?.id,
+            host_locker_id: parsedData.host_locker?.id,
+          },
         });
 
         // Stop scanning and reload the page
@@ -965,12 +1009,12 @@ export const ViewLocker = () => {
     setScanning(false);
 
     // Manually stop all video streams from the camera
-    const videoElement = document.querySelector('video');
+    const videoElement = document.querySelector("video");
     if (videoElement && videoElement.srcObject) {
       const stream = videoElement.srcObject;
       const tracks = stream.getTracks();
 
-      tracks.forEach(track => {
+      tracks.forEach((track) => {
         track.stop(); // Stop each track (both video and audio)
       });
 
@@ -980,10 +1024,8 @@ export const ViewLocker = () => {
     // Refresh the page when closing the scanner
     window.location.reload();
   };
- 
 
-
-const content = (
+  const content = (
     <>
       <div className="navbarBrand">
         {locker ? `Locker: ${locker.name}` : "Locker"}
@@ -998,7 +1040,8 @@ const content = (
       <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
       <div className="container">
         <div className="locker-description">
-          {locker ? ` ${locker.description}` : "Description"}</div>
+          {locker ? ` ${locker.description}` : "Description"}
+        </div>
         {/* QR Scanner Section */}
         {scanning && (
           <div className="qr-scanner-overlay">
@@ -1013,21 +1056,22 @@ const content = (
                   }
                 }}
                 constraints={{ facingMode: "environment" }} // Use the environment (back) camera
-
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: "100%", height: "100%" }}
               />
               <button className="qr-scanner-close" onClick={closeScanner}>
-              Close
+                Close
               </button>
             </div>
           </div>
         )}
         <div className="qr-scan-section">
           {!scanning && (
-            <button className="qrbutton" onClick={() => setScanning(true)}>Start QR Scan</button>
+            <button className="qrbutton" onClick={() => setScanning(true)}>
+              Start QR Scan
+            </button>
           )}
         </div>
-       
+
         <div className="container-2 clearfix">
           <div className="a">
             <div className="res">
@@ -1071,7 +1115,9 @@ const content = (
                         <div
                           id="documents-byShare"
                           onClick={() =>
-                            handleResourceClick(resource.resource.i_node_pointer)
+                            handleResourceClick(
+                              resource.resource.i_node_pointer
+                            )
                           }
                         >
                           {resource.resource.document_name}
@@ -1098,173 +1144,194 @@ const content = (
           <div className="b">
             <h3 id="mycon">My Connections:</h3>
             <div className="tabs">
-              <div className={`tab-header ${activeTab === 'incoming' ? 'active' : ''}`} onClick={() => setActiveTab('incoming')}>
+              <div
+                className={`tab-header ${
+                  activeTab === "incoming" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("incoming")}
+              >
                 Incoming Connections
               </div>
-              <div className={`tab-header ${activeTab === 'outgoing' ? 'active' : ''}`} onClick={() => setActiveTab('outgoing')}>
+              <div
+                className={`tab-header ${
+                  activeTab === "outgoing" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("outgoing")}
+              >
                 Outgoing Connections
               </div>
             </div>
             <div className="tab-content">
-            {activeTab === 'incoming' && (
-//               <div className="tab-panel">
-//   <h4 id="headingconnection">Incoming Connection types</h4>
-//   <div className="conn">
-//     {otherConnections.length > 0 ? (
-//       otherConnections.map((connection) => (
-//         <div
-//           key={connection.connection_type_id}
-//           className="viewlockerconnections"
-//         >
-//           <h4 id="connectiontype">
-//             <button
-//               className="connection-name-button"
-//               onClick={() => handleConnectionClick(connection)}
-//               style={{
-//                 textDecoration: "underline",
-//                 background: "none",
-//                 border: "none",
-//                 padding: 0,
-//                 cursor: "pointer",
-//                 color: "inherit",
-//               }}
-//             >
-//               <u>{connection.connection_type_name}</u>
-//             </button>
-//             {" "} (users: {connection.incoming_count})
-//           </h4>
-//           <button
-//             className="info-button2"
-//             onClick={() => handleIncomingInfo(connection)}
-//           >
-//             i
-//           </button>
-//           <div id="conntent">
-//                 {connection.connection_description}
-//               </div>
-//               <div id="conntent">
-//                 Created On:{" "}
-//                 {new Date(connection.created_time).toLocaleString()}
-//               </div>
-//               <div id="conntent">
-//                 Valid Until:{" "}
-//                 {new Date(connection.validity_time).toLocaleString()}
-//               </div>
-                           
+              {activeTab === "incoming" && (
+                //               <div className="tab-panel">
+                //   <h4 id="headingconnection">Incoming Connection types</h4>
+                //   <div className="conn">
+                //     {otherConnections.length > 0 ? (
+                //       otherConnections.map((connection) => (
+                //         <div
+                //           key={connection.connection_type_id}
+                //           className="viewlockerconnections"
+                //         >
+                //           <h4 id="connectiontype">
+                //             <button
+                //               className="connection-name-button"
+                //               onClick={() => handleConnectionClick(connection)}
+                //               style={{
+                //                 textDecoration: "underline",
+                //                 background: "none",
+                //                 border: "none",
+                //                 padding: 0,
+                //                 cursor: "pointer",
+                //                 color: "inherit",
+                //               }}
+                //             >
+                //               <u>{connection.connection_type_name}</u>
+                //             </button>
+                //             {" "} (users: {connection.incoming_count})
+                //           </h4>
+                //           <button
+                //             className="info-button2"
+                //             onClick={() => handleIncomingInfo(connection)}
+                //           >
+                //             i
+                //           </button>
+                //           <div id="conntent">
+                //                 {connection.connection_description}
+                //               </div>
+                //               <div id="conntent">
+                //                 Created On:{" "}
+                //                 {new Date(connection.created_time).toLocaleString()}
+                //               </div>
+                //               <div id="conntent">
+                //                 Valid Until:{" "}
+                //                 {new Date(connection.validity_time).toLocaleString()}
+                //               </div>
 
- 
-//         </div>
-//       ))
-//     ) : (
-//       <p>No connections found.</p>
-//     )}
-//   </div>
-// </div>
+                //         </div>
+                //       ))
+                //     ) : (
+                //       <p>No connections found.</p>
+                //     )}
+                //   </div>
+                // </div>
 
-  <div className="tab-panel">
-    <h4 id="headingconnection">Incoming Connection types</h4>
-    <div className="conn">
-      {otherConnections.length > 0 ? (
-        otherConnections.map((connection) => (
-          <div
-            key={connection.connection_type_id}
-            className="viewlockerconnections"
-          >
-            <h4 id="connectiontype">
-              <button
-                className="connection-name-button"
-                onClick={() => handleConnectionClick(connection)}
-                style={{
-                  textDecoration: "none",
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  cursor: "pointer",
-                  color: "inherit",
-                }}
-              >
-                <u>{connection.connection_type_name}</u>
-              </button>
-              {" "} (users: {connection.incoming_count})
-            </h4>
-            <button
-              className="info-button2"
-              onClick={() => handleIncomingInfo(connection)}
-            >
-              i
-            </button>
-          </div>
-        ))
-      ) : (
-        <p>No connections found.</p>
-      )}
-    </div>
-  </div>
-)}
+                <div className="tab-panel">
+                  <h4 id="headingconnection">Incoming Connection types</h4>
+                  <div className="conn">
+                    {otherConnections.length > 0 ? (
+                      otherConnections.map((connection) => (
+                        <div
+                          key={connection.connection_type_id}
+                          className="viewlockerconnections"
+                        >
+                          <h4 id="connectiontype">
+                            <button
+                              className="connection-name-button"
+                              onClick={() => handleConnectionClick(connection)}
+                              style={{
+                                textDecoration: "none",
+                                background: "none",
+                                border: "none",
+                                padding: 0,
+                                cursor: "pointer",
+                                color: "inherit",
+                              }}
+                            >
+                              <u>{connection.connection_type_name}</u>
+                            </button>{" "}
+                            (users: {connection.incoming_count})
+                          </h4>
+                          <button
+                            className="info-button2"
+                            onClick={() => handleIncomingInfo(connection)}
+                          >
+                            i
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No connections found.</p>
+                    )}
+                  </div>
+                </div>
+              )}
 
-              {activeTab === 'outgoing' && (
+              {activeTab === "outgoing" && (
                 <div className="tab-panel">
                   <h4 id="headingconnection">Outgoing Connections</h4>
                   <div className="conn">
                     {connections.outgoing_connections.length > 0 ? (
-                      connections.outgoing_connections.map((connection, index) => {
-                        const tracker = trackerData[connection.connection_id];
-                        const color = tracker ? getStatusColor(tracker) : "gray";
-                        const ratio = tracker
-                          ? calculateRatio(tracker)
-                          : "Loading...";
+                      connections.outgoing_connections.map(
+                        (connection, index) => {
+                          const tracker = trackerData[connection.connection_id];
+                          const color = tracker
+                            ? getStatusColor(tracker)
+                            : "gray";
+                          const ratio = tracker
+                            ? calculateRatio(tracker)
+                            : "Loading...";
 
-                        return (
-                          <div
-                            key={connection.connection_id}
-                            className="viewlockerconnections"
-                          >
-                            <div id="conntent">
-                              <button
-                                className="connection-name-button"
-                                onClick={() => handleTracker(connection)}
-                                style={{
-                                  textDecoration: "underline",
-                                  background: "none",
-                                  border: "none",
-                                  padding: 0,
-                                  cursor: "pointer",
-                                  color: "inherit",
-                                }}
-                              >
-                                {connection.connection_name}
-                              </button>
+                          return (
+                            <div
+                              key={connection.connection_id}
+                              className="viewlockerconnections"
+                            >
+                              <div id="conntent">
+                                <button
+                                  className="connection-name-button"
+                                  onClick={() => handleTracker(connection)}
+                                  style={{
+                                    textDecoration: "underline",
+                                    background: "none",
+                                    border: "none",
+                                    padding: 0,
+                                    cursor: "pointer",
+                                    color: "inherit",
+                                  }}
+                                >
+                                  {connection.connection_name}
+                                </button>
+                              </div>
+                              <div id="conntent">
+                                {connection.guest_locker.name} &lt;&gt;{" "}
+                                {connection.host_locker.name}
+                              </div>
+                              <div id="conntent">
+                                Created On:{" "}
+                                {new Date(
+                                  connection.created_time
+                                ).toLocaleString()}
+                              </div>
+                              <div id="conntent">
+                                Valid Until:{" "}
+                                {new Date(
+                                  connection.validity_time
+                                ).toLocaleString()}
+                              </div>
+                              <div className="Lockertracker">
+                                <button
+                                  className="info-button"
+                                  onClick={() => handleConsentAndInfo(connection)}
+                                >
+                                  c
+                                </button>
+                                <button
+                                  className="info-button"
+                                  onClick={() => handleInfo(connection)}
+                                >
+                                  i{" "}
+                                </button>
+                                <button
+                                  onClick={() => handleTracker(connection)}
+                                  style={{ backgroundColor: color }}
+                                >
+                                  {ratio}
+                                </button>
+                              </div>
                             </div>
-                            <div id="conntent">
-                              {connection.guest_locker.name} &lt;&gt;{" "}
-                              {connection.host_locker.name}
-                            </div>
-                            <div id="conntent">
-                              Created On:{" "}
-                              {new Date(connection.created_time).toLocaleString()}
-                            </div>
-                            <div id="conntent">
-                              Valid Until:{" "}
-                              {new Date(connection.validity_time).toLocaleString()}
-                            </div>
-                            <div className="Lockertracker">
-                              <button
-                                className="info-button"
-                                onClick={() => handleInfo(connection)}
-                              >
-                                {" "}
-                                i{" "}
-                              </button>
-                              <button
-                                onClick={() => handleTracker(connection)}
-                                style={{ backgroundColor: color }}
-                              >
-                                {ratio}
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })
+                          );
+                        }
+                      )
                     ) : (
                       <p>No outgoing connections found.</p>
                     )}
@@ -1276,6 +1343,5 @@ const content = (
         </div>
       </div>
     </div>
-    
   );
 };

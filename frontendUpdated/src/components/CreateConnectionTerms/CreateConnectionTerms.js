@@ -725,6 +725,10 @@ export const CreateConnectionTerms = () => {
     hostUserUsername,
     connectionDescription,
     locker,
+    showConsent,
+    guest_locker_id,
+    host_locker_id,
+    connection_id,
   
   } = location.state || {};
   console.log(
@@ -733,7 +737,10 @@ export const CreateConnectionTerms = () => {
     connectionTypeName,
     connectionDescription,
     hostUserUsername,
-    locker
+    locker,
+    guest_locker_id,
+    host_locker_id,
+    connection_id,
   );
 
   const capitalizeFirstLetter = (string) => {
@@ -919,19 +926,24 @@ export const CreateConnectionTerms = () => {
     const revoke_host = false;
     const consent = false;
     const formData = new FormData();
-    formData.append("connection_name", connectionName);
-    formData.append("connection_type_name", connectionTypeName);
-    formData.append("guest_username", curruser.username);
-    formData.append("guest_lockername", locker.name);
-    formData.append("host_username", hostUserUsername);
-    formData.append("host_lockername", hostLockerName);
-    formData.append("revoke_host", revoke_host);
-    formData.append("revoke_guest", revoke_guest);
-    formData.append("consent", consent);
+    // formData.append("connection_name", connectionName);
+    // formData.append("connection_type_name", connectionTypeName);
+    // formData.append("guest_username", curruser.username);
+    // formData.append("guest_lockername", locker.name);
+    // formData.append("host_username", hostUserUsername);
+    // formData.append("host_lockername", hostLockerName);
+    // formData.append("revoke_host", revoke_host);
+    // formData.append("revoke_guest", revoke_guest);
+    // formData.append("consent", consent);
+    console.log(guest_locker_id);
+    formData.append("guest_locker_id", guest_locker_id);
+    formData.append("host_locker_id", host_locker_id);
+    formData.append("connection_id", connection_id);
+
 
     try {
       const response = await fetch(
-        "host/revoke-consent/".replace(/host/, frontend_host),
+        "host/revoke/".replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -947,7 +959,7 @@ export const CreateConnectionTerms = () => {
       if (data.success) {
         // setMessage("Consent revoked successfully.");
         setModalMessage({
-          message: "Consent revoked successfully.",
+          message: "Consent revoked successfully." + data.message,
           type: "success",
         });
         // console.log(message);
@@ -955,7 +967,7 @@ export const CreateConnectionTerms = () => {
         setIagree("0");
       } else {
         setModalMessage({
-          message: data.error || "An error occurred while revoking consent.",
+          message: data.message || "An error occurred while revoking consent.",
           type: "failure",
         });
       }
@@ -1018,7 +1030,7 @@ export const CreateConnectionTerms = () => {
     return <p>No forbidden terms available.</p>;
   };
 
-
+console.log(res);
 
   const content = (
     // <>
@@ -1083,8 +1095,8 @@ export const CreateConnectionTerms = () => {
           type={modalMessage.type}
         />
       )}
-
-      {Iagree === "0" && (
+      
+      {showConsent && Iagree === "0" && (
         <div>
           <div className="page13button">
             {" "}
@@ -1102,7 +1114,7 @@ export const CreateConnectionTerms = () => {
         </div>
       )}
 
-      {Iagree === "1" && (
+      {showConsent && Iagree === "1" && (
         <div className="page13parent13state1">
           <div className="page13consent">
             Consent Given on : {consentData.consent_given}
@@ -1120,7 +1132,7 @@ export const CreateConnectionTerms = () => {
             </button>
           </div>
         </div>
-      )}
+      )} 
     </div>
   );
 };

@@ -1300,132 +1300,103 @@ export const ViewTermsByType = () => {
             </div>
           )}
         </div>
-
-        {/* Adding space below the submit button */}
-        <div style={{ marginBottom: "20px" }}></div>
-
         {permissions?.canShareMoreData && (
-          <div className="table-container">
-            {" "}
-            {/* Add this div for styling */}
-            <h3>Share more data</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Sno</th>
-                  <th>Name</th>
-                  <th>Purpose</th>
-                  <th>Action Type</th>
-                  <th>Value</th>
-                  <th>Remove</th>
-                </tr>
-              </thead>
-              <tbody>
-                {permissionsData.map((permission) => (
-                  <tr key={permission.sno}>
-                    <td>{permission.sno}</td>
-                    <td>{permission.labelName}</td>
-                    <td>{permission.purpose || "None"}</td>{" "}
-                    {/* Display "None" if empty */}
-                    <td>{permission.action}</td>
-                    <td>
-                      {permission.dataElement || "None"}{" "}
-                      {/* Display "None" if empty */}
-                    </td>
-                    <td>None</td>
-                  </tr>
-                ))}
-                {moreDataTerms.map((term, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>
-                      <input
-                        type="text"
-                        value={term.labelName}
-                        onChange={(e) =>
-                          updateTerm(index, "labelName", e.target.value)
-                        }
-                        placeholder="Label Name"
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        value={term.purpose}
-                        onChange={(e) =>
-                          updateTerm(index, "purpose", e.target.value)
-                        }
-                        placeholder="Purpose"
-                        required
-                      />
-                    </td>
-                    <td>
-                      <select
-                        value={term.type}
-                        onChange={(e) =>
-                          handleActionTypeChange(index, e.target.value)
-                        }
-                      >
-                        <option value="text">Text</option>
-                        <option value="file">File</option>
-                        <option value="date">Date</option>
-                      </select>
-                    </td>
-                    <td>
-                      {term.type === "text" && (
-                        <input
-                          type="text"
-                          value={term.enter_value}
-                          onChange={(e) =>
-                            updateTerm(index, "enter_value", e.target.value)
-                          }
-                          placeholder="Enter Value"
-                          required
-                        />
-                      )}
-                      {term.type === "file" && (
-                        <input
-                          type="file"
-                          onChange={(e) =>
-                            updateTerm(index, "enter_value", e.target.files[0])
-                          } // Store file
-                          required
-                        />
-                      )}
-                      {term.type === "date" && (
-                        <input
-                          type="date"
-                          value={term.enter_value}
-                          onChange={(e) =>
-                            updateTerm(index, "enter_value", e.target.value)
-                          }
-                          required
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <button onClick={() => removeMoreDataTerm(index)}>
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div style={{ margin: "20px 0" }}>
-              <div>
-                <button
-                  style={{ marginRight: "10px" }}
-                  onClick={addMoreDataTerm}
-                >
-                  Add New Term
-                </button>
-                <button onClick={handleMoreSubmit}>Submit</button>
-              </div>
-            </div>
-          </div>
-        )}
+  <div className="table-container">
+    {/* Add this div for styling */}
+    <h3>Share more data</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Sno</th>
+          <th>Name</th>
+          <th>Purpose</th>
+          <th>Type of Share</th>
+          <th>Value</th>
+          <th>Status</th> {/* Changed "Remove" to "Status" */}
+        </tr>
+      </thead>
+      <tbody>
+        {permissionsData.map((permission) => (
+          <tr key={permission.sno}>
+            <td>{permission.sno}</td>
+            <td>{permission.labelName}</td>
+            <td>{permission.purpose || "None"}</td>
+            {/* Display "None" if empty */}
+            <td>{permission.action}</td>
+            <td>
+              {permission.dataElement || "None"}
+              {/* Display "None" if empty */}
+            </td>
+            <td>Status Active</td> {/* Example status value */}
+          </tr>
+        ))}
+        {moreDataTerms.map((term, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>
+              <input
+                type="text"
+                value={term.labelName}
+                onChange={(e) =>
+                  updateTerm(index, "labelName", e.target.value)
+                }
+                placeholder="Label Name"
+                required
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={term.purpose}
+                onChange={(e) =>
+                  updateTerm(index, "purpose", e.target.value)
+                }
+                placeholder="Purpose"
+                required
+              />
+            </td>
+            <td>
+              <select
+                value={term.typeOfShare}
+                onChange={(e) =>
+                  updateTerm(index, "typeOfShare", e.target.value)
+                }
+              >
+                <option value="share">Share</option>
+                <option value="transfer">Transfer</option>
+                <option value="confer">Confer</option>
+                <option value="collateral">Collateral</option>
+              </select>
+            </td>
+            <td>
+              <input
+                type="file"
+                onChange={(e) =>
+                  updateTerm(index, "enter_value", e.target.files[0])
+                }
+                required
+              />
+            </td>
+            <td>Pending</td> {/* Example status value */}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <div style={{ margin: "20px 0" }}>
+      <div>
+        <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
+          Add New Term
+        </button>
+        <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
+          Remove Last Term {/* This removes the last term added */}
+        </button>
+        <button onClick={handleMoreSubmit}>Submit</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
       </div>
     </div>
   );

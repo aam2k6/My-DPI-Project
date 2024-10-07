@@ -1308,7 +1308,7 @@ export const ViewTermsByType = () => {
           <div className="table-container">
             {" "}
             {/* Add this div for styling */}
-            <h3>Additional Terms for Sharing More Data</h3>
+            <h3>Share more data</h3>
             <table>
               <thead>
                 <tr>

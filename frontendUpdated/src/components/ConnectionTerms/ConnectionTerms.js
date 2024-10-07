@@ -562,6 +562,7 @@ export const ConnectionTerms = () => {
     hostPermissions: [],
     canShareMore: false,
     canDownload: false,
+    forbidden:false,
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -718,7 +719,8 @@ const fetchGlobalTemplates = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+    console.log("Form data before submit:", formData); // Add this line
+
     if (obligations.length === 0) {
       setError("At least one obligation must be added.");
       setModalMessage({
@@ -730,6 +732,8 @@ const fetchGlobalTemplates = () => {
     }
   
     const token = Cookies.get("authToken");
+    const forbiddenArray = formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"];
+
   
     const connectionTermsData = {
       ...connectionData,
@@ -738,6 +742,8 @@ const fetchGlobalTemplates = () => {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
       },
+      forbidden: forbiddenArray,  // Add forbidden array here
+
     };
   
     console.log("data",connectionTermsData);
@@ -1054,8 +1060,13 @@ const fetchGlobalTemplates = () => {
                       />
                     </label>
                     <h2>Forbidden</h2>
-                    <label className="permission-label">
-  <span>You cannot unilaterally close the connection</span>
+<label className="permission-label">
+  <span>
+    {formData.forbidden 
+      ? "You cannot unilaterally close the connection." 
+      : "You can unilaterally close the connection."
+    }
+  </span>
   <input
     type="checkbox"
     name="forbidden"
@@ -1063,6 +1074,8 @@ const fetchGlobalTemplates = () => {
     onChange={handleCheckboxChange}
   />
 </label>
+
+
 
 
                     <div className="connectionTerms-btn">

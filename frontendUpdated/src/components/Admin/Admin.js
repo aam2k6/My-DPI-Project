@@ -35,6 +35,20 @@ export const Admin = () => {
     validitytime,
     hostUserUsername,
   } = location.state || {};
+  const [selectedTerm, setSelectedTerm] = useState(null);
+  const [newConnectionTermName, setNewConnectionTermName] = useState(""); // For the new term name
+  const [labelName, setLabelName] = useState("");
+  const [terms, setTerms] = useState([]);
+  const [connectionDetails, setConnectionDetails] = useState(null); // New state to store full connection data
+  const authToken = Cookies.get("authToken");
+  const [editingConnection, setEditingConnection] = useState(null); // State for the connection being edited
+  const [newConnectionTypeName, setNewConnectionTypeName] = useState(""); // New connection type name
+  const [newConnectionDescription, setNewConnectionDescription] = useState(""); // New connection description
+  const [selectedConnectionTerm, setSelectedConnectionTerm] = useState(""); // Selected connection term
+  const [showEditConnectionModal, setShowEditConnectionModal] = useState(false); // Show/hide the modal for editing connection types
+  const [newDescription, setNewDescription] = useState(""); // New description
+  const [newPurpose, setNewPurpose] = useState(""); // New purpose
+  const [refreshToggle, setRefreshToggle] = useState(false); // New state variable
 
   useEffect(() => {
     if (!curruser) {
@@ -299,6 +313,124 @@ export const Admin = () => {
     }
   };
 
+  const handleEditConnectionClick = async (connection) => {
+    setEditingConnection(connection.connection_type_id);
+    setNewConnectionTypeName(connection.connection_type_name);
+    setNewConnectionDescription(connection.connection_description);
+    setSelectedConnectionTerm(""); // Clear any previous term selections
+    setShowEditConnectionModal(true); // Show the modal
+    await fetchTermsByConnectionType(connection.connection_type_name); // Fetch terms for this connection type
+  };
+
+  // Function to fetch connection details (terms) by connection type
+  const fetchTermsByConnectionType = async (connectionTypeName) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${curruser.username}&host_locker_name=${locker.name}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        setConnectionDetails(data.data); // Store the full connection data, not just obligations
+        setTerms(data.data.obligations); // Still store obligations separately for dropdown
+      } else {
+        console.error("Failed to fetch connection details");
+      }
+    } catch (error) {
+      console.error("Error fetching terms:", error);
+    }
+  };
+
+  const handleTermSelect = (termId) => {
+    const selected = terms.find((term) => term.terms_id === termId);
+
+    // Set the state variables based on the selected term
+    if (selected) {
+      setSelectedTerm(selected);
+      setLabelName(selected.labelName);
+      setNewConnectionTermName(selected.labelName);
+      setNewDescription(selected.description || ""); // Ensure defaulting to an empty string if undefined
+      setNewPurpose(selected.purpose || ""); // Ensure defaulting to an empty string if undefined
+    } else {
+      // Clear fields if no term is selected
+      setSelectedTerm(null);
+      setLabelName("");
+      setNewConnectionTermName("");
+      setNewDescription("");
+      setNewPurpose("");
+    }
+  };
+
+  const handleSaveConnectionChanges = async () => {
+    if (!editingConnection) return;
+
+    try {
+      const token = Cookies.get("authToken");
+
+      // Prepare the connection update data
+      const connectionUpdateData = {
+        connection_type_id: editingConnection,
+        connection_type_name: newConnectionTypeName, // Updated name
+        connection_type_description: newConnectionDescription, // Updated description
+      };
+
+      // If a term is selected, include the term update
+      if (selectedTerm && labelName) {
+        connectionUpdateData.terms = [
+          {
+            terms_id: selectedTerm.terms_id,
+            data_element_name: labelName, // Updated label name
+            description: newDescription || "", // Ensure it's an empty string if undefined
+            purpose: newPurpose, // Updated purpose
+          },
+        ];
+      }
+
+      const response = await fetch(
+        `host/edit-delete-connectiontype/`.replace(/host/, frontend_host),
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(connectionUpdateData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Re-fetch connections after saving
+        fetchOtherConnections();
+        setShowEditConnectionModal(false);
+        setModalMessage({
+          message: "Connection updated successfully!",
+          type: "success",
+        });
+      } else {
+        console.error(data.message);
+        setModalMessage({
+          message: "Failed to update connection.",
+          type: "failure",
+        });
+      }
+    } catch (error) {
+      console.error("An error occurred while updating the connection:", error);
+      setModalMessage({
+        message: "An error occurred while updating the connection.",
+        type: "failure",
+      });
+    }
+  };
+
   return (
     <div>
       <Navbar content={content} />
@@ -334,12 +466,10 @@ export const Admin = () => {
                       hostLockerName: locker.name,
                       hostUserUsername: curruser?.username,
                       locker: locker,
-                      connectionDescription:connection.connection_description,
-                      createdtime:connection.created_time,
-                      validitytime:connection.validity_time
-
+                      connectionDescription: connection.connection_description,
+                      createdtime: connection.created_time,
+                      validitytime: connection.validity_time,
                     },
-                    
                   });
                 }}
                 style={{
@@ -365,15 +495,121 @@ export const Admin = () => {
                   {new Date(connection.validity_time).toLocaleDateString()}
                 </p>
               </div>
+              <div className="button-group">
+                <button onClick={() => handleEditConnectionClick(connection)}>
+                  Edit
+                </button>
+                <button
+                  onClick={() =>
+                    handleDeleteConnection(connection.connection_type_id)
+                  }
+                >
+                  Delete
+                </button>
+              </div>
 
-              {/* Add Delete Button */}
-              <button
-                onClick={() =>
-                  handleDeleteConnection(connection.connection_type_id)
-                }
-              >
-                Delete
-              </button>
+              {showEditConnectionModal && (
+                <div className="edit-modal">
+                  <div className="modal-content">
+                    <h3>Edit Connection Type</h3>
+
+                    {/* Connection Type Name Input */}
+                    <div className="form-group">
+                      <label>Connection Type Name:</label>
+                      <input
+                        type="text"
+                        value={newConnectionTypeName}
+                        onChange={(e) =>
+                          setNewConnectionTypeName(e.target.value)
+                        }
+                      />
+                    </div>
+
+                    {/* Description Input */}
+                    <div className="form-group">
+                      <label>Description:</label>
+                      <input
+                        type="text"
+                        value={newConnectionDescription}
+                        onChange={(e) =>
+                          setNewConnectionDescription(e.target.value)
+                        }
+                      />
+                    </div>
+
+                    {terms.length > 0 && (
+                      <div>
+                        <label htmlFor="termsDropdown">Select Term:</label>
+                        <select
+                          id="termsDropdown"
+                          onChange={(e) =>
+                            handleTermSelect(Number(e.target.value))
+                          }
+                        >
+                          <option value="">None</option>
+                          {terms.map((term) => (
+                            <option key={term.terms_id} value={term.terms_id}>
+                              {term.labelName} (ID: {term.terms_id})
+                            </option>
+                          ))}
+                        </select>
+
+                        {selectedTerm && selectedTerm.terms_id && (
+                          <>
+                            {/* Label Name */}
+                            <div className="form-group">
+                              <label>Label Name:</label>
+                              <input
+                                type="text"
+                                value={labelName}
+                                onChange={(e) => setLabelName(e.target.value)}
+                              />
+                            </div>
+
+                            {/* Description */}
+                            <div className="form-group">
+                              <label>Description:</label>
+                              <input
+                                type="text"
+                                value={newDescription || ""} // Ensure the value is never undefined
+                                onChange={(e) =>
+                                  setNewDescription(e.target.value)
+                                }
+                              />
+                            </div>
+
+                            {/* Purpose */}
+                            <div className="form-group">
+                              <label>Purpose:</label>
+                              <input
+                                type="text"
+                                value={newPurpose}
+                                onChange={(e) => setNewPurpose(e.target.value)}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Modal Buttons */}
+                    <div className="modal-buttons">
+                      <button
+                        className="cancel-btn"
+                        onClick={() => setShowEditConnectionModal(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="save-btn"
+                        onClick={handleSaveConnectionChanges}
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         ) : (

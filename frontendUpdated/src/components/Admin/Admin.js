@@ -636,7 +636,6 @@ export const Admin = () => {
           <p>No lockers found.</p>
         )}
       </div>
-      {/* done */}
       {/* Edit Locker Modal */}
       {showEditModal && (
         <div className="edit-modal">

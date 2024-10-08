@@ -498,37 +498,53 @@ const renderForbidden = () => {
     return <p>No forbidden terms available.</p>;
   };
 
-    const renderPermissionsTable = () => {
-        if (permissionsData.length > 0) {
-            return (
-                <div className="permissions-table">
-                    <h3>User Permissions</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Sno</th>
-                                <th>Label Name</th>
-                                <th>Data Element</th>
-                                <th>Purpose</th>
+  const renderPermissionsTable = () => {
+    if (permissionsData.length > 0) {
+        return (
+            <div className="permissions-table">
+                <h3>User Permissions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sno</th>
+                            <th>Label Name</th>
+                            <th>Data Element</th>
+                            <th>Purpose</th>
+                            <th>Type of Share</th> {/* New column for Type of Share */}
+                            <th>Status</th> {/* New column for status dropdown */}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {permissionsData.map((permission, index) => (
+                            <tr key={index}>
+                                <td>{permission.sno}</td>
+                                <td>{permission.labelName}</td>
+                                <td>{permission.dataElement || "None"}</td> {/* Display "None" if empty */}
+                                <td>{permission.purpose || "None"}</td> {/* Display "None" if empty */}
+                                <td>{permission.typeOfShare || "None"}</td> {/* Type of Share column */}
+                                <td>
+                                    <select
+                                        value={statuses[permission.labelName] || ''}
+                                        onChange={(e) =>
+                                            handleStatusChange(permission.labelName, e.target.value)
+                                        }
+                                    >
+                                        <option value="">Select Status</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {permissionsData.map((permission) => (
-                                <tr key={permission.sno}>
-                                    <td>{permission.sno}</td>
-                                    <td>{permission.labelName}</td>
-                                    <td>
-                                        {permission.dataElement || "None"} {/* Display "None" if empty */}
-                                    </td>
-                                    <td>{permission.purpose || "None"}</td> {/* Display "None" if empty */}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-        }
-    };
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    } else {
+        return;
+    }
+};
+
     
     const navigateToConnectionDetails = (connection) => {
         console.log("print", connection); // Log the connection object

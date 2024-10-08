@@ -919,7 +919,6 @@ export const CreateConnectionTerms = () => {
     setIsModalOpen(true);
 };
 
-
   const handleRevokebutton = async () => {
     const token = Cookies.get("authToken");
     const revoke_guest = false;
@@ -982,6 +981,7 @@ export const CreateConnectionTerms = () => {
     // navigate(`/target-locker-view`);
   };
 
+ 
   const renderObligations = () => {
     if (res && res.obligations && Array.isArray(res.obligations)) {
       return (
@@ -1054,6 +1054,7 @@ console.log(res);
   );
 
   console.log("I agree", Iagree);
+  console.log(res, "res");
   return (
     <div>
       <Navbar content={content} />

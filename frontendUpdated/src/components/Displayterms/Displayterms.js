@@ -272,6 +272,7 @@ export const Displayterms = () => {
     </>
   );
 
+  console.log(res, "res");
   return (
     <div>
       <Navbar content={content} />

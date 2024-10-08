@@ -542,6 +542,8 @@ export const ViewTermsByType = () => {
   //     transfer: [],
   // });
   const [permissionsData, setPermissionsData] = useState([]);
+  const [globalTemplates, setGlobalTemplates] = useState([]);
+  const [terms, setTerms] = useState([]);
 
   const {
     connectionName,
@@ -562,6 +564,60 @@ export const ViewTermsByType = () => {
       navigate("/");
       return;
     }
+
+    const fetchGlobalTemplates = () => {
+      const token = Cookies.get("authToken");
+      fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Fetched Templates:", data); // Log the fetched data
+          setGlobalTemplates(data.data); // Store fetched templates
+          console.log("global data", data.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching templates:", error);
+          setError("Failed to fetch templates");
+        });
+    };
+
+    //fetch terms from the api
+    const fetchObligations = async () => {
+      console.log("Inside fetch terms");
+      try {
+        const token = Cookies.get("authToken");
+        const connectionTypeName = connectionName.split("-").shift().trim();
+        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
+        console.log("Final API URL:", apiUrl);
+
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch terms");
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          setTerms(data.data.obligations); // Update to set data.data instead of data
+          console.log("Terms Response Data:", data.data.obligations);
+        } else {
+          setError(data.error || "No terms found");
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    };
 
     const fetchTerms = async () => {
       try {
@@ -682,6 +738,8 @@ export const ViewTermsByType = () => {
 
     fetchPermissionsData();
     fetchTerms();
+    fetchGlobalTemplates();
+    fetchObligations();
   }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
 
   const handleInputChange = (labelName, value) => {
@@ -1145,18 +1203,18 @@ export const ViewTermsByType = () => {
 
   const handleConsentAndInfo = (connection) => {
     if (typeof connection === "string") {
-        const connectionName = connection; // Treat the string as the connection_name
-        const connectionTypeName = connectionName.split("-").shift().trim();
-  
-        console.log("Navigating with state:", {
-            connectionName,
-            connectionTypeName,
-            guest_locker_id: connection.guest_locker?.id,
+      const connectionName = connection; // Treat the string as the connection_name
+      const connectionTypeName = connectionName.split("-").shift().trim();
+
+      console.log("Navigating with state:", {
+        connectionName,
+        connectionTypeName,
+        guest_locker_id: connection.guest_locker?.id,
         host_locker_id: connection.host_locker?.id,
-        connection_id : connection.connection_id,
-          });
-      
-    navigate("/show-connection-terms", {
+        connection_id: connection.connection_id,
+      });
+
+      navigate("/show-connection-terms", {
         state: {
           connectionName: connectionName, // Pass the string as connectionName
           connectionDescription: connectionDescription,
@@ -1169,7 +1227,6 @@ export const ViewTermsByType = () => {
           host_locker_id,
           connection_id,
         },
-        
       });
     }
   };
@@ -1179,6 +1236,18 @@ export const ViewTermsByType = () => {
     newPermissions[index] = value;
     setPermissions(newPermissions);
   };
+
+  const uniqueGlobalConnTypeIds = [...new Set(terms
+    .filter(term => term.global_conn_type_id !== null)
+    .map(term => term.global_conn_type_id)
+  )];
+
+  const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
+    const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+    return template ? template.global_connection_type_name : null;
+  });
+
+  // console.log(uniqueGlobalConnTypeIds, globalTemplates,  globalTemplateNames, "name");
 
   const content = (
     <>
@@ -1203,7 +1272,7 @@ export const ViewTermsByType = () => {
           <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
         </button>
         <button
-        //   className="info-button"
+          //   className="info-button"
           onClick={() => handleConsentAndInfo(connectionName)}
         >
           Revoke Consent
@@ -1228,6 +1297,20 @@ export const ViewTermsByType = () => {
 
       <div className={showResources ? "split-view" : ""}>
         <div className="table-container">
+          
+          <div className="center">
+          {globalTemplateNames.length > 0 && "Regulations used: "}
+            <span style={{ fontWeight: "bold" }}>
+              {globalTemplateNames.filter(Boolean).map((name, index) => (
+                <span key={index}>
+                  {name}
+                  {index < globalTemplateNames.filter(Boolean).length - 1 &&
+                    ", "}
+                </span>
+              ))}
+            </span>
+          </div>
+
           <table>
             <thead>
               <tr>
@@ -1239,7 +1322,6 @@ export const ViewTermsByType = () => {
                 <th>Status</th> {/* New column for Status */}
               </tr>
             </thead>
-
             <tbody>
               {res?.obligations.map((obligation, index) => (
                 <tr key={index}>

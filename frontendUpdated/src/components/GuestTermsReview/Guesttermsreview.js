@@ -25,6 +25,8 @@ export const Guesttermsreview = () => {
         transfer: [],
     });
     const [permissionsData, setPermissionsData] = useState([]);
+    const [terms, setTerms] = useState([]);
+    const [globalTemplates, setGlobalTemplates] = useState([]);
 
 
     useEffect(() => {
@@ -32,6 +34,61 @@ export const Guesttermsreview = () => {
             navigate('/');
             return;
         }
+
+        const fetchGlobalTemplates = () => {
+            const token = Cookies.get("authToken");
+            fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${token}`,
+              },
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log("Fetched Templates:", data); // Log the fetched data
+                setGlobalTemplates(data.data); // Store fetched templates
+                console.log("global data", data.data);
+              })
+              .catch((error) => {
+                console.error("Error fetching templates:", error);
+                setError("Failed to fetch templates");
+              });
+          };
+      
+          //fetch terms from the api
+          const fetchObligations = async () => {
+            console.log("Inside fetch terms");
+            try {
+              const token = Cookies.get("authToken");
+              const connectionTypeName = connection.connection_name.split("-").shift().trim();
+              let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${connection.host_user.username}&host_locker_name=${connection.host_locker.name}`;
+              console.log("Final API URL:", apiUrl);
+      
+              const response = await fetch(apiUrl, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Basic ${token}`,
+                },
+              });
+      
+              if (!response.ok) {
+                throw new Error("Failed to fetch terms");
+              }
+      
+              const data = await response.json();
+      
+              if (data.success) {
+                setTerms(data.data.obligations); // Update to set data.data instead of data
+                console.log("Terms Response Data:", data.data.obligations);
+              } else {
+                setError(data.error || "No terms found");
+              }
+            } catch (err) {
+              setError(err.message);
+            }
+          };
+      
 
         const fetchTerms = async () => {
             try {
@@ -126,6 +183,8 @@ export const Guesttermsreview = () => {
 
         fetchTerms();
         fetchConnectionDetails();
+        fetchGlobalTemplates();
+        fetchObligations();
     }, [curruser, connection, connectionType, navigate]);
 
 
@@ -503,7 +562,7 @@ const renderForbidden = () => {
                 createdtime: connection.created_time,
                 validitytime: connection.validity_time,
                 hostUserUsername: hostUserUsername, 
-                locker: connection.owner_locker, 
+                locker: conndetails.host_locker, 
             },
         });
         
@@ -533,12 +592,36 @@ const renderForbidden = () => {
         </>
     );
 
+    const uniqueGlobalConnTypeIds = [...new Set(terms
+        .filter(term => term.global_conn_type_id !== null)
+        .map(term => term.global_conn_type_id)
+      )];
+    
+      const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
+        const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+        return template ? template.global_connection_type_name : null;
+      });
+
     return (
         <div>
             <Navbar content={content} />
     
             <div className={showResources ? "split-view" : ""}>
                 <div className="table-container">
+                    
+                <div className="center2">
+            {globalTemplateNames.length > 0 && "Regulations used: "}
+            <span style={{ fontWeight: "bold" }}>
+              {globalTemplateNames.filter(Boolean).map((name, index) => (
+                <span key={index}>
+                  {name}
+                  {index < globalTemplateNames.filter(Boolean).length - 1 &&
+                    ", "}
+                </span>
+              ))}
+            </span>
+          </div>
+
                     <button onClick={openTermsPopup} className="view-terms-link">View Terms</button>
                     {showTermsPopup && (
                         <div className="terms-popup">

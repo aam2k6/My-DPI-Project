@@ -4,6 +4,11 @@
     padding: 20px;
 }
 
+.center2 {
+    text-align: center;
+    /* margin-bottom: 20px; */
+  }
+
 .table-container {
     flex: 1;
     padding: 20px;
@@ -157,6 +162,7 @@
     background-color: #007bff; /* Button color */
     text-align: right;
     margin: 10px 0;
+    margin-bottom: 0;
     color:#007bff;
     text-decoration: none;
 }

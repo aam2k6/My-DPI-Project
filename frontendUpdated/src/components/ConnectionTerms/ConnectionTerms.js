@@ -591,6 +591,7 @@ const fetchGlobalTemplates = () => {
     .then((data) => {
       console.log("Fetched Templates:", data); // Log the fetched data
       setGlobalTemplates(data.data); // Store fetched templates
+      console.log("global data", data.data);
       setDropdownVisible(true); // Show dropdown
     })
     .catch((error) => {
@@ -598,7 +599,7 @@ const fetchGlobalTemplates = () => {
       setError("Failed to fetch templates");
     });
 };
-;
+
   
   const handleTemplateSelection = (templateId) => {
     setSelectedTemplateIds((prev) => {
@@ -630,11 +631,22 @@ const fetchGlobalTemplates = () => {
         .then((data) => {
           if (data.success) {
             const { obligations, permissions, forbidden } = data.data;
+
+            const obligationsWithGlobalId = obligations.map((obligation) => ({
+              ...obligation,
+              global_conn_type_id: templateId,  // Add global_conn_type_id
+            }));
+  
   
             // Combine obligations, permissions, and forbidden into a single array or separate arrays
+            // setObligations((prev) => [
+            //   ...prev, 
+            //   ...obligations, // Add the fetched obligations
+            // ]);
+
             setObligations((prev) => [
               ...prev, 
-              ...obligations, // Add the fetched obligations
+              ...obligationsWithGlobalId, // Add fetched obligations with global_conn_type_id
             ]);
   
             // Handle permissions
@@ -733,11 +745,16 @@ const fetchGlobalTemplates = () => {
   
     const connectionTermsData = {
       ...connectionData,
-      obligations: obligations,
+      // obligations: obligations,
+      obligations: obligations.map(obligation => ({
+        ...obligation,
+        global_conn_type_id: obligation.global_conn_type_id || null,
+      })),
       permissions: {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
       },
+      
     };
   
     console.log("data",connectionTermsData);

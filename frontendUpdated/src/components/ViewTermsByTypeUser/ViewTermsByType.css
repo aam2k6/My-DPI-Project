@@ -4,6 +4,10 @@
     padding: 20px;
 }
 
+.center {
+    text-align: center;
+    margin-bottom: 20px;
+  }
 .table-container {
     flex: 1;
     padding: 20px;

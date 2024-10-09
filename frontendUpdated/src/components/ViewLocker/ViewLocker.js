@@ -1355,7 +1355,7 @@ import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
-
+// import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -1378,6 +1378,7 @@ export const ViewLocker = () => {
   const [activeTab, setActiveTab] = useState("incoming");
   const [xnodes, setXnodes] = useState([]);
   const [correspondingNames, setCorrespondingNames] = useState([]);
+  // const [pdfUrl, setPdfUrl] = useState("");
 
   useEffect(() => {
     if (locker) {
@@ -1872,8 +1873,8 @@ export const ViewLocker = () => {
 
       if (link_To_File) {
         console.log("link to file", link_To_File);
-        // Open the PDF file in a new window or tab
         window.open(link_To_File, '_blank');
+        // setPdfUrl(link_To_File);
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -2256,6 +2257,7 @@ export const ViewLocker = () => {
           </div>
         </div>
       </div>
+      {/* {pdfUrl && <PDFViewer pdfUrl={pdfUrl} />} */}
     </div>
   );
 };

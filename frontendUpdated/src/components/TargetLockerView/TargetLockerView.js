@@ -1142,6 +1142,8 @@ export const TargetLockerView = () => {
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrData, setQrData] = useState("");  // State for QR code data
+  const [xnodes, setXnodes] = useState([]);
+  const [correspondingNames, setCorrespondingNames] = useState([]);
 
   useEffect(() => {
     if (!curruser) {
@@ -1152,6 +1154,7 @@ export const TargetLockerView = () => {
       fetchResources();
       fetchOtherConnections();
       fetchConnections();
+      fetchXnodes();
     }
   }, [curruser, navigate, parentUser, locker]);
 
@@ -1160,6 +1163,45 @@ export const TargetLockerView = () => {
     setModalMessage({ message: "", type: "" });
     setQrData("");  // Reset QR code data when modal is closed
   };
+
+  const fetchXnodes = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({ locker_id: locker.locker_id });
+
+      const response = await fetch(
+        `host/get-all-xnodes-for-locker/?${params}`.replace(
+          /host/,
+          frontend_host
+        ),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch Xnodes");
+      }
+
+      const data = await response.json();
+      console.log("xnode data", data);
+
+      if (data.xnode_list && data.corresponding_document_name_list) {
+        setXnodes(data.xnode_list);
+        setCorrespondingNames(data.corresponding_document_name_list);
+      } else {
+        setError(data.message || "Failed to fetch Xnodes");
+      }
+    } catch (error) {
+      console.error("Error fetching Xnodes:", error);
+      setError("An error occurred while fetching Xnodes");
+    }
+  };
+
 
   const fetchResources = async () => {
     try {
@@ -1421,6 +1463,46 @@ export const TargetLockerView = () => {
     }
   };
   
+  const handleXnodeClick = async (xnode_id) => {
+
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}`.replace(
+                  /host/,
+                  frontend_host
+                ), {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to access the resource');
+      }
+
+      const data = await response.json();
+      console.log(data);
+      const { link_To_File } = data;
+
+      if (link_To_File) {
+        console.log("link to file", link_To_File);
+        window.open(link_To_File, '_blank');
+        // setPdfUrl(link_To_File);
+      } else {
+        setError('Unable to retrieve the file link.');
+        console.log(error);
+      }
+    } catch (err) {
+      // setError(`Error: ${err.message}`);
+      console.log(err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
 
   return (
     <div>
@@ -1440,8 +1522,8 @@ export const TargetLockerView = () => {
       <div className="page7container">
         <div className="notvisible">
           <div className="page7publicresources">
-            <p>Public resources: Resources for all</p>
-            {resources.length > 0 ? (
+            <p>Xnodes</p>
+            {/* {resources.length > 0 ? (
               resources.map((resource) => (
                 <div className="page7resource" key={resource.resource_id}>
                   <div id="documentspage7" onClick={() => handleResourceClick(resource.i_node_pointer)}>
@@ -1451,7 +1533,39 @@ export const TargetLockerView = () => {
               ))
             ) : (
               <p id="page7nores">No resources found.</p>
-            )}
+            )} */}
+            {xnodes.length > 0 ? (
+                  <ul>
+                    {xnodes.map((xnode, index) => (
+                      <div
+                        key={xnode.id}
+                        className="resource-item"
+                        // style={{
+                        //   color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red',}}
+                      >
+                        <div className="resource-details">
+                          <div
+                            id={
+                              xnode.xnode_Type === "INODE"
+                                ? "documents"
+                                : "documents-byShare"
+                            }
+                            onClick={() =>
+                              handleXnodeClick(xnode.id)
+                            }
+                          >
+                            {correspondingNames[index]}
+                          </div>
+                          {/* <div className="public-private">
+                            {xnode.type === "private" ? <>Private</> : "Public"}
+                          </div> */}
+                        </div>
+                      </div>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="not-found">No Xnodes found.</p>
+                )}
           </div>
 
           <div className="page7publicresources">

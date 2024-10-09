@@ -718,6 +718,9 @@ export const CreateConnectionTerms = () => {
   const [consentData, setConsentData] = useState(null);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [connectionDetails, setConnectionDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const {
     connectionName,
     hostLockerName,
@@ -729,6 +732,7 @@ export const CreateConnectionTerms = () => {
     guest_locker_id,
     host_locker_id,
     connection_id,
+    lockerComplete,
   
   } = location.state || {};
   console.log(
@@ -741,7 +745,10 @@ export const CreateConnectionTerms = () => {
     guest_locker_id,
     host_locker_id,
     connection_id,
+    lockerComplete,
   );
+
+  console.log("guest locker", locker);
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -751,6 +758,7 @@ export const CreateConnectionTerms = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
+    navigate(`/view-locker?param=${Date.now()}`, { state: { locker: lockerComplete } });
   };
 
   const checkConsentStatus = async () => {
@@ -800,6 +808,42 @@ export const CreateConnectionTerms = () => {
       return;
     }
 
+    const fetchConnectionDetails = async () => {
+    
+      const connection_type_name = connectionTypeName;
+      const host_locker_name = hostLockerName; 
+      const guest_locker_name =  locker;
+      const host_user_username = hostUserUsername; 
+      const guest_user_username = curruser.username;
+  
+      const token = Cookies.get("authToken"); 
+  
+      try {
+        const response = await fetch(
+          `host/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        const data = await response.json();
+        console.log("data conn", data.connections);
+        if (response.ok) {
+          setConnectionDetails(data.connections);
+        } else {
+          setError(data.error || "Failed to fetch connection details.");
+        }
+      } catch (err) {
+        setError(`Error: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     //fetch terms from the api
     const fetchTerms = async () => {
       console.log("Inside fetch terms");
@@ -837,13 +881,56 @@ export const CreateConnectionTerms = () => {
 
     fetchTerms();
     checkConsentStatus();
+    fetchConnectionDetails();
+
+    console.log("details", connectionDetails);
+
+ 
+
   }, []);
+
+  useEffect(() => {
+    if (connectionDetails) {
+      const { revoke_guest, revoke_host } = connectionDetails;
+
+      if (revoke_guest === true && revoke_host === false) {
+        setModalMessage({
+          message: 'You have closed the connection, but the host is yet to approve your revoke.',
+          type: 'info',
+        });
+        setIsModalOpen(true);
+      }
+    }
+  }, [connectionDetails]);
+
+  // Show loading while fetching connection details
+  if (loading) {
+    return <div>Loading...</div>; // Replace with a proper loading component if needed
+  }
+
+  // if (error) {
+  //   return <div>Error: {error}</div>;
+  // }
+
+  
+  // useEffect(() => {
+    // Check the values of revoke_guest and revoke_host
+    // if (connectionDetails && connectionDetails.revoke_guest === true && !connectionDetails.revoke_host === false) {
+    //   setModalMessage({
+    //     message: 'You have closed the connection, but the host is yet to approve your revoke.',
+    //     type: 'info',
+    //   });
+    //   console.log("success");
+    //   setIsModalOpen(true);
+    // }
+  // }, [connectionDetails]);
+
 
   const handleIagreebutton = async () => {
     const token = Cookies.get('authToken');
     const consent = true;
     console.log("Locker Name:", locker); // Verify locker details
-    if (!locker || !locker.name) {
+    if (!locker ) {
       console.error("Locker is undefined or doesn't have a name.");
       setModalMessage({
         message: 'Locker information is missing.',
@@ -864,7 +951,7 @@ export const CreateConnectionTerms = () => {
                 connection_name: connectionName,
                 connection_description: connectionDescription, 
                 host_locker_name: hostLockerName,
-                guest_locker_name: locker.name,
+                guest_locker_name: locker,
                 host_user_username: hostUserUsername,
                 guest_user_username: curruser.username
             })
@@ -885,7 +972,7 @@ export const CreateConnectionTerms = () => {
                 connection_name: connectionName,
                 connection_type_name: connectionTypeName,
                 guest_username: curruser.username,
-                guest_lockername: locker.name,
+                guest_lockername: locker,
                 host_username: hostUserUsername,
                 host_lockername: hostLockerName,
                 consent: consent.toString()
@@ -935,14 +1022,14 @@ export const CreateConnectionTerms = () => {
     // formData.append("revoke_guest", revoke_guest);
     // formData.append("consent", consent);
     console.log(guest_locker_id);
-    formData.append("guest_locker_id", guest_locker_id);
-    formData.append("host_locker_id", host_locker_id);
+    // formData.append("guest_locker_id", guest_locker_id);
+    // formData.append("host_locker_id", host_locker_id);
     formData.append("connection_id", connection_id);
 
 
     try {
       const response = await fetch(
-        "host/revoke/".replace(/host/, frontend_host),
+        "host/revoke-guest/".replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -955,7 +1042,7 @@ export const CreateConnectionTerms = () => {
 
       const data = await response.json();
       console.log("revoke consent", data);
-      if (data.success) {
+      if (response.status === 200) {
         // setMessage("Consent revoked successfully.");
         setModalMessage({
           message: "Consent revoked successfully." + data.message,
@@ -979,6 +1066,7 @@ export const CreateConnectionTerms = () => {
     }
     setIsModalOpen(true);
     // navigate(`/target-locker-view`);
+    
   };
 
  

@@ -1738,6 +1738,7 @@ export const ViewLocker = () => {
         showConsent: false,
         guest_locker_id: connection.guest_locker?.id,
         host_locker_id: connection.host_locker?.id,
+        lockerComplete: locker,
       },
     });
   };
@@ -1774,6 +1775,7 @@ export const ViewLocker = () => {
         guest_locker_id: connection.guest_locker?.id,
         host_locker_id: connection.host_locker?.id,
         connection_id: connection.connection_id,
+        lockerComplete: locker,
       },
     });
   };
@@ -1806,6 +1808,7 @@ export const ViewLocker = () => {
             showConsent: true,
             guest_locker_id: parsedData.guest_locker?.id,
             host_locker_id: parsedData.host_locker?.id,
+            lockerComplete: locker,
           },
         });
 
@@ -1868,9 +1871,9 @@ export const ViewLocker = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
+        console.log("link to file", link_To_File);
         // Open the PDF file in a new window or tab
-        const url = `host/media/${link_To_File}`.replace(/host/, frontend_host);
-        window.open(url, '_blank');
+        window.open(link_To_File, '_blank');
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1892,7 +1895,7 @@ export const ViewLocker = () => {
     </>
   );
   // console.log("res vnode", VnodeResources);
-  // console.log("res", resources);
+  console.log("res", resources);
 
   return (
     <div>

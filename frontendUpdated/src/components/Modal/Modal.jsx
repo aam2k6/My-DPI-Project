@@ -13,7 +13,7 @@ import './Modal.css';
 //         </div>
 //     );
 // }
-export default function Modal({ message, onClose, type, children }) {
+export default function Modal({ message, onClose, type, revoke, onRevoke, viewTerms, children }) {
     const modalClass = type === 'success' ? 'modal-success' : type === 'failure' ? 'modal-failure' : '';
   
     return (
@@ -22,6 +22,9 @@ export default function Modal({ message, onClose, type, children }) {
           <p>{message}</p>
           {children} {/* Render children here */}
           <button onClick={onClose}>Close</button>
+          {revoke && <button onClick={onRevoke}>Revoke</button>}
+          {revoke && <button onClick={ viewTerms}>View Terms</button>}
+          
         </div>
       </div>
     );

@@ -5,7 +5,10 @@ import { usercontext } from "../../usercontext";
 import Cookies from 'js-cookie';
 import "./Guesttermsreview.css";
 import Navbar from "../Navbar/Navbar";
+import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config";
+
+
 
 export const Guesttermsreview = () => {
     const navigate = useNavigate();
@@ -27,7 +30,32 @@ export const Guesttermsreview = () => {
     const [permissionsData, setPermissionsData] = useState([]);
     const [terms, setTerms] = useState([]);
     const [globalTemplates, setGlobalTemplates] = useState([]);
+    const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [connectionDetails, setConnectionDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [revokeState, setRevokeState] = useState(true);
+//   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
+// const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
+
+// const RevokeMessageModal = ({ message, onClose }) => (
+//     <div className="modal">
+//         <div className="modal-content">
+//             <h2>Revoke Status</h2>
+//             <p>{message}</p>
+//             <button onClick={onClose}>Close</button>
+//         </div>
+//     </div>
+// );
+
+const onRevokeButtonClick = async (connection_id) => {
+    setRevokeState(false);
+    const message = await handleRevoke(connection_id); 
+    setIsModalOpen(false);
+    setModalMessage({message: message, type: "info"});
+    setIsModalOpen(true); 
+};
 
     useEffect(() => {
         if (!curruser) {
@@ -169,6 +197,7 @@ export const Guesttermsreview = () => {
                     console.log("data", data);
                     setTermsValue(data.connections.terms_value || {});
                     setconndetails(data.connections);
+                    setConnectionDetails(data.connections);
 
                     const initialStatuses = {};
                     for (const [key, value] of Object.entries(data.connections.terms_value || {})) {
@@ -179,6 +208,9 @@ export const Guesttermsreview = () => {
             } catch (err) {
                 setError(err.message);
             }
+             finally {
+                    setLoading(false);
+             } 
         };
 
         fetchTerms();
@@ -187,6 +219,21 @@ export const Guesttermsreview = () => {
         fetchObligations();
     }, [curruser, connection, connectionType, navigate]);
 
+
+    useEffect(() => {
+        if (connectionDetails) {
+          const { revoke_guest, revoke_host } = connectionDetails;
+          console.log(revoke_host, revoke_guest);
+          if (revoke_guest === true || revoke_host === true) {
+            setModalMessage({
+              message: 'The guest has closed the connection, click Revoke to revoke the connection',
+              type: 'info',
+            });
+            setIsModalOpen(true);
+          }
+        }
+      }, [connectionDetails]);
+    
 
     // const handleStatusChange = (index, status, value, type, isFile) => {
     //     if (value !== "") {
@@ -230,6 +277,78 @@ export const Guesttermsreview = () => {
     //     }
     // };
 
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setModalMessage({ message: "", type: "" });
+        navigate(`/view-locker?param=${Date.now()}`, { state: { locker: conndetails.host_locker } });
+      };
+
+
+      const handleRevoke = async (connection_id) => {
+
+        const formData = new FormData();
+        formData.append("connection_id", connection_id);
+        formData.append("revoke_host_bool", "True");
+
+        console.log(connection_id ,"id");
+        const token = Cookies.get("authToken"); 
+        try {
+            // Step 1: Call revoke_host API using fetch
+            const revokeHostResponse = await fetch('host/revoke-host/'.replace(/host/, frontend_host), {
+                method: 'POST',
+                headers: {
+                    Authorization: `Basic ${token}`,
+                    
+                },
+            
+
+                body: formData,
+                
+            });
+    
+            const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+    
+            if (revokeHostResponse.ok) {
+                console.log("Revoke host successful: ", revokeHostData.message);
+            };
+            }catch(error){
+                console.error("Error:", error);
+   
+            }
+    
+                // Step 2: Call revoke API using fetch
+                try {
+                    const response = await fetch(
+                      "host/revoke-guest/".replace(/host/, frontend_host),
+                      {
+                        method: "POST",
+                        headers: {
+                          // 'Content-Type': 'application/json',
+                          Authorization: `Basic ${token}`,
+                        },
+                        body: formData,
+                      }
+                    );
+              
+                    const data = await response.json();
+                    console.log("revoke consent", data);
+                    if (response.status === 200) {
+                    
+                    return "Successfully revoked ";
+                     
+                      
+                    } else {
+                  
+                     return data.message || "An error occurred while revoking consent.";
+                    }
+                  } catch (error) {
+                    console.error("Error:", error);
+                   
+                    return "An error occurred while revoking consent.";
+                  }
+                
+                };
+    
 
     const handleStatusChange = (index, status, value, type, isFile) => {
         if (value !== "") {
@@ -544,7 +663,6 @@ const renderForbidden = () => {
         return;
     }
 };
-
     
     const navigateToConnectionDetails = (connection) => {
         console.log("print", connection); // Log the connection object
@@ -716,6 +834,23 @@ const renderForbidden = () => {
             <div className="save-button-container">
                 <button onClick={handleSave}>Save</button>
             </div>
+            {isModalOpen && (
+      <Modal
+        message={modalMessage.message}
+        onClose={handleCloseModal}
+        type={modalMessage.type}
+        revoke = {revokeState}
+        onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
+        viewTerms = {() => navigateToConnectionDetails(connectionType)}
+      />
+    )}
+
+    {/* {isRevokeModalOpen && (
+    <RevokeMessageModal 
+        message={revokeMessage} 
+        onClose={handleCloseModal}
+    />
+)} */}
         </div>
     );
     

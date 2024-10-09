@@ -33,6 +33,7 @@
     cursor: pointer;
     font-size: medium;
     font-weight: bold;
+    margin: 2px;
 }
 
 .modal button:hover {

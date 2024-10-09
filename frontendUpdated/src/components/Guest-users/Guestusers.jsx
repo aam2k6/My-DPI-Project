@@ -20,6 +20,7 @@ export const Guestusers = () => {
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
 
+  console.log(connectionType, locker);
   useEffect(() => {
     if (!curruser) {
       navigate('/');

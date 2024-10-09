@@ -112,11 +112,12 @@ export const CreateConnectionType = () => {
             state: {
                 connectionTypeName: selectedConnectionType.connection_type_name,
                 connectionDescription:selectedConnectionType.connection_description,
-                locker: selectedLocker,
+                locker: selectedLocker.name,
                 hostUserUsername: parentUser.username,
                 hostLockerName: locker.name,
                 connectionName: `${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`,
                 showConsent: true,
+                lockerComplete: selectedLocker,
             }
         });
     };

@@ -521,6 +521,7 @@ import Cookies from "js-cookie";
 import "./ViewTermsByType.css";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
+import Modal from "../Modal/Modal.jsx";
 
 export const ViewTermsByType = () => {
   const navigate = useNavigate();
@@ -544,6 +545,11 @@ export const ViewTermsByType = () => {
   const [permissionsData, setPermissionsData] = useState([]);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
+  const [connectionDetails, setConnectionDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [moreDataTerms, setMoreDataTerms] = useState([]);
 
   const {
     connectionName,
@@ -558,12 +564,57 @@ export const ViewTermsByType = () => {
     host_locker_id,
   } = location.state || {};
 
-  console.log("start", guest_locker_id, host_locker_id);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalMessage({ message: "", type: "" });
+    navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
+  };
+
+  console.log("start", guest_locker_id, host_locker_id, locker);
   useEffect(() => {
     if (!curruser) {
       navigate("/");
       return;
     }
+
+    const fetchConnectionDetails = async () => {
+      const connectionTypeName = connectionName.split("-").shift().trim();
+    
+      const connection_type_name = connectionTypeName;
+      const host_locker_name = hostLockerName; 
+      const guest_locker_name =  locker.name;
+      const host_user_username = hostUserUsername; 
+      const guest_user_username = curruser.username;
+  
+      const token = Cookies.get("authToken"); 
+  
+      try {
+        const response = await fetch(
+          `host/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        const data = await response.json();
+        console.log("data conn", data.connections);
+        if (response.ok) {
+          setConnectionDetails(data.connections);
+        } else {
+          setError(data.error || "Failed to fetch connection details.");
+        }
+      } catch (err) {
+        setError(`Error: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
 
     const fetchGlobalTemplates = () => {
       const token = Cookies.get("authToken");
@@ -736,11 +787,106 @@ export const ViewTermsByType = () => {
       }
     };
 
+    
+      const fetchResources = async () => {
+        if (selectedLocker) {
+        try {
+          const token = Cookies.get("authToken");
+          const response = await fetch(
+            `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(
+              /host/,
+              frontend_host
+            ),
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch resources");
+          }
+
+          const data = await response.json();
+          if (data.success) {
+            setResources(data.resources);
+          } else {
+            setError(data.message || "Failed to fetch resources");
+          }
+        } catch (error) {
+          setError("An error occurred while fetching resources");
+        }
+      }
+      };
+
+      const fetchVnodeResources = async () => {
+        if (selectedLocker) {
+        try {
+          const token = Cookies.get("authToken");
+          const params = new URLSearchParams({
+            host_locker_id: locker.locker_id,
+          });
+
+          const response = await fetch(
+            `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch resources");
+          }
+
+          const data = await response.json();
+          //   console.log("data", data);
+          //   console.log("vnodes", data.data);
+
+          //if (data.success) {
+          setVnodeResources(data.data);
+          //} else {
+          //setError(data.message || "Failed to fetch resources");
+          //}
+          //}
+        } catch (error) {
+          console.error("Error fetching resources:", error);
+          setError("An error occurred while fetching resources");
+        }
+      }
+      };
+
     fetchPermissionsData();
     fetchTerms();
     fetchGlobalTemplates();
     fetchObligations();
-  }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName]);
+    fetchConnectionDetails();
+    fetchResources();
+    fetchVnodeResources();
+  }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName, selectedLocker]);
+
+  useEffect(() => {
+    if (connectionDetails) {
+      const { revoke_guest, revoke_host } = connectionDetails;
+      console.log(revoke_host, revoke_guest);
+      if (revoke_guest === true && revoke_host === false) {
+        setModalMessage({
+          message: 'You have closed the connection, but the host is yet to approve your revoke.',
+          type: 'info',
+        });
+        setIsModalOpen(true);
+      }
+    }
+  }, [connectionDetails]);
+
+  // Show loading while fetching connection details
+  if (loading) {
+    return <div>Loading...</div>; // Replace with a proper loading component if needed
+  }
 
   const handleInputChange = (labelName, value) => {
     setTermValues((prev) => ({
@@ -804,80 +950,9 @@ export const ViewTermsByType = () => {
     setShowResources(false);
   };
 
-  useEffect(() => {
-    if (selectedLocker) {
-      const fetchResources = async () => {
-        try {
-          const token = Cookies.get("authToken");
-          const response = await fetch(
-            `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(
-              /host/,
-              frontend_host
-            ),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch resources");
-          }
+  // useEffect(() => {
 
-          const data = await response.json();
-          if (data.success) {
-            setResources(data.resources);
-          } else {
-            setError(data.message || "Failed to fetch resources");
-          }
-        } catch (error) {
-          setError("An error occurred while fetching resources");
-        }
-      };
-
-      const fetchVnodeResources = async () => {
-        try {
-          const token = Cookies.get("authToken");
-          const params = new URLSearchParams({
-            host_locker_id: locker.locker_id,
-          });
-
-          const response = await fetch(
-            `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch resources");
-          }
-
-          const data = await response.json();
-          //   console.log("data", data);
-          //   console.log("vnodes", data.data);
-
-          //if (data.success) {
-          setVnodeResources(data.data);
-          //} else {
-          //setError(data.message || "Failed to fetch resources");
-          //}
-          //}
-        } catch (error) {
-          console.error("Error fetching resources:", error);
-          setError("An error occurred while fetching resources");
-        }
-      };
-
-      fetchResources();
-      fetchVnodeResources();
-    }
-  }, [selectedLocker]);
+  // }, [selectedLocker]);
 
   const combinedResources = [...resources];
   VnodeResources.forEach((vnode) => {
@@ -1082,7 +1157,7 @@ export const ViewTermsByType = () => {
 
   // console.log("resources list", resources);
   // State for storing user inputs for moreDataTerms
-  const [moreDataTerms, setMoreDataTerms] = useState([]);
+
   // Function to handle changes in the permission table
   const handleMoreDataInputChange = (index, field, value) => {
     // Copy the current state of moreDataTerms
@@ -1191,6 +1266,7 @@ export const ViewTermsByType = () => {
           hostUserUsername: hostUserUsername,
           locker: locker.name,
           showConsent: false,
+          lockerComplete: locker,
         },
       });
     } else {
@@ -1226,6 +1302,7 @@ export const ViewTermsByType = () => {
           guest_locker_id,
           host_locker_id,
           connection_id,
+          lockerComplete: locker,
         },
       });
     }
@@ -1292,7 +1369,9 @@ export const ViewTermsByType = () => {
 
   // console.log("resourcesData", resourcesData);
   return (
+
     <div>
+
       <Navbar content={content} />
 
       <div className={showResources ? "split-view" : ""}>
@@ -1475,7 +1554,16 @@ export const ViewTermsByType = () => {
         <button onClick={handleMoreSubmit}>Submit</button>
       </div>
     </div>
+         
+    {isModalOpen && (
+      <Modal
+        message={modalMessage.message}
+        onClose={handleCloseModal}
+        type={modalMessage.type}
+      />
+    )}
   </div>
+
 )}
 
 

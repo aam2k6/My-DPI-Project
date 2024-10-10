@@ -811,6 +811,22 @@ export const Guesttermsreview = () => {
   const handleCheckboxChange = () => {
       setIsReceiptChecked(!isReceiptChecked); // Toggle checkbox state
   };
+  const handleNavigation = (template) => {
+    if (template) {
+      console.log("temp",template);
+      console.log("id",template.global_connection_type_template_id);
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: template.global_connection_type_name,
+          connectionTypeDescription: template.global_connection_type_description,
+          template_Id: template.global_connection_type_template_id,
+          hide: true,
+        },
+      });
+    }
+  };
+    
+
 
   console.log("statuses", statuses);
   return (
@@ -820,16 +836,22 @@ export const Guesttermsreview = () => {
       <div className={showResources ? "split-view" : ""}>
         <div className="table-container">
           <div className="center2">
-            {globalTemplateNames.length > 0 && "Regulations used: "}
-            <span style={{ fontWeight: "bold" }}>
-              {globalTemplateNames.filter(Boolean).map((name, index) => (
-                <span key={index}>
-                  {name}
-                  {index < globalTemplateNames.filter(Boolean).length - 1 &&
-                    ", "}
-                </span>
-              ))}
-            </span>
+          {globalTemplateNames.length > 0 && "Regulations used: "}
+<span style={{ fontWeight: "bold" }}>
+  {uniqueGlobalConnTypeIds.map((id, index) => {
+    const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+    return template ? (
+      <span
+        key={index}
+        onClick={() => handleNavigation(template)}  // Pass the entire template object
+        style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
+      >
+        {template.global_connection_type_name}  
+        {index < uniqueGlobalConnTypeIds.length - 1 && ", "}  
+      </span>
+    ) : null;
+  })}
+</span>
           </div>
 
           <button onClick={openTermsPopup} className="view-terms-link">

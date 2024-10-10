@@ -550,6 +550,8 @@ export const ViewTermsByType = () => {
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [moreDataTerms, setMoreDataTerms] = useState([]);
+  const [hostObligationMessage, setHostObligationMessage] = useState('');
+
 
   const {
     connectionName,
@@ -1325,6 +1327,10 @@ export const ViewTermsByType = () => {
   });
 
   // console.log(uniqueGlobalConnTypeIds, globalTemplates,  globalTemplateNames, "name");
+  const allObligationsApproved = () => {
+    return res?.obligations.every((obligation) => statuses[obligation.labelName] === "Approved");
+  };
+    
 
   const content = (
     <>
@@ -1389,6 +1395,7 @@ export const ViewTermsByType = () => {
               ))}
             </span>
           </div>
+          <h3>Guest Obligations</h3>
 
           <table>
             <thead>
@@ -1554,6 +1561,20 @@ export const ViewTermsByType = () => {
         <button onClick={handleMoreSubmit}>Submit</button>
       </div>
     </div>
+    {allObligationsApproved() && (
+  <div>
+    <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+      Host Obligations
+    </h3>
+    <p>You will receive a receipt from the host</p>
+  </div>
+)}
+
+{hostObligationMessage && (
+  <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+    Host Obligation: {hostObligationMessage}
+  </h3>
+)}
          
     {isModalOpen && (
       <Modal

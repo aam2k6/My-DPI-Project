@@ -806,6 +806,11 @@ export const Guesttermsreview = () => {
     );
     return template ? template.global_connection_type_name : null;
   });
+  const [isReceiptChecked, setIsReceiptChecked] = useState(false); // State for the checkbox
+
+  const handleCheckboxChange = () => {
+      setIsReceiptChecked(!isReceiptChecked); // Toggle checkbox state
+  };
 
   console.log("statuses", statuses);
   return (
@@ -930,6 +935,20 @@ export const Guesttermsreview = () => {
       <div className="save-button-container">
         <button onClick={handleSave}>Save</button>
       </div>
+      
+      <div style={{ marginTop: '20px', marginLeft: '10px' }}>
+    <h3 style={{ fontSize: '20px', marginLeft: '10px' }}>Host Obligations</h3> {/* Add heading with increased font size */}
+    <label style={{ fontSize: '20px', marginLeft: '10px' }}> {/* Increase font size for the label */}
+        The guest will receive a receipt once all the documents are received.
+        <input
+            type="checkbox"
+            checked={isReceiptChecked}
+            onChange={handleCheckboxChange}
+            style={{ transform: 'scale(1.5)', marginLeft: '10px' }} // Increase checkbox size
+        />
+    </label>
+</div>
+
       {isModalOpen && (
         <Modal
           message={modalMessage.message}

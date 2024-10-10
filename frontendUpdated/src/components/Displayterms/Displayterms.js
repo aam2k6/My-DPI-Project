@@ -369,6 +369,8 @@ export const Displayterms = () => {
           <div className="page13headterms">Default Host Privileges</div>
           By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
 
+          <div className="page13headterms"><h4>Host Obligations</h4></div>
+          You will receive a receipt when all the obligations are method 
         </div>
       </div>
     </div>

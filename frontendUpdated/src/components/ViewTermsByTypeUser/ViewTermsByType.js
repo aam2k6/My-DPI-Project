@@ -1323,12 +1323,28 @@ export const ViewTermsByType = () => {
 
   const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
     const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+      console.log(template, "template for id:", id);  // Debug to check if template is valid
+
     return template ? template.global_connection_type_name : null;
   });
 
   // console.log(uniqueGlobalConnTypeIds, globalTemplates,  globalTemplateNames, "name");
   const allObligationsApproved = () => {
     return res?.obligations.every((obligation) => statuses[obligation.labelName] === "Approved");
+  };
+  const handleNavigation = (template) => {
+    if (template) {
+      console.log("temp",template);
+      console.log("id",template.global_connection_type_template_id);
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: template.global_connection_type_name,
+          connectionTypeDescription: template.global_connection_type_description,
+          template_Id: template.global_connection_type_template_id,
+          hide: true,
+        },
+      });
+    }
   };
     
 
@@ -1379,21 +1395,26 @@ export const ViewTermsByType = () => {
     <div>
 
       <Navbar content={content} />
-
       <div className={showResources ? "split-view" : ""}>
-        <div className="table-container">
-          
-          <div className="center">
-          {globalTemplateNames.length > 0 && "Regulations used: "}
-            <span style={{ fontWeight: "bold" }}>
-              {globalTemplateNames.filter(Boolean).map((name, index) => (
-                <span key={index}>
-                  {name}
-                  {index < globalTemplateNames.filter(Boolean).length - 1 &&
-                    ", "}
-                </span>
-              ))}
-            </span>
+  <div className="table-container">
+    <div className="center">
+    {globalTemplateNames.length > 0 && "Regulations used: "}
+<span style={{ fontWeight: "bold" }}>
+  {uniqueGlobalConnTypeIds.map((id, index) => {
+    const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+    return template ? (
+      <span
+        key={index}
+        onClick={() => handleNavigation(template)}  // Pass the entire template object
+        style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
+      >
+        {template.global_connection_type_name}  
+        {index < uniqueGlobalConnTypeIds.length - 1 && ", "}  
+      </span>
+    ) : null;
+  })}
+</span>
+
           </div>
           
           <h3>Your Obligations</h3>

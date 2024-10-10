@@ -1395,7 +1395,8 @@ export const ViewTermsByType = () => {
               ))}
             </span>
           </div>
-          <h3>Guest Obligations</h3>
+          
+          <h3>Your Obligations</h3>
 
           <table>
             <thead>
@@ -1468,6 +1469,8 @@ export const ViewTermsByType = () => {
             </div>
           )}
         </div>
+        </div>
+       <div>
         {permissions?.canShareMoreData && (
   <div className="table-container">
     {/* Add this div for styling */}
@@ -1537,13 +1540,17 @@ export const ViewTermsByType = () => {
               </select>
             </td>
             <td>
-              <input
+              {/* <input
                 type="file"
                 onChange={(e) =>
                   updateTerm(index, "enter_value", e.target.files[0])
                 }
                 required
-              />
+              /> */}
+              <button onClick={() => handleButtonClick(term.labelName)}>
+                 {selectedResources[term.labelName]?.id ||
+                   "Upload File"}
+               </button>
             </td>
             <td>Pending</td> {/* Example status value */}
           </tr>
@@ -1561,6 +1568,7 @@ export const ViewTermsByType = () => {
         <button onClick={handleMoreSubmit}>Submit</button>
       </div>
     </div>
+         
     {allObligationsApproved() && (
   <div>
     <h3 style={{ textAlign: "left", marginTop: "20px" }}>
@@ -1588,7 +1596,10 @@ export const ViewTermsByType = () => {
 )}
 
 
+
+
       </div>
     </div>
   );
 };
+

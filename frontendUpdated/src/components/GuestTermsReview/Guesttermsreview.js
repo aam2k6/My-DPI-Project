@@ -873,6 +873,12 @@ export const Guesttermsreview = () => {
                   By default Reshare,Download,Aggreagte are disabled unless
                   otherwise mentioned in the terms
                 </div>
+                <div className="permissions">
+                  <h3>Host Obligations</h3>
+                  You will receive a receipt when all the obligations are met.
+                
+
+                </div>
               </div>
             </div>
           )}

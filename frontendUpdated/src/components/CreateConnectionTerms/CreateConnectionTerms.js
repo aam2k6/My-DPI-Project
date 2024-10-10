@@ -1246,7 +1246,7 @@ console.log("names", globalTemplateNames);
           By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
 
           <div className="page13headterms"><h4>Host Obligations</h4></div>
-          You will receive a receipt when all the obligations are method 
+          You will receive a receipt when all the obligations are met
         </div>
         
 

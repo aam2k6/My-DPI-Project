@@ -827,6 +827,8 @@ export const Guesttermsreview = () => {
             </span>
           </div>
 
+          <h4>Guest Obligations</h4>
+
           <button onClick={openTermsPopup} className="view-terms-link">
             View Terms
           </button>

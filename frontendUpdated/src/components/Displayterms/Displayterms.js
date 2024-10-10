@@ -160,6 +160,9 @@ export const Displayterms = () => {
   const { curruser } = useContext(usercontext);
   const [error, setError] = useState(null);
   const [res, setRes] = useState(null);
+  const [globalTemplates, setGlobalTemplates] = useState([]);
+  const [terms, setTerms] = useState([]);
+  
   const {
     connectionName,
     hostLockerName,
@@ -177,6 +180,27 @@ export const Displayterms = () => {
       navigate("/");
       return;
     }
+
+    const fetchGlobalTemplates = () => {
+      const token = Cookies.get("authToken");
+      fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // console.log("Fetched Templates:", data); // Log the fetched data
+          setGlobalTemplates(data.data); // Store fetched templates
+          // console.log("global data", data.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching templates:", error);
+          setError("Failed to fetch templates");
+        });
+    };
+
 
     const fetchTerms = async () => {
       console.log("Inside fetch terms");
@@ -202,6 +226,7 @@ export const Displayterms = () => {
 
         if (data.success) {
           setRes(data.data);
+          setTerms(data.data.obligations);
           console.log(data.data);
         } else {
           setError(data.error || "No terms found");
@@ -212,6 +237,7 @@ export const Displayterms = () => {
     };
 
     fetchTerms();
+    fetchGlobalTemplates();
   }, [curruser, connectionTypeName, hostUserUsername, hostLockerName, locker.name, navigate]);
 
   // Render Obligations
@@ -263,6 +289,32 @@ export const Displayterms = () => {
     return <p>No forbidden terms available.</p>;
   };
 
+
+  const uniqueGlobalConnTypeIds = [...new Set(terms
+    .filter(term => term.global_conn_type_id !== null)
+    .map(term => term.global_conn_type_id)
+  )];
+
+  const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
+    const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+    return template ? template : null;
+  });
+
+  const handleNavigation = (template) => {
+    if (template) {
+      console.log(template);
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: template.global_connection_type_name,
+          connectionTypeDescription: template.global_connection_type_description,
+          template_Id: template.global_connection_type_template_id,
+          hide: true,
+        },
+      });
+    }
+  };
+  
+
   const content = (
     <>
       <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
@@ -278,6 +330,23 @@ export const Displayterms = () => {
       <Navbar content={content} />
       <div className="connection-details1">
         <h4>Connection Type Name: {connectionTypeName}</h4>
+        <h3>
+  {globalTemplateNames.length > 0 && "Connection has been imported from "}
+  <span style={{ fontWeight: "bold" }}>
+    {globalTemplateNames.filter(Boolean).map((template, index) => (
+      <span key={index}>
+        <span 
+          style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          onClick={() => handleNavigation(template)}
+        >
+          {template.global_connection_type_name}
+        </span>
+        {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+      </span>
+    ))}
+  </span>
+</h3>
+              
         {connectionDescription}
         <br></br>Created on: {new Date(createdtime).toLocaleString()}
         <br></br>Valid until: {new Date(validitytime).toLocaleString()}

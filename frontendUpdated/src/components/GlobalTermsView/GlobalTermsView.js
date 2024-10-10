@@ -158,7 +158,7 @@ const GlobalTermsView = () => {
   const [termsData, setTermsData] = useState(null);
   const [error, setError] = useState(null);
 
-  const { connectionTypeName, connectionTypeDescription, template_Id } = location.state || {};
+  const { connectionTypeName, connectionTypeDescription, template_Id, hide } = location.state || {};
 
   useEffect(() => {
     if (!curruser) {
@@ -252,11 +252,11 @@ const GlobalTermsView = () => {
   return (
     <div className="global-terms-view-page">
     <Navbar />
-    <Sidebar />
+    {!hide && <Sidebar />}
     <div className="terms-content-container">
       <div className="header-with-button">
         <h2>Global Connection Terms - {connectionTypeName}</h2>
-        <button className="edit-button" onClick={handleEditClick}>Edit</button>
+        {!hide && <button className="edit-button" onClick={handleEditClick}>Edit</button>}
       </div>
 
         <p>{connectionTypeDescription}</p>

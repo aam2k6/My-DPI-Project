@@ -720,6 +720,8 @@ export const CreateConnectionTerms = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [connectionDetails, setConnectionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [globalTemplates, setGlobalTemplates] = useState([]);
+  const [terms, setTerms] = useState([]);
 
   const {
     connectionName,
@@ -808,6 +810,27 @@ export const CreateConnectionTerms = () => {
       return;
     }
 
+    const fetchGlobalTemplates = () => {
+      const token = Cookies.get("authToken");
+      fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // console.log("Fetched Templates:", data); // Log the fetched data
+          setGlobalTemplates(data.data); // Store fetched templates
+          // console.log("global data", data.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching templates:", error);
+          setError("Failed to fetch templates");
+        });
+    };
+
+
     const fetchConnectionDetails = async () => {
     
       const connection_type_name = connectionTypeName;
@@ -868,7 +891,8 @@ export const CreateConnectionTerms = () => {
         const data = await response.json();
     
         if (data.success) {
-          setRes(data.data); // Update to set data.data instead of data
+          setRes(data.data); 
+          setTerms(data.data.obligations);
           console.log("Terms Response Data:", data.data);
         } else {
           setError(data.error || "No terms found");
@@ -882,6 +906,7 @@ export const CreateConnectionTerms = () => {
     fetchTerms();
     checkConsentStatus();
     fetchConnectionDetails();
+    fetchGlobalTemplates();
 
     console.log("details", connectionDetails);
 
@@ -1120,6 +1145,34 @@ export const CreateConnectionTerms = () => {
 
 console.log(res);
 
+
+const uniqueGlobalConnTypeIds = [...new Set(terms
+  .filter(term => term.global_conn_type_id !== null)
+  .map(term => term.global_conn_type_id)
+)];
+
+const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
+  const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+  return template ? template : null;
+});
+
+const handleNavigation = (template) => {
+  if (template) {
+    console.log(template);
+    navigate('/GlobalTermsView', {
+      state: {
+        connectionTypeName: template.global_connection_type_name,
+        connectionTypeDescription: template.global_connection_type_description,
+        template_Id: template.global_connection_type_template_id,
+        hide: true,
+      },
+    });
+  }
+};
+
+
+console.log("names", globalTemplateNames);
+
   const content = (
     // <>
     // <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
@@ -1135,6 +1188,22 @@ console.log(res);
       <br></br>
       <div className="connection-details">
         Connection Name: {connectionName} <br></br>
+        <h3>
+  {globalTemplateNames.length > 0 && "Connection has been imported from "}
+  <span style={{ fontWeight: "bold" }}>
+    {globalTemplateNames.filter(Boolean).map((template, index) => (
+      <span key={index}>
+        <span 
+          style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          onClick={() => handleNavigation(template)}
+        >
+          {template.global_connection_type_name}
+        </span>
+        {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+      </span>
+    ))}
+  </span>
+</h3>
         {connectionDescription}<br></br>
         Guest: {curruser.username} --&gt; Host: {hostUserUsername} 
       </div>

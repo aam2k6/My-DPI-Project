@@ -1377,7 +1377,7 @@ export const ViewLocker = () => {
   const [VnodeResources, setVnodeResources] = useState([]);
   const [activeTab, setActiveTab] = useState("incoming");
   const [xnodes, setXnodes] = useState([]);
-  const [correspondingNames, setCorrespondingNames] = useState([]);
+  // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
 
   useEffect(() => {
@@ -1415,9 +1415,9 @@ export const ViewLocker = () => {
       const data = await response.json();
       console.log("xnode data", data);
 
-      if (data.xnode_list && data.corresponding_document_name_list) {
+      if (data.xnode_list ) {
         setXnodes(data.xnode_list);
-        setCorrespondingNames(data.corresponding_document_name_list);
+        // setCorrespondingNames(data.corresponding_document_name_list);
       } else {
         setError(data.message || "Failed to fetch Xnodes");
       }
@@ -1896,7 +1896,7 @@ export const ViewLocker = () => {
     </>
   );
   // console.log("res vnode", VnodeResources);
-  console.log("res", resources);
+  console.log("xnodes", xnodes);
 
   return (
     <div>
@@ -2036,7 +2036,7 @@ export const ViewLocker = () => {
                               handleClick(xnode.id)
                             }
                           >
-                            {correspondingNames[index]}
+                            {xnode.resource_name}
                           </div>
                           {/* <div className="public-private">
                             {xnode.type === "private" ? <>Private</> : "Public"}

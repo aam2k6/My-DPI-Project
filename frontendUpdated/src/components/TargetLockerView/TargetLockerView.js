@@ -1143,7 +1143,7 @@ export const TargetLockerView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrData, setQrData] = useState("");  // State for QR code data
   const [xnodes, setXnodes] = useState([]);
-  const [correspondingNames, setCorrespondingNames] = useState([]);
+
 
   useEffect(() => {
     if (!curruser) {
@@ -1190,9 +1190,9 @@ export const TargetLockerView = () => {
       const data = await response.json();
       console.log("xnode data", data);
 
-      if (data.xnode_list && data.corresponding_document_name_list) {
+      if (data.xnode_list) {
         setXnodes(data.xnode_list);
-        setCorrespondingNames(data.corresponding_document_name_list);
+        
       } else {
         setError(data.message || "Failed to fetch Xnodes");
       }
@@ -1554,7 +1554,7 @@ export const TargetLockerView = () => {
                               handleXnodeClick(xnode.id)
                             }
                           >
-                            {correspondingNames[index]}
+                            {xnode.resource_name}
                           </div>
                           {/* <div className="public-private">
                             {xnode.type === "private" ? <>Private</> : "Public"}

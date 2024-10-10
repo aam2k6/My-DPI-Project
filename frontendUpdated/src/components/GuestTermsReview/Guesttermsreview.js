@@ -827,11 +827,10 @@ export const Guesttermsreview = () => {
             </span>
           </div>
 
-          <h4>Guest Obligations</h4>
-
           <button onClick={openTermsPopup} className="view-terms-link">
             View Terms
           </button>
+<h3>Guest Obligations</h3>
           {showTermsPopup && (
             <div className="terms-popup">
               <div className="terms-popup-content">
@@ -850,7 +849,6 @@ export const Guesttermsreview = () => {
               </div>
             </div>
           )}
-          <br></br>
           <table>
             <thead>
               <tr>

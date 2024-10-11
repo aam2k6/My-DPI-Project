@@ -1482,20 +1482,20 @@ const appendPagesToTerms = (termValue) => {
   const allObligationsApproved = () => {
     return res?.obligations.every((obligation) => statuses[obligation.labelName] === "Approved");
   };
-  const handleNavigation = (template) => {
-    if (template) {
-      console.log("temp",template);
-      console.log("id",template.global_connection_type_template_id);
-      navigate('/GlobalTermsView', {
-        state: {
-          connectionTypeName: template.global_connection_type_name,
-          connectionTypeDescription: template.global_connection_type_description,
-          template_Id: template.global_connection_type_template_id,
-          hide: true,
-        },
-      });
-    }
-  };
+  // const handleNavigation = (template) => {
+  //   if (template) {
+  //     console.log("temp",template);
+  //     console.log("id",template.global_connection_type_template_id);
+  //     navigate('/GlobalTermsView', {
+  //       state: {
+  //         connectionTypeName: template.global_connection_type_name,
+  //         connectionTypeDescription: template.global_connection_type_description,
+  //         template_Id: template.global_connection_type_template_id,
+  //         hide: true,
+  //       },
+  //     });
+  //   }
+  // };
     
 
   const handleClick = async (xnode_id) => {

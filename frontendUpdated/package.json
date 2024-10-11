@@ -11,6 +11,7 @@
     "@yudiel/react-qr-scanner": "^2.0.8",
     "axios": "^1.7.7",
     "js-cookie": "^3.0.5",
+    "pdfjs-dist": "^3.11.174",
     "qrcode.react": "^4.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -33,7 +34,6 @@
     "workbox-routing": "^6.6.0",
     "workbox-strategies": "^6.6.0",
     "workbox-streams": "^6.6.0"
-
   },
   "scripts": {
     "start": "react-scripts start",

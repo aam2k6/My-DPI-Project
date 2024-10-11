@@ -951,7 +951,7 @@ export const Guesttermsreview = () => {
           <div className="center2">
           {globalTemplateNames.length > 0 && "Regulations used: "}
 <span style={{ fontWeight: "bold" }}>
-  {uniqueGlobalConnTypeIds.map((id, index) => {
+{uniqueGlobalConnTypeIds.map((id, index) => {
     const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
     return template ? (
       <span
@@ -1090,20 +1090,7 @@ export const Guesttermsreview = () => {
     </label>
 </div>
 
-{allObligationsApproved() && (
-  <div>
-    <h3 style={{ textAlign: "left", marginTop: "20px" }}>
-      Host Obligations
-    </h3>
-    <p>You will receive a receipt from the host</p>
-  </div>
-)}
 
-{hostObligationMessage && (
-  <h3 style={{ textAlign: "center", marginTop: "20px" }}>
-    Host Obligation: {hostObligationMessage}
-  </h3>
-)}
 
       {isModalOpen && (
         <Modal

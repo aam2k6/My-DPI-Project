@@ -115,14 +115,74 @@
     font-size: 1em;
 }
 
+
 .resource-container button:hover {
     background-color: #478bb3;
+}
+
+#view{
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    /* padding: 1rem 0.75rem; */
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: bolder;
+    padding: 0.5rem 0.5rem; 
+    max-width: 75px;
+    margin-left: 2rem;
+    margin-top: 0rem;
+    font-size: 12px;
 }
 
 .connection-details{
     font-size: large;
     margin-left: 2rem;
   }
+
+
+  .page-input-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .page-input-modal h3 {
+    margin-bottom: 10px;
+  }
+
+  .page-input-modal label{
+    margin-right: 10px;
+    padding: 1px;
+  }
+  
+  .page-input-modal input {
+    margin: 5px 0;
+    padding: 5px;
+    width: 100px;
+  }
+  
+  .page-input-modal .error {
+    color: red;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .page-input-modal button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    
+  }
+  
   
 
 

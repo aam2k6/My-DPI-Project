@@ -316,6 +316,50 @@ export const Guesttermsreview = () => {
     });
   };
 
+  const handleClick = async (xnode_id_with_pages) => {
+    const xnode_id = xnode_id_with_pages?.split(',')[0];
+    const pages = xnode_id_with_pages?.split(',')[1];
+    const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
+    const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
+    console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+                  /host/,
+                  frontend_host
+                ), {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to access the resource');
+      }
+
+      const data = await response.json();
+      console.log(data);
+      const { link_To_File } = data;
+
+      if (link_To_File) {
+        // console.log("link to file", link_To_File);
+        window.open(link_To_File, '_blank');
+        // setPdfUrl(link_To_File);
+      } else {
+        setError('Unable to retrieve the file link.');
+        console.log(error);
+      }
+    } catch (err) {
+      // setError(`Error: ${err.message}`);
+      console.log(err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
   const handleRevoke = async (connection_id) => {
     const formData = new FormData();
     formData.append("connection_id", connection_id);
@@ -498,14 +542,20 @@ export const Guesttermsreview = () => {
         setError(updateData.error || "Failed to save statuses");
       }
 
+      for(const resource of resourcesToShare){
+        await updateXnode(resource);
+      }
+      for(const resource of resourcesToShare){
+        await updateXnode(resource);
+      }
       // Transfer resources
-      for (const resource of resourcesToTransfer) {
-        await handleAcceptResource(resource);
+      if (resourcesToTransfer.length > 0) {
+        await handleAcceptResource();
       }
 
       // Share resources
-      for (const resource of resourcesToShare) {
-        await handleShareResource(resource);
+      if (resourcesToShare.length > 0) {
+        await handleShareResource();
       }
 
       navigate("/home");
@@ -516,8 +566,55 @@ export const Guesttermsreview = () => {
   };
 
   // console.log("conndetials", conndetails);
-  const handleAcceptResource = async (resource) => {
+  const updateXnode = async (resource) => {
     try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(
+        `host/update-inode/`.replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`,
+          },
+          body: JSON.stringify({
+            connection_id: conndetails.connection_id,
+            xnode_id: resource.id,
+            validity_until: conndetails.validity_until,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error("Failed to update resource");
+      }
+
+      const data = await response.json();
+      // console.log("transfer", data);
+      if (data.success) {
+        console.log("update successful");
+      } else {
+        setError(data.error || "Failed to transfer resource");
+        console.log(data.error);
+      }
+    } catch (err) {
+      setError(err.message);
+      console.log(err);
+    }
+  };
+
+  const handleAcceptResource = async () => {
+    try {
+      console.log(JSON.stringify({
+        connection_name: conndetails.connection_name,
+        host_locker_name: conndetails.host_locker.name,
+        guest_locker_name: conndetails.guest_locker.name,
+        host_user_username: conndetails.host_user.username,
+        guest_user_username: conndetails.guest_user.username,
+        validity_until: conndetails.validity_time,
+      }));
+      
       const token = Cookies.get("authToken");
       const response = await fetch(
         `host/transfer-resource/`.replace(/host/, frontend_host),
@@ -533,13 +630,14 @@ export const Guesttermsreview = () => {
             guest_locker_name: conndetails.guest_locker.name,
             host_user_username: conndetails.host_user.username,
             guest_user_username: conndetails.guest_user.username,
-            resource,
+            validity_until: conndetails.validity_time,
           }),
         }
       );
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.log(response.error);
         throw new Error("Failed to transfer resource");
       }
 
@@ -555,8 +653,17 @@ export const Guesttermsreview = () => {
     }
   };
 
-  const handleShareResource = async (resource) => {
+  const handleShareResource = async () => {
     try {
+      // console.log(JSON.stringify({
+      //   connection_name: conndetails.connection_name,
+      //   host_locker_name: conndetails.host_locker.name,
+      //   guest_locker_name: conndetails.guest_locker.name,
+      //   host_user_username: conndetails.host_user.username,
+      //   guest_user_username: conndetails.guest_user.username,
+      //   validity_until: conndetails.validity_time,
+      // }));
+      
       const token = Cookies.get("authToken");
       const response = await fetch(
         `host/share-resource/`.replace(/host/, frontend_host),
@@ -572,10 +679,12 @@ export const Guesttermsreview = () => {
             guest_locker_name: conndetails.guest_locker.name,
             host_user_username: conndetails.host_user.username,
             guest_user_username: conndetails.guest_user.username,
-            resource,
+            validity_until: conndetails.validity_time,
           }),
         }
       );
+
+      
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -586,6 +695,10 @@ export const Guesttermsreview = () => {
       const data = await response.json();
       if (!data.success) {
         throw new Error(data.error || "Failed to share resource");
+      }
+      else{
+        console.log(data.message);
+        alert(data.message);
       }
     } catch (err) {
       console.error("Error:", err.message);
@@ -807,7 +920,7 @@ export const Guesttermsreview = () => {
     return template ? template.global_connection_type_name : null;
   });
 
-  console.log("statuses", statuses);
+  // console.log("statuses", statuses);
   return (
     <div>
       <Navbar content={content} />
@@ -830,7 +943,7 @@ export const Guesttermsreview = () => {
           <button onClick={openTermsPopup} className="view-terms-link">
             View Terms
           </button>
-<h3>Guest Obligations</h3>
+          <h3>Guest Obligations</h3>
           {showTermsPopup && (
             <div className="terms-popup">
               <div className="terms-popup-content">
@@ -870,12 +983,12 @@ export const Guesttermsreview = () => {
                       <a
                         href="#"
                         onClick={() =>
-                          handleResourceClick(
-                            termsValue[obligation.labelName]?.split(";")[0]
+                          handleClick(
+                            termsValue[obligation.labelName]?.split(";")[0]?.split("|")[1]
                           )
                         }
                       >
-                        {termsValue[obligation.labelName]?.split(";")[0]}
+                        {termsValue[obligation.labelName]?.split(";")[0]?.split("|")[0]}
                       </a>
                     ) : (
                       "None"

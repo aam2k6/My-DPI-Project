@@ -1870,7 +1870,7 @@ export const ViewLocker = () => {
       const data = await response.json();
       console.log(data);
       const { link_To_File } = data;
-
+      // console.log("link to file", link_To_File);
       if (link_To_File) {
         console.log("link to file", link_To_File);
         window.open(link_To_File, '_blank');

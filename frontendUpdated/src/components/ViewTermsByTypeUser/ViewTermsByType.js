@@ -558,6 +558,8 @@ export const ViewTermsByType = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedResourceId, setSelectedResourceId] = useState(null);
   const [selection, setSelection] = useState({});
+  const [hostObligationMessage, setHostObligationMessage] = useState('');
+
 
   const {
     connectionName,
@@ -1458,6 +1460,8 @@ const appendPagesToTerms = (termValue) => {
 
   const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
     const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+      console.log(template, "template for id:", id);  // Debug to check if template is valid
+
     return template ? template : null;
   });
 
@@ -1475,6 +1479,24 @@ const appendPagesToTerms = (termValue) => {
     }
   };
   // console.log(uniqueGlobalConnTypeIds, globalTemplates,  globalTemplateNames, "name");
+  const allObligationsApproved = () => {
+    return res?.obligations.every((obligation) => statuses[obligation.labelName] === "Approved");
+  };
+  const handleNavigation = (template) => {
+    if (template) {
+      console.log("temp",template);
+      console.log("id",template.global_connection_type_template_id);
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: template.global_connection_type_name,
+          connectionTypeDescription: template.global_connection_type_description,
+          template_Id: template.global_connection_type_template_id,
+          hide: true,
+        },
+      });
+    }
+  };
+    
 
   const handleClick = async (xnode_id) => {
 
@@ -1582,7 +1604,6 @@ const appendPagesToTerms = (termValue) => {
     <div>
 
       <Navbar content={content} />
-
       <div className={showResources ? "split-view" : ""}>
         <div className="table-container">
           
@@ -1603,6 +1624,8 @@ const appendPagesToTerms = (termValue) => {
               ))}
             </span>
           </div>
+          
+          <h3>Your Obligations</h3>
 
           <table>
             <thead>
@@ -1679,6 +1702,8 @@ const appendPagesToTerms = (termValue) => {
         
     </div>
     <div>
+        </div>
+       <div>
     {permissions?.canShareMoreData && (
   <div className="table-container">
     {/* Add this div for styling */}
@@ -1750,6 +1775,7 @@ const appendPagesToTerms = (termValue) => {
             </td>
             <td>
               {/* <input
+              {/* <input
                 type="file"
                 onChange={(e) =>
                   updateTerm(index, "enter_value", e.target.files[0])
@@ -1777,6 +1803,21 @@ const appendPagesToTerms = (termValue) => {
         </button>
         <button onClick={handleMoreSubmit}>Submit</button>
       </div>
+         
+    {allObligationsApproved() && (
+  <div>
+    <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+      Host Obligations
+    </h3>
+    <p>You will receive a receipt from the host</p>
+  </div>
+)}
+
+{hostObligationMessage && (
+  <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+    Host Obligation: {hostObligationMessage}
+  </h3>
+)}
          
     {isModalOpen && (
       <Modal
@@ -1835,6 +1876,7 @@ const appendPagesToTerms = (termValue) => {
   );
   
 };
+
 
 
 

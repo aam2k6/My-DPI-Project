@@ -372,6 +372,82 @@ const navigateToViewTerms = (connection) => {
   });
 };
 
+const handleInfo = (connection) => {
+  const connectionParts = connection.connection_name.split(/[-:]/).map(part => part.trim());
+  const connectionTypeName = connectionParts[0];  // Extract connection type
+  const guestUserUsername = connectionParts[1];   // Extract guest username
+  const hostUserUsername = connectionParts[2];  
+  const locker = connection.guest_locker;
+  
+
+  console.log("Navigating with state:", {
+    connectionName: connection.connection_name,
+    hostLockerName: connection.host_locker?.name,
+    guestLockerName: connection.guest_locker?.name,
+    hostUserUsername: connection.host_user?.username,
+    guestUserUsername: connection.guest_user?.username,
+    locker:connection.guest_locker?.name,
+    connectionTypeName,
+    connectionDescription:connection.connection_description,     
+  });
+
+  navigate("/show-connection-terms", {
+    state: {
+      connection_id: connection.connection_id,
+      connectionName: connection.connection_name,
+      connectionDescription: connection.connection_description,
+      hostLockerName: connection.host_locker,  
+      guestLockerName: connection.guest_locker, 
+      hostUserUsername: connection.host_user, 
+      guestUserUsername: curruser.username, 
+      locker: locker,   
+      connectionTypeName                 
+    },
+  });
+};
+
+
+
+const handleConsent = (connection) => {
+  // Split the connection_name using both '-' and ':' to get relevant parts
+  const connectionParts = connection.connection_name.split(/[-:]/).map(part => part.trim());
+  const connectionTypeName = connectionParts[0];  // The first part is the connection type
+  const guestUserUsername = connectionParts[1];   // The second part is the guest username
+  const hostUserUsername = connectionParts[2];    // The third part is the host locker name
+
+  // Ensure that locker IDs are not undefined by extracting from the connection object
+  const guestLockerId = connection.guest_locker?.id
+  const hostLockerId = connection.host_locker?.id 
+  const locker = connection.guest_locker;
+
+
+  console.log("Navigating with state:", {
+    connectionName: connection.connection_name,
+    connectionTypeName,       
+    guestUserUsername,        
+    hostUserUsername,         
+    guestLockerId,            
+    hostLockerId,             
+    connection_id: connection.connection_id,
+  });
+
+  navigate("/show-connection-terms", {
+    state: {
+      connection_id: connection.connection_id,
+      connectionName: connection.connection_name,
+      connectionDescription: connection.connection_description,
+      hostLockerName: connection.host_locker,  
+      guestLockerName: connection.guest_locker, 
+      hostUserUsername: connection.host_user, 
+      guestUserUsername: curruser.username, 
+      locker: locker,   
+      connectionTypeName, 
+      showConsent: true,              
+    },
+  });
+};
+
+
 
   const content = (
     <>
@@ -405,51 +481,99 @@ const navigateToViewTerms = (connection) => {
     {outgoingConnections.length > 0 ? (
       <div className="tableContainer"> {/* Added a container for scrolling */}
         <table className="outgoingConnectionsTable">
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Connection Type</th>
-              <th>Host User</th>
-              <th>Host Locker</th>
-              <th>Guest Locker</th>
-              <th>Created On</th>
-              <th>Validity On</th>
-            </tr>
-          </thead>
-          <tbody>
-            {outgoingConnections.map((connection, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>
-  {/* Connection name clickable */}
-  <button
-    className="connection-name-button"
-    onClick={() => navigateToViewTerms(connection)}
-    style={{
-      textDecoration: "underline",
-      background: "none",
-      border: "none",
-      padding: 0,
-      cursor: "pointer",
-      color: "inherit",
-      
-      textAlign: "left", // Align text to the left
-    }}
-  >
-  {connection.connection_name}
-  </button>
-    {connection.connection_description}
-  
+        <thead>
+  <tr>
+    <th>S.No</th>
+    <th>Connection Type</th>
+    <th>Host User</th>
+    <th>Host Locker</th>
+    <th>Guest Locker</th>
+    <th>Created On</th>
+    <th>Validity On</th>
+    <th>Actions</th> {/* New column for the I and C buttons */}
+  </tr>
+</thead>
+<tbody>
+  {outgoingConnections.map((connection, index) => (
+    <tr key={index}>
+      <td>{index + 1}</td>
+      <td>
+        {/* Connection name clickable */}
+        <button
+          className="connection-name-button"
+          onClick={() => navigateToViewTerms(connection)}
+          style={{
+            textDecoration: "underline",
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            color: "inherit",
+            textAlign: "left",
+          }}
+        >
+          {connection.connection_name}
+        </button>
+        <div>{connection.connection_description}</div>
+      </td>
+      <td>{connection.host_user}</td>
+      <td>{connection.host_locker}</td>
+      <td>{connection.guest_locker}</td>
+      <td>{new Date(connection.created_on).toLocaleString()}</td>
+      <td>{new Date(connection.validity_time).toLocaleString()}</td>
+      <td>
+  <div id="conntent" style={{ display: "flex", justifyContent: "center" }}>
+    {/* I (Info) button with circular design */}
+    <button
+      className="connection-circle-button"
+      onClick={() => handleInfo(connection)}
+      style={{
+        backgroundColor: "#fff",    // Black background
+        color: "#000",              // White text for contrast
+        border: "2px solid #000",   // Black border
+        borderRadius: "50%",        // Circular shape
+        width: "30px",              // Width and height should be equal for perfect circle
+        height: "30px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: "bold",
+        marginRight: "10px",        // Spacing between buttons
+        cursor: "pointer",
+      }}
+    >
+      I
+    </button>
+
+    {/* C (Consent) button with circular design */}
+    <button
+      className="connection-circle-button"
+      onClick={() => handleConsent(connection)}
+      style={{
+        backgroundColor: "#fff",    // Black background
+        color: "#000",              // White text for contrast
+        border: "2px solid #000",   // Black border
+        borderRadius: "50%",        // Circular shape
+        width: "30px",              // Width and height should be equal for perfect circle
+        height: "30px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: "bold",
+        cursor: "pointer",
+      }}
+    >
+      C
+    </button>
+  </div>
 </td>
 
-                <td>{connection.host_user}</td>
-                <td>{connection.host_locker}</td>
-                <td>{connection.guest_locker}</td>
-                <td>{new Date(connection.created_on).toLocaleString()}</td>
-                <td>{new Date(connection.validity_time).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
+
+    </tr>
+  ))}
+</tbody>
+
+
         </table>
       </div>
     ) : (

@@ -919,6 +919,27 @@ export const Guesttermsreview = () => {
     );
     return template ? template.global_connection_type_name : null;
   });
+  const [isReceiptChecked, setIsReceiptChecked] = useState(false); // State for the checkbox
+
+  const handleCheckboxChange = () => {
+      setIsReceiptChecked(!isReceiptChecked); // Toggle checkbox state
+  };
+  const handleNavigation = (template) => {
+    if (template) {
+      console.log("temp",template);
+      console.log("id",template.global_connection_type_template_id);
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: template.global_connection_type_name,
+          connectionTypeDescription: template.global_connection_type_description,
+          template_Id: template.global_connection_type_template_id,
+          hide: true,
+        },
+      });
+    }
+  };
+    
+
 
   // console.log("statuses", statuses);
   return (
@@ -928,16 +949,22 @@ export const Guesttermsreview = () => {
       <div className={showResources ? "split-view" : ""}>
         <div className="table-container">
           <div className="center2">
-            {globalTemplateNames.length > 0 && "Regulations used: "}
-            <span style={{ fontWeight: "bold" }}>
-              {globalTemplateNames.filter(Boolean).map((name, index) => (
-                <span key={index}>
-                  {name}
-                  {index < globalTemplateNames.filter(Boolean).length - 1 &&
-                    ", "}
-                </span>
-              ))}
-            </span>
+          {globalTemplateNames.length > 0 && "Regulations used: "}
+<span style={{ fontWeight: "bold" }}>
+  {uniqueGlobalConnTypeIds.map((id, index) => {
+    const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+    return template ? (
+      <span
+        key={index}
+        onClick={() => handleNavigation(template)}  // Pass the entire template object
+        style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
+      >
+        {template.global_connection_type_name}  
+        {index < uniqueGlobalConnTypeIds.length - 1 && ", "}  
+      </span>
+    ) : null;
+  })}
+</span>
           </div>
 
           <button onClick={openTermsPopup} className="view-terms-link">
@@ -958,6 +985,12 @@ export const Guesttermsreview = () => {
                   <h3>Default Host Privileges</h3>
                   By default Reshare,Download,Aggreagte are disabled unless
                   otherwise mentioned in the terms
+                </div>
+                <div className="permissions">
+                  <h3>Host Obligations</h3>
+                  You will receive a receipt when all the obligations are met.
+                
+
                 </div>
               </div>
             </div>
@@ -1043,6 +1076,35 @@ export const Guesttermsreview = () => {
       <div className="save-button-container">
         <button onClick={handleSave}>Save</button>
       </div>
+      
+      <div style={{ marginTop: '20px', marginLeft: '10px' }}>
+    <h3 style={{ fontSize: '20px', marginLeft: '10px' }}>Host Obligations</h3> {/* Add heading with increased font size */}
+    <label style={{ fontSize: '20px', marginLeft: '10px' }}> {/* Increase font size for the label */}
+        The guest will receive a receipt once all the documents are received.
+        <input
+            type="checkbox"
+            checked={isReceiptChecked}
+            onChange={handleCheckboxChange}
+            style={{ transform: 'scale(1.5)', marginLeft: '10px' }} // Increase checkbox size
+        />
+    </label>
+</div>
+
+{allObligationsApproved() && (
+  <div>
+    <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+      Host Obligations
+    </h3>
+    <p>You will receive a receipt from the host</p>
+  </div>
+)}
+
+{hostObligationMessage && (
+  <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+    Host Obligation: {hostObligationMessage}
+  </h3>
+)}
+
       {isModalOpen && (
         <Modal
           message={modalMessage.message}

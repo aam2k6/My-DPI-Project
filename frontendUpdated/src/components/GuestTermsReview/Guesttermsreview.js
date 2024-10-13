@@ -617,7 +617,7 @@ export const Guesttermsreview = () => {
       
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/transfer-resource/`.replace(/host/, frontend_host),
+        `${frontend_host}/transfer-resource/`,
         {
           method: "POST",
           headers: {

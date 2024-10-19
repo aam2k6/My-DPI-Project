@@ -791,6 +791,7 @@ export const ViewTermsByType = () => {
               dataElement: value.enter_value,
               purpose: value.purpose,
               action: value.typeOfValue,
+              share:value.typeOfSharing,
             })
           );
           setPermissionsData(sharedData);
@@ -1151,12 +1152,13 @@ const appendPagesToTerms = (termValue) => {
       // Traverse through permissionsData
       const canShareMoreData = termValues["canShareMoreData"] || {};
       permissionsData.forEach((permission) => {
-        const { labelName, dataElement, purpose, action } = permission;
+        const { labelName, dataElement, purpose, action ,share} = permission;
 
         canShareMoreData[labelName] = {
           enter_value: dataElement,
           purpose: purpose,
           typeOfValue: action,
+          typeOfSharing:share,
         };
       });
 
@@ -1327,6 +1329,7 @@ const appendPagesToTerms = (termValue) => {
       enter_value: term.enter_value || "", // If value is not provided, use an empty string
       purpose: term.purpose || "Purpose for the document", // Default purpose
       typeOfValue: term.type || "text", // Default to 'text' if no type is selected
+      typeOfShare:term.typeOfSharing||"",
     }));
 
     const requestBody = {
@@ -1369,7 +1372,7 @@ const appendPagesToTerms = (termValue) => {
   const addMoreDataTerm = () => {
     setMoreDataTerms((prevTerms) => [
       ...prevTerms,
-      { labelName: "", purpose: "", enter_value: "", type: "text" }, // Default values
+      { labelName: "", purpose: "", enter_value: "", type: "text" ,typeOfSharing:""}, // Default values
     ]);
   };
   const removeMoreDataTerm = (index) => {
@@ -1592,13 +1595,21 @@ const appendPagesToTerms = (termValue) => {
       </div>
     </>
   );
-  //     console.log("res without submit", res);
-  //     console.log("resources normal", resources);
-  //     console.log("combined", resources);
-  //     console.log('Obligations:', res?.obligations);
-  // console.log('Additional Terms:', res?.moreDataTerms);
 
-  // console.log("resourcesData", resourcesData);
+  const tooltips = {
+    share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
+    transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
+    confer: "You are going to transfer ownership of the resource, but the recipient cannot modify the contents. You still have rights over this resource.",
+    collateral: "You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource."
+  };
+  
+  const renderTooltip = (typeOfShare) => {
+    return (
+      <span className="tooltiptext">
+        {tooltips[typeOfShare] || "Select a type of share to view details."}
+      </span>
+    );
+  };
   return (
 
     <div>
@@ -1633,6 +1644,7 @@ const appendPagesToTerms = (termValue) => {
                 <th>Sno</th>
                 <th>Name</th>
                 <th>purpose</th>
+                <th>Type of share</th>
                 <th>Enter value</th>
                 <th>Host Privileges</th>
                 <th>Status</th> {/* New column for Status */}
@@ -1644,6 +1656,12 @@ const appendPagesToTerms = (termValue) => {
                   <td>{index + 1}</td>
                   <td>{obligation.labelName}</td>
                   <td>{obligation.purpose}</td>
+                  <td>
+                    <div className="tooltip">
+                      {obligation.typeOfSharing}
+                      {renderTooltip(obligation.typeOfSharing)}
+                    </div>
+                  </td>                  
                   <td>{renderInputField(obligation)}</td>
                   <td>
                     {obligation.hostPermissions

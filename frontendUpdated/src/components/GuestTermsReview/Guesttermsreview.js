@@ -180,6 +180,7 @@ export const Guesttermsreview = () => {
               labelName: key,
               dataElement: value.enter_value,
               purpose: value.purpose,
+              //share:value.typeOfSharing,
             })
           );
           setPermissionsData(sharedData);
@@ -938,7 +939,20 @@ export const Guesttermsreview = () => {
       });
     }
   };
-    
+  const tooltips = {
+    share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
+    transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
+    confer: "You are going to transfer ownership of the resource, but the recipient cannot modify the contents. You still have rights over this resource.",
+    collateral: "You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource."
+  };
+  
+  const renderTooltip = (typeOfShare) => {
+    return (
+      <span className="tooltiptext">
+        {tooltips[typeOfShare] || "Select a type of share to view details."}
+      </span>
+    );
+  };
 
 
   // console.log("statuses", statuses);
@@ -1002,6 +1016,7 @@ export const Guesttermsreview = () => {
                 <th>Name</th>
                 <th>Data Element</th>
                 <th>Purpose</th>
+                <th>Type of Share</th>
                 <th>Host Privileges</th>
                 <th>Status</th>
               </tr>
@@ -1029,10 +1044,17 @@ export const Guesttermsreview = () => {
                   </td>
                   <td>{obligation.purpose}</td>
                   <td>
+                    <div className="tooltip">
+                      {obligation.typeOfSharing}
+                      {renderTooltip(obligation.typeOfSharing)}
+                    </div>
+                  </td>  
+                  <td>
                     {obligation.hostPermissions
                       ? obligation.hostPermissions.join(", ")
                       : "None"}
                   </td>
+
                   <td>
                     <select
                       value={statuses[obligation.labelName] || ""}

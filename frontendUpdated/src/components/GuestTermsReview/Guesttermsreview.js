@@ -325,7 +325,7 @@ export const Guesttermsreview = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
                   /host/,
                   frontend_host
                 ), {

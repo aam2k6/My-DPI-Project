@@ -32,6 +32,8 @@ export const ConnectionTermsGlobal = () => {
   const initialGlobalForm = {
     globalName: "",
     globalDescription: "",
+    globaltype:"",
+    domain:"",
   };
 
   const [globalFormData, setGlobalFormData] = useState(initialGlobalForm);
@@ -68,7 +70,7 @@ export const ConnectionTermsGlobal = () => {
 }, [location.state, connectionTypeName, connectionTypeDescription, existingTerms]);
 
 
-  const { globalName, globalDescription } = globalFormData;
+  const { globalName, globalDescription,globaltype } = globalFormData;
 
   // Handle changes for global fields
   const handleGlobalChange = (event) => {
@@ -177,6 +179,9 @@ export const ConnectionTermsGlobal = () => {
           global_connection_type_name: globalFormData.globalName,
           global_connection_type_description: globalFormData.globalDescription,
           global_terms_IDs: termsIDs,
+          globaltype:globalFormData.globaltype,
+          domain: globalFormData.domain // Include domain here
+
         };
   
         return fetch(`${frontend_host}/add-global-template/`, {
@@ -269,6 +274,36 @@ export const ConnectionTermsGlobal = () => {
             onChange={handleGlobalChange}
           />
         </label>
+        <label className="obligation-label">
+  <span>Template/Policy</span>
+  <select
+    name="template"
+    value={globalFormData.template} // Bind it to the state
+    onChange={handleGlobalChange} // Handle changes
+  >
+    <option value="">Select Template/Policy</option>
+    <option value="template">template</option>
+    <option value="policy">policy</option>
+   
+  </select>
+</label>
+<label className="obligation-label">
+  <span>Domain</span>
+  <select
+    name="domain"
+    value={globalFormData.domain} // Bind it to the state
+    onChange={handleGlobalChange} // Handle changes
+  >
+    <option value="">Select Domain</option>
+    <option value="health">Healthcare</option>
+    <option value="finance">Finance</option>
+    <option value="education">Education</option>
+    <option value="technology">Technology</option>
+{/*     <option value="other">Other</option> */}
+  </select>
+</label>
+
+
 
         <div className="main-heading">Guest Terms Of Service</div>
 

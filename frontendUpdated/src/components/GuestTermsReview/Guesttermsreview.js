@@ -1014,6 +1014,7 @@ export const Guesttermsreview = () => {
               Host Connection Terms
             </div>
           </div>
+          {/* Added Tabs */}
           <div className="tab-content">
             {activeTab=="guest" && (
               <>

@@ -173,14 +173,34 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
 
       <div className="navbarLinks">
         {lockerAdmin && (
-          <ul className="navbarFirstLink">
-            <li>
+          <ul>
+            <li className="navLinks">
               <a href="#" onClick={handleConnection}>
                 Locker Admin
               </a>
             </li>
           </ul>
         )}
+
+
+        <ul>
+          <li className="navLinks">
+            <a href="#" onClick={handleDPIDirectory}>
+              DPI Directory
+            </a>
+          </li>
+        </ul>
+
+        <ul>
+          <li className="navLinks">
+            <a href="#" onClick={handleHomeClick}>
+              Home
+            </a>
+          </li>
+          {/* <li>
+            <a href="#" onClick={handleAdminSettings}></a>
+          </li> */}
+        </ul>
 
         {/* Notification Bell */}
         <ul className="navbarFirstLink">
@@ -228,36 +248,20 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
           </li>
         </ul>
 
-        <ul className="navbarFirstLink">
-          <li>
-            <a href="#" onClick={handleDPIDirectory}>
-              DPI Directory
-            </a>
-          </li>
-        </ul>
-
-        <ul className="navbarSecondLink">
-          <li>
-            <a href="#" onClick={handleHomeClick}>
-              Home
-            </a>
-          </li>
-          <li>
-            <a href="#" onClick={handleAdminSettings}></a>
-          </li>
-        </ul>
-
         <ul className="navbarThirdLink">
           <li>
+          <div className="profileContainer">
             <img
               src={userImage}
               alt="User Icon"
               onClick={toggleDropdown}
               className="dropdownImage"
+              style={{ display: "block", margin: "0 auto" }} 
             />
             <div className="username" onClick={toggleDropdown}>
               {capitalizeFirstLetter(curruser.username)}
             </div>
+          </div>
 
             {isOpen && (
               <div className="dropdownContent">

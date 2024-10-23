@@ -120,11 +120,23 @@
 
   .connection-details1{
     font-size: large;
-    margin-left: 2rem;
     margin-top: -4rem;
+    padding-left: 15px;
   }
 
-  
+  .connectionName1{
+    margin-top: 30px;
+    font-size: 18px;
+  }
+  .connectionName2{
+    margin-top: 12px;
+    font-size: 18px;
+  }
+
+.connection-details1 .dates{
+  font-size:small;
+}
+
   .description {
     font-size: 0.995rem; /* Slightly smaller font size for the description */
     color: rgb(44, 41, 41); /* Different color to distinguish from the name */

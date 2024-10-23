@@ -6,6 +6,8 @@ import "./Guesttermsreview.css";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config";
+import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
+
 
 export const Guesttermsreview = () => {
   const navigate = useNavigate();
@@ -32,6 +34,9 @@ export const Guesttermsreview = () => {
   const [connectionDetails, setConnectionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [revokeState, setRevokeState] = useState(true);
+  const [activeTab, setActiveTab] = useState("guest");
+
+
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -875,6 +880,20 @@ export const Guesttermsreview = () => {
     });
   };
 
+  const userTooltips = {
+    guest: "Guest",
+    host: "Host",
+  };
+
+
+  const renderUserTooltip = (userType) => {
+    return (
+      <span className="tooltiptext small-tooltip">
+        {userTooltips[userType] || "Hover over an icon to see user details."}
+      </span>
+    );
+  };
+
   const content = (
     <>
       <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
@@ -895,13 +914,28 @@ export const Guesttermsreview = () => {
             border: "none",
           }}
         >
-          <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
+          <i className="fa fa-info-circle userIcon"></i>
         </button>
         <br></br>
         {conndetails?.connection_description}
         <br></br>
-        Guest: {conndetails?.guest_user?.username || "Loading..."} --&gt; Host:{" "}
-        {conndetails?.host_user?.username || "Loading..."}
+        <div className="tooltip-container user-container">
+          <div className="tooltip user-container">
+            <FaUserCircle className="userIcon"/> &nbsp;
+            <span className="userName">
+              {renderUserTooltip('guest', conndetails?.guest_user?.username)} : {conndetails?.guest_user?.username || "Loading..."}&nbsp;
+            </span>&nbsp;
+          </div>
+          <FaArrowCircleRight className="userIcon" /> &nbsp;
+          <div className="tooltip user-container">
+            <FaRegUserCircle className="userIcon"/>&nbsp;
+            <span className="userName">
+              {renderUserTooltip('host', conndetails?.host_user?.username)} : {conndetails?.host_user?.username || "Loading..."}
+            </span>
+          </div>
+      </div>
+        {/* <FaUserCircle className="userIcon"/> : {conndetails?.guest_user?.username || "Loading..."} <FaArrowCircleRight className="userIcon" /> &nbsp; <FaRegUserCircle className="userIcon"/>&nbsp; :{" "}
+        {conndetails?.host_user?.username || "Loading..."} */}
       </div>
     </>
   );
@@ -960,177 +994,237 @@ export const Guesttermsreview = () => {
     <div>
       <Navbar content={content} />
 
-      <div className={showResources ? "split-view" : ""}>
-        <div className="table-container">
-          <div className="center2">
-          {globalTemplateNames.length > 0 && "Regulations used: "}
-<span style={{ fontWeight: "bold" }}>
-{uniqueGlobalConnTypeIds.map((id, index) => {
-    const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
-    return template ? (
-      <span
-        key={index}
-        onClick={() => handleNavigation(template)}  // Pass the entire template object
-        style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
-      >
-        {template.global_connection_type_name}  
-        {index < uniqueGlobalConnTypeIds.length - 1 && ", "}  
-      </span>
-    ) : null;
-  })}
-</span>
+      <div className="view-container">
+        <div className="b">
+          <div className="tabs">
+            <div
+              className={`tab-header ${
+                activeTab === "guest" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("guest")}
+            >
+              Guest Connection Terms
+            </div>
+            <div
+              className={`tab-header ${
+                activeTab === "host" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("host")}
+            >
+              Host Connection Terms
+            </div>
           </div>
-
-          <button onClick={openTermsPopup} className="view-terms-link">
-            View Terms
-          </button>
-          <h3>Guest Obligations</h3>
-          {showTermsPopup && (
-            <div className="terms-popup">
-              <div className="terms-popup-content">
-                <span className="close" onClick={closeTermsPopup}>
-                  &times;
+          <div className="tab-content">
+            {activeTab=="guest" && (
+              <>
+                          <div className={showResources ? "split-view" : ""}>
+                  <div className="table-container">
+                    <div className="center2">
+                    {globalTemplateNames.length > 0 && "Regulations used: "}
+                <span style={{ fontWeight: "bold" }}>
+                {uniqueGlobalConnTypeIds.map((id, index) => {
+                const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+                return template ? (
+                <span
+                  key={index}
+                  onClick={() => handleNavigation(template)}  // Pass the entire template object
+                  style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
+                >
+                  {template.global_connection_type_name}  
+                  {index < uniqueGlobalConnTypeIds.length - 1 && ", "}  
                 </span>
-                <h2>Connection Terms</h2>
-                {renderObligations()}
-                {renderPermissions()}
-                {renderForbidden()}
-                <div className="permissions">
-                  <h3>Default Host Privileges</h3>
-                  By default Reshare,Download,Aggreagte are disabled unless
-                  otherwise mentioned in the terms
-                </div>
-                <div className="permissions">
-                  <h3>Host Obligations</h3>
-                  You will receive a receipt when all the obligations are met.
-                
+                ) : null;
+                })}
+                </span>
+                    </div>
 
+                    <button onClick={openTermsPopup} className="view-terms-link">
+                      View Terms
+                    </button>
+                    <h3>Guest Obligations</h3>
+                    {showTermsPopup && (
+                      <div className="terms-popup">
+                        <div className="terms-popup-content">
+                          <span className="close" onClick={closeTermsPopup}>
+                            &times;
+                          </span>
+                          <h2>Connection Terms</h2>
+                          {renderObligations()}
+                          {renderPermissions()}
+                          {renderForbidden()}
+                          <div className="permissions">
+                            <h3>Default Host Privileges</h3>
+                            By default Reshare,Download,Aggreagte are disabled unless
+                            otherwise mentioned in the terms
+                          </div>
+                          <div className="permissions">
+                            <h3>Host Obligations</h3>
+                            You will receive a receipt when all the obligations are met.
+                          
+
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Sno</th>
+                          <th>Name</th>
+                          <th>Data Element</th>
+                          <th>Purpose</th>
+                          <th>Type of Share</th>
+                          <th>Host Privileges</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {res?.obligations.map((obligation, index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{obligation.labelName}</td>
+                            <td>
+                              {termsValue[obligation.labelName]?.split(";")[0] ? (
+                                <a
+                                  href="#"
+                                  onClick={() =>
+                                    handleClick(
+                                      termsValue[obligation.labelName]?.split(";")[0]?.split("|")[1]
+                                    )
+                                  }
+                                >
+                                  {termsValue[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+                                </a>
+                              ) : (
+                                "None"
+                              )}
+                            </td>
+                            <td>{obligation.purpose}</td>
+                            <td>
+                              <div className="tooltip">
+                                {obligation.typeOfSharing}
+                                {renderTooltip(obligation.typeOfSharing)}
+                              </div>
+                            </td>  
+                            <td>
+                              {obligation.hostPermissions
+                                ? obligation.hostPermissions.join(", ")
+                                : "None"}
+                            </td>
+
+                            <td>
+                              <select
+                                value={statuses[obligation.labelName] || ""}
+                                onChange={(e) =>
+                                  handleStatusChange(
+                                    obligation.labelName,
+                                    e.target.value,
+                                    termsValue[obligation.labelName]?.split(";")[0],
+                                    obligation.typeOfSharing,
+                                    obligation.typeOfAction === "file"
+                                  )
+                                }
+                              >
+                                <option value="">Select Status</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    {/* Permissions Table Rendered Here */}
+                    {renderPermissionsTable()}
+                  </div>
+                  {showResources && (
+                    <div className="resource-container">
+                      <h3>Resource List</h3>
+                      <ul>
+                        {resources.map((resource, index) => (
+                          <li key={index} onClick={() => handleResourceClick(resource)}>
+                            {resource}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                <br></br>
+                <div className="save-button-container">
+                  <button onClick={handleSave}>Save</button>
+                </div>
+
+                <div style={{ marginTop: '20px', marginLeft: '10px' }}>
+                <h3 style={{ fontSize: '20px', marginLeft: '10px' }}>Host Obligations</h3> {/* Add heading with increased font size */}
+                <label style={{ fontSize: '20px', marginLeft: '10px' }}> {/* Increase font size for the label */}
+                  The guest will receive a receipt once all the documents are received.
+                  <input
+                      type="checkbox"
+                      checked={isReceiptChecked}
+                      onChange={handleCheckboxChange}
+                      style={{ transform: 'scale(1.5)', marginLeft: '10px' }} // Increase checkbox size
+                  />
+                </label>
+                </div>
+
+
+
+                {isModalOpen && (
+                  <Modal
+                    message={modalMessage.message}
+                    onClose={handleCloseModal}
+                    type={modalMessage.type}
+                    revoke={revokeState}
+                    onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
+                    viewTerms={() => navigateToConnectionDetails(connectionType)}
+                  />
+                )}
+
+                {/* {isRevokeModalOpen && (
+                <RevokeMessageModal 
+                message={revokeMessage} 
+                onClose={handleCloseModal}
+                />
+                )} */}
+
+              </>
+            )}
+            {activeTab=="host" &&(
+              <>
+                <div className="table-container">
+                  <h3>Host Obligations</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Sno</th>
+                          <th>Name</th>
+                          <th>purpose</th>
+                          <th>Type of share</th>
+                          <th>Enter value</th>
+                          <th>Host Privileges</th>
+                          <th>Status</th> {/* New column for Status */}
+                        </tr>
+                      </thead>
+                    </table>
+                </div>
+                <div style={{ margin: "10px 0" }}>
+                <div>
+                  {
+                    <button style={{ marginLeft: "10px" }}>
+                      Submit
+                    </button>
+                  }
                 </div>
               </div>
-            </div>
-          )}
-          <table>
-            <thead>
-              <tr>
-                <th>Sno</th>
-                <th>Name</th>
-                <th>Data Element</th>
-                <th>Purpose</th>
-                <th>Type of Share</th>
-                <th>Host Privileges</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {res?.obligations.map((obligation, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{obligation.labelName}</td>
-                  <td>
-                    {termsValue[obligation.labelName]?.split(";")[0] ? (
-                      <a
-                        href="#"
-                        onClick={() =>
-                          handleClick(
-                            termsValue[obligation.labelName]?.split(";")[0]?.split("|")[1]
-                          )
-                        }
-                      >
-                        {termsValue[obligation.labelName]?.split(";")[0]?.split("|")[0]}
-                      </a>
-                    ) : (
-                      "None"
-                    )}
-                  </td>
-                  <td>{obligation.purpose}</td>
-                  <td>
-                    <div className="tooltip">
-                      {obligation.typeOfSharing}
-                      {renderTooltip(obligation.typeOfSharing)}
-                    </div>
-                  </td>  
-                  <td>
-                    {obligation.hostPermissions
-                      ? obligation.hostPermissions.join(", ")
-                      : "None"}
-                  </td>
-
-                  <td>
-                    <select
-                      value={statuses[obligation.labelName] || ""}
-                      onChange={(e) =>
-                        handleStatusChange(
-                          obligation.labelName,
-                          e.target.value,
-                          termsValue[obligation.labelName]?.split(";")[0],
-                          obligation.typeOfSharing,
-                          obligation.typeOfAction === "file"
-                        )
-                      }
-                    >
-                      <option value="">Select Status</option>
-                      <option value="approved">Approved</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Permissions Table Rendered Here */}
-          {renderPermissionsTable()}
-        </div>
-        {showResources && (
-          <div className="resource-container">
-            <h3>Resource List</h3>
-            <ul>
-              {resources.map((resource, index) => (
-                <li key={index} onClick={() => handleResourceClick(resource)}>
-                  {resource}
-                </li>
-              ))}
-            </ul>
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
-      <br></br>
-      <div className="save-button-container">
-        <button onClick={handleSave}>Save</button>
-      </div>
-      
-      <div style={{ marginTop: '20px', marginLeft: '10px' }}>
-    <h3 style={{ fontSize: '20px', marginLeft: '10px' }}>Host Obligations</h3> {/* Add heading with increased font size */}
-    <label style={{ fontSize: '20px', marginLeft: '10px' }}> {/* Increase font size for the label */}
-        The guest will receive a receipt once all the documents are received.
-        <input
-            type="checkbox"
-            checked={isReceiptChecked}
-            onChange={handleCheckboxChange}
-            style={{ transform: 'scale(1.5)', marginLeft: '10px' }} // Increase checkbox size
-        />
-    </label>
-</div>
 
 
-
-      {isModalOpen && (
-        <Modal
-          message={modalMessage.message}
-          onClose={handleCloseModal}
-          type={modalMessage.type}
-          revoke={revokeState}
-          onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
-          viewTerms={() => navigateToConnectionDetails(connectionType)}
-        />
-      )}
-
-      {/* {isRevokeModalOpen && (
-    <RevokeMessageModal 
-        message={revokeMessage} 
-        onClose={handleCloseModal}
-    />
-)} */}
     </div>
   );
 };

@@ -155,6 +155,12 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 
 export const Displayterms = () => {
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -317,7 +323,7 @@ export const Displayterms = () => {
 
   const content = (
     <>
-      <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+      <div className="navbarBrand">{curruser ? capitalizeFirstLetter(curruser.username): "None"}</div>
       <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -329,27 +335,30 @@ export const Displayterms = () => {
     <div>
       <Navbar content={content} />
       <div className="connection-details1">
-        <h4>Connection Type Name: {connectionTypeName}</h4>
-        <h3>
-  {globalTemplateNames.length > 0 && "Connection has been imported from "}
-  <span style={{ fontWeight: "bold" }}>
-    {globalTemplateNames.filter(Boolean).map((template, index) => (
-      <span key={index}>
-        <span 
-          style={{ cursor: 'pointer', textDecoration: 'underline' }}
-          onClick={() => handleNavigation(template)}
-        >
-          {template.global_connection_type_name}
-        </span>
-        {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
-      </span>
-    ))}
-  </span>
-</h3>
-              
-        {connectionDescription}
+        <div className="connectionName1">Connection Type Name: {connectionTypeName}</div>
+        <div className="connectionName2">
+          {globalTemplateNames.length > 0 && "Connection has been imported from "}
+          <span style={{ fontWeight: "bold" }}>
+            {globalTemplateNames.filter(Boolean).map((template, index) => (
+              <span key={index}>
+                <span 
+                  style={{ cursor: 'pointer', textDecoration  : 'underline' }}
+                  onClick={() => handleNavigation(template)}
+                >
+                  {template.global_connection_type_name}
+                </span>
+                {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+              </span>
+            ))}
+          </span>
+        </div>       
+       <div className="dates">
+        <div style={{fontSize:"18px"}}>
+          {connectionDescription}
+        </div>
         <br></br>Created on: {new Date(createdtime).toLocaleString()}
         <br></br>Valid until: {new Date(validitytime).toLocaleString()}
+       </div>
       </div>
       <div className="page13container">
         <p>

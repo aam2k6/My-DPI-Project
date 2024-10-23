@@ -9,27 +9,26 @@ import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
 
-export const Connection = () => {
+export const Connection = ({ formValues, handleInputChange }) => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
-    const { curruser} = useContext(usercontext);
+    const { curruser } = useContext(usercontext);
     const location = useLocation();
-    const [connectionName, setConnectionName] = useState(null);
-    const [connectionDescription, setConnectionDescription] = useState(null);
-    const [validity, setValidity] = useState(null); 
     const { locker_conn, setConnectionData } = useContext(ConnectionContext);
-    const [selectedLocker, setSelectedLocker] = useState(null);
     const [lockers, setLockers] = useState([]);
 
-    // const locker = location.state ? location.state.locker : null;
-    // console.log("in connection", locker);
+    // Local state for connection fields
+    const [connectionName, setConnectionName] = useState(formValues.connectionType || '');  // Default to formData
+    const [connectionType, setConnectionType] = useState(formValues.connectionType || '')
+    const [connectionDescription, setConnectionDescription] = useState(formValues.description || '');
+    const [validity, setValidity] = useState(formValues.calender || '');
 
     useEffect(() => {
         if (!curruser) {
             navigate('/');
             return;
         }
-    }, []);
+    }, [curruser, navigate]);
 
     useEffect(() => {
         const token = Cookies.get('authToken');
@@ -45,8 +44,8 @@ export const Connection = () => {
             .then(data => {
                 if (data.success) {
                     setLockers(data.lockers);
-                    if (!selectedLocker && data.lockers.length > 0) {
-                        setSelectedLocker(data.lockers[0]);
+                    if (data.lockers.length > 0) {
+                        setConnectionName(data.lockers[0].name); // Example of setting default
                     }
                 } else {
                     setError(data.message || data.error);
@@ -68,71 +67,84 @@ export const Connection = () => {
         };
 
         setConnectionData(connectionData);
-
-        console.log("Form submitted");
-        console.log("in connection 2", connectionData, locker_conn);
-
+        console.log("Form submitted", connectionData, locker_conn);
         navigate("/connectionTerms");
-        // navigate("/connectionTerms", { state: { selectedLocker } });
+    };
+
+    // Handle input change for local state
+    const handleLocalChange = (e, key) => {
+        const value = e.target.value;
+        if (key === 'connectionType') {
+            setConnectionType(value);
+            handleInputChange(e, 'connectionType');  // Update parent state too
+        } else if (key === 'connectionDescription') {
+            setConnectionDescription(value);
+            handleInputChange(e, 'description');  // Update parent state too
+        } else if (key === 'validity') {
+            setValidity(value);
+            handleInputChange(e, 'calender');  // Update parent state too
+        }
     };
 
     const content = (
-        <><div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
-        <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
+        <>
+            <div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
+            <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
         </>
-        );
+    );
 
     return (
         <div>
-            <Navbar content = {content}></Navbar>
-            <Panel />  
-            <div className="Panelcontent">      
-          <div className="connection-heroContainer">
-                <div className="connection-resourceHeading">Connection</div>
+            <Navbar content={content}></Navbar>
+            <Panel />
+            <div className="Panelcontent">
+                <div className="connection-heroContainer">
+                    <div className="connection-resourceHeading">Connection</div>
+                    <div className="connection-lockerForm">
+                        <form className="connection-lockerForm" onSubmit={handleSubmit}>
+                            <label>
+                                <span>Locker</span>
+                                <input
+                                    value={locker_conn ? locker_conn.name : ''} 
+                                    readOnly
+                                />
+                            </label>
 
-                <div className="connection-lockerForm">
-                    <form className="connection-lockerForm" onSubmit={handleSubmit}>
-                        <label>
-                            <span>Locker</span>
-                            <input
-                             value={locker_conn ? locker_conn.name : ''}  readOnly/>
+                            <label>
+                                <span>Name</span>
+                                <input
+                                    type="text"
+                                    placeholder="Connection Type Name"
+                                    value={connectionType}
+                                    onChange={(e) => handleLocalChange(e, 'connectionType')}
+                                />
+                            </label>
 
-                        </label>
+                            <label>
+                                <span>Description </span>
+                                <input
+                                    type="text"
+                                    placeholder="Description"
+                                    value={connectionDescription}
+                                    onChange={(e) => handleLocalChange(e, 'connectionDescription')}
+                                />
+                            </label>
 
-                        <label>
-                            <span>Name</span>
-                            <input
-                                type="text"
-                                name="lockerDescription"
-                                placeholder="Connection Type Name"
-                                onChange = {(e)=>setConnectionName(e.target.value)}
-                            />
-                        </label>
+                            <label>
+                                <span>Validity</span>
+                                <input
+                                    type="date"
+                                    placeholder="Calendar Picker"
+                                    value={validity}
+                                    onChange={(e) => handleLocalChange(e, 'validity')}
+                                />
+                            </label>
 
-                        <label>
-                            <span>Description </span>
-                            <input id="kerak"
-                                type="text"
-                                name="lockerDescription"
-                                placeholder="Description"
-                                onChange = {(e)=>setConnectionDescription(e.target.value)}
-                            />
-                        </label>
-                        <label>
-                            <span>Validity</span>
-                            <input
-                                type="date"
-                                name="lockerDescription"
-                                placeholder="Calendar Picker"
-                                onChange = {(e)=>setValidity(e.target.value)}
-                            />
-                        </label>
-
-                        <button type="submit">Next</button>
-                    </form>
+                            <button type="submit">Next</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            </div> 
         </div>
     );
 };

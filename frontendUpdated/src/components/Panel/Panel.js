@@ -67,7 +67,17 @@ const Panel = () => {
             to="/connectionTerms"
             onClick={() => navigate("/connectionTerms")}
           >
-            Connection Terms
+            Guest Connection Terms
+          </Link>
+        </li>
+        <li
+          className={location.pathname === "/connectionTermsHost" ? "selected" : ""}
+        >
+          <Link 
+            to="/connectionTermsHost"
+            onClick={() => navigate("/connectionTermsHost")}
+          >
+            Host Connection Terms
           </Link>
         </li>
       </ul>

@@ -15,6 +15,7 @@ import { DPIdirectory } from "./components/DPIdirectory/DPIdirectory";
 import { TargetUserView } from "./components/TargetUserView/TargetUserView";
 import { Connection } from "./components/Connection/Connection";
 import { ConnectionTerms } from "./components/ConnectionTerms/ConnectionTerms";
+import { ConnectionTermsHost } from "./components/ConnectionTerms/ConnectionTermsHost"
 import { ConnectionTermsGlobal } from "./components/ConnectionTermsGlobal/ConnectionTermsGlobal";
 import { TargetLockerView } from "./components/TargetLockerView/TargetLockerView";
 import { Admin } from "./components/Admin/Admin";
@@ -42,6 +43,18 @@ function App() {
   const [curruser, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [formValues, setFormValues] = useState({
+    connectionType:'',
+    description:'',
+    calender:'',
+  });
+
+  const handleInputChange = (event, field) => {
+    const { value } = event.target;
+    setFormValues((prevData) => ({ ...prevData, [field]: value }));
+  };
+
+
   useEffect(() => {
     // Load user from localStorage if available
     const storedUser = localStorage.getItem("curruser");
@@ -64,6 +77,7 @@ function App() {
     return <div>Loading...</div>; // Render a loading indicator while checking localStorage
   }
 
+    
   return (
     <div className="App">
       <Router>
@@ -124,7 +138,7 @@ function App() {
               path="/connection"
               element={
                 <ProtectedRoute>
-                  <Connection />
+                  <Connection formValues={formValues} handleInputChange={handleInputChange}/>
                 </ProtectedRoute>
               }
             />
@@ -132,7 +146,15 @@ function App() {
               path="/connectionTerms"
               element={
                 <ProtectedRoute>
-                  <ConnectionTerms />
+                  <ConnectionTerms formValues={formValues} handleInputChange={handleInputChange} setFormValues={setFormValues}/>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/connectionTermsHost"
+              element={
+                <ProtectedRoute>
+                  <ConnectionTermsHost />
                 </ProtectedRoute>
               }
             />

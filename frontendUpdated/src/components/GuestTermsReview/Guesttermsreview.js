@@ -1015,6 +1015,7 @@ export const Guesttermsreview = () => {
             </div>
           </div>
           {/* Added Tabs */}
+            {/* Added Tabs */}
           <div className="tab-content">
             {activeTab=="guest" && (
               <>

@@ -912,12 +912,13 @@ export const Guesttermsreview = () => {
             cursor: "pointer",
             background: "transparent",
             border: "none",
+            marginBottom:"6px"
           }}
         >
           <i className="fa fa-info-circle userIcon"></i>
         </button>
         <br></br>
-        {conndetails?.connection_description}
+        <span>{conndetails?.connection_description}</span>
         <br></br>
         <div className="tooltip-container user-container">
           <div className="tooltip user-container">
@@ -1158,18 +1159,18 @@ export const Guesttermsreview = () => {
                   <button onClick={handleSave}>Save</button>
                 </div>
 
-                <div style={{ marginTop: '20px', marginLeft: '10px' }}>
-                <h3 style={{ fontSize: '20px', marginLeft: '10px' }}>Host Obligations</h3> {/* Add heading with increased font size */}
-                <label style={{ fontSize: '20px', marginLeft: '10px' }}> {/* Increase font size for the label */}
+                {/* <div style={{ marginTop: '20px', marginLeft: '10px' }}>
+                <h3 style={{ fontSize: '20px', marginLeft: '10px' }}>Host Obligations</h3>
+                <label style={{ fontSize: '20px', marginLeft: '10px' }}>
                   The guest will receive a receipt once all the documents are received.
                   <input
                       type="checkbox"
                       checked={isReceiptChecked}
                       onChange={handleCheckboxChange}
-                      style={{ transform: 'scale(1.5)', marginLeft: '10px' }} // Increase checkbox size
+                      style={{ transform: 'scale(1.5)', marginLeft: '10px' }}
                   />
                 </label>
-                </div>
+                </div> */}
 
 
 

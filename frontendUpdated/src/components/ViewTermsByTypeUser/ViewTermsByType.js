@@ -522,8 +522,16 @@ import "./ViewTermsByType.css";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
+import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
+
 
 export const ViewTermsByType = () => {
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -559,6 +567,7 @@ export const ViewTermsByType = () => {
   const [selectedResourceId, setSelectedResourceId] = useState(null);
   const [selection, setSelection] = useState({});
   const [hostObligationMessage, setHostObligationMessage] = useState('');
+  const [activeTab, setActiveTab] = useState("guest");
 
 
   const {
@@ -975,7 +984,7 @@ export const ViewTermsByType = () => {
         return (
           <button onClick={() => handleButtonClick(obligation.labelName)}>
             {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
-              "Upload File"}
+              "Select File"}
           </button>
         );
       case "date":
@@ -1015,7 +1024,7 @@ export const ViewTermsByType = () => {
       ...prev,
       [currentLabelName]: resource,
     }));
-    setShowResources(false);
+    setShowResources(true);
     setSelectedResourceId(resource.id);
     setShowPageInput(true);
     console.log("resources selected", selectedResources);
@@ -1070,6 +1079,7 @@ export const ViewTermsByType = () => {
             
             setShowPageInput(false);
             setErrorMessage(null);
+            setShowResources(false)
             setFromPage('');
             setToPage('');
         } else {
@@ -1541,10 +1551,25 @@ const appendPagesToTerms = (termValue) => {
     }
   };
 
+  const userTooltips = {
+    guest: "Guest",
+    host: "Host",
+  };
+
+  const renderUserTooltip = (userType) => {
+    return (
+      <span className="tooltiptext small-tooltip">
+        {userTooltips[userType] || "Hover over an icon to see user details."}
+      </span>
+    );
+  };
+
   console.log("selection", selection);
   const content = (
     <>
-      <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+      <div className="navbarBrand">
+        {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
+      </div>
       <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -1572,6 +1597,7 @@ const appendPagesToTerms = (termValue) => {
         </button>
         <br></br>
         <>
+        <div style={{paddingBottom:"8px"}}>
         {globalTemplateNames.length > 0 && "Connection has been imported from "}
   <span style={{ fontWeight: "bold" }}>
     {globalTemplateNames.filter(Boolean).map((template, index) => (
@@ -1586,12 +1612,20 @@ const appendPagesToTerms = (termValue) => {
       </span>
 
     ))}
-     </span></>
-     <br></br>
- 
+     </span></div></>
         {connectionDescription}
         <br></br>
-        Guest: {guestUserUsername} --&gt;Host: {hostUserUsername}
+        <div className="tooltip-container user-container">
+          <div className="tooltip user-container">
+            <FaUserCircle className="userIcon"/> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
+          </div>
+          <FaArrowCircleRight className="userIcon" /> &nbsp;
+          <div className="tooltip user-container">
+            <FaRegUserCircle className="userIcon"/>&nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
+          </div>
+        </div>
       </div>
     </>
   );
@@ -1610,285 +1644,369 @@ const appendPagesToTerms = (termValue) => {
       </span>
     );
   };
+
+  const renderPermissionsTable = () => {
+    if (permissionsData.length > 0) {
+      return (
+        <div className="permissions-table">
+          <h3>User Permissions</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Sno</th>
+                <th>Label Name</th>
+                <th>Data Element</th>
+                <th>Purpose</th>
+                <th>Type of Share</th> {/* New column for Type of Share */}
+                <th>Status</th> {/* New column for status dropdown */}
+              </tr>
+            </thead>
+            <tbody>
+              
+            </tbody>
+          </table>
+        </div>
+      );
+    } else {
+      return;
+    }
+  };
+
   return (
 
     <div>
 
       <Navbar content={content} />
-      <div className={showResources ? "split-view" : ""}>
-        <div className="table-container">
-          
-          <div className="center">
-          {globalTemplateNames.length > 0 && "Regulations used: "}
-            <span style={{ fontWeight: "bold" }}>
-              {globalTemplateNames.filter(Boolean).map((template, index) => (
-                <span key={index}>
-                  <span 
-          style={{ cursor: 'pointer', textDecoration: 'underline' }}
-          onClick={() => handleNavigation(template)}
-        >
-          {template.global_connection_type_name}
-        </span>
-                  {index < globalTemplateNames.filter(Boolean).length - 1 &&
-                    ", "}
-                </span>
-              ))}
-            </span>
-          </div>
-          
-          <h3>Your Obligations</h3>
 
+
+
+      <div className="view-container">
+    <div className="b">
+            <div className="tabs">
+              <div
+                className={`tab-header ${
+                  activeTab === "guest" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("guest")}
+              >
+                Guest Connection Terms
+              </div>
+              <div
+                className={`tab-header ${
+                  activeTab === "host" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("host")}
+              >
+                Host Connection Terms
+              </div>
+            </div>
+          <div className="tab-content">
+          {activeTab === "guest" && (
+            <div>
+      
+            <div className={showResources ? "split-view" : ""}>
+              <div className="table-container">
+                
+                <div className="center">
+                {globalTemplateNames.length > 0 && "Regulations used: "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {globalTemplateNames.filter(Boolean).map((template, index) => (
+                      <span key={index}>
+                        <span 
+                style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => handleNavigation(template)}
+              >
+                {template.global_connection_type_name}
+              </span>
+                        {index < globalTemplateNames.filter(Boolean).length - 1 &&
+                          ", "}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+                
+                <h3>Your Obligations</h3>
+      
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Sno</th>
+                      <th>Name</th>
+                      <th>purpose</th>
+                      <th>Type of share</th>
+                      <th>Enter value</th>
+                      <th>Host Privileges</th>
+                      <th>Status</th> {/* New column for Status */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {res?.obligations.map((obligation, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{obligation.labelName}</td>
+                        <td>{obligation.purpose}</td>
+                        <td>
+                          <div className="tooltip">
+                            {obligation.typeOfSharing}
+                            {renderTooltip(obligation.typeOfSharing)}
+                          </div>
+                        </td>                  
+                        <td>{renderInputField(obligation)}</td>
+                        <td>
+                          {obligation.hostPermissions
+                            ? obligation.hostPermissions.join(", ")
+                            : "None"}
+                        </td>
+                        <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
+                        {/* Display status */}
+                        {/* <td>{obligation.labelDescription}</td> */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ margin: "10px 0" }}>
+                <div>
+                  {
+                    <button style={{ marginLeft: "10px" }} onClick={handleSubmit}>
+                      Submit
+                    </button>
+                  }
+                </div>
+              </div>
+              <div>
+                {showResources && (
+                  <div className="resource-container">
+                    <h3>Select Resource for {currentLabelName}</h3>
+                    {/* {error && <p className="error">{error}</p>} */}
+      
+                    <ul>
+                      {xnodes.map((resource, index) => (
+                        <li key={index}>
+                          <div>
+                            <label>
+                              <input
+                                type="radio"
+                                name="selectedResource"
+                                value={resource.resource_name} //i changed here
+                                checked={
+                                  selection[currentLabelName]
+                                    ?.id === resource.id
+                                }
+                                onClick={() => handleResourceSelection(resource)}
+                              />
+                              {resource.resource_name}  <button id="view" onClick = {() => handleClick(resource.id)}>View</button>
+                            </label>
+                           
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <button onClick={() => setShowResources(false)}>Select</button>
+                  </div>
+                )}
+              </div>
+              
+          </div>
+          <div>
+              </div>
+             <div>
+          {permissions?.canShareMoreData && (
+        <div className="table-container">
+          {/* Add this div for styling */}
+          <h3>Share more data</h3>
           <table>
             <thead>
               <tr>
                 <th>Sno</th>
                 <th>Name</th>
-                <th>purpose</th>
-                <th>Type of share</th>
-                <th>Enter value</th>
-                <th>Host Privileges</th>
-                <th>Status</th> {/* New column for Status */}
+                <th>Purpose</th>
+                <th>Type of Share</th>
+                <th>Value</th>
+                <th>Status</th> {/* Changed "Remove" to "Status" */}
               </tr>
             </thead>
             <tbody>
-              {res?.obligations.map((obligation, index) => (
+              
+              {permissionsData.map((permission) => (
+                <tr key={permission.sno}>
+                  <td>{permission.sno}</td>
+                  <td>{permission.labelName}</td>
+                  <td>{permission.purpose || "None"}</td>
+                  {/* Display "None" if empty */}
+                  <td>{permission.action}</td>
+                  <td>
+                    {permission.dataElement || "None"}
+                    {/* Display "None" if empty */}
+                  </td>
+                  <td>Status Active</td> {/* Example status value */}
+                </tr>
+              ))}
+              {moreDataTerms.map((term, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{obligation.labelName}</td>
-                  <td>{obligation.purpose}</td>
                   <td>
-                    <div className="tooltip">
-                      {obligation.typeOfSharing}
-                      {renderTooltip(obligation.typeOfSharing)}
-                    </div>
-                  </td>                  
-                  <td>{renderInputField(obligation)}</td>
-                  <td>
-                    {obligation.hostPermissions
-                      ? obligation.hostPermissions.join(", ")
-                      : "None"}
+                    <input
+                      type="text"
+                      value={term.labelName}
+                      onChange={(e) =>
+                        updateTerm(index, "labelName", e.target.value)
+                      }
+                      placeholder="Label Name"
+                      required
+                    />
                   </td>
-                  <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
-                  {/* Display status */}
-                  {/* <td>{obligation.labelDescription}</td> */}
+                  <td>
+                    <input
+                      type="text"
+                      value={term.purpose}
+                      onChange={(e) =>
+                        updateTerm(index, "purpose", e.target.value)
+                      }
+                      placeholder="Purpose"
+                      required
+                    />
+                  </td>
+                  <td>
+                    <select
+                      value={term.typeOfShare}
+                      onChange={(e) =>
+                        updateTerm(index, "typeOfShare", e.target.value)
+                      }
+                    >
+                      <option value="share">Share</option>
+                      <option value="transfer">Transfer</option>
+                      <option value="confer">Confer</option>
+                      <option value="collateral">Collateral</option>
+                    </select>
+                  </td>
+                  <td>
+                    {/* <input
+                    {/* <input
+                      type="file"
+                      onChange={(e) =>
+                        updateTerm(index, "enter_value", e.target.files[0])
+                      }
+                     
+                      required
+                    /> */}
+                     <button onClick={() => handleButtonClick(term.labelName)}>
+                      {selectedResources[term.labelName]?.id ||
+                        "Upload File"}
+                    </button>
+                  </td>
+                  <td>Pending</td> {/* Example status value */}
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-        <div style={{ margin: "10px 0" }}>
-          <div>
-            {
-              <button style={{ marginLeft: "10px" }} onClick={handleSubmit}>
-                Submit
+          <div style={{ margin: "20px 0" }}>
+            <div>
+              <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
+                Add Data
               </button>
-            }
-          </div>
-        </div>
-        <div>
-          {showResources && (
-            <div className="resource-container">
-              <h3>Select Resource for {currentLabelName}</h3>
-              {/* {error && <p className="error">{error}</p>} */}
-
-              <ul>
-                {xnodes.map((resource, index) => (
-                  <li key={index}>
-                    <div>
-                      <label>
-                        <input
-                          type="radio"
-                          name="selectedResource"
-                          value={resource.resource_name} //i changed here
-                          checked={
-                            selection[currentLabelName]
-                              ?.id === resource.id
-                          }
-                          onClick={() => handleResourceSelection(resource)}
-                        />
-                        {resource.resource_name}  <button id="view" onClick = {() => handleClick(resource.id)}>View</button>
-                      </label>
-                     
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <button onClick={() => setShowResources(false)}>Select</button>
+              <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
+                Remove Data {/* This removes the last term added */}
+              </button>
+              <button onClick={handleMoreSubmit}>Submit</button>
             </div>
-          )}
-        </div>
-        
-    </div>
-    <div>
-        </div>
-       <div>
-    {permissions?.canShareMoreData && (
-  <div className="table-container">
-    {/* Add this div for styling */}
-    <h3>Share more data</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Sno</th>
-          <th>Name</th>
-          <th>Purpose</th>
-          <th>Type of Share</th>
-          <th>Value</th>
-          <th>Status</th> {/* Changed "Remove" to "Status" */}
-        </tr>
-      </thead>
-      <tbody>
-        
-        {permissionsData.map((permission) => (
-          <tr key={permission.sno}>
-            <td>{permission.sno}</td>
-            <td>{permission.labelName}</td>
-            <td>{permission.purpose || "None"}</td>
-            {/* Display "None" if empty */}
-            <td>{permission.action}</td>
-            <td>
-              {permission.dataElement || "None"}
-              {/* Display "None" if empty */}
-            </td>
-            <td>Status Active</td> {/* Example status value */}
-          </tr>
-        ))}
-        {moreDataTerms.map((term, index) => (
-          <tr key={index}>
-            <td>{index + 1}</td>
-            <td>
-              <input
-                type="text"
-                value={term.labelName}
-                onChange={(e) =>
-                  updateTerm(index, "labelName", e.target.value)
-                }
-                placeholder="Label Name"
-                required
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={term.purpose}
-                onChange={(e) =>
-                  updateTerm(index, "purpose", e.target.value)
-                }
-                placeholder="Purpose"
-                required
-              />
-            </td>
-            <td>
-              <select
-                value={term.typeOfShare}
-                onChange={(e) =>
-                  updateTerm(index, "typeOfShare", e.target.value)
-                }
-              >
-                <option value="share">Share</option>
-                <option value="transfer">Transfer</option>
-                <option value="confer">Confer</option>
-                <option value="collateral">Collateral</option>
-              </select>
-            </td>
-            <td>
-              {/* <input
-              {/* <input
-                type="file"
-                onChange={(e) =>
-                  updateTerm(index, "enter_value", e.target.files[0])
-                }
                
-                required
-              /> */}
-               <button onClick={() => handleButtonClick(term.labelName)}>
-                {selectedResources[term.labelName]?.id ||
-                  "Upload File"}
-              </button>
-            </td>
-            <td>Pending</td> {/* Example status value */}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-    <div style={{ margin: "20px 0" }}>
-      <div>
-        <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
-          Add New Term
-        </button>
-        <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-          Remove Last Term {/* This removes the last term added */}
-        </button>
-        <button onClick={handleMoreSubmit}>Submit</button>
+          {allObligationsApproved() && (
+        <div>
+          <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+            Host Obligations
+          </h3>
+          <p>You will receive a receipt from the host</p>
+        </div>
+      )}
+      
+      {hostObligationMessage && (
+        <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+          Host Obligation: {hostObligationMessage}
+        </h3>
+      )}
+               
+          {isModalOpen && (
+            <Modal
+              message={modalMessage.message}
+              onClose={handleCloseModal}
+              type={modalMessage.type}
+            />
+          )}
+      
+      {showPageInput && (
+        <div className="page-input-modal">
+        <div>
+          <h3>Enter Page Range for {currentLabelName}</h3>
+          {errorMessage && <p className="error">{errorMessage}</p>}
+      
+          <label>
+            From Page:
+            <input
+              type="number"
+              value={fromPage}
+              onChange={(e) => setFromPage(e.target.value)}
+              min="1"
+            />
+          </label>
+      
+          <label>
+            To Page:
+            <input
+              type="number"
+              value={toPage}
+              onChange={(e) => setToPage(e.target.value)}
+              min="1"
+            />
+          </label>
+      
+          
+        </div>
+        <div className="button-group">
+          <button onClick={handlePageSubmit}>Submit</button>
+          <button onClick={() =>{
+          setShowPageInput(false);
+          setErrorMessage(null);
+          setFromPage('');
+          setToPage('');
+        }}>Cancel</button>
+        </div>
+        </div>
+      )}
+        </div>
+        </div>
+      )}
+      
       </div>
-         
-    {allObligationsApproved() && (
-  <div>
-    <h3 style={{ textAlign: "left", marginTop: "20px" }}>
-      Host Obligations
-    </h3>
-    <p>You will receive a receipt from the host</p>
-  </div>
-)}
+          </div>
+      
+          )}
+          {activeTab === "host" && (
+            <>
+              <h3>Host Obligations</h3>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Sno</th>
+                      <th>Name</th>
+                      <th>Data Element</th>
+                      <th>Purpose</th>
+                      <th>Type of Share</th>
+                      <th>Host Privileges</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                </table>
 
-{hostObligationMessage && (
-  <h3 style={{ textAlign: "center", marginTop: "20px" }}>
-    Host Obligation: {hostObligationMessage}
-  </h3>
-)}
-         
-    {isModalOpen && (
-      <Modal
-        message={modalMessage.message}
-        onClose={handleCloseModal}
-        type={modalMessage.type}
-      />
-    )}
-
-{showPageInput && (
-  <div className="page-input-modal">
-  <div>
-    <h3>Enter Page Range for {currentLabelName}</h3>
-    {errorMessage && <p className="error">{errorMessage}</p>}
-
-    <label>
-      From Page:
-      <input
-        type="number"
-        value={fromPage}
-        onChange={(e) => setFromPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    <label>
-      To Page:
-      <input
-        type="number"
-        value={toPage}
-        onChange={(e) => setToPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    
-  </div>
-  <div className="button-group">
-    <button onClick={handlePageSubmit}>Submit</button>
-    <button onClick={() =>{
-    setShowPageInput(false);
-    setErrorMessage(null);
-    setFromPage('');
-    setToPage('');
-  }}>Cancel</button>
-  </div>
-  </div>
-)}
-  </div>
-  </div>
-)}
-
-</div>
+                {/* Permissions Table Rendered Here */}
+                {renderPermissionsTable()}
+              </div>
+            </>
+          )}
+          </div>
+    </div>
+    </div>
     </div>
     
   );

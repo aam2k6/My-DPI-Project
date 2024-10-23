@@ -150,7 +150,7 @@
 
 //   const handleSubmit = (event) => {
 //     event.preventDefault();
-  
+
 //     if (obligations.length === 0) {
 //       setError("At least one obligation must be added.");
 //       setModalMessage({
@@ -160,9 +160,9 @@
 //       setIsModalOpen(true); // Open modal with info message.
 //       return;
 //     }
-  
+
 //     const token = Cookies.get("authToken");
-  
+
 //     const connectionTermsData = {
 //       ...connectionData,
 //       obligations: obligations,
@@ -171,9 +171,9 @@
 //         canDownloadData: formData.canDownload,
 //       },
 //     };
-  
+
 //     setConnectionTermsData(connectionTermsData);
-  
+
 //     fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
 //       method: "POST",
 //       headers: {
@@ -191,7 +191,7 @@
 //             type: "success",
 //           });
 //           setIsModalOpen(true);
-//           navigate("/admin"); 
+//           navigate("/admin");
 //           // Optionally, reset the form after successful creation.
 //         } else if (status === 400 && data.error.includes("already exists")) {
 //           // Handle the case where the connection type already exists.
@@ -201,7 +201,7 @@
 //             type: "error",
 //           });
 //           setIsModalOpen(true);
-          
+
 //         } else {
 //           // General error handling.
 //           console.error("Error:", data.error);
@@ -223,7 +223,7 @@
 //         setIsModalOpen(true); // Open modal with error message.
 //       });
 //   };
-  
+
 //   const handleHostPermissionsChange = (event) => {
 //     const { value, checked } = event.target;
 
@@ -557,12 +557,12 @@ export const ConnectionTerms = () => {
     labelName: "",
     typeOfAction: "text",
     typeOfSharing: "share",
-    purpose:"",
+    purpose: "",
     labelDescription: "",
     hostPermissions: [],
     canShareMore: false,
     canDownload: false,
-    forbidden:false,
+    forbidden: false,
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -575,33 +575,29 @@ export const ConnectionTerms = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false); // To toggle dropdown visibility
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
 
-  );
-
-
-const fetchGlobalTemplates = () => {
-  const token = Cookies.get("authToken");
-  fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
-    method: "GET",
-    headers: {
-      Authorization: `Basic ${token}`,
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Fetched Templates:", data); // Log the fetched data
-      setGlobalTemplates(data.data); // Store fetched templates
-      console.log("global data", data.data);
-      setDropdownVisible(true); // Show dropdown
+  const fetchGlobalTemplates = () => {
+    const token = Cookies.get("authToken");
+    fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
     })
-    .catch((error) => {
-      console.error("Error fetching templates:", error);
-      setError("Failed to fetch templates");
-    });
-};
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched Templates:", data); // Log the fetched data
+        setGlobalTemplates(data.data); // Store fetched templates
+        console.log("global data", data.data);
+        setDropdownVisible(true); // Show dropdown
+      })
+      .catch((error) => {
+        console.error("Error fetching templates:", error);
+        setError("Failed to fetch templates");
+      });
+  };
 
-  
   const handleTemplateSelection = (templateId) => {
     setSelectedTemplateIds((prev) => {
       const updatedIds = prev.includes(templateId)
@@ -635,28 +631,27 @@ const fetchGlobalTemplates = () => {
 
             const obligationsWithGlobalId = obligations.map((obligation) => ({
               ...obligation,
-              global_conn_type_id: templateId,  // Add global_conn_type_id
+              global_conn_type_id: templateId, // Add global_conn_type_id
             }));
-  
-  
+
             // Combine obligations, permissions, and forbidden into a single array or separate arrays
             // setObligations((prev) => [
-            //   ...prev, 
+            //   ...prev,
             //   ...obligations, // Add the fetched obligations
             // ]);
 
             setObligations((prev) => [
-              ...prev, 
+              ...prev,
               ...obligationsWithGlobalId, // Add fetched obligations with global_conn_type_id
             ]);
-  
+
             // Handle permissions
             setFormData((prevFormData) => ({
               ...prevFormData,
               canShareMore: permissions.canShareMoreData,
               canDownload: permissions.canDownloadData,
             }));
-  
+
             // Handle forbidden terms (you can also update another state for forbidden terms)
             // if you want to show them somewhere else.
           } else {
@@ -667,10 +662,9 @@ const fetchGlobalTemplates = () => {
           setError(`Failed to fetch obligations for template ID ${templateId}`);
         });
     });
-  
+
     setDropdownVisible(false); // Hide dropdown after fetching
   };
-  
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -706,13 +700,13 @@ const fetchGlobalTemplates = () => {
 
   const handleRemoveObligation = (index) => {
     const removedObligation = obligations[index];
-  
+
     // Remove the obligation
     const updatedObligations = obligations.filter((_, i) => i !== index);
-  
+
     // Update the obligations state
     setObligations(updatedObligations);
-  
+
     // Clear the form if the removed obligation is the one currently loaded in the form
     if (
       formData.labelName === removedObligation.labelName &&
@@ -720,14 +714,14 @@ const fetchGlobalTemplates = () => {
       formData.typeOfAction === removedObligation.typeOfAction &&
       formData.typeOfSharing === removedObligation.typeOfSharing &&
       formData.purpose === removedObligation.purpose &&
-      formData.hostPermissions.join(",") === removedObligation.hostPermissions.join(",") &&
+      formData.hostPermissions.join(",") ===
+        removedObligation.hostPermissions.join(",") &&
       formData.canShareMore === removedObligation.canShareMore &&
       formData.canDownload === removedObligation.canDownload
     ) {
       setFormData(initialFormData);
     }
   };
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -742,15 +736,16 @@ const fetchGlobalTemplates = () => {
       setIsModalOpen(true); // Open modal with info message.
       return;
     }
-  
-    const token = Cookies.get("authToken");
-    const forbiddenArray = formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"];
 
-  
+    const token = Cookies.get("authToken");
+    const forbiddenArray = formData.forbidden
+      ? ["Cannot close unilaterally"]
+      : ["can unilaterally close connection"];
+
     const connectionTermsData = {
       ...connectionData,
       // obligations: obligations,
-      obligations: obligations.map(obligation => ({
+      obligations: obligations.map((obligation) => ({
         ...obligation,
         global_conn_type_id: obligation.global_conn_type_id || null,
       })),
@@ -758,22 +753,26 @@ const fetchGlobalTemplates = () => {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
       },
-      forbidden: forbiddenArray,  // Add forbidden array here
-
+      forbidden: forbiddenArray, // Add forbidden array here
     };
-  
-    console.log("data",connectionTermsData);
+
+    console.log("data", connectionTermsData);
     setConnectionTermsData(connectionTermsData);
-  
-    fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${token}`,
-      },
-      body: JSON.stringify(connectionTermsData),
-    })
-      .then((response) => response.json().then((data) => ({ status: response.status, data })))
+
+    fetch(
+      "host/create-connection-type-and-terms/".replace(/host/, frontend_host),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${token}`,
+        },
+        body: JSON.stringify(connectionTermsData),
+      }
+    )
+      .then((response) =>
+        response.json().then((data) => ({ status: response.status, data }))
+      )
       .then(({ status, data }) => {
         if (status === 201) {
           // Success case: show success modal and reset form if needed.
@@ -782,17 +781,19 @@ const fetchGlobalTemplates = () => {
             type: "success",
           });
           setIsModalOpen(true);
-          navigate("/admin"); 
+          navigate("/admin");
           // Optionally, reset the form after successful creation.
         } else if (status === 400 && data.error.includes("already exists")) {
           // Handle the case where the connection type already exists.
-          setError("Connection type with this name already exists in the same locker.");
+          setError(
+            "Connection type with this name already exists in the same locker."
+          );
           setModalMessage({
-            message: "Connection type with this name already exists in the same locker.",
+            message:
+              "Connection type with this name already exists in the same locker.",
             type: "error",
           });
           setIsModalOpen(true);
-          
         } else {
           // General error handling.
           console.error("Error:", data.error);
@@ -814,7 +815,7 @@ const fetchGlobalTemplates = () => {
         setIsModalOpen(true); // Open modal with error message.
       });
   };
-  
+
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
 
@@ -850,10 +851,6 @@ const fetchGlobalTemplates = () => {
     }
   }, [curruser]);
 
-  const handlePrevious =()=>{
-    navigate("/connection")
-  }
-
   const token = Cookies.get("authToken");
 
   const content = (
@@ -862,12 +859,15 @@ const fetchGlobalTemplates = () => {
       <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
     </>
   );
-  
 
   return (
     <>
       {isModalOpen && (
-        <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModal}
+          type={modalMessage.type}
+        />
       )}
       <Navbar content={content}></Navbar>
       <div className="page-container">
@@ -878,8 +878,14 @@ const fetchGlobalTemplates = () => {
             <div className="parent-container">
               <div className="parent-left-heading">
                 <div className="parent-left-heading-title">
-                  <div className="connectionTerms-resourceHeading">Guest Obligations</div>
-                  <button className="handle-obligation" type="button" onClick={handleAddObligation}>
+                  <div className="connectionTerms-resourceHeading">
+                    Guest Obligations
+                  </div>
+                  <button
+                    className="handle-obligation"
+                    type="button"
+                    onClick={handleAddObligation}
+                  >
                     Add Obligations
                   </button>
                   <button
@@ -892,46 +898,60 @@ const fetchGlobalTemplates = () => {
                     Import Global Connection Template
                   </button>
                   {isTemplateModalOpen && (
-  <Modal
-    message="Select Global Templates"
-    onClose={() => setIsTemplateModalOpen(false)}
-    type="info"
-  >
-    <div className="template-selection-container">
-      {globalTemplates.length > 0 ? (
-        <>
-          <label>Select Templates:</label>
-          {globalTemplates.map((template) => (
-            <div key={template.global_connection_type_template_id}>
-              <label>
-                <input
-                  type="checkbox"
-                  value={template.global_connection_type_template_id}
-                  checked={selectedTemplateIds.includes(template.global_connection_type_template_id)}
-                  onChange={() =>
-                    handleTemplateSelection(template.global_connection_type_template_id)
-                  }
-                />
-                {template.global_connection_type_name} (ID: {template.global_connection_type_template_id})
-                {/* <br />
+                    <Modal
+                      message="Select Global Templates"
+                      onClose={() => setIsTemplateModalOpen(false)}
+                      type="info"
+                    >
+                      <div className="template-selection-container">
+                        {globalTemplates.length > 0 ? (
+                          <>
+                            <label>Select Templates:</label>
+                            {globalTemplates.map((template) => (
+                              <div
+                                key={
+                                  template.global_connection_type_template_id
+                                }
+                              >
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    value={
+                                      template.global_connection_type_template_id
+                                    }
+                                    checked={selectedTemplateIds.includes(
+                                      template.global_connection_type_template_id
+                                    )}
+                                    onChange={() =>
+                                      handleTemplateSelection(
+                                        template.global_connection_type_template_id
+                                      )
+                                    }
+                                  />
+                                  {template.global_connection_type_name} (ID:{" "}
+                                  {template.global_connection_type_template_id})
+                                  {/* <br />
                 {template.global_connection_type_description} */}
-              </label>
-            </div>
-          ))}
-          <button onClick={handleFetchObligations}>Add Selected Templates</button>
-        </>
-      ) : (
-        <div>Loading templates...</div>
-      )}
-    </div>
-  </Modal>
-)}
-
-
+                                </label>
+                              </div>
+                            ))}
+                            <button onClick={handleFetchObligations}>
+                              Add Selected Templates
+                            </button>
+                          </>
+                        ) : (
+                          <div>Loading templates...</div>
+                        )}
+                      </div>
+                    </Modal>
+                  )}
                 </div>
 
                 <div className="connectionTerms-lockerForm">
-                  <form className="connectionTerms-lockerForm" onSubmit={handleSubmit}>
+                  <form
+                    className="connectionTerms-lockerForm"
+                    onSubmit={handleSubmit}
+                  >
                     <label className="obligation-label">
                       <span>Label</span>
                       <input
@@ -958,7 +978,8 @@ const fetchGlobalTemplates = () => {
                       <span className="tooltip">
                         ?
                         <span className="tooltiptext">
-                          Choose the action type: Share, Transfer, Confer, or Collateral.
+                          Choose the action type: Share, Transfer, Confer, or
+                          Collateral.
                         </span>
                       </span>
                     </label>
@@ -980,19 +1001,29 @@ const fetchGlobalTemplates = () => {
                         ?
                         <span className="tooltiptext">
                           <span>
-                            Transfer: You are transferring ownership of this resource. You will no longer have access to this resource after this operation.
+                            Transfer: You are transferring ownership of this
+                            resource. You will no longer have access to this
+                            resource after this operation.
                           </span>
                           <br />
                           <span>
-                            Confer: You are going to transfer ownership of the resource, but the recipient cannot modify the contents of what you have conferred. You still have rights over this resource.
+                            Confer: You are going to transfer ownership of the
+                            resource, but the recipient cannot modify the
+                            contents of what you have conferred. You still have
+                            rights over this resource.
                           </span>
                           <br />
                           <span>
-                            Share: You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.
+                            Share: You are not transferring ownership of this
+                            resource, but the recipient can view your resource.
+                            The recipient cannot do anything else.
                           </span>
                           <br />
                           <span>
-                            Collateral: You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource and can use this as agreed with the recipient.
+                            Collateral: You are temporarily transferring
+                            ownership to the recipient. After this operation,
+                            you cannot change anything in the resource and can
+                            use this as agreed with the recipient.
                           </span>
                           <br />
                         </span>
@@ -1027,7 +1058,9 @@ const fetchGlobalTemplates = () => {
                           <input
                             type="checkbox"
                             value="reshare"
-                            checked={formData.hostPermissions.includes("reshare")}
+                            checked={formData.hostPermissions.includes(
+                              "reshare"
+                            )}
                             onChange={handleHostPermissionsChange}
                           />
                           Reshare
@@ -1036,7 +1069,9 @@ const fetchGlobalTemplates = () => {
                           <input
                             type="checkbox"
                             value="download"
-                            checked={formData.hostPermissions.includes("download")}
+                            checked={formData.hostPermissions.includes(
+                              "download"
+                            )}
                             onChange={handleHostPermissionsChange}
                           />
                           Download
@@ -1045,7 +1080,9 @@ const fetchGlobalTemplates = () => {
                           <input
                             type="checkbox"
                             value="aggregate"
-                            checked={formData.hostPermissions.includes("aggregate")}
+                            checked={formData.hostPermissions.includes(
+                              "aggregate"
+                            )}
                             onChange={handleHostPermissionsChange}
                           />
                           Aggregate
@@ -1054,14 +1091,17 @@ const fetchGlobalTemplates = () => {
                       <span className="tooltip">
                         ?
                         <span className="tooltiptext">
-                          Select host permissions: Reshare, Download, or Aggregate.
+                          Select host permissions: Reshare, Download, or
+                          Aggregate.
                         </span>
                       </span>
                     </label>
 
                     <h2>Permissions</h2>
                     <label className="permission-label" key="canShareMore">
-                      <span className="permission-labels">Can the guest share more data</span>
+                      <span className="permission-labels">
+                        Can the guest share more data
+                      </span>
                       <input
                         type="checkbox"
                         name="canShareMore"
@@ -1071,7 +1111,9 @@ const fetchGlobalTemplates = () => {
                     </label>
 
                     <label className="permission-label" key="canDownload">
-                      <span className="permission-labels">Can they download the data</span>
+                      <span className="permission-labels">
+                        Can they download the data
+                      </span>
                       <input
                         type="checkbox"
                         name="canDownload"
@@ -1080,33 +1122,24 @@ const fetchGlobalTemplates = () => {
                       />
                     </label>
                     <h2>Forbidden</h2>
-<label className="permission-label">
-  <span>
-    {formData.forbidden 
-      ? "You cannot unilaterally close the connection." 
-      : "You can unilaterally close the connection."
-    }
-  </span>
-  <input
-    type="checkbox"
-    name="forbidden"
-    checked={formData.forbidden}
-    onChange={handleCheckboxChange}
-  />
-</label>
-
-
-
+                    <label className="permission-label">
+                      <span>
+                        {formData.forbidden
+                          ? "You cannot unilaterally close the connection."
+                          : "You can unilaterally close the connection."}
+                      </span>
+                      <input
+                        type="checkbox"
+                        name="forbidden"
+                        checked={formData.forbidden}
+                        onChange={handleCheckboxChange}
+                      />
+                    </label>
 
                     <div className="connectionTerms-btn">
                       <button type="submit">Submit</button>
                     </div>
                   </form>
-                  <div>
-                    <button onClick={handlePrevious}>
-                      previous
-                    </button>
-                  </div>
                 </div>
               </div>
 

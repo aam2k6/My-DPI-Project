@@ -43,18 +43,6 @@ function App() {
   const [curruser, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [formValues, setFormValues] = useState({
-    connectionType:'',
-    description:'',
-    calender:'',
-  });
-
-  const handleInputChange = (event, field) => {
-    const { value } = event.target;
-    setFormValues((prevData) => ({ ...prevData, [field]: value }));
-  };
-
-
   useEffect(() => {
     // Load user from localStorage if available
     const storedUser = localStorage.getItem("curruser");
@@ -138,7 +126,7 @@ function App() {
               path="/connection"
               element={
                 <ProtectedRoute>
-                  <Connection formValues={formValues} handleInputChange={handleInputChange}/>
+                  <Connection />
                 </ProtectedRoute>
               }
             />
@@ -146,7 +134,7 @@ function App() {
               path="/connectionTerms"
               element={
                 <ProtectedRoute>
-                  <ConnectionTerms formValues={formValues} handleInputChange={handleInputChange} setFormValues={setFormValues}/>
+                  <ConnectionTerms />
                 </ProtectedRoute>
               }
             />

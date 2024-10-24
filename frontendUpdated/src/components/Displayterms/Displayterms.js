@@ -372,7 +372,7 @@ export const Displayterms = () => {
           <div className="page13headterms">Your Permissions</div>
           <div className="page13lowerterms">{renderPermissions()}</div>
 
-          <div className="page13headterms">Your Prohibitions</div>
+          {/* <div className="page13headterms">Your Prohibitions</div> */}
           <div className="page13lowerterms">{renderForbidden()}</div>
 
           <div className="page13headterms">Default Host Privileges</div>

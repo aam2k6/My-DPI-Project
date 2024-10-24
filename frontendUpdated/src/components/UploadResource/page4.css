@@ -9,6 +9,11 @@
     font-size: 1.195rem;                          
 }
 
+.uploadDescription{
+  font-size: 18px;
+  margin-left: 30px;
+}
+
 .page4heroContainer {
     border: 2px solid rgb(107, 120, 231);
     display: flex;

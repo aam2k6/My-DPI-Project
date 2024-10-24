@@ -11,9 +11,9 @@ import { frontend_host } from "../../config";
 export const ConnectionTermsGlobal = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Get the state passed from the previous page
-  const { connectionTypeName, connectionTypeDescription, existingTerms } = location.state || {};
+  const { connectionTypeName, connectionTypeDescription, existingTerms } =
+    location.state || {};
   const [purpose, setPurpose] = useState(""); // Ensure it's initialized
-
 
   // Separate states for global and obligation form data
   const initialObligationForm = {
@@ -26,18 +26,19 @@ export const ConnectionTermsGlobal = () => {
     canShareMore: false,
     canDownload: false,
     forbidden: false, // Add forbidden state
-
   };
 
   const initialGlobalForm = {
     globalName: "",
     globalDescription: "",
-    globaltype:"",
-    domain:"",
+    globaltype: "",
+    domain: "",
   };
 
   const [globalFormData, setGlobalFormData] = useState(initialGlobalForm);
-  const [obligationFormData, setObligationFormData] = useState(initialObligationForm);
+  const [obligationFormData, setObligationFormData] = useState(
+    initialObligationForm
+  );
   const [obligations, setObligations] = useState([]); // Obligations array
   const [error, setError] = useState(null);
   const { curruser, setUser } = useContext(usercontext);
@@ -45,32 +46,38 @@ export const ConnectionTermsGlobal = () => {
 
   useEffect(() => {
     if (location.state) {
-        setGlobalFormData({
-            globalName: connectionTypeName || "",
-            globalDescription: connectionTypeDescription || "",
-        });
+      setGlobalFormData({
+        globalName: connectionTypeName || "",
+        globalDescription: connectionTypeDescription || "",
+      });
 
-        const { forbidden, obligations } = existingTerms || {};
-        console.log("existing terms ", forbidden, obligations); // Debugging logs
+      const { forbidden, obligations } = existingTerms || {};
+      console.log("existing terms ", forbidden, obligations); // Debugging logs
 
-        if (obligations && obligations.length > 0) {
-            setObligations(obligations.map((term) => ({
-                labelName: term.labelName || "",
-                typeOfAction: term.typeOfAction || "text",
-                typeOfSharing: term.typeOfSharing || "share",
-                purpose: term.purpose || "",
-                labelDescription: term.labelDescription || "",
-                hostPermissions: term.hostPermissions || [],
-                canShareMore: false,
-                canDownload: false,
-                forbidden: false,
-            })));
-        }
+      if (obligations && obligations.length > 0) {
+        setObligations(
+          obligations.map((term) => ({
+            labelName: term.labelName || "",
+            typeOfAction: term.typeOfAction || "text",
+            typeOfSharing: term.typeOfSharing || "share",
+            purpose: term.purpose || "",
+            labelDescription: term.labelDescription || "",
+            hostPermissions: term.hostPermissions || [],
+            canShareMore: false,
+            canDownload: false,
+            forbidden: false,
+          }))
+        );
+      }
     }
-}, [location.state, connectionTypeName, connectionTypeDescription, existingTerms]);
+  }, [
+    location.state,
+    connectionTypeName,
+    connectionTypeDescription,
+    existingTerms,
+  ]);
 
-
-  const { globalName, globalDescription,globaltype } = globalFormData;
+  const { globalName, globalDescription, globaltype } = globalFormData;
 
   // Handle changes for global fields
   const handleGlobalChange = (event) => {
@@ -114,19 +121,18 @@ export const ConnectionTermsGlobal = () => {
     const { permissions, forbidden } = existingTerms || {};
 
     setObligationFormData((prev) => ({
-        ...prev,
-        labelName: obligationToLoad.labelName || "",
-        typeOfAction: obligationToLoad.typeOfAction || "text",
-        typeOfSharing: obligationToLoad.typeOfSharing || "share",
-        purpose: obligationToLoad.purpose || "",
-        labelDescription: obligationToLoad.labelDescription || "",
-        hostPermissions: obligationToLoad.hostPermissions || [],
-        canShareMore: permissions?.canShareMoreData || false, // Check from the global permissions
-        canDownload: permissions?.canDownloadData || false, // Check from the global permissions
-        forbidden: forbidden, // If there are forbidden terms, set it to true
+      ...prev,
+      labelName: obligationToLoad.labelName || "",
+      typeOfAction: obligationToLoad.typeOfAction || "text",
+      typeOfSharing: obligationToLoad.typeOfSharing || "share",
+      purpose: obligationToLoad.purpose || "",
+      labelDescription: obligationToLoad.labelDescription || "",
+      hostPermissions: obligationToLoad.hostPermissions || [],
+      canShareMore: permissions?.canShareMoreData || false, // Check from the global permissions
+      canDownload: permissions?.canDownloadData || false, // Check from the global permissions
+      forbidden: forbidden, // If there are forbidden terms, set it to true
     }));
-};
-
+  };
 
   const handleRemoveObligation = (index) => {
     setObligations(obligations.filter((_, i) => i !== index));
@@ -149,7 +155,6 @@ export const ConnectionTermsGlobal = () => {
         canDownloadData: obligationFormData.canDownload,
       },
       forbidden: obligationFormData.forbidden, // Include forbidden state in form submission
-
     };
 
     console.log(connectionTermsData);
@@ -174,16 +179,15 @@ export const ConnectionTermsGlobal = () => {
         console.log("Global terms created successfully.");
         navigate("/create-global-connection-type");
         const termsIDs = data.terms.map((term) => term.terms_id);
-  
+
         const globalTemplateData = {
           global_connection_type_name: globalFormData.globalName,
           global_connection_type_description: globalFormData.globalDescription,
           global_terms_IDs: termsIDs,
-          globaltype:globalFormData.globaltype,
-          domain: globalFormData.domain // Include domain here
-
+          globaltype: globalFormData.globaltype,
+          domain: globalFormData.domain, // Include domain here
         };
-  
+        console.log(globalTemplateData);
         return fetch(`${frontend_host}/add-global-template/`, {
           method: "POST",
           headers: {
@@ -208,7 +212,6 @@ export const ConnectionTermsGlobal = () => {
         setError("An error occurred while submitting the data.");
       });
   };
-
 
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
@@ -275,35 +278,32 @@ export const ConnectionTermsGlobal = () => {
           />
         </label>
         <label className="obligation-label">
-  <span>Template/Policy</span>
-  <select
-    name="template"
-    value={globalFormData.template} // Bind it to the state
-    onChange={handleGlobalChange} // Handle changes
-  >
-    <option value="">Select Template/Policy</option>
-    <option value="template">template</option>
-    <option value="policy">policy</option>
-   
-  </select>
-</label>
-<label className="obligation-label">
-  <span>Domain</span>
-  <select
-    name="domain"
-    value={globalFormData.domain} // Bind it to the state
-    onChange={handleGlobalChange} // Handle changes
-  >
-    <option value="">Select Domain</option>
-    <option value="health">Healthcare</option>
-    <option value="finance">Finance</option>
-    <option value="education">Education</option>
-    <option value="technology">Technology</option>
-{/*     <option value="other">Other</option> */}
-  </select>
-</label>
-
-
+          <span>Template/Policy</span>{" "}
+          <select
+            name="globaltype"
+            value={globalFormData.globaltype} // Bind it to the state
+            onChange={handleGlobalChange} // Handle changes
+          >
+            <option value="">Select Template/Policy</option>{" "}
+            <option value="template">template</option>{" "}
+            <option value="policy">policy</option>{" "}
+          </select>
+        </label>
+        <label className="obligation-label">
+          <span>Domain</span>{" "}
+          <select
+            name="domain"
+            value={globalFormData.domain} // Bind it to the state
+            onChange={handleGlobalChange} // Handle changes
+          >
+            <option value="">Select Domain</option>{" "}
+            <option value="health">Healthcare</option>{" "}
+            <option value="finance">Finance</option>{" "}
+            <option value="education">Education</option>{" "}
+            <option value="technology">Technology</option>
+            {/*     <option value="other">Other</option> */}{" "}
+          </select>
+        </label>
 
         <div className="main-heading">Guest Terms Of Service</div>
 
@@ -376,41 +376,48 @@ export const ConnectionTermsGlobal = () => {
                     ?
                     <span className="tooltiptext">
                       <span>
-                        Transfer: You are transferring ownership of this resource.
-                        You will no longer have access to this resource after this
-                        operation.
+                        Transfer: You are transferring ownership of this
+                        resource. You will no longer have access to this
+                        resource after this operation.
                       </span>
                       <br />
                       <span>
-                        Confer: You are going to transfer ownership of the resource,
-                        but the recipient cannot modify the contents of what you have
-                        conferred. You still have rights over this resource.
+                        Confer: You are going to transfer ownership of the
+                        resource, but the recipient cannot modify the contents
+                        of what you have conferred. You still have rights over
+                        this resource.
                       </span>
                       <br />
                       <span>
-                        Share: You are not transferring ownership of this resource,
-                        but the recipient can view your resource. The recipient cannot
-                        do anything else.
+                        Share: You are not transferring ownership of this
+                        resource, but the recipient can view your resource. The
+                        recipient cannot do anything else.
                       </span>
                       <br />
                       <span>
-                        Collateral: You are temporarily transferring ownership to the
-                        recipient. After this operation, you cannot change anything in
-                        the resource and can use this as agreed with the recipient.
+                        Collateral: You are temporarily transferring ownership
+                        to the recipient. After this operation, you cannot
+                        change anything in the resource and can use this as
+                        agreed with the recipient.
                       </span>
                       <br />
                     </span>
                   </span>
                 </label>
                 <label className="obligation-label">
-          <span>Purpose</span>
-          <input
-  type="text"
-  name="purpose"
-  value={obligationFormData.purpose}
-  onChange={(e) => setObligationFormData({...obligationFormData, purpose: e.target.value})}
-/>
-</label>
+                  <span>Purpose</span>
+                  <input
+                    type="text"
+                    name="purpose"
+                    value={obligationFormData.purpose}
+                    onChange={(e) =>
+                      setObligationFormData({
+                        ...obligationFormData,
+                        purpose: e.target.value,
+                      })
+                    }
+                  />
+                </label>
 
                 <label className="obligation-label">
                   <span>Description</span>
@@ -430,7 +437,9 @@ export const ConnectionTermsGlobal = () => {
                       <input
                         type="checkbox"
                         value="reshare"
-                        checked={obligationFormData.hostPermissions.includes("reshare")}
+                        checked={obligationFormData.hostPermissions.includes(
+                          "reshare"
+                        )}
                         onChange={handleHostPermissionsChange}
                       />
                       Reshare
@@ -439,7 +448,9 @@ export const ConnectionTermsGlobal = () => {
                       <input
                         type="checkbox"
                         value="download"
-                        checked={obligationFormData.hostPermissions.includes("download")}
+                        checked={obligationFormData.hostPermissions.includes(
+                          "download"
+                        )}
                         onChange={handleHostPermissionsChange}
                       />
                       Download
@@ -448,7 +459,9 @@ export const ConnectionTermsGlobal = () => {
                       <input
                         type="checkbox"
                         value="aggregate"
-                        checked={obligationFormData.hostPermissions.includes("aggregate")}
+                        checked={obligationFormData.hostPermissions.includes(
+                          "aggregate"
+                        )}
                         onChange={handleHostPermissionsChange}
                       />
                       Aggregate
@@ -486,17 +499,17 @@ export const ConnectionTermsGlobal = () => {
                     onChange={handleCheckboxChange}
                   />
                 </label>
-               
-                    <h2>Forbidden</h2>
-                    <label className="permission-label">
-  <span>You cannot unilaterally close the connection</span>
-  <input
-    type="checkbox"
-    name="forbidden"
-    checked={obligationFormData.forbidden}
-    onChange={handleCheckboxChange}
-  />
-</label>
+
+                <h2>Forbidden</h2>
+                <label className="permission-label">
+                  <span>You cannot unilaterally close the connection</span>
+                  <input
+                    type="checkbox"
+                    name="forbidden"
+                    checked={obligationFormData.forbidden}
+                    onChange={handleCheckboxChange}
+                  />
+                </label>
 
                 <div className="connectionTerms-btn">
                   <button type="submit">Submit</button>
@@ -528,3 +541,4 @@ export const ConnectionTermsGlobal = () => {
     </div>
   );
 };
+

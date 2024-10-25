@@ -1,8 +1,8 @@
 
 .descriptionpage7 {
-  font-size: 1.50rem; /* Slightly smaller font size for the description */
+  font-size: 1.30rem !important; /* Slightly smaller font size for the description */
   color: rgb(44, 41, 41); /* Different color to distinguish from the name */
-  margin-top: 6rem;
+  margin-top: -2rem !important;
 
 }
 .description7{
@@ -29,10 +29,6 @@
   font-weight: bolder;
   /* padding: 0.5rem 0.25rem;  */
   max-width: 200px;
-}
-
-.descriptionpage7 {
-  margin-right: 48rem; /* Add some space between the text and the button */
 }
 .page7container{
   
@@ -175,12 +171,7 @@
   font-size: small;
   font-weight: 400;
 }
-.descriptionpage7 {
-  font-size: 1.5625rem;
-  
-  /* font-weight: bolder; */
 
-}
 
 #availconntype{
   font-size: 0.75rem;

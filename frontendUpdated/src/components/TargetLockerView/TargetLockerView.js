@@ -1522,7 +1522,7 @@ export const TargetLockerView = () => {
       <div className="page7container">
         <div className="notvisible">
           <div className="page7publicresources">
-            <p>Xnodes</p>
+            <p>Resources</p>
             {/* {resources.length > 0 ? (
               resources.map((resource) => (
                 <div className="page7resource" key={resource.resource_id}>
@@ -1611,9 +1611,9 @@ export const TargetLockerView = () => {
               return (
                 <div className="page7myconnections" key={index}>
                   <div id="conntent">
-                    <h2 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
+                    <h4 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
                       {connection.connection_name}
-                    </h2>
+                    </h4>
                     <div>{connection.host_user.username} &lt;&gt; {connection.guest_user.username}</div>
                     <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
                     <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>

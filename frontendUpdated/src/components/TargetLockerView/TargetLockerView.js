@@ -1564,7 +1564,7 @@ export const TargetLockerView = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p className="not-found">No Xnodes found.</p>
+                  <p className="not-found">No Resources found.</p>
                 )}
           </div>
 

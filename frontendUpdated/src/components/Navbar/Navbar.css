@@ -211,3 +211,45 @@
   font-size: 0.75rem;
   font-weight: 200;
 }
+/* Dropdown content styles */
+.dropdownContent {
+  position: absolute;
+  top: calc(100% + 0.5rem); /* Position below the trigger */
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+}
+
+.dropdownTrigger {
+  cursor: pointer;
+  position: relative;
+  color: black;
+  padding: 10px;
+  text-align: center;
+}
+
+.dropdownContent button {
+  color: black;
+  top: calc(100% + 0.5rem); /* Position below the trigger */
+  right: 100%;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdownContent button:hover {
+  background-color: #f1f1f1;
+}
+
+.navLinks {
+  position: relative; /* Necessary for dropdown positioning */
+}

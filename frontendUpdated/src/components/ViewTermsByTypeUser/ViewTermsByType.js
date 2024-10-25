@@ -1567,12 +1567,17 @@ const appendPagesToTerms = (termValue) => {
   console.log("selection", selection);
   const content = (
     <>
-      <div className="navbarBrand">
+      {/* <div className="navbarBrand">
         {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
       </div>
       <div className="description">
         {curruser ? curruser.description : "None"}
+      </div> */}
+
+      <div className="navbarBrand">
+      {connectionName}
       </div>
+
       <br></br>
       <div className="connection-details">
         Connection Name: {connectionName}
@@ -1620,10 +1625,21 @@ const appendPagesToTerms = (termValue) => {
             <FaUserCircle className="userIcon"/> &nbsp;
             <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
           </div>
-          <FaArrowCircleRight className="userIcon" /> &nbsp;
+          <i class="fa-solid fa-right-long"></i> &nbsp;
           <div className="tooltip user-container">
             <FaRegUserCircle className="userIcon"/>&nbsp;
             <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
+          </div>
+        </div>
+        <div className="tooltip-container user-container">
+          <div className="tooltip user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+            <i class="bi bi-person-fill-lock"></i> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
+          </div>
+          <i class="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltip user-container" onClick={() => handleuserclick(hostUserUsername)}>
+            <i class="bi bi-person-lock"></i>&nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
           </div>
         </div>
       </div>
@@ -1671,6 +1687,13 @@ const appendPagesToTerms = (termValue) => {
       return;
     }
   };
+
+  const handleuserclick = (hostUserUsername) => {
+    console.log(hostUserUsername);
+    navigate(`/target-user-view`, { state: { user: { username: hostUserUsername } } });
+}
+
+  
 
   return (
 

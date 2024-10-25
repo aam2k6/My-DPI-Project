@@ -110,7 +110,7 @@ export default function CreateGlobalConnectionType() {
                   <div key={domain}>
                     <div className="domain-header" onClick={() => handleDomainToggle(domain, 'templates')}>
                       <span className="domain-title">
-                        {expandedStates[domain]?.templates ? <FaArrowDown /> : <FaArrowRight />} {capitalizeFirstLetter(domain)}
+                      {expandedStates[domain]?.templates ? '▼' : '►'} {capitalizeFirstLetter(domain)}
                       </span>
                     </div>
                     {expandedStates[domain]?.templates && (
@@ -144,7 +144,7 @@ export default function CreateGlobalConnectionType() {
                   <div key={domain}>
                     <div className="domain-header" onClick={() => handleDomainToggle(domain, 'policies')}>
                       <span className="domain-title">
-                        {expandedStates[domain]?.policies ? <FaArrowDown /> : <FaArrowRight />} {capitalizeFirstLetter(domain)}
+                      {expandedStates[domain]?.policies ? '▼' :  '►'} {capitalizeFirstLetter(domain)}
                       </span>
                     </div>
                     {expandedStates[domain]?.policies && (

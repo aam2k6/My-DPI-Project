@@ -2032,11 +2032,15 @@ export const ViewLocker = () => {
                                 ? "documents"
                                 : "documents-byShare"
                             }
-                            onClick={() =>
-                              handleClick(xnode.id)
-                            }
+                            style={{ display: 'flex'}}
                           >
-                            {xnode.resource_name}
+                            <span onClick={() =>
+                              handleClick(xnode.id)
+                            }>{xnode.resource_name}</span>
+                            <span className="resource-icon">
+                              <i class="fa-regular fa-pen-to-square" style={{paddingRight:"20px"}}></i>
+                              <i class="fa-regular fa-trash-can"></i>
+                            </span>
                           </div>
                           {/* <div className="public-private">
                             {xnode.type === "private" ? <>Private</> : "Public"}

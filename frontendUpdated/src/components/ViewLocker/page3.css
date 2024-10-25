@@ -257,10 +257,15 @@ overflow-x: auto;
 .resource-details {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 50%;
   /* margin: -4px;  */
   /* margin: 0px;  */
   padding: 0;
+}
+
+.resource-icon{
+  color: black;
+  margin-left: auto;
 }
 
 .connection-name-button{

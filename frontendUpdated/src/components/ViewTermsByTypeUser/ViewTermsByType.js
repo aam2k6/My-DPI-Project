@@ -984,7 +984,7 @@ export const ViewTermsByType = () => {
         return (
           <button onClick={() => handleButtonClick(obligation.labelName)}>
             {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
-              "Select File"}
+              "Select Resource"}
           </button>
         );
       case "date":
@@ -1712,7 +1712,7 @@ const appendPagesToTerms = (termValue) => {
                 }`}
                 onClick={() => setActiveTab("guest")}
               >
-                Guest Connection Terms
+                Guest Data
               </div>
               <div
                 className={`tab-header ${
@@ -1720,7 +1720,7 @@ const appendPagesToTerms = (termValue) => {
                 }`}
                 onClick={() => setActiveTab("host")}
               >
-                Host Connection Terms
+                Host Data
               </div>
             </div>
           <div className="tab-content">

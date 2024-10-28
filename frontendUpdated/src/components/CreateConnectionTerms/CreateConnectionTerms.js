@@ -704,7 +704,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
-import { frontend_host } from "../../config";
+import { frontend_host } from "../../config";import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
+
+
 // import res from "./object";
 
 export const CreateConnectionTerms = () => {
@@ -722,6 +724,7 @@ export const CreateConnectionTerms = () => {
   const [loading, setLoading] = useState(true);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
+  const [activeTab, setActiveTab] = useState("guest");
 
   const {
     connectionName,
@@ -1173,6 +1176,25 @@ const handleNavigation = (template) => {
 
 console.log("names", globalTemplateNames);
 
+
+const userTooltips = {
+  guest: "Guest",
+  host: "Host",
+};
+
+const renderUserTooltip = (userType) => {
+  return (
+    <span className="tooltiptext small-tooltip">
+      {userTooltips[userType] || "Hover over an icon to see user details."}
+    </span>
+  );
+};
+
+const handleuserclick = (hostUserUsername) => {
+  console.log(hostUserUsername);
+  navigate(`/target-user-view`, { state: { user: { username: hostUserUsername } } });
+}
+
   const content = (
     // <>
     // <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
@@ -1181,9 +1203,12 @@ console.log("names", globalTemplateNames);
     // <div className="description"></div>
     // </>
     <>
-      <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+      {/* <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
       <div className="description">
         {curruser ? curruser.description : "None"}
+      </div> */}
+      <div className="navbarBrand">
+      {connectionName}
       </div>
       <br></br>
       <div className="connection-details">
@@ -1205,7 +1230,29 @@ console.log("names", globalTemplateNames);
   </span>
 </h3>
         {connectionDescription}<br></br>
-        Guest: {curruser.username} --&gt; Host: {hostUserUsername} 
+        {/* Guest: {curruser.username} --&gt; Host: {hostUserUsername}  */}
+        <div className="tooltip-container user-container">
+          <div className="tooltip user-container">
+            <FaUserCircle className="userIcon"/> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {curruser.username} &nbsp;</span>
+          </div>
+          <i class="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltip user-container">
+            <FaRegUserCircle className="userIcon"/>&nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
+          </div>
+        </div>
+        <div className="tooltip-container user-container">
+          <div className="tooltip user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+            <i class="bi bi-person-fill-lock"></i> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {locker} &nbsp;</span>
+          </div>
+          <i class="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltip user-container" onClick={() => handleuserclick(hostUserUsername)}>
+            <i class="bi bi-person-lock"></i>&nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+          </div>
+        </div>
       </div>
     </>
   );
@@ -1227,30 +1274,57 @@ console.log("names", globalTemplateNames);
         <div className="page13requestor">Locker :{capitalizeFirstLetter(locker.name)}</div>
 
       </div> */}
-      <div className="page13container">
-        <p>
-          <u>Terms of connection</u>
-        </p>
 
-        <div className="page13subparent">
-          <div className="page13headterms">Your Obligations </div>
-          <div className="page13lowerterms">{renderObligations()}</div>
-
-          <div className="page13headterms">Your Permissions </div>
-          <div className="page13lowerterms">{renderPermissions()}</div>
-
-          <div className="page13headterms">Your Prohibitions</div>
-          <div className="page13lowerterms">{renderForbidden()}</div>
-
-          <div className="page13headterms">Default Host Privileges</div>
-          By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-
-          <div className="page13headterms"><h4>Host Obligations</h4></div>
-          You will receive a receipt when all the obligations are met
+      <div className="view-container">
+        <div className="b">
+          <div className="tabs">
+            <div
+              className={`tab-header ${
+                activeTab === "guest" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("guest")}
+            >
+              Guest Data
+            </div>
+            <div
+              className={`tab-header ${
+                activeTab === "host" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("host")}
+            >
+              Host Data
+            </div>
+          </div>
+          <div className="tab-content">
+            <div className="table-container">
+            {activeTab === "guest" && (
+              <div>
+                <div className="page13headterms">Your Obligations</div>
+                <div className="page13lowerterms">{renderObligations()}</div>
+      
+                <div className="page13headterms">Your Permissions</div>
+                <div className="page13lowerterms">{renderPermissions()}</div>
+      
+                {/* <div className="page13headterms">Your Prohibitions</div> */}
+                <div className="page13lowerterms">{renderForbidden()}</div>
+      
+                <div className="page13headterms">Default Host Privileges</div>
+                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+      
+                <div className="page13headterms"><h4>Host Obligations</h4></div>
+                You will receive a receipt when all the obligations are met
+              </div>
+            )}
+             {activeTab === "host" && (
+                <div className="page13headterms">
+                  Host connection terms...
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        
-
       </div>
+  
       {isModalOpen && (
         <Modal
           message={modalMessage.message}

@@ -168,6 +168,7 @@ export const Displayterms = () => {
   const [res, setRes] = useState(null);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
+  const [activeTab, setActiveTab] = useState("guest");
   
   const {
     connectionName,
@@ -360,28 +361,59 @@ export const Displayterms = () => {
         <br></br>Valid until: {new Date(validitytime).toLocaleString()}
        </div>
       </div>
-      <div className="page13container">
-        <p>
-          <u>Terms of connection</u>
-        </p>
 
-        <div className="page13subparent">
-          <div className="page13headterms">Your Obligations</div>
-          <div className="page13lowerterms">{renderObligations()}</div>
 
-          <div className="page13headterms">Your Permissions</div>
-          <div className="page13lowerterms">{renderPermissions()}</div>
-
-          {/* <div className="page13headterms">Your Prohibitions</div> */}
-          <div className="page13lowerterms">{renderForbidden()}</div>
-
-          <div className="page13headterms">Default Host Privileges</div>
-          By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-
-          <div className="page13headterms"><h4>Host Obligations</h4></div>
-          You will receive a receipt when all the obligations are met
+      <div className="view-container">
+        <div className="b">
+          <div className="tabs">
+            <div
+              className={`tab-header ${
+                activeTab === "guest" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("guest")}
+            >
+              Guest Data
+            </div>
+            <div
+              className={`tab-header ${
+                activeTab === "host" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("host")}
+            >
+              Host Data
+            </div>
+          </div>
+          <div className="tab-content">
+            <div className="table-container">
+              {activeTab === "guest" && (
+                <div>
+                <div className="page13headterms">Your Obligations</div>
+                <div className="page13lowerterms">{renderObligations()}</div>
+      
+                <div className="page13headterms">Your Permissions</div>
+                <div className="page13lowerterms">{renderPermissions()}</div>
+      
+                {/* <div className="page13headterms">Your Prohibitions</div> */}
+                <div className="page13lowerterms">{renderForbidden()}</div>
+      
+                <div className="page13headterms">Default Host Privileges</div>
+                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+      
+                <div className="page13headterms"><h4>Host Obligations</h4></div>
+                You will receive a receipt when all the obligations are met
+              </div>
+              )}
+              {activeTab === "host" && (
+                <div className="page13headterms">
+                  Host connection terms...
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
+
+     
     </div>
   );
 };

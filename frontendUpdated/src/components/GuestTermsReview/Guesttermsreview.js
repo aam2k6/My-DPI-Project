@@ -32,6 +32,8 @@ export const Guesttermsreview = () => {
   const [connectionDetails, setConnectionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [revokeState, setRevokeState] = useState(true);
+
+  const [statuses2, setStatuses2] = useState({});
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -180,10 +182,25 @@ export const Guesttermsreview = () => {
               labelName: key,
               dataElement: value.enter_value,
               purpose: value.purpose,
-              //share:value.typeOfSharing,
+              share:value.typeOfShare,
+              status:value.status,
             })
           );
           setPermissionsData(sharedData);
+          console.log(sharedData, "sharedData");
+          const initialStatuses2 = {}
+          console.log(data.shared_more_data_terms);
+          for (const [key, value] of Object.entries(
+            data.shared_more_data_terms
+          )) {
+              initialStatuses2[key] = value.enter_value.endsWith("T")
+                ? "approved"
+                : value.enter_value.endsWith("R")
+                ? "rejected"
+                : "";
+          }
+          setStatuses2(initialStatuses2);
+          console.log("statuses initial", initialStatuses2);
         } else {
           setError(data.error || "No permissions data found");
         }
@@ -221,6 +238,7 @@ export const Guesttermsreview = () => {
           console.log("terms_value:", data.connections.terms_value); // Check if `terms_value` exists
           if (data.connections.terms_value) {
             const initialStatuses = {};
+            
             for (const [key, value] of Object.entries(
               data.connections.terms_value
             )) {
@@ -234,6 +252,7 @@ export const Guesttermsreview = () => {
             }
             console.log("inside here");
             console.log("initial statuses", initialStatuses);
+        
             setStatuses(initialStatuses);
           } else {
             console.log("No terms_value found");
@@ -471,12 +490,67 @@ export const Guesttermsreview = () => {
     }
   };
 
+  //permissions
+  const handleStatusChange2 = (index, status, value, type, isFile) => {
+   
+      setStatuses2((prevStatuses) => {
+        // Update the statuses for the specific index
+        const newStatuses = {
+          ...prevStatuses,
+          [index]: status,
+        };
+
+        // Recalculate the resourcesData based on all statuses
+        setResourcesData(() => {
+          // Initialize new arrays for transfer and share
+          const newTransfer = [];
+          const newShare = [];
+
+          // Iterate through all statuses to populate new arrays
+          Object.keys(newStatuses).forEach((key) => {
+            const currentValue = permissionsData.find(
+              (permission) => permission.labelName === key
+            )?.dataElement.split(";")[0];
+            console.log(permissionsData, currentValue, "hello") // Extract current value for the term
+            const currentType = permissionsData.find(
+              (permission) => permission.labelName === key
+            )?.share;
+            // const currentIsFile =
+            //   res.obligations.find((obligation) => obligation.labelName === key)
+            //     ?.typeOfAction === "file";
+
+            if (
+              newStatuses[key] === "approved" &&
+              currentValue
+            ) {
+              if (currentType === "transfer") {
+                newTransfer.push(currentValue);
+              } else if (currentType === "share") {
+                newShare.push(currentValue);
+              }
+            }
+          });
+
+          // Return the updated resourcesData
+          return {
+            transfer: newTransfer,
+            share: newShare,
+          };
+        });
+
+        return newStatuses;
+      });
+    
+  };
+  console.log("res data", res);
   const handleSave = async () => {
     try {
       const token = Cookies.get("authToken");
+      
 
       // Create the terms_value object from the obligations
       const terms_value = res?.obligations.reduce((acc, obligation) => {
+        console.log(res?.obligations, "data not extra")
         // Determine the status for the current obligation
         const status =
           statuses[obligation.labelName] === "approved"
@@ -491,8 +565,40 @@ export const Guesttermsreview = () => {
         return acc;
       }, {});
 
+
+
       // Preserve the existing canShareMoreData structure without overriding other terms
       if (termsValue?.canShareMoreData) {
+        console.log(termsValue.canShareMoreData, "data extra");
+
+        for (const [key, value] of Object.entries(
+          termsValue.canShareMoreData
+        )) {
+          const status =
+              statuses2[key] === "approved"
+                ? "T"
+                : statuses2[key] === "rejected"
+                ? "R"
+                : "F";
+                const  val = value.enter_value?.split(";")[0] || "";
+                value.enter_value = `${val};${status}`;
+                
+        }
+
+        // const extra_terms_value = termsValue?.canShareMoreData.map((acc, obligation) => {
+        //   // Determine the status for the current obligation
+        //   const status =
+        //     statuses[obligation.labelName] === "approved"
+        //       ? "T"
+        //       : statuses[obligation.labelName] === "rejected"
+        //       ? "R"
+        //       : "F";
+        //   const resourceName =
+        //     termsValue[obligation.labelName]?.split(";")[0] || "";
+        //   // Add to terms_value with the status
+        //   acc[obligation.labelName] = `${resourceName};${status}`;
+        //   return acc;
+        // }, {});
         terms_value.canShareMoreData = {
           ...termsValue.canShareMoreData,
         };
@@ -516,7 +622,7 @@ export const Guesttermsreview = () => {
         },
       };
 
-      // console.log("Request Body:", requestBody);
+      console.log("Request Body:", requestBody);
 
       const updateResponse = await fetch(
         `host/update-connection-terms/`.replace(/host/, frontend_host),
@@ -809,17 +915,14 @@ export const Guesttermsreview = () => {
                 <tr key={index}>
                   <td>{permission.sno}</td>
                   <td>{permission.labelName}</td>
-                  <td>{permission.dataElement || "None"}</td>{" "}
-                  {/* Display "None" if empty */}
+                  <td>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
-                  {/* Display "None" if empty */}
-                  <td>{permission.typeOfShare || "None"}</td>{" "}
-                  {/* Type of Share column */}
+                  <td>{permission.share || "None"}</td>{" "}
                   <td>
                     <select
-                      value={statuses[permission.labelName] || ""}
+                      value={statuses2[permission.labelName] || ""}
                       onChange={(e) =>
-                        handleStatusChange(permission.labelName, e.target.value)
+                        handleStatusChange2(permission.labelName, e.target.value)
                       }
                     >
                       <option value="">Select Status</option>

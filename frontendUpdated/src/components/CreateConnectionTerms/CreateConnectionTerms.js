@@ -859,6 +859,7 @@ export const CreateConnectionTerms = () => {
           setConnectionDetails(data.connections);
         } else {
           setError(data.error || "Failed to fetch connection details.");
+          console.log("fecth connection details",data.error)
         }
       } catch (err) {
         setError(`Error: ${err.message}`);
@@ -1003,6 +1004,15 @@ export const CreateConnectionTerms = () => {
                 consent: consent.toString()
             })
         });
+        console.log("give-consent body", {
+          connection_name: connectionName,
+          connection_type_name: connectionTypeName,
+          guest_username: curruser.username,
+          guest_lockername: locker,
+          host_username: hostUserUsername,
+          host_lockername: hostLockerName,
+          consent: consent.toString()
+      });
 
         const consentData = await consentResponse.json();
         if (consentData.success) {

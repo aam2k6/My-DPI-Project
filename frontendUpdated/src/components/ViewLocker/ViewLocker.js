@@ -1413,13 +1413,15 @@ export const ViewLocker = () => {
       }
 
       const data = await response.json();
+      console.log(data.message || data.error, "mssg");
       console.log("xnode data", data);
 
       if (data.xnode_list ) {
         setXnodes(data.xnode_list);
         // setCorrespondingNames(data.corresponding_document_name_list);
       } else {
-        setError(data.message || "Failed to fetch Xnodes");
+        setError(data.message || data.error || "Failed to fetch Xnodes");
+        console.log("msg", data.message || data.error);
       }
     } catch (error) {
       console.error("Error fetching Xnodes:", error);

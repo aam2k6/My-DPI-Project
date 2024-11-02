@@ -7,6 +7,10 @@ import { usercontext } from "../../usercontext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { frontend_host } from "../../config";
+import { MdOutlineQrCodeScanner } from "react-icons/md";
+import { QrReader } from 'react-qr-reader'; // Corrected import statement
+
+
 
 export default function Navbar({ content, lockerAdmin, lockerObj }) {
   const capitalizeFirstLetter = (string) => {
@@ -21,6 +25,12 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   const [notifications, setNotifications] = useState([]);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false); // State for directory dropdown
   const { curruser, setUser } = useContext(usercontext);
+  const [scanning, setScanning] = useState(false); // State to manage QR scanner visibility
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false); // State for QR modal
+  const [qrData, setQrData] = useState(null); // State for QR data
+  
+ 
+
 
   const handleDPIDirectory = () => {
     navigate("/dpi-directory");
@@ -175,6 +185,76 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
     }
   };
 
+ 
+  const handleQRScanner = (event) => {
+    event.stopPropagation(); // Prevent event from bubbling up
+    setIsQRModalOpen(true); // Open the QR modal
+  };
+
+  const handleQRModalClose = () => {
+    setIsQRModalOpen(false); // Close the QR modal
+    setQrData(null); // Clear QR data when closing
+    setScanning(false);
+    const videoElement = document.querySelector("video");
+    if (videoElement && videoElement.srcObject) {
+      const stream = videoElement.srcObject;
+      const tracks = stream.getTracks();
+
+      tracks.forEach((track) => {
+        track.stop(); // Stop each track (both video and audio)
+      });
+
+      videoElement.srcObject = null; // Clear the video element source
+    }
+
+    // Refresh the page when closing the scanner
+    window.location.reload();
+  };
+  
+
+  const handleScan = (data) => {
+    if (data) {
+      try {
+        const parsedData = JSON.parse(data);
+        console.log("Scanned QR Data:", parsedData);
+  
+        // Check for essential fields and handle optional ones
+        if (
+          parsedData.connection_name &&
+          parsedData.connection_type_name &&
+          parsedData.host_username &&
+          parsedData.host_locker_name
+        ) {
+          // Navigate to CreateConnectionType page with the state data
+          navigate("/create-connection-type", {
+            state: {
+              hostuser: { username: parsedData.host_username },
+              hostlocker: { name: parsedData.host_locker_name },
+              selectedConnectionType: {
+                connection_type_name: parsedData.connection_type_name,
+                connection_description: parsedData.connection_description || '',
+              },
+            },
+          });
+  
+          // Stop scanning and reload the page
+          setScanning(false);
+          window.location.reload(); // This will reload the page after navigating
+        } else {
+          console.error("Parsed data is missing essential fields");
+        }
+      } catch (error) {
+        console.error("Invalid QR Code:", error);
+      }
+    }
+  };
+  
+
+  const handleError = (err) => {
+    console.error(err); // Log any error during scanning
+  };
+  
+
   return (
     <nav className="navbar">
       <div className="wrap">{content}</div>
@@ -217,51 +297,71 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
         </ul>
 
         {/* Notification Bell */}
-        <ul className="navbarFirstLink">
-          <li>
-            <div className="notification-icon" onClick={toggleNotifications}>
-              <FontAwesomeIcon
-                icon={faBell}
-                className="notification-bell"
-                size="2x"
-              />
-              {notifications.some((n) => !n.read) && (
-                <span className="notification-badge">
-                  {notifications.filter((n) => !n.read).length}
-                </span>
-              )}
-            </div>
-
-            {isNotificationsOpen && (
-              <div className="notification-dropdown">
-                <h3>Notifications</h3>
-                {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`notification-box ${
-                        notification.read ? "read" : "unread"
-                      }`}
-                      onClick={() => markNotificationAsRead(notification.id)}
-                    >
-                      <p>
-                        <b>{notification.guest_user} </b> has requested for
-                        Locker <b>{notification.host_locker_name} </b> from the
-                        connection <b>{notification.connection_type_name}</b>
-                      </p>
-                      <p>
-                        {new Date(notification.created_at).toLocaleString()}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <p>No notifications found.</p>
-                )}
-              </div>
+        <div className="notification-icon" onClick={toggleNotifications}>
+          <FontAwesomeIcon icon={faBell} className="notification-bell" size="2x" />
+          {notifications.some((n) => !n.read) && (
+            <span className="notification-badge">
+              {notifications.filter((n) => !n.read).length}
+            </span>
+          )}
+        </div>
+        
+        {isNotificationsOpen && (
+          <div className="notification-dropdown">
+            <h3>Notifications</h3>
+            {notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`notification-box ${notification.read ? "read" : "unread"}`}
+                  onClick={() => markNotificationAsRead(notification.id)}
+                >
+                  <p>
+                    <b>{notification.guest_user} </b> has requested for
+                    Locker <b>{notification.host_locker_name} </b> from the
+                    connection <b>{notification.connection_type_name}</b>
+                  </p>
+                  <p>
+                    {new Date(notification.created_at).toLocaleString()}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>No notifications found.</p>
             )}
-          </li>
-        </ul>
+          </div>
+        )}
 
+         {/* QR Scanner Button */}
+      <ul className="navbarFirstLink">
+        <li>
+          <div className="qr-scanner-icon" onClick={handleQRScanner}>
+            <MdOutlineQrCodeScanner size={24} />
+          </div>
+        </li>
+      </ul>
+
+      {/* QR Code Scanner Modal */}
+      {isQRModalOpen && (
+  <div className="qr-scanner-overlay">
+    <div className="qr-scanner-box">
+      <QrReader
+        onResult={(result, error) => {
+          if (result) {
+            handleScan(result?.text);  // Directly call handleScan with the scanned text
+          }
+          if (error) {
+            handleError(error);  // Call handleError for any errors
+          }
+        }}
+        constraints={{ facingMode: "environment" }}  // Use the back camera
+        style={{ width: "100%", height: "100%" }}
+      />
+      <button className="qr-scanner-close" onClick={handleQRModalClose}>Close</button>
+    </div>
+  </div>
+
+        )}
         <ul className="navbarThirdLink">
           <li>
             <div className="profileContainer">
@@ -304,6 +404,8 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
           </li>
         </ul>
       </div>
+       
+    
     </nav>
   );
 }

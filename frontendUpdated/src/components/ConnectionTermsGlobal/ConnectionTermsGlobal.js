@@ -541,3 +541,4 @@ export const ConnectionTermsGlobal = () => {
     </div>
   );
 };
+

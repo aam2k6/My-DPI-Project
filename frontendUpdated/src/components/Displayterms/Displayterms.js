@@ -155,6 +155,12 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 
 export const Displayterms = () => {
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -162,6 +168,7 @@ export const Displayterms = () => {
   const [res, setRes] = useState(null);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
+  const [activeTab, setActiveTab] = useState("guest");
   
   const {
     connectionName,
@@ -317,7 +324,7 @@ export const Displayterms = () => {
 
   const content = (
     <>
-      <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+      <div className="navbarBrand">{curruser ? capitalizeFirstLetter(curruser.username): "None"}</div>
       <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -329,50 +336,84 @@ export const Displayterms = () => {
     <div>
       <Navbar content={content} />
       <div className="connection-details1">
-        <h4>Connection Type Name: {connectionTypeName}</h4>
-        <h3>
-  {globalTemplateNames.length > 0 && "Connection has been imported from "}
-  <span style={{ fontWeight: "bold" }}>
-    {globalTemplateNames.filter(Boolean).map((template, index) => (
-      <span key={index}>
-        <span 
-          style={{ cursor: 'pointer', textDecoration: 'underline' }}
-          onClick={() => handleNavigation(template)}
-        >
-          {template.global_connection_type_name}
-        </span>
-        {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
-      </span>
-    ))}
-  </span>
-</h3>
-              
-        {connectionDescription}
+        <div className="connectionName1">Connection Type Name: {connectionTypeName}</div>
+        <div className="connectionName2">
+          {globalTemplateNames.length > 0 && "Connection has been imported from "}
+          <span style={{ fontWeight: "bold" }}>
+            {globalTemplateNames.filter(Boolean).map((template, index) => (
+              <span key={index}>
+                <span 
+                  style={{ cursor: 'pointer', textDecoration  : 'underline' }}
+                  onClick={() => handleNavigation(template)}
+                >
+                  {template.global_connection_type_name}
+                </span>
+                {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+              </span>
+            ))}
+          </span>
+        </div>       
+       <div className="dates">
+        <div style={{fontSize:"18px"}}>
+          {connectionDescription}
+        </div>
         <br></br>Created on: {new Date(createdtime).toLocaleString()}
         <br></br>Valid until: {new Date(validitytime).toLocaleString()}
+       </div>
       </div>
-      <div className="page13container">
-        <p>
-          <u>Terms of connection</u>
-        </p>
 
-        <div className="page13subparent">
-          <div className="page13headterms">Your Obligations</div>
-          <div className="page13lowerterms">{renderObligations()}</div>
 
-          <div className="page13headterms">Your Permissions</div>
-          <div className="page13lowerterms">{renderPermissions()}</div>
-
-          <div className="page13headterms">Your Prohibitions</div>
-          <div className="page13lowerterms">{renderForbidden()}</div>
-
-          <div className="page13headterms">Default Host Privileges</div>
-          By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-
-          <div className="page13headterms"><h4>Host Obligations</h4></div>
-          You will receive a receipt when all the obligations are met
+      <div className="view-container">
+        <div className="b">
+          <div className="tabs">
+            <div
+              className={`tab-header ${
+                activeTab === "guest" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("guest")}
+            >
+              Guest Data
+            </div>
+            <div
+              className={`tab-header ${
+                activeTab === "host" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("host")}
+            >
+              Host Data
+            </div>
+          </div>
+          <div className="tab-content">
+            <div className="table-container">
+              {activeTab === "guest" && (
+                <div>
+                <div className="page13headterms">Your Obligations</div>
+                <div className="page13lowerterms">{renderObligations()}</div>
+      
+                <div className="page13headterms">Your Permissions</div>
+                <div className="page13lowerterms">{renderPermissions()}</div>
+      
+                {/* <div className="page13headterms">Your Prohibitions</div> */}
+                <div className="page13lowerterms">{renderForbidden()}</div>
+      
+                <div className="page13headterms">Default Host Privileges</div>
+                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+      
+                <div className="page13headterms"><h4>Host Obligations</h4></div>
+                You will receive a receipt when all the obligations are met
+              </div>
+              )}
+              {activeTab === "host" && (
+                <div className="page13headterms">
+                  Host connection terms...
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
+
+     
     </div>
   );
 };

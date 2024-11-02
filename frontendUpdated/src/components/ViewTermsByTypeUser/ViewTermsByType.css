@@ -1,3 +1,31 @@
+.small-tooltip{
+    width: auto; /* Use auto width to fit content */
+    max-width: 70px
+}
+.tooltip-container{
+    padding-top: 12px;
+}
+.userIcon{
+    font-size: 18px;
+}
+.userName{
+    font-size: 18px;
+}
+
+.user-container{
+    display: flex;
+}
+
+.view-container{
+    border: 2px solid rgb(107, 120, 231);
+    margin: 40px;
+    padding: 10px;
+}
+
+.save-button-container{
+    margin:10px;
+}
+
 .split-view {
     display: flex;
     justify-content: space-between;
@@ -141,13 +169,28 @@
   }
 
 
+  /* .page-input-modal {
+    position: fixed;
+    top: 75%;
+    left: 86%;
+    width: 520px;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 5px 25px 15px 25px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  } */
+
   .page-input-modal {
     position: fixed;
     top: 50%;
     left: 50%;
+    top: 75%;
+    left: 86%;
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 20px;
+    padding: 5px 15px 15px 15px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
   }

@@ -1,264 +1,3 @@
-// import React, { useState, useEffect, useContext } from 'react';
-// import Sidebar from '../Sidebar/Sidebar';
-// import Navbar from '../Navbar/Navbar';
-// import './CreateGlobalConnectionType.css';
-// import { useNavigate } from 'react-router-dom';
-// import Cookies from 'js-cookie';
-// import { usercontext } from "../../usercontext";
-// import { frontend_host } from '../../config';
-
-// export default function CreateGlobalConnectionType() {
-//   const [connectionTypes, setConnectionTypes] = useState([]);
-//   const [error, setError] = useState(null);
-//   const navigate = useNavigate();
-//   const { curruser } = useContext(usercontext);
-
-//   useEffect(() => {
-//     if (!curruser) {
-//       navigate('/');
-//       return;
-//     }
-
-//     const token = Cookies.get('authToken');
-
-//     fetch('host/get-template-or-templates/'.replace(/host/, frontend_host), {
-//       method: 'GET',
-//       headers: {
-//         'Authorization': `Basic ${token}`,
-//         'Content-Type': 'application/json'
-//       }
-//     })
-//       .then(response => {
-//         if (!response.ok) {
-//           throw new Error('Failed to fetch connection types');
-//         }
-//         return response.json();
-//       })
-//       .then(data => {
-//         if (data.data) {
-//           setConnectionTypes(data.data);
-//         } else {
-//           setError('No connection types found.');
-//         }
-//       })
-//       .catch(error => {
-//         setError("An error occurred while fetching connection types.");
-//         console.error("Error fetching connection types:", error);
-//       });
-//   }, [curruser, navigate]);
-
-//   const handleAddNewConnectionType = () => {
-//     navigate('/ConnectionTermsGlobal');
-//   };
-
-//   const handleConnectionTypeClick = (type) => {
-//     const template_Id = type.global_connection_type_template_id;
-
-//     if (!template_Id) {
-//       setError("Template ID is missing or invalid.");
-//       return;
-//     }
-
-//     // Navigate to GlobalConnectionTerms component
-//     navigate('/GlobalTermsView', {
-//       state: {
-//         connectionTypeName: type.global_connection_type_name,
-//         connectionTypeDescription: type.global_connection_type_description,
-//         template_Id: template_Id
-//       }
-//     });
-//   };
-
-//   return (
-//     <div className='manage-connection-page'>
-//       <Navbar />
-//       <Sidebar />
-//       <div className='manage-connection-content'>
-//         <h1>SYSTEM ADMIN SETTINGS</h1> 
-
-//         <h2>Existing Global Connection Types</h2> 
-//         {error && <p className="error">{error}</p>}
-//         {connectionTypes.length > 0 ? (
-//           <ol className='connection-list'>
-//             {connectionTypes.map(type => (
-//               <li 
-//                 key={type.global_connection_type_template_id} 
-//                 className='connection-item'
-//               >
-//                 <span 
-//                   className="connection-link"
-//                   onClick={() => handleConnectionTypeClick(type)}
-//                 >
-//                   {type.global_connection_type_name}
-//                 </span><br />
-//               </li>
-//             ))}
-//           </ol>
-//         ) : (
-//           <p>No global connection types found.</p>
-//         )}
-        
-//         <div className="add-connection-type-container">
-//           <button className="add-connection-type-button" onClick={handleAddNewConnectionType}>
-//             Add New Global Connection Type
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-// import React, { useState, useEffect, useContext } from 'react';
-// import Sidebar from '../Sidebar/Sidebar';
-// import Navbar from '../Navbar/Navbar';
-// import './CreateGlobalConnectionType.css';
-// import { useNavigate } from 'react-router-dom';
-// import Cookies from 'js-cookie';
-// import { usercontext } from "../../usercontext";
-// import { frontend_host } from '../../config';
-
-// export default function CreateGlobalConnectionType() {
-//   const [connectionTypes, setConnectionTypes] = useState([]);
-//   const [error, setError] = useState(null);
-//   const navigate = useNavigate();
-//   const { curruser } = useContext(usercontext);
-
-//   useEffect(() => {
-//     if (!curruser) {
-//       navigate('/');
-//       return;
-//     }
-
-//     const token = Cookies.get('authToken');
-
-//     fetch('host/get-template-or-templates/'.replace(/host/, frontend_host), {
-//       method: 'GET',
-//       headers: {
-//         'Authorization': `Basic ${token}`,
-//         'Content-Type': 'application/json'
-//       }
-//     })
-//       .then(response => {
-//         if (!response.ok) {
-//           throw new Error('Failed to fetch connection types');
-//         }
-//         return response.json();
-//       })
-//       .then(data => {
-//         console.log("Fetched data:", data); // <-- Add this to see the response data
-//         if (data.data) {
-//           setConnectionTypes(data.data);
-//           if (data.data.length === 0) {
-//             setError('No connection types found.');
-//           }
-//         } else {
-//           setError('No connection types found.');
-//         }
-//       })
-//       .catch(error => {
-//         setError("An error occurred while fetching connection types.");
-//         console.error("Error fetching connection types:", error);
-//       });
-//   }, [curruser, navigate]);
-
-//   const handleAddNewConnectionType = () => {
-//     navigate('/ConnectionTermsGlobal');
-//   };
-
-//   const handleConnectionTypeClick = (type) => {
-//     const template_Id = type.global_connection_type_template_id;
-
-//     if (!template_Id) {
-//       setError("Template ID is missing or invalid.");
-//       return;
-//     }
-
-//     // Navigate to GlobalConnectionTerms component
-//     navigate('/GlobalTermsView', {
-//       state: {
-//         connectionTypeName: type.global_connection_type_name,
-//         connectionTypeDescription: type.global_connection_type_description,
-//         template_Id: template_Id
-//       }
-//     });
-//   };
-
-//   return (
-//       <div className="manage-connection-page">
-//         <Navbar />
-//         <Sidebar />
-//         <div className="manage-connection-content">
-//           <h1>SYSTEM ADMIN SETTINGS</h1>
-//     
-//           <h2>Existing Global Connection Types</h2>
-//           {error && <p className="error">{error}</p>}
-//           
-//           {connectionTypes.length > 0 ? (
-//             <>
-//               {/* Templates Section */}
-//               <div className="template-section">
-//                 <h3>Templates</h3>
-//                 {connectionTypes.filter(type => type.globaltype === "template").length > 0 ? (
-//                   <ol className="connection-list">
-//                     {connectionTypes
-//                       .filter(type => type.globaltype === "template")
-//                       .map(type => (
-//                         <li 
-//                           key={type.global_connection_type_template_id} 
-//                           className="connection-item"
-//                         >
-//                           <span 
-//                             className="connection-link"
-//                             onClick={() => handleConnectionTypeClick(type)}
-//                           >
-//                             {type.global_connection_type_name}
-//                           </span><br />
-//                         </li>
-//                       ))}
-//                   </ol>
-//                 ) : (
-//                   <p>No templates found.</p>
-//                 )}
-//               </div>
-//     
-//               {/* Policies Section */}
-//               <div className="policy-section">
-//                 <h3>Policies</h3>
-//                 {connectionTypes.filter(type => type.globaltype === "policy").length > 0 ? (
-//                   <ol className="connection-list">
-//                     {connectionTypes
-//                       .filter(type => type.globaltype === "policy")
-//                       .map(type => (
-//                         <li 
-//                           key={type.global_connection_type_template_id} 
-//                           className="connection-item"
-//                         >
-//                           <span 
-//                             className="connection-link"
-//                             onClick={() => handleConnectionTypeClick(type)}
-//                           >
-//                             {type.global_connection_type_name}
-//                           </span><br />
-//                         </li>
-//                       ))}
-//                   </ol>
-//                 ) : (
-//                   <p>No policies found.</p>
-//                 )}
-//               </div>
-//             </>
-//           ) : (
-//             <p>No global connection types found.</p>
-//           )}
-//     
-//           <div className="add-connection-type-container">
-//             <button className="add-connection-type-button" onClick={handleAddNewConnectionType}>
-//               Add New Global Connection Type
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     );
-// }
 import React, { useState, useEffect, useContext } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Navbar from '../Navbar/Navbar';
@@ -275,6 +14,7 @@ export default function CreateGlobalConnectionType() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { curruser } = useContext(usercontext);
+  const isSystemAdmin = curruser && (curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin');
 
   useEffect(() => {
     if (!curruser) {
@@ -351,7 +91,7 @@ export default function CreateGlobalConnectionType() {
   return (
     <div className="manage-connection-page">
       <Navbar />
-      <Sidebar />
+      {isSystemAdmin && <Sidebar />} {/* Show Sidebar only for System Admin */}
       <div className="manage-connection-content">
         <h1>GLOBAL CONNECTIONS</h1>
         {error && <p className="error">{error}</p>}
@@ -370,7 +110,7 @@ export default function CreateGlobalConnectionType() {
                   <div key={domain}>
                     <div className="domain-header" onClick={() => handleDomainToggle(domain, 'templates')}>
                       <span className="domain-title">
-                        {expandedStates[domain]?.templates ? <FaArrowDown /> : <FaArrowRight />} {capitalizeFirstLetter(domain)}
+                      {expandedStates[domain]?.templates ? '▼' : '►'} {capitalizeFirstLetter(domain)}
                       </span>
                     </div>
                     {expandedStates[domain]?.templates && (
@@ -404,7 +144,7 @@ export default function CreateGlobalConnectionType() {
                   <div key={domain}>
                     <div className="domain-header" onClick={() => handleDomainToggle(domain, 'policies')}>
                       <span className="domain-title">
-                        {expandedStates[domain]?.policies ? <FaArrowDown /> : <FaArrowRight />} {capitalizeFirstLetter(domain)}
+                      {expandedStates[domain]?.policies ? '▼' :  '►'} {capitalizeFirstLetter(domain)}
                       </span>
                     </div>
                     {expandedStates[domain]?.policies && (
@@ -430,12 +170,14 @@ export default function CreateGlobalConnectionType() {
           <p>No domains found.</p>
         )}
 
-        <div className="add-connection-type-container">
-          <button className="add-connection-type-button" onClick={handleAddNewConnectionType}>
-            Add New Global Connection Type
-          </button>
-        </div>
+{isSystemAdmin && ( // Show button only for System Admin
+          <div className="add-connection-type-container">
+            <button className="add-connection-type-button" onClick={handleAddNewConnectionType}>
+              Add New Global Connection Type
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
-};
+}

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import userImage from "../../assets/WhatsApp Image 2024-07-11 at 16.04.18.jpeg";
 import { usercontext } from "../../usercontext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell } from '@fortawesome/free-solid-svg-icons'; // Importing the bell icon
+import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { frontend_host } from "../../config";
 
 export default function Navbar({ content, lockerAdmin, lockerObj }) {
@@ -19,10 +19,15 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   const [error, setError] = useState(null);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [isDirectoryOpen, setIsDirectoryOpen] = useState(false); // State for directory dropdown
   const { curruser, setUser } = useContext(usercontext);
 
   const handleDPIDirectory = () => {
     navigate("/dpi-directory");
+  };
+
+  const handleGlobalConnectionDirectory = () => {
+    navigate("/create-global-connection-type");
   };
 
   const handleHomeClick = () => {
@@ -34,6 +39,10 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
     localStorage.removeItem("curruser");
     setUser(null);
     navigate("/");
+  };
+
+  const toggleDirectoryDropdown = () => {
+    setIsDirectoryOpen(!isDirectoryOpen); // Toggle directory dropdown
   };
 
   useEffect(() => {
@@ -125,7 +134,6 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
       );
 
       if (response.ok) {
-        // Update local notifications state and local storage
         const updatedNotifications = notifications.map((notif) => ({ ...notif, read: true }));
         setNotifications(updatedNotifications);
         localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
@@ -173,14 +181,40 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
 
       <div className="navbarLinks">
         {lockerAdmin && (
-          <ul className="navbarFirstLink">
-            <li>
+          <ul>
+            <li className="navLinks">
               <a href="#" onClick={handleConnection}>
                 Locker Admin
               </a>
             </li>
           </ul>
         )}
+
+        
+{/* Directory dropdown */}
+<ul className="navLinks">
+  <li className="navLinks">
+    <a href="#" onClick={(e) => { e.preventDefault(); toggleDirectoryDropdown(); }} className="dropdownTrigger">
+      Directory
+    </a>
+    {isDirectoryOpen && (
+      <div className="dropdownContent">
+        <button onClick={handleDPIDirectory}>DPI Directory</button>
+        <button onClick={handleGlobalConnectionDirectory}>Global Connection Directory</button>
+      </div>
+    )}
+  </li>
+</ul>
+
+
+
+        <ul>
+          <li className="navLinks">
+            <a href="#" onClick={handleHomeClick}>
+              Home
+            </a>
+          </li>
+        </ul>
 
         {/* Notification Bell */}
         <ul className="navbarFirstLink">
@@ -228,35 +262,19 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
           </li>
         </ul>
 
-        <ul className="navbarFirstLink">
-          <li>
-            <a href="#" onClick={handleDPIDirectory}>
-              DPI Directory
-            </a>
-          </li>
-        </ul>
-
-        <ul className="navbarSecondLink">
-          <li>
-            <a href="#" onClick={handleHomeClick}>
-              Home
-            </a>
-          </li>
-          <li>
-            <a href="#" onClick={handleAdminSettings}></a>
-          </li>
-        </ul>
-
         <ul className="navbarThirdLink">
           <li>
-            <img
-              src={userImage}
-              alt="User Icon"
-              onClick={toggleDropdown}
-              className="dropdownImage"
-            />
-            <div className="username" onClick={toggleDropdown}>
-              {capitalizeFirstLetter(curruser.username)}
+            <div className="profileContainer">
+              <img
+                src={userImage}
+                alt="User Icon"
+                onClick={toggleDropdown}
+                className="dropdownImage"
+                style={{ display: "block", margin: "0 auto" }}
+              />
+              <div className="username" onClick={toggleDropdown}>
+                {capitalizeFirstLetter(curruser.username)}
+              </div>
             </div>
 
             {isOpen && (

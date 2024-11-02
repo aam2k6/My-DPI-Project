@@ -72,6 +72,7 @@ export const UploadResource = () => {
     <>
     <div className="navbarLockerName">Locker: {locker.name}</div>
           <div className="navbarLockerOwner">Owner: {curruser.username}</div>
+          <span className='uploadDescription'><p>{locker.description}</p></span>
     </>
   );
 
@@ -79,9 +80,9 @@ export const UploadResource = () => {
     <div>
     <Navbar content = {content} />
 
-      <div className="descriptionLocker">
+      {/* <div className="descriptionLocker">
         <p>{locker.description}</p>
-      </div>
+      </div> */}
 
       <div className="page4heroContainer">
         <div className="page4resourceHeading">Resources</div>

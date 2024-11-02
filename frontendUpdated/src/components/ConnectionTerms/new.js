@@ -524,14 +524,11 @@ import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 
-
 export const ViewTermsByType = () => {
-
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -566,16 +563,6 @@ export const ViewTermsByType = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedResourceId, setSelectedResourceId] = useState(null);
   const [selection, setSelection] = useState({});
-
-  const [selectedResourceId2, setSelectedResourceId2] = useState(null);
-  const [selection2, setSelection2] = useState({});
-  const [selectedResources2, setSelectedResources2] = useState({});
-  const [showPageInput2, setShowPageInput2] = useState(false);
-  const [showResources2, setShowResources2] = useState(false);
-  const [statuses2, setStatuses2] = useState({});
-
-  // const [currentLabelName2, setCurrentLabelName2] = useState(null);
-
   const [hostObligationMessage, setHostObligationMessage] = useState('');
   const [activeTab, setActiveTab] = useState("guest");
 
@@ -689,7 +676,6 @@ export const ViewTermsByType = () => {
         const data = await response.json();
 
         if (data.success) {
-          console.log("data by conntype", data.data);
           setTerms(data.data.obligations); // Update to set data.data instead of data
           // console.log("Terms Response Data:", data.data.obligations);
         } else {
@@ -721,19 +707,18 @@ export const ViewTermsByType = () => {
         }
 
         const data = await response.json();
-        console.log("data by terms value", data);
+        console.log("data", data);
         if (data.success) {
           const initialValues = {};
           const initialResources = {};
           const statusMap = {};
-          const statusMap2 = {};
           // const resourceMap = {
           //     share: [],
           //     transfer: []
           // };
 
           data.terms.obligations.forEach((obligation) => {
-            // console.log("obligation," , obligation);
+            console.log("obligation," , obligation);
             initialValues[obligation.labelName] = obligation.value || "";
             statusMap[obligation.labelName] = obligation.value.endsWith("T")
               ? "Approved"
@@ -743,7 +728,7 @@ export const ViewTermsByType = () => {
 
             if (obligation.typeOfAction === "file" && obligation.value) {
               const [id] = obligation.value.split(";");
-              // console.log(id, "doc name", obligation.value);
+              console.log(id, "doc name", obligation.value);
               initialResources[obligation.labelName] = {
                 id,
                 i_node_pointer: obligation.i_node_pointer,
@@ -757,21 +742,14 @@ export const ViewTermsByType = () => {
               //     resourceMap.share.push(document_name);
               // }
             }
-
-            
-            
-
           });
-        
-          // console.log("values initial", initialValues, initialResources);
+          console.log("values initial", initialValues, initialResources);
           setRes(data.terms);
           setTermValues(initialValues);
-          console.log(initialValues, "ini");
           setSelectedResources(initialResources);
           setPermissions(data.terms.permissions); // Set permissions
           setStatuses(statusMap);
-          
-          // console.log(termValues, "term values", initialValues);
+          console.log(termValues, "term values", initialValues);
           // console.log("data initial", data);
           // setResourcesData({
           //     share: Object.values(initialResources).filter(res => res.typeOfSharing === "share").map(res => res.document_name),
@@ -788,7 +766,7 @@ export const ViewTermsByType = () => {
         setError(err.message);
       }
     };
-    console.log(res, "res");
+    
     const fetchPermissionsData = async () => {
       try {
         const token = Cookies.get("authToken");
@@ -812,7 +790,6 @@ export const ViewTermsByType = () => {
         const data = await response.json();
         if (data.success) {
           // Create an array from the shared_more_data_terms object
-          console.log(data.shared_more_data_terms);
           const sharedData = Object.entries(data.shared_more_data_terms).map(
             ([key, value], index) => ({
               sno: index + 1,
@@ -820,24 +797,10 @@ export const ViewTermsByType = () => {
               dataElement: value.enter_value,
               purpose: value.purpose,
               action: value.typeOfValue,
-              share:value.typeOfShare,
+              share:value.typeOfSharing,
             })
           );
           setPermissionsData(sharedData);
-          console.log("permissionData", sharedData);
-          const statusMap2 = {}
-          sharedData.forEach((permission) => {
-              console.log("perm," , permission);
-              
-              statusMap2[permission.labelName] = permission.dataElement.endsWith("T")
-                ? "Approved"
-                : permission.dataElement.endsWith("R")
-                ? "Rejected"
-                : "Pending";
-  
-            });
-            setStatuses2(statusMap2);
-            console.log(statusMap2, "map");
         } else {
           setError(data.error || "No permissions data found");
         }
@@ -998,7 +961,7 @@ export const ViewTermsByType = () => {
     const strippedValue = termValues[obligation.labelName]
       // ?.replace(/;[TFR]$/, "");
       ?.replace(/;[ ]?[TFR]$/, "");
-      // console.log(strippedValue, "strippedValue", termValues);
+      console.log(strippedValue, "strippedValue", termValues);
     switch (obligation.typeOfAction) {
       case "text":
         return (
@@ -1014,11 +977,11 @@ export const ViewTermsByType = () => {
       case "file":
         // console.log("name", selectedResources[obligation.labelName]);
         // console.log("name 2", selectedResources);
-        // console.log("selection name", selection);
+        console.log("selection name", selection);
         return (
           <button onClick={() => handleButtonClick(obligation.labelName)}>
             {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
-              "Select Resource"}
+              "Upload File"}
           </button>
         );
       case "date":
@@ -1043,7 +1006,7 @@ export const ViewTermsByType = () => {
   };
 
   const handleResourceSelection = (resource) => {
-    // console.log("inside",resource);
+    console.log("inside",resource);
     // initialResources[obligation.labelName] = {
       //                 document_name,
       //                 i_node_pointer: obligation.i_node_pointer,
@@ -1058,127 +1021,13 @@ export const ViewTermsByType = () => {
       ...prev,
       [currentLabelName]: resource,
     }));
-    setShowResources(true);
+    setShowResources(false);
     setSelectedResourceId(resource.id);
     setShowPageInput(true);
-    // console.log("resources selected", selectedResources);
-    // console.log("selection", selection);
+    console.log("resources selected", selectedResources);
+    console.log("selection", selection);
   };
 
-
-//********************************************************** */
-  const handleButtonClick2 = (labelName) => {
-    setSelectedLocker(guestLockerName);
-    setShowResources2(true);
-    setCurrentLabelName(labelName);
-  };
-
-  const handleResourceSelection2 = (resource) => {
-    // console.log("inside",resource);
-    // initialResources[obligation.labelName] = {
-      //                 document_name,
-      //                 i_node_pointer: obligation.i_node_pointer,
-      //                 typeOfSharing: obligation.typeOfSharing,
-      //               };
-      
-    setSelection2((prev) => ({
-      ...prev,
-      [currentLabelName]: {id:resource.id, resource_name:resource.resource_name,}
-    }));
-    setSelectedResources2((prev) => ({
-      ...prev,
-      [currentLabelName]: resource,
-    }));
-    setShowResources2(false);
-    setSelectedResourceId2(resource.id);
-    setShowPageInput2(true);
-    // console.log("resources selected", selectedResources);
-    // console.log("selection", selection);
-  };
-
-  const handlePageSubmit2 = async () => {
-    if (!fromPage || !toPage) {
-        setErrorMessage("Both from_page and to_page are required.");
-        return;
-    }
-    const token = Cookies.get("authToken");
-    try {
-        const response = await fetch('host/get-total-pages/'.replace(
-          /host/,
-          frontend_host
-        ), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Basic ${token}`,
-                
-            },
-            body: JSON.stringify({
-                xnode_id: selectedResourceId2,
-                from_page: parseInt(fromPage, 10),
-                to_page: parseInt(toPage, 10)
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            
-            const resource = selection2[currentLabelName]; // Current selected resource
-            // console.log("in page res", resource);
-            const termValue = `${resource.resource_name}|${resource.id},(${fromPage}:${toPage}); F`;
-            // console.log(termValue, "termValue");
-
-           
-            appendPagesToTerms2(termValue);
-
-            
-            setShowPageInput2(false);
-            setErrorMessage(null);
-            setFromPage('');
-            setToPage('');
-        } else {
-           
-            setErrorMessage(data.error);
-        }
-    } catch (error) {
-        setErrorMessage("An error occurred while validating pages.");
-    }
-};
-
-// const appendPagesToTerms2 = (termValue) => {
-// console.log("more", currentLabelName, termValue)
-// console.log(moreDataTerms, "before update more term values")
-// setMoreDataTerms((prevTerms) =>
-//   prevTerms.map((term) =>
-//     term.labelName === currentLabelName
-//       ? { ...term, enter_value: termValue } // Update only 'enter_value'
-//       : term // Keep all other terms and fields intact
-//   )
-// );
-// console.log("updated more term values", moreDataTerms);
-// };
-
-const appendPagesToTerms2 = (newValue) => {
-  console.log("Label to update:", currentLabelName);
-  console.log("New value:", newValue);
-
-  setMoreDataTerms((prevTerms) => {
-    const updatedTerms = prevTerms.map((term) => {
-      console.log("Checking term:", term);
-      if (term.labelName.trim().toLowerCase() === currentLabelName.trim().toLowerCase()) {
-        console.log("Match found, updating enter_value for:", term.labelName);
-        return { ...term, enter_value: newValue }; // Update only 'enter_value'
-      }
-      return term; // Keep all other terms and fields intact
-    });
-
-    console.log("Updated Terms:", updatedTerms);
-    return updatedTerms;
-  });
-};
-
-//******************************************************** */
   // useEffect(() => {
 
   // }, [selectedLocker]);
@@ -1217,9 +1066,9 @@ const appendPagesToTerms2 = (newValue) => {
         if (response.ok && data.success) {
             
             const resource = selection[currentLabelName]; // Current selected resource
-            // console.log("in page res", resource);
+            console.log("in page res", resource);
             const termValue = `${resource.resource_name}|${resource.id},(${fromPage}:${toPage}); F`;
-            // console.log(termValue, "termValue");
+            console.log(termValue, "termValue");
 
            
             appendPagesToTerms(termValue);
@@ -1227,7 +1076,6 @@ const appendPagesToTerms2 = (newValue) => {
             
             setShowPageInput(false);
             setErrorMessage(null);
-            setShowResources(false)
             setFromPage('');
             setToPage('');
         } else {
@@ -1240,12 +1088,12 @@ const appendPagesToTerms2 = (newValue) => {
 };
 
 const appendPagesToTerms = (termValue) => {
-      // console.log("in append", termValue);
+      console.log("in append", termValue);
       setTermValues((prevTerms) => ({
         ...prevTerms,
         [currentLabelName]: termValue,
       }));
-    // console.log("updated term values", termValues);
+    console.log("updated term values", termValues);
 };
 
 
@@ -1327,20 +1175,20 @@ const appendPagesToTerms = (termValue) => {
         
         ...Object.fromEntries(
           Object.entries(termValues).map(([key, value]) => {
-            // console.log("updated term values in submit", termValues);
+            console.log("updated term values in submit", termValues);
             const obligation = res.obligations.find(
               (ob) => ob.labelName === key
             );
             const initialValue = obligation?.value || "";
-            // console.log(initialValue, "initial Value");
+            console.log(initialValue, "initial Value");
 
              if (obligation.typeOfAction === "file") {
               const initialVal = initialValue?.split("|")[1]?.split(",")[0] || "";
               
-              // console.log("initialVal", initialVal, initialValue);
+              console.log("initialVal", initialVal, initialValue);
               const resource = selection[key];
               // const v = `${resource?.resource_name+"|"+resource?.id,fromPage+":"+toPage}`;
-              // console.log("resource in payload", resource);
+              console.log("resource in payload", resource);
             //   const initialResourcePointer = initialValue.split(";")[0];
             //   console.log(initialResourcePointer);
               // if (
@@ -1488,7 +1336,6 @@ const appendPagesToTerms = (termValue) => {
       purpose: term.purpose || "Purpose for the document", // Default purpose
       typeOfValue: term.type || "text", // Default to 'text' if no type is selected
       typeOfShare:term.typeOfSharing||"",
-      // status: statuses2[term.labelName]||"Pending",
     }));
 
     const requestBody = {
@@ -1500,7 +1347,7 @@ const appendPagesToTerms = (termValue) => {
       extra_data: extraDataArray,
     };
 
-    console.log("Request Body:", JSON.stringify(requestBody, null, 2));
+    // console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
     try {
       const token = Cookies.get("authToken");
@@ -1531,7 +1378,7 @@ const appendPagesToTerms = (termValue) => {
   const addMoreDataTerm = () => {
     setMoreDataTerms((prevTerms) => [
       ...prevTerms,
-      { labelName: "", purpose: "", enter_value: "", type: "text" ,typeOfSharing:"share", status: "Pending"}, // Default values
+      { labelName: "", purpose: "", enter_value: "", type: "text" ,typeOfSharing:""}, // Default values
     ]);
   };
   const removeMoreDataTerm = (index) => {
@@ -1622,7 +1469,7 @@ const appendPagesToTerms = (termValue) => {
 
   const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
     const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
-      // console.log(template, "template for id:", id);  
+      console.log(template, "template for id:", id);  // Debug to check if template is valid
 
     return template ? template : null;
   });
@@ -1681,7 +1528,7 @@ const appendPagesToTerms = (termValue) => {
       }
 
       const data = await response.json();
-      // console.log(data);
+      console.log(data);
       const { link_To_File } = data;
 
       if (link_To_File) {
@@ -1700,11 +1547,11 @@ const appendPagesToTerms = (termValue) => {
     }
   };
 
-  // console.log("selection", selection);
   const userTooltips = {
     guest: "Guest",
     host: "Host",
   };
+
 
   const renderUserTooltip = (userType) => {
     return (
@@ -1717,18 +1564,13 @@ const appendPagesToTerms = (termValue) => {
   console.log("selection", selection);
   const content = (
     <>
-      {/* <div className="navbarBrand">
+      <div className="navbarBrand">
         {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
       </div>
       <div className="description">
         {curruser ? curruser.description : "None"}
-      </div> */}
-
-      <div className="navbarBrand">
-      {connectionName}
       </div>
 
-      <br></br>
       <div className="connection-details">
         Connection Name: {connectionName}
         <button
@@ -1742,7 +1584,7 @@ const appendPagesToTerms = (termValue) => {
             border: "none",
           }}
         >
-          <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
+          <i className="fa fa-info-circle userIcon"></i>
         </button>
         <button
           //   className="info-button"
@@ -1750,9 +1592,7 @@ const appendPagesToTerms = (termValue) => {
         >
           Revoke Consent
         </button>
-        <br></br>
         <>
-        <div style={{paddingBottom:"8px"}}>
         {globalTemplateNames.length > 0 && "Connection has been imported from "}
   <span style={{ fontWeight: "bold" }}>
     {globalTemplateNames.filter(Boolean).map((template, index) => (
@@ -1767,31 +1607,24 @@ const appendPagesToTerms = (termValue) => {
       </span>
 
     ))}
-     </span></div></>
+     </span></>
+     
+     <br></br>
+ 
         {connectionDescription}
         <br></br>
         <div className="tooltip-container user-container">
           <div className="tooltip user-container">
             <FaUserCircle className="userIcon"/> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
+            <span className="userName">{renderUserTooltip('guest')} : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
           </div>
-          <i class="fa-solid fa-right-long"></i> &nbsp;
+          <FaArrowCircleRight className="userIcon" /> &nbsp;
           <div className="tooltip user-container">
             <FaRegUserCircle className="userIcon"/>&nbsp;
             <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
           </div>
-        </div>
-        <div className="tooltip-container user-container">
-          <div className="tooltip user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
-            <i class="bi bi-person-fill-lock"></i> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
-          </div>
-          <i class="fa-solid fa-right-long"></i> &nbsp;
-          <div className="tooltip user-container" onClick={() => handleuserclick(hostUserUsername)}>
-            <i class="bi bi-person-lock"></i>&nbsp;
-            <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
-          </div>
-        </div>
+      </div>
+    
       </div>
     </>
   );
@@ -1810,10 +1643,6 @@ const appendPagesToTerms = (termValue) => {
       </span>
     );
   };
-
-
-  console.log(termValues, "term values");
-  console.log("moreDataTerms", moreDataTerms );
 
   const renderPermissionsTable = () => {
     if (permissionsData.length > 0) {
@@ -1842,45 +1671,11 @@ const appendPagesToTerms = (termValue) => {
     }
   };
 
-  const handleuserclick = (hostUserUsername) => {
-    console.log(hostUserUsername);
-    navigate(`/target-user-view`, { state: { user: { username: hostUserUsername } } });
-}
-
-  
-
-
   return (
+  <>
+    <Navbar content={content}/>
 
-    <div>
-
-      <Navbar content={content} />
-
-      {/* <div className={showResources || showResources2 ? "split-view" : ""}>
-        <div className="table-container">
-          
-          <div className="center">
-          {globalTemplateNames.length > 0 && "Regulations used: "}
-            <span style={{ fontWeight: "bold" }}>
-              {globalTemplateNames.filter(Boolean).map((template, index) => (
-                <span key={index}>
-                  <span 
-          style={{ cursor: 'pointer', textDecoration: 'underline' }}
-          onClick={() => handleNavigation(template)}
-        >
-          {template.global_connection_type_name}
-        </span>
-                  {index < globalTemplateNames.filter(Boolean).length - 1 &&
-                    ", "}
-                </span>
-              ))}
-            </span>
-          </div>
-          
-          <h3>Your Obligations</h3> */}
-
-
-      <div className="view-container">
+    <div className="view-container">
     <div className="b">
             <div className="tabs">
               <div
@@ -1889,7 +1684,7 @@ const appendPagesToTerms = (termValue) => {
                 }`}
                 onClick={() => setActiveTab("guest")}
               >
-                Guest Data
+                Guest Connection Terms
               </div>
               <div
                 className={`tab-header ${
@@ -1897,14 +1692,14 @@ const appendPagesToTerms = (termValue) => {
                 }`}
                 onClick={() => setActiveTab("host")}
               >
-                Host Data
+                Host Connection Terms
               </div>
             </div>
           <div className="tab-content">
           {activeTab === "guest" && (
             <div>
       
-      <div className={showResources || showResources2 ? "split-view" : ""}>
+            <div className={showResources ? "split-view" : ""}>
               <div className="table-container">
                 
                 <div className="center">
@@ -2005,45 +1800,7 @@ const appendPagesToTerms = (termValue) => {
                     <button onClick={() => setShowResources(false)}>Select</button>
                   </div>
                 )}
-
-{showResources2 && (
-            <div className="resource-container">
-              <h3>Select Resource for {currentLabelName}</h3>
-              {/* {error && <p className="error">{error}</p>} */}
-
-              <ul>
-                {xnodes.map((resource, index) => (
-                  <li key={index}>
-                    <div>
-                      <label>
-                        <input
-                          type="radio"
-                          name="selectedResource"
-                          value={resource.resource_name} //i changed here
-                          checked={
-                            selection2[currentLabelName]
-                              ?.id === resource.id
-                          }
-                          onClick={() => handleResourceSelection2(resource)}
-                        />
-                        {resource.resource_name}  <button id="view" onClick = {() => handleClick(resource.id)}>View</button>
-                      </label>
-                     
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <button onClick={() => setShowResources2(false)}>Select</button>
-            </div>
-          )}
-          
-                 </div>
-              
-          </div>
-          <div>
               </div>
-             <div>
-              {/* </div>
               
           </div>
           <div>
@@ -2051,7 +1808,7 @@ const appendPagesToTerms = (termValue) => {
              <div>
           {permissions?.canShareMoreData && (
         <div className="table-container">
-
+          {/* Add this div for styling */}
           <h3>Share more data</h3>
           <table>
             <thead>
@@ -2061,7 +1818,7 @@ const appendPagesToTerms = (termValue) => {
                 <th>Purpose</th>
                 <th>Type of Share</th>
                 <th>Value</th>
-                <th>Status</th> 
+                <th>Status</th> {/* Changed "Remove" to "Status" */}
               </tr>
             </thead>
             <tbody>
@@ -2071,13 +1828,13 @@ const appendPagesToTerms = (termValue) => {
                   <td>{permission.sno}</td>
                   <td>{permission.labelName}</td>
                   <td>{permission.purpose || "None"}</td>
-                  
+                  {/* Display "None" if empty */}
                   <td>{permission.action}</td>
                   <td>
                     {permission.dataElement || "None"}
-                    
+                    {/* Display "None" if empty */}
                   </td>
-                  <td>Status Active</td> 
+                  <td>Status Active</td> {/* Example status value */}
                 </tr>
               ))}
               {moreDataTerms.map((term, index) => (
@@ -2119,14 +1876,21 @@ const appendPagesToTerms = (termValue) => {
                     </select>
                   </td>
                   <td>
-                    
-                  
+                    {/* <input
+                    {/* <input
+                      type="file"
+                      onChange={(e) =>
+                        updateTerm(index, "enter_value", e.target.files[0])
+                      }
+                     
+                      required
+                    /> */}
                      <button onClick={() => handleButtonClick(term.labelName)}>
                       {selectedResources[term.labelName]?.id ||
                         "Upload File"}
                     </button>
                   </td>
-                  <td>Pending</td> 
+                  <td>Pending</td> {/* Example status value */}
                 </tr>
               ))}
             </tbody>
@@ -2137,7 +1901,7 @@ const appendPagesToTerms = (termValue) => {
                 Add New Term
               </button>
               <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-                Remove Last Term 
+                Remove Last Term {/* This removes the last term added */}
               </button>
               <button onClick={handleMoreSubmit}>Submit</button>
             </div>
@@ -2164,10 +1928,8 @@ const appendPagesToTerms = (termValue) => {
               type={modalMessage.type}
             />
           )}
- */}
-
       
-      {/* {showPageInput && (
+      {showPageInput && (
         <div className="page-input-modal">
         <div>
           <h3>Enter Page Range for {currentLabelName}</h3>
@@ -2182,7 +1944,6 @@ const appendPagesToTerms = (termValue) => {
               min="1"
             />
           </label>
-          <br></br>
       
           <label>
             To Page:
@@ -2195,7 +1956,6 @@ const appendPagesToTerms = (termValue) => {
           </label>
       
           
-
         </div>
         <div className="button-group">
           <button onClick={handlePageSubmit}>Submit</button>
@@ -2206,216 +1966,16 @@ const appendPagesToTerms = (termValue) => {
           setToPage('');
         }}>Cancel</button>
         </div>
-       <div> */}
-    {permissions?.canShareMoreData && (
-  <div className="table-container">
-    {/* Add this div for styling */}
-    <h3>Share more data</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Sno</th>
-          <th>Name</th>
-          <th>Purpose</th>
-          <th>Type of Share</th>
-          <th>Value</th>
-          <th>Status</th> {/* Changed "Remove" to "Status" */}
-        </tr>
-      </thead>
-      <tbody>
-        
-        {permissionsData.map((permission) => (
-          <tr key={permission.sno}>
-            <td>{permission.sno}</td>
-            <td>{permission.labelName}</td>
-            <td>{permission.purpose || "None"}</td>
-            {/* Display "None" if empty */}
-            <td>{permission.share}</td>
-            <td>
-              <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button>
-              {/* Display "None" if empty */}
-            </td>
-            <td>{statuses2[permission.labelName]}</td> {/* Example status value */}
-          </tr>
-        ))}
-        {moreDataTerms.map((term, index) => (
-          <tr key={index}>
-            <td>{index + 1}</td>
-            <td>
-              <input
-                type="text"
-                value={term.labelName}
-                onChange={(e) =>
-                  updateTerm(index, "labelName", e.target.value)
-                }
-                placeholder="Label Name"
-                required
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={term.purpose}
-                onChange={(e) =>
-                  updateTerm(index, "purpose", e.target.value)
-                }
-                placeholder="Purpose"
-                required
-              />
-            </td>
-            <td>
-              <select
-                value={term.typeOfSharing}
-                onChange={(e) =>
-                  updateTerm(index, "typeOfSharing", e.target.value)
-                }
-              >
-                <option value="share">Share</option>
-                <option value="transfer">Transfer</option>
-                <option value="confer">Confer</option>
-                <option value="collateral">Collateral</option>
-              </select>
-            </td>
-            <td>
-              {/* <input
-              {/* <input
-                type="file"
-                onChange={(e) =>
-                  updateTerm(index, "enter_value", e.target.files[0])
-                }
-               
-                required
-              /> */}
-               <button onClick={() => handleButtonClick2(term.labelName)}>
-               {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] ||
-              "Upload File"}
-              </button>
-            </td>
-            <td>Pending</td> {/* Example status value */}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-    <div style={{ margin: "20px 0" }}>
-      <div>
-        <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
-          Add New Term
-        </button>
-        <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-          Remove Last Term {/* This removes the last term added */}
-        </button>
-        <button onClick={handleMoreSubmit}>Submit</button>
-      </div>
-         
-    {allObligationsApproved() && (
-  <div>
-    <h3 style={{ textAlign: "left", marginTop: "20px" }}>
-      Host Obligations
-    </h3>
-    <p>You will receive a receipt from the host</p>
-  </div>
-)}
-
-{hostObligationMessage && (
-  <h3 style={{ textAlign: "center", marginTop: "20px" }}>
-    Host Obligation: {hostObligationMessage}
-  </h3>
-)}
-         
-    {isModalOpen && (
-      <Modal
-        message={modalMessage.message}
-        onClose={handleCloseModal}
-        type={modalMessage.type}
-      />
-    )}
-
-{showPageInput && (
-  <div className="page-input-modal">
-  <div>
-    <h3>Enter Page Range for {currentLabelName}</h3>
-    {errorMessage && <p className="error">{errorMessage}</p>}
-
-    <label>
-      From Page:
-      <input
-        type="number"
-        value={fromPage}
-        onChange={(e) => setFromPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    <label>
-      To Page:
-      <input
-        type="number"
-        value={toPage}
-        onChange={(e) => setToPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    
-  </div>
-  <div className="button-group">
-    <button onClick={handlePageSubmit}>Submit</button>
-    <button onClick={() =>{
-    setShowPageInput(false);
-    setErrorMessage(null);
-    setFromPage('');
-    setToPage('');
-  }}>Cancel</button>
-  </div>
-  </div>
-)}
-
-{showPageInput2 && (
-  <div className="page-input-modal">
-  <div>
-    <h3>Enter Page Range for {currentLabelName}</h3>
-    {errorMessage && <p className="error">{errorMessage}</p>}
-
-    <label>
-      From Page:
-      <input
-        type="number"
-        value={fromPage}
-        onChange={(e) => setFromPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    <label>
-      To Page:
-      <input
-        type="number"
-        value={toPage}
-        onChange={(e) => setToPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    
-  </div>
-  <div className="button-group">
-    <button onClick={handlePageSubmit2}>Submit</button>
-    <button onClick={() =>{
-    setShowPageInput2(false);
-    setErrorMessage(null);
-    setFromPage('');
-    setToPage('');
-  }}>Cancel</button>
-  </div>
-  </div>
-)}
-  </div>
-  </div>
-)}
-
-</div>
         </div>
       )}
+        </div>
+        </div>
+      )}
+      
+      </div>
+          </div>
+      
+          )}
           {activeTab === "host" && (
             <>
               <h3>Host Obligations</h3>
@@ -2442,7 +2002,9 @@ const appendPagesToTerms = (termValue) => {
           </div>
     </div>
     </div>
-    </div>
+    
+
+    </>
     
   );
   

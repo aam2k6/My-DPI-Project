@@ -104,13 +104,13 @@
   overflow-y: auto; /* Enable vertical scrolling */
   width: 42%;
   border: 2px solid rgb(107, 120, 231);
-  padding: 0.5rem;
+  /* padding: 0.5rem; */
 
   /* font-size: 2rem; */
   float: left;
   margin-left: 2rem;
 }
-.b {
+.container .b {
   max-height: 27rem; /* Set a max height for scrolling */
   overflow-y: auto; /* Enable vertical scrolling */
   margin-right: 5rem;
@@ -146,7 +146,6 @@
   float: right;
   border: 2px solid rgb(107, 120, 231);
   padding: 0.5rem;
-
 }
 .locker-name {
   font-size: 1.45rem;
@@ -158,11 +157,12 @@
   margin-left:3rem;
   margin-bottom:1rem;
   font-size:1.15rem;
+  padding-top: 20px ;
 }
 #documents {
   text-decoration: underline;
   color: blue;
-  margin-bottom: 2rem;
+  margin-bottom: 1.3rem;
   margin-left: 2rem;
   font-size: 1.25rem;
   flex: 1;
@@ -183,10 +183,10 @@
 
 .res {
   margin-left: 2rem;
-  font-size: 1.45rem;
+  font-size: 1.40rem;
   /* font-weight: bolder; */
-  margin-bottom: 3rem;
-  margin-top: 2rem;
+  /* margin-bottom: 3rem; */
+  /* margin-top: 2rem; */
 }
 .page3button {
   background-color: #007bff;
@@ -239,7 +239,7 @@
 }
 #mycon {
   margin-left: 2rem;
-  font-size: 1.45rem;
+  font-size: 1.40rem;
 }
 
 .resource-item {
@@ -249,7 +249,7 @@
   /* padding: 10px; */
   /* border-bottom: 1px solid #ccc; */
   /* border: 2px solid rgb(107, 120, 231); */
-margin: 1rem;
+/* margin: 1rem; */
 width: 50rem;
 max-width: 50rem;
 overflow-x: auto;
@@ -257,7 +257,15 @@ overflow-x: auto;
 .resource-details {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 50%;
+  /* margin: -4px;  */
+  /* margin: 0px;  */
+  padding: 0;
+}
+
+.resource-icon{
+  color: black;
+  margin-left: auto;
 }
 
 .connection-name-button{

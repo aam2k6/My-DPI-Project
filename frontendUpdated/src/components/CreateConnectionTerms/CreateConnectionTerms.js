@@ -1106,34 +1106,43 @@ export const CreateConnectionTerms = () => {
     // navigate(`/target-locker-view`);
     
   };
-
- 
-  const renderObligations = () => {
-    if (res && res.obligations && Array.isArray(res.obligations)) {
-      return (
-        <div>
-          <ul>
-            {res.obligations.map((term, index) => (
-              <li key={index}>
-      {term.typeOfSharing} - {term.labelName} (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 ? term.hostPermissions.join(", ") : "None"})
-      </li>
-            ))}
-          </ul>
-        </div>
-      );
+  const renderTermsSection = (terms, title) => (
+    <div className="terms-section">
+      <h3>{title}</h3>
+      {terms && terms.length > 0 ? (
+        <ul>
+          {terms.map((term, index) => (
+            <li key={index}>
+              <strong>{term.labelName}</strong> - {term.labelDescription}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No terms available.</p>
+      )}
+    </div>
+  );
+  
+  const renderObligations = (userType) => {
+    if (res && res.obligations) {
+      return userType === "guest"
+        ? renderTermsSection(res.obligations.guest_to_host)
+        : renderTermsSection(res.obligations.host_to_guest);
     }
     return <p>No obligations available.</p>;
   };
   
-  const renderPermissions = () => {
+  const renderPermissions = (userType) => {
     if (res && res.permissions) {
-      const { canShareMoreData, canDownloadData } = res.permissions;
+      const permissionsData = userType === "guest"
+        ? res.permissions.guest_to_host
+        : res.permissions.host_to_guest;
       return (
         <div className="permissions">
-          {/* <h3>Your Permissions</h3> */}
+          {/* <h3>{userType === "guest" ? "Guest's Permissions" : "Host's Permissions"}</h3> */}
           <ul>
-            {canShareMoreData ? <li>You can share more data.</li> : <li>You cannot share more data.</li>}
-            {canDownloadData ? <li>You can download data.</li> : <li>You cannot download data.</li>}
+            <li>{permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
+            <li>{permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li>
           </ul>
         </div>
       );
@@ -1141,28 +1150,25 @@ export const CreateConnectionTerms = () => {
     return <p>No permissions available.</p>;
   };
   
-  const renderForbidden = () => {
+  const renderForbidden = (userType) => {
     if (res && res.forbidden) {
-      return (
-        <ul>
-          {res.forbidden.map((term, index) => (
-            <li key={index}>
-              {term.labelDescription}
-            </li>
-          ))}
-        </ul>
-      );
+      return userType === "guest"
+        ? renderTermsSection(res.forbidden.guest_to_host)
+        : renderTermsSection(res.forbidden.host_to_guest);
     }
     return <p>No forbidden terms available.</p>;
   };
-
+  
 console.log(res);
 
 
-const uniqueGlobalConnTypeIds = [...new Set(terms
-  .filter(term => term.global_conn_type_id !== null)
-  .map(term => term.global_conn_type_id)
-)];
+const uniqueGlobalConnTypeIds = Array.isArray(terms)
+    ? [...new Set(terms
+      .filter(term => term.global_conn_type_id !== null)
+      .map(term => term.global_conn_type_id)
+    )]
+    : [];
+
 
 const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
   const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
@@ -1205,181 +1211,148 @@ const handleuserclick = (hostUserUsername) => {
   navigate(`/target-user-view`, { state: { user: { username: hostUserUsername } } });
 }
 
-  const content = (
-    // <>
-    // <div className="navbarBrand">{capitalizeFirstLetter(connectionTypeName)} ({capitalizeFirstLetter(hostUserUsername)}&lt; &gt;{capitalizeFirstLetter(curruser.username)})</div>
-    // <div className="navbarBrand">Connection name:: {capitalizeFirstLetter(connectionName)}   </div>
-    // {/* <div className="navbarBrand">{(connection_description)}   </div> */}
-    // <div className="description"></div>
-    // </>
-    <>
-      {/* <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
-      <div className="description">
-        {curruser ? curruser.description : "None"}
-      </div> */}
-      <div className="navbarBrand">
-      {connectionName}
-      </div>
-      <br></br>
-      <div className="connection-details">
-        Connection Name: {connectionName} <br></br>
-        <h3>
-  {globalTemplateNames.length > 0 && "Connection has been imported from "}
-  <span style={{ fontWeight: "bold" }}>
-    {globalTemplateNames.filter(Boolean).map((template, index) => (
-      <span key={index}>
-        <span 
-          style={{ cursor: 'pointer', textDecoration: 'underline' }}
-          onClick={() => handleNavigation(template)}
-        >
-          {template.global_connection_type_name}
+const content = (
+  <>
+    <div className="navbarBrand">{connectionName}</div>
+    <br />
+    <div className="connection-details">
+      Connection Name: {connectionName} <br />
+      <h3>
+        {globalTemplateNames.length > 0 && "Connection has been imported from "}
+        <span style={{ fontWeight: "bold" }}>
+          {globalTemplateNames.filter(Boolean).map((template, index) => (
+            <span key={index}>
+              <span 
+                style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => handleNavigation(template)}
+              >
+                {template.global_connection_type_name}
+              </span>
+              {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+            </span>
+          ))}
         </span>
-        {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
-      </span>
-    ))}
-  </span>
-</h3>
-        {connectionDescription}<br></br>
-        {/* Guest: {curruser.username} --&gt; Host: {hostUserUsername}  */}
-        <div className="tooltip-container user-container">
-          <div className="tooltip user-container">
-            <FaUserCircle className="userIcon"/> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {curruser.username} &nbsp;</span>
-          </div>
-          <i class="fa-solid fa-right-long"></i> &nbsp;
-          <div className="tooltip user-container">
-            <FaRegUserCircle className="userIcon"/>&nbsp;
-            <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
-          </div>
+      </h3>
+      {connectionDescription}<br />
+      
+      <div className="tooltip-container user-container">
+        <div className="tooltip user-container">
+          <FaUserCircle className="userIcon" /> &nbsp;
+          <span className="userName">{renderUserTooltip('guest')} : {curruser.username} &nbsp;</span>
         </div>
-        <div className="tooltip-container user-container">
-          <div className="tooltip user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
-            <i class="bi bi-person-fill-lock"></i> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {locker} &nbsp;</span>
-          </div>
-          <i class="fa-solid fa-right-long"></i> &nbsp;
-          <div className="tooltip user-container" onClick={() => handleuserclick(hostUserUsername)}>
-            <i class="bi bi-person-lock"></i>&nbsp;
-            <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
-          </div>
+        <i className="fa-solid fa-right-long"></i> &nbsp;
+        <div className="tooltip user-container">
+          <FaRegUserCircle className="userIcon" /> &nbsp;
+          <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
         </div>
       </div>
-    </>
-  );
 
-  console.log("I agree", Iagree);
-  console.log(res, "res");
-  return (
-    <div>
-      <Navbar content={content} />
-      {/* 
-      <div className="page13parent">
-        <div className="page13host1">Host : {capitalizeFirstLetter(hostUserUsername)}</div>
-        <div className="page13requestor">Requestor :{capitalizeFirstLetter(curruser.username)}</div>
-
+      <div className="tooltip-container user-container">
+        <div className="tooltip user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+          <i className="bi bi-person-fill-lock"></i> &nbsp;
+          <span className="userName">{renderUserTooltip('guest')} : {locker} &nbsp;</span>
+        </div>
+        <i className="fa-solid fa-right-long"></i> &nbsp;
+        <div className="tooltip user-container" onClick={() => handleuserclick(hostUserUsername)}>
+          <i className="bi bi-person-lock"></i> &nbsp;
+          <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+        </div>
       </div>
+    </div>
+  </>
+);
 
-      <div className="page13parent">
-        <div className="page13host2">Locker:{capitalizeFirstLetter(hostLockerName)}</div>
-        <div className="page13requestor">Locker :{capitalizeFirstLetter(locker.name)}</div>
+console.log("I agree", Iagree);
+console.log(res, "res");
 
-      </div> */}
-
-      <div className="view-container">
-        <div className="b">
-          <div className="tabs">
-            <div
-              className={`tab-header ${
-                activeTab === "guest" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("guest")}
-            >
-              Guest Data
-            </div>
-            <div
-              className={`tab-header ${
-                activeTab === "host" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("host")}
-            >
-              Host Data
-            </div>
+return (
+  <div>
+    <Navbar content={content} />
+    <div className="view-container">
+      <div className="b">
+        <div className="tabs">
+          <div
+            className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
+            onClick={() => setActiveTab("guest")}
+          >
+            Guest Data
           </div>
-          <div className="tab-content">
-            <div className="table-container">
+          <div
+            className={`tab-header ${activeTab === "host" ? "active" : ""}`}
+            onClick={() => setActiveTab("host")}
+          >
+            Host Data
+          </div>
+        </div>
+        <div className="tab-content">
+          <div className="table-container">
             {activeTab === "guest" && (
               <div>
                 <div className="page13headterms">Your Obligations</div>
-                <div className="page13lowerterms">{renderObligations()}</div>
-      
+                <div className="page13lowerterms">{renderObligations("guest")}</div>
                 <div className="page13headterms">Your Permissions</div>
-                <div className="page13lowerterms">{renderPermissions()}</div>
-      
-                {/* <div className="page13headterms">Your Prohibitions</div> */}
-                <div className="page13lowerterms">{renderForbidden()}</div>
-      
+                <div className="page13lowerterms">{renderPermissions("guest")}</div>
+                <div className="page13headterms">Your Forbidden Terms</div>
+                <div className="page13lowerterms">{renderForbidden("guest")}</div>
                 <div className="page13headterms">Default Host Privileges</div>
                 By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-      
-                <div className="page13headterms"><h4>Host Obligations</h4></div>
-                You will receive a receipt when all the obligations are met
               </div>
             )}
-             {activeTab === "host" && (
-                <div className="page13headterms">
-                  Host connection terms...
-                </div>
-              )}
-            </div>
+            {activeTab === "host" && (
+              <div>
+                <div className="page13headterms">Host Obligations</div>
+                <div className="page13lowerterms">{renderObligations("host")}</div>
+                <div className="page13headterms">Host Permissions</div>
+                <div className="page13lowerterms">{renderPermissions("host")}</div>
+                <div className="page13headterms">Host Forbidden Terms</div>
+                <div className="page13lowerterms">{renderForbidden("host")}</div>
+                <div className="page13headterms">Default Host Privileges</div>
+                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+              </div>
+            )}
           </div>
         </div>
       </div>
-  
-      {isModalOpen && (
-        <Modal
-          message={modalMessage.message}
-          onClose={handleCloseModal}
-          type={modalMessage.type}
-        />
-      )}
-      
-      {showConsent && Iagree === "0" && (
-        <div>
-          <div className="page13button">
-            {" "}
-            <button
-              className="page13iagree0button"
-              onClick={handleIagreebutton}
-            >
-              {" "}
-              I Agree{" "}
-            </button>
-          </div>
-          {/* <div>
-            {message && <div className="message">{message}</div>}
-          </div> */}
-        </div>
-      )}
-
-      {showConsent && Iagree === "1" && (
-        <div className="page13parent13state1">
-          <div className="page13consent">
-            Consent Given on : {consentData.consent_given}
-            <br />
-            Consent valid Until : {consentData.valid_until}
-          </div>
-          <div className="page13button">
-            {" "}
-            <button
-              className="page13iagree1button"
-              onClick={handleRevokebutton}
-            >
-              {" "}
-              Revoke{" "}
-            </button>
-          </div>
-        </div>
-      )} 
     </div>
-  );
-};
+
+    {isModalOpen && (
+      <Modal
+        message={modalMessage.message}
+        onClose={handleCloseModal}
+        type={modalMessage.type}
+      />
+    )}
+
+    {showConsent && Iagree === "0" && (
+      <div>
+        <div className="page13button">
+          <button
+            className="page13iagree0button"
+            onClick={handleIagreebutton}
+          >
+            I Agree
+          </button>
+        </div>
+      </div>
+    )}
+
+    {showConsent && Iagree === "1" && (
+      <div className="page13parent13state1">
+        <div className="page13consent">
+          Consent Given on : {consentData.consent_given}
+          <br />
+          Consent valid Until : {consentData.valid_until}
+        </div>
+        <div className="page13button">
+          <button
+            className="page13iagree1button"
+            onClick={handleRevokebutton}
+          >
+            Revoke
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+);
+}

@@ -723,98 +723,118 @@ export const ConnectionTerms = () => {
     }
   };
 
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   console.log("Form data before submit:", formData); // Add this line
+
+  //   if (obligations.length === 0) {
+  //     setError("At least one obligation must be added.");
+  //     setModalMessage({
+  //       message: "At least one obligation must be added.",
+  //       type: "info",
+  //     });
+  //     setIsModalOpen(true); // Open modal with info message.
+  //     return;
+  //   }
+
+  //   const token = Cookies.get("authToken");
+  //   const forbiddenArray = formData.forbidden
+  //     ? ["Cannot close unilaterally"]
+  //     : ["can unilaterally close connection"];
+
+  //   const connectionTermsData = {
+  //     ...connectionData,
+  //     // obligations: obligations,
+  //     obligations: obligations.map((obligation) => ({
+  //       ...obligation,
+  //       global_conn_type_id: obligation.global_conn_type_id || null,
+  //     })),
+  //     permissions: {
+  //       canShareMoreData: formData.canShareMore,
+  //       canDownloadData: formData.canDownload,
+  //     },
+  //     forbidden: forbiddenArray, // Add forbidden array here
+  //   };
+
+  //   console.log("data", connectionTermsData);
+  //   setConnectionTermsData(connectionTermsData);
+
+  //   fetch(
+  //     "host/create-connection-type-and-terms/".replace(/host/, frontend_host),
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Basic ${token}`,
+  //       },
+  //       body: JSON.stringify(connectionTermsData),
+  //     }
+  //   )
+  //     .then((response) =>
+  //       response.json().then((data) => ({ status: response.status, data }))
+  //     )
+  //     .then(({ status, data }) => {
+  //       if (status === 201) {
+  //         // Success case: show success modal and reset form if needed.
+  //         setModalMessage({
+  //           message: "Connection Type successfully created!",
+  //           type: "success",
+  //         });
+  //         setIsModalOpen(true);
+  //         navigate("/admin");
+  //         // Optionally, reset the form after successful creation.
+  //       } else if (status === 400 && data.error.includes("already exists")) {
+  //         // Handle the case where the connection type already exists.
+  //         setError(
+  //           "Connection type with this name already exists in the same locker."
+  //         );
+  //         setModalMessage({
+  //           message:
+  //             "Connection type with this name already exists in the same locker.",
+  //           type: "error",
+  //         });
+  //         setIsModalOpen(true);
+  //       } else {
+  //         // General error handling.
+  //         console.error("Error:", data.error);
+  //         setError(data.error);
+  //         setModalMessage({
+  //           message: data.error,
+  //           type: "error",
+  //         });
+  //         setIsModalOpen(true); // Open modal with error message.
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //       setError("An error occurred while submitting the data.");
+  //       setModalMessage({
+  //         message: "An error occurred while submitting the data.",
+  //         type: "error",
+  //       });
+  //       setIsModalOpen(true); // Open modal with error message.
+  //     });
+  // };
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Form data before submit:", formData); // Add this line
-
     if (obligations.length === 0) {
       setError("At least one obligation must be added.");
-      setModalMessage({
-        message: "At least one obligation must be added.",
-        type: "info",
-      });
-      setIsModalOpen(true); // Open modal with info message.
       return;
     }
-
-    const token = Cookies.get("authToken");
-    const forbiddenArray = formData.forbidden
-      ? ["Cannot close unilaterally"]
-      : ["can unilaterally close connection"];
-
     const connectionTermsData = {
-      ...connectionData,
-      // obligations: obligations,
-      obligations: obligations.map((obligation) => ({
-        ...obligation,
-        global_conn_type_id: obligation.global_conn_type_id || null,
-      })),
+      ...connectionData, // Spread data from previous page
+      obligations,
       permissions: {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
       },
-      forbidden: forbiddenArray, // Add forbidden array here
     };
-
-    console.log("data", connectionTermsData);
-    setConnectionTermsData(connectionTermsData);
-
-    fetch(
-      "host/create-connection-type-and-terms/".replace(/host/, frontend_host),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${token}`,
-        },
-        body: JSON.stringify(connectionTermsData),
-      }
-    )
-      .then((response) =>
-        response.json().then((data) => ({ status: response.status, data }))
-      )
-      .then(({ status, data }) => {
-        if (status === 201) {
-          // Success case: show success modal and reset form if needed.
-          setModalMessage({
-            message: "Connection Type successfully created!",
-            type: "success",
-          });
-          setIsModalOpen(true);
-          navigate("/admin");
-          // Optionally, reset the form after successful creation.
-        } else if (status === 400 && data.error.includes("already exists")) {
-          // Handle the case where the connection type already exists.
-          setError(
-            "Connection type with this name already exists in the same locker."
-          );
-          setModalMessage({
-            message:
-              "Connection type with this name already exists in the same locker.",
-            type: "error",
-          });
-          setIsModalOpen(true);
-        } else {
-          // General error handling.
-          console.error("Error:", data.error);
-          setError(data.error);
-          setModalMessage({
-            message: data.error,
-            type: "error",
-          });
-          setIsModalOpen(true); // Open modal with error message.
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setError("An error occurred while submitting the data.");
-        setModalMessage({
-          message: "An error occurred while submitting the data.",
-          type: "error",
-        });
-        setIsModalOpen(true); // Open modal with error message.
-      });
+    setConnectionTermsData(connectionTermsData); // Update context
+    navigate("/connectionTermsHost"); // Navigate to next page
   };
+  
 
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
@@ -1137,7 +1157,7 @@ export const ConnectionTerms = () => {
                     </label>
 
                     <div className="connectionTerms-btn">
-                      <button type="submit">Submit</button>
+                      <button type="submit">Next</button>
                     </div>
                   </form>
                 </div>

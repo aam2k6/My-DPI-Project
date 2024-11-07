@@ -58,19 +58,19 @@ export const Connection = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    console.log("Hiiiii")
     const connectionData = {
       lockerName: locker_conn?.name,
       connectionName,
       connectionDescription,
       validity,
     };
-
     setConnectionData(connectionData);
     console.log("Form submitted");
     console.log("in connection 2", connectionData, locker_conn);
-    // navigate("/connectionTerms", { state: { selectedLocker } });
     navigate("/connectionTerms");
   };
+  
 
   const content = (
     <>
@@ -96,7 +96,7 @@ export const Connection = () => {
                 <span>Name</span>
                 <input
                   type="text"
-                  name="lockerDescription"
+                  name="connectionName"
                   placeholder="Connection Type Name"
                   onChange={(e) => setConnectionName(e.target.value)}
                 />
@@ -106,7 +106,7 @@ export const Connection = () => {
                 <input
                   id="kerak"
                   type="text"
-                  name="lockerDescription"
+                  name="connectionDescription"
                   placeholder="Description"
                   onChange={(e) => setConnectionDescription(e.target.value)}
                 />
@@ -115,7 +115,7 @@ export const Connection = () => {
                 <span>Validity</span>
                 <input
                   type="date"
-                  name="lockerDescription"
+                  name="validity"
                   placeholder="Calendar Picker"
                   onChange={(e) => setValidity(e.target.value)}
                 />

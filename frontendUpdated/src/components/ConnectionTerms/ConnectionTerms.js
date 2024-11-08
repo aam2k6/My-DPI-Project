@@ -816,9 +816,11 @@ export const ConnectionTerms = () => {
   //     });
   // };
 
+  
+  
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmits = (event) => {
+    // event.preventDefault();
     if (obligations.length === 0) {
       setError("At least one obligation must be added.");
       return;
@@ -833,6 +835,52 @@ export const ConnectionTerms = () => {
     };
     setConnectionTermsData(connectionTermsData); // Update context
     navigate("/connectionTermsHost"); // Navigate to next page
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const token = Cookies.get("authToken");
+
+    const finalData = {
+      ...connectionData,  // Contains lockerName, connectionName, connectionDescription, validity
+      obligations: obligations.map(obligation => ({
+         ...obligation,
+         global_conn_type_id: obligation.global_conn_type_id || null,  // Optional field if needed by the API
+      })),
+      permissions: {
+         canShareMoreData: formData.canShareMore,
+         canDownloadData: formData.canDownload,
+      },
+      forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
+      from: "GUEST",
+      to: "HOST"
+   };
+   
+    console.log("Data to be posted:", finalData); // Verify the structure and values
+
+  
+    fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${token}`,
+      },
+      body: JSON.stringify(finalData),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (response.ok) {
+          console.log("Data successfully posted:", data);
+          handleSubmits()
+        } else {
+          console.error("Failed to post data:", data);
+          setError(data.message || "Failed to post data");
+        }
+      })
+      .catch((error) => {
+        console.error("Network error:", error);
+        setError("An error occurred while submitting data.");
+      });
   };
   
 

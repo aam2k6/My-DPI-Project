@@ -790,60 +790,7 @@ export const ViewTermsByType = () => {
     };
     console.log(res, "res");
     const fetchPermissionsData = async () => {
-      try {
-        const token = Cookies.get("authToken");
-        const connectionId = connection_id;
-        const response = await fetch(
-          `host/get-extra-data?connection_id=${connectionId}`.replace(
-            /host/,
-            frontend_host
-          ),
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("");
-        }
-        const data = await response.json();
-        if (data.success) {
-          // Create an array from the shared_more_data_terms object
-          console.log(data.shared_more_data_terms);
-          const sharedData = Object.entries(data.shared_more_data_terms).map(
-            ([key, value], index) => ({
-              sno: index + 1,
-              labelName: key,
-              dataElement: value.enter_value,
-              purpose: value.purpose,
-              action: value.typeOfValue,
-              share:value.typeOfShare,
-            })
-          );
-          setPermissionsData(sharedData);
-          console.log("permissionData", sharedData);
-          const statusMap2 = {}
-          sharedData.forEach((permission) => {
-              console.log("perm," , permission);
-              
-              statusMap2[permission.labelName] = permission.dataElement.endsWith("T")
-                ? "Approved"
-                : permission.dataElement.endsWith("R")
-                ? "Rejected"
-                : "Pending";
-  
-            });
-            setStatuses2(statusMap2);
-            console.log(statusMap2, "map");
-        } else {
-          setError(data.error || "No permissions data found");
-        }
-      } catch (err) {
-        setError(err.message);
-      }
+      
     };
 
     
@@ -1615,10 +1562,32 @@ const appendPagesToTerms = (termValue) => {
     setPermissions(newPermissions);
   };
 
-  const uniqueGlobalConnTypeIds = [...new Set(terms
-    .filter(term => term.global_conn_type_id !== null)
-    .map(term => term.global_conn_type_id)
-  )];
+  // const uniqueGlobalConnTypeIds = [...new Set(terms
+  //   .filter(term => term.global_conn_type_id !== null)
+  //   .map(term => term.global_conn_type_id)
+  // )];
+  console.log("Terms:", terms); // Check the content of terms
+
+ // Flatten the object (for example, consider guest_to_host)
+ const termsArray = [...(terms.guest_to_host || []), ...(terms.host_to_guest || [])];
+ // Access guest_to_host array, fallback to empty array
+
+// Log the termsArray for debugging
+console.log("Terms Array:", termsArray);
+
+// Ensure you filter and map properly over the array
+const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
+  ...new Set(
+    termsArray
+      .filter(term => term.global_conn_type_id !== null && term.global_conn_type_id !== undefined)
+      .map(term => term.global_conn_type_id)
+  )
+] : [];
+
+
+console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
+
+  
 
   const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
     const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
@@ -1940,7 +1909,7 @@ const appendPagesToTerms = (termValue) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {res?.obligations.map((obligation, index) => (
+                  {res?.obligations.map((obligation, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{obligation.labelName}</td>

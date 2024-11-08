@@ -1052,13 +1052,30 @@ export const Guesttermsreview = () => {
     </>
   );
 
-  const uniqueGlobalConnTypeIds = [
-    ...new Set(
-      terms
-        .filter((term) => term.global_conn_type_id !== null)
-        .map((term) => term.global_conn_type_id)
-    ),
-  ];
+  // const uniqueGlobalConnTypeIds = [
+  //   ...new Set(
+  //     terms
+  //       .filter((term) => term.global_conn_type_id !== null)
+  //       .map((term) => term.global_conn_type_id)
+  //   ),
+  // ];
+
+
+  const termsArray = [...(terms.guest_to_host || []), ...(terms.host_to_guest || [])];
+ // Access guest_to_host array, fallback to empty array
+
+// Log the termsArray for debugging
+console.log("Terms Array:", termsArray);
+
+// Ensure you filter and map properly over the array
+const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
+  ...new Set(
+    termsArray
+      .filter(term => term.global_conn_type_id !== null && term.global_conn_type_id !== undefined)
+      .map(term => term.global_conn_type_id)
+  )
+] : [];
+
 
   const globalTemplateNames = uniqueGlobalConnTypeIds.map((id) => {
     const template = globalTemplates.find(

@@ -301,8 +301,8 @@ const fetchGlobalTemplates = () => {
          canDownloadData: formData.canDownload,
       },
       forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
-      from: "guest",
-      to: "host"
+      from: "GUEST",
+      to: "HOST"
    };
    
     console.log("Data to be posted:", finalData); // Verify the structure and values

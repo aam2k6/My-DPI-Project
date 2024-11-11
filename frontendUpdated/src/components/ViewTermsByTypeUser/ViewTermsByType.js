@@ -579,7 +579,7 @@ export const ViewTermsByType = () => {
   const [hostObligationMessage, setHostObligationMessage] = useState('');
   const [activeTab, setActiveTab] = useState("guest");
   const [guestToHostObligations, setGuestToHostObligations] = useState([]);
-const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
+  const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
 
 
   const {
@@ -698,8 +698,12 @@ const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
       if (guestToHostObligations.length || hostToGuestObligations.length) {
         // Combine obligations if you need a single array, or set them separately as needed
         setTerms({ guestToHost: guestToHostObligations, hostToGuest: hostToGuestObligations });
-        console.log("Guest to Host Obligations:", guestToHostObligations);
-        console.log("Host to Guest Obligations:", hostToGuestObligations);
+        console.log("Guest to Host Obligations 1:", guestToHostObligations);
+        console.log("Host to Guest Obligations 1:", hostToGuestObligations);
+
+        setGuestToHostObligations(guestToHostObligations);
+        setHostToGuestObligations(hostToGuestObligations);
+
       } else {
         console.error("No obligations found in data.data.obligations");
         setError("No obligations available in the fetched data");
@@ -745,8 +749,8 @@ const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
             const hostObligations = data.data.obligations.host_to_guest || [];
     
             // Log obligations arrays to verify
-            console.log("Guest to Host Obligations:", guestObligations);
-            console.log("Host to Guest Obligations:", hostObligations);
+            console.log("Guest to Host Obligations 2:", guestObligations);
+            console.log("Host to Guest Obligations 2:", hostObligations);
     
             setGuestToHostObligations(guestObligations);
             setHostToGuestObligations(hostObligations);
@@ -774,7 +778,8 @@ const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
                 };
               }
             });
-    
+
+            setRes(data.terms);
             setTermValues(initialValues);
             setSelectedResources(initialResources);
             setStatuses(statusMap);
@@ -1279,7 +1284,7 @@ const appendPagesToTerms = (termValue) => {
         ...Object.fromEntries(
           Object.entries(termValues).map(([key, value]) => {
             // console.log("updated term values in submit", termValues);
-            const obligation = res.obligations.find(
+            const obligation = guestToHostObligations.find(
               (ob) => ob.labelName === key
             );
             const initialValue = obligation?.value || "";
@@ -2169,7 +2174,7 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
       
           
 
-        </div>
+        </div>v
         <div className="button-group">
           <button onClick={handlePageSubmit}>Submit</button>
           <button onClick={() =>{

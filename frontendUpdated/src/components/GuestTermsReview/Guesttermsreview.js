@@ -51,7 +51,7 @@ export const Guesttermsreview = () => {
   //         </div>
   //     </div>
   // );
-
+  console.log(connection, connectionType);
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
     const message = await handleRevoke(connection_id);
@@ -215,6 +215,9 @@ export const Guesttermsreview = () => {
     };
 
     const fetchConnectionDetails = async () => {
+      const connectionTypeName = connection.connection_type_name
+      ? connection.connection_type_name.split("-").shift().trim()
+      : undefined;
       try {
         const token = Cookies.get("authToken");
         const response = await fetch(
@@ -1118,7 +1121,10 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
   };
 
 
-  // console.log("statuses", statuses);
+  console.log("conn details", conndetails);
+  console.log("connection", connection);
+  console.log("navigate back 1", connection);
+  console.log("navigate back 2", connectionType);
   return (
     <div>
       <Navbar content={content} />
@@ -1138,7 +1144,22 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
               className={`tab-header ${
                 activeTab === "host" ? "active" : ""
               }`}
-              onClick={() => setActiveTab("host")}
+              onClick={() => navigate("/view-host-terms-by-type", {
+                state: {
+                  connection_id: conndetails.connection_id,
+                  connectionName: conndetails.connection_name,
+                  connectionDescription: conndetails.connection_description,
+                  hostLockerName: conndetails?.host_locker?.name,
+                  guestLockerName: conndetails?.guest_locker?.name,
+                  hostUserUsername: conndetails?.host_user?.username,
+                  guestUserUsername: conndetails?.guest_user?.username,
+                  locker: conndetails?.host_locker,
+                  guest_locker_id: conndetails.guest_locker?.locker_id,
+                  host_locker_id: conndetails.host_locker?.locker_id,
+                  connection: connection,
+                  connectionType: connectionType,
+                },
+              })}
             >
               Host Connection Terms
             </div>
@@ -1322,7 +1343,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
 
               </>
             )}
-            {activeTab=="host" &&(
+            {/* {activeTab=="host" &&(
               <>
                 <div className="table-container">
                   <h3>Host Obligations</h3>
@@ -1335,7 +1356,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                           <th>Type of share</th>
                           <th>Enter value</th>
                           <th>Host Privileges</th>
-                          <th>Status</th> {/* New column for Status */}
+                          <th>Status</th>
                         </tr>
                       </thead>
                     </table>
@@ -1350,7 +1371,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                 </div>
               </div>
               </>
-            )}
+            )} */}
           </div>
         </div>
       </div>

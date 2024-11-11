@@ -146,6 +146,7 @@ export const Guestusers = () => {
   };
 
   const handleConnectionClick = (connection) => {
+    console.log("navigate", connection, connectionType);
     navigate("/guest-terms-review", { state: { connection, connectionType } });
   };
 
@@ -174,7 +175,7 @@ export const Guestusers = () => {
       },
     });
   };
-  
+  console.log("connectionType", connectionType);
   const content = (
     <>
       {connectionType && (

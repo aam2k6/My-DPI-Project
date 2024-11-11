@@ -30,6 +30,7 @@ import FreezeLockerConnection from "./components/FreezeLockerConnection/FreezeLo
 import CreateGlobalConnectionType from "./components/CreateGlobalConnectionType/CreateGlobalConnectionType";
 import SettingsPage from "./components/Settings/SettingsPage";
 import {Displayterms }from "./components/Displayterms/Displayterms";
+import {ViewHostTermsByType} from "./components/GuestTermsReview/ViewHostTermsByType";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import GlobalTermsView from './components/GlobalTermsView/GlobalTermsView'; // Import the new component
 
@@ -272,6 +273,15 @@ function App() {
             }
             />
             <Route path="/GlobalTermsView" element={<GlobalTermsView />} /> {/* Add the new route */}
+
+            <Route
+            path = "/view-host-terms-by-type"
+            element = {
+              <ProtectedRoute>
+                <ViewHostTermsByType/>
+              </ProtectedRoute>
+            }
+            />
 
 
             <Route path="*" element={<h1>Page Not Found</h1>} />

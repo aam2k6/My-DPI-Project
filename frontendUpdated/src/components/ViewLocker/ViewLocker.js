@@ -267,7 +267,7 @@ export const ViewLocker = () => {
       }
       const data = await response.json();
       if (data.success) {
-        // console.log("view locker", data);
+        console.log("view locker", data);
         setTrackerData((prevState) => ({
           ...prevState,
           [connection.connection_id]: {

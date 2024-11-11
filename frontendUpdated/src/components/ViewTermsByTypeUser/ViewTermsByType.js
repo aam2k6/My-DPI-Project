@@ -578,9 +578,10 @@ export const ViewTermsByType = () => {
 
   const [hostObligationMessage, setHostObligationMessage] = useState('');
   const [activeTab, setActiveTab] = useState("guest");
+  const [guestToHostTerms, setGuestToHostTerms] = useState([]);
+  const [hostToGuestTerms, setHostToGuestTerms] = useState([]);
   const [guestToHostObligations, setGuestToHostObligations] = useState([]);
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
-
 
   const {
     connectionName,
@@ -698,11 +699,11 @@ export const ViewTermsByType = () => {
       if (guestToHostObligations.length || hostToGuestObligations.length) {
         // Combine obligations if you need a single array, or set them separately as needed
         setTerms({ guestToHost: guestToHostObligations, hostToGuest: hostToGuestObligations });
-        console.log("Guest to Host Obligations 1:", guestToHostObligations);
-        console.log("Host to Guest Obligations 1:", hostToGuestObligations);
+        console.log("Guest to Host Obligations 1: terms", guestToHostObligations);
+        console.log("Host to Guest Obligations 1: terms", hostToGuestObligations);
 
-        setGuestToHostObligations(guestToHostObligations);
-        setHostToGuestObligations(hostToGuestObligations);
+        setGuestToHostTerms(guestToHostObligations);
+        setHostToGuestTerms(hostToGuestObligations);
 
       } else {
         console.error("No obligations found in data.data.obligations");
@@ -740,13 +741,23 @@ export const ViewTermsByType = () => {
         console.log("Fetched data:", data); // Log entire data to check its structure
     
         if (data.success) {
-          // Check if obligations exist in data.data
-          if (data.data && data.data.obligations) {
-            console.log("Obligations found:", data.data.obligations); // Confirm obligations structure
-    
-            // Access guest_to_host and host_to_guest arrays
-            const guestObligations = data.data.obligations.guest_to_host || [];
-            const hostObligations = data.data.obligations.host_to_guest || [];
+          const obligations = data.terms.obligations || [];
+
+          const guestObligations = obligations.filter(
+            (obligation) => obligation.from === "GUEST" && obligation.to === "HOST"
+          );
+
+          const hostObligations = obligations.filter(
+            (obligation) => obligation.from === "HOST" && obligation.to === "GUEST"
+          );
+
+          // // Check if obligations exist in data.data
+          // if (data && data.terms.obligations) {
+          //   console.log("Obligations found:", data.terms.obligations); // Confirm obligations structure
+          //   console.log("data.data.terms", data.terms);
+          //   // Access guest_to_host and host_to_guest arrays
+          //   const guestObligations = data.data.obligations.guest_to_host || [];
+          //   const hostObligations = data.data.obligations.host_to_guest || [];
     
             // Log obligations arrays to verify
             console.log("Guest to Host Obligations 2:", guestObligations);
@@ -761,7 +772,8 @@ export const ViewTermsByType = () => {
             const statusMap = {};
     
             // Loop through guest and host obligations
-            [...guestObligations, ...hostObligations].forEach((obligation) => {
+            // [...guestObligations, ...hostObligations].forEach((obligation) => {
+              guestObligations.forEach((obligation) => {
               initialValues[obligation.labelName] = obligation.value || "";
               statusMap[obligation.labelName] = obligation.value?.endsWith("T")
                 ? "Approved"
@@ -783,13 +795,11 @@ export const ViewTermsByType = () => {
             setTermValues(initialValues);
             setSelectedResources(initialResources);
             setStatuses(statusMap);
+            setPermissions(data.terms.permissions);
           } else {
             console.error("No obligations found in data.data.obligations");
             setError("No obligations available in the fetched data");
           }
-        } else {
-          setError(data.error || "No terms found");
-        }
       } catch (err) {
         console.error("Error fetching terms:", err.message);
         setError(err.message);
@@ -798,8 +808,64 @@ export const ViewTermsByType = () => {
     
     
     
+    // const fetchPermissionsData = async () => {
+    //   // Placeholder for future implementation
+    // };
     const fetchPermissionsData = async () => {
-      // Placeholder for future implementation
+      try {
+        const token = Cookies.get("authToken");
+        const connectionId = connection_id;
+        const response = await fetch(
+          `host/get-extra-data?connection_id=${connectionId}`.replace(
+            /host/,
+            frontend_host
+          ),
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Basic ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("");
+        }
+        const data = await response.json();
+        if (data.success) {
+          // Create an array from the shared_more_data_terms object
+          console.log(data.shared_more_data_terms);
+          const sharedData = Object.entries(data.shared_more_data_terms).map(
+            ([key, value], index) => ({
+              sno: index + 1,
+              labelName: key,
+              dataElement: value.enter_value,
+              purpose: value.purpose,
+              action: value.typeOfValue,
+              share:value.typeOfShare,
+            })
+          );
+          setPermissionsData(sharedData);
+          console.log("permissionData", sharedData);
+          const statusMap2 = {}
+          sharedData.forEach((permission) => {
+              console.log("perm," , permission);
+              
+              statusMap2[permission.labelName] = permission.dataElement.endsWith("T")
+                ? "Approved"
+                : permission.dataElement.endsWith("R")
+                ? "Rejected"
+                : "Pending";
+  
+            });
+            setStatuses2(statusMap2);
+            console.log(statusMap2, "map");
+        } else {
+          setError(data.error || "No permissions data found");
+        }
+      } catch (err) {
+        setError(err.message);
+      }
     };
         
     

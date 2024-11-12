@@ -723,7 +723,7 @@ export const ViewTermsByType = () => {
       try {
         const token = Cookies.get("authToken");
         const response = await fetch(
-          `${frontend_host}/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`,
+          `${frontend_host}/get-terms-value/?host_user_username=${hostUserUsername}&guest_user_username=${guestUserUsername}&host_locker_name=${hostLockerName}&connection_name=${connectionName}&guest_locker_name=${guestLockerName}`,
           {
             method: "GET",
             headers: {
@@ -743,13 +743,15 @@ export const ViewTermsByType = () => {
         if (data.success) {
           const obligations = data.terms.obligations || [];
 
-          const guestObligations = obligations.filter(
-            (obligation) => obligation.from === "GUEST" && obligation.to === "HOST"
-          );
+          // const guestObligations = obligations.filter(
+          //   (obligation) => obligation.from === "GUEST" && obligation.to === "HOST"
+          // );
 
-          const hostObligations = obligations.filter(
-            (obligation) => obligation.from === "HOST" && obligation.to === "GUEST"
-          );
+          // const hostObligations = obligations.filter(
+          //   (obligation) => obligation.from === "HOST" && obligation.to === "GUEST"
+          // );
+          const hostObligations = obligations.host_to_guest;
+          const guestObligations = obligations.guest_to_host;
 
           // // Check if obligations exist in data.data
           // if (data && data.terms.obligations) {
@@ -2251,6 +2253,87 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
         }}>Cancel</button>
         </div>
        <div> */}
+
+{showPageInput && (
+  <div className="page-input-modal">
+  <div>
+    <h3>Enter Page Range for {currentLabelName}</h3>
+    {errorMessage && <p className="error">{errorMessage}</p>}
+
+    <label>
+      From Page:
+      <input
+        type="number"
+        value={fromPage}
+        onChange={(e) => setFromPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    <label>
+      To Page:
+      <input
+        type="number"
+        value={toPage}
+        onChange={(e) => setToPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    
+  </div>
+  <div className="button-group">
+    <button onClick={handlePageSubmit}>Submit</button>
+    <button onClick={() =>{
+    setShowPageInput(false);
+    setErrorMessage(null);
+    setFromPage('');
+    setToPage('');
+  }}>Cancel</button>
+  </div>
+  </div>
+)}
+
+{showPageInput2 && (
+  <div className="page-input-modal">
+  <div>
+    <h3>Enter Page Range for {currentLabelName}</h3>
+    {errorMessage && <p className="error">{errorMessage}</p>}
+
+    <label>
+      From Page:
+      <input
+        type="number"
+        value={fromPage}
+        onChange={(e) => setFromPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    <label>
+      To Page:
+      <input
+        type="number"
+        value={toPage}
+        onChange={(e) => setToPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    
+  </div>
+  <div className="button-group">
+    <button onClick={handlePageSubmit2}>Submit</button>
+    <button onClick={() =>{
+    setShowPageInput2(false);
+    setErrorMessage(null);
+    setFromPage('');
+    setToPage('');
+  }}>Cancel</button>
+  </div>
+  </div>
+)}
+
     {permissions?.canShareMoreData && (
   <div className="table-container">
     {/* Add this div for styling */}
@@ -2374,7 +2457,7 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
       />
     )}
 
-{showPageInput && (
+{/* {showPageInput && (
   <div className="page-input-modal">
   <div>
     <h3>Enter Page Range for {currentLabelName}</h3>
@@ -2452,7 +2535,7 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
   }}>Cancel</button>
   </div>
   </div>
-)}
+)} */}
   </div>
   </div>
 )}

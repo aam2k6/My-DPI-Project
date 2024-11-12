@@ -211,7 +211,7 @@ export const ViewHostTermsByType = () => {
       try {
         const token = Cookies.get("authToken");
         const response = await fetch(
-          `${frontend_host}/get-terms-value/?username=${hostUserUsername}&locker_name=${guestLockerName}&connection_name=${connectionName}`,
+          `${frontend_host}/get-terms-value/?host_user_username=${hostUserUsername}&guest_user_username=${guestUserUsername}&host_locker_name=${hostLockerName}&connection_name=${connectionName}&guest_locker_name=${guestLockerName}`,
           {
             method: "GET",
             headers: {
@@ -231,13 +231,16 @@ export const ViewHostTermsByType = () => {
         if (data.success) {
           const obligations = data.terms.obligations || [];
 
-          const guestObligations = obligations.filter(
-            (obligation) => obligation.from === "GUEST" && obligation.to === "HOST"
-          );
+          // const guestObligations = obligations.filter(
+          //   (obligation) => obligation.from === "GUEST" && obligation.to === "HOST"
+          // );
 
-          const hostObligations = obligations.filter(
-            (obligation) => obligation.from === "HOST" && obligation.to === "GUEST"
-          );
+          // const hostObligations = obligations.filter(
+          //   (obligation) => obligation.from === "HOST" && obligation.to === "GUEST"
+          // );
+
+          const guestObligations = obligations.guest_to_host;
+          const hostObligations = obligations.host_to_guest;
 
           // // Check if obligations exist in data.data
           // if (data && data.terms.obligations) {
@@ -261,7 +264,7 @@ export const ViewHostTermsByType = () => {
     
             // Loop through guest and host obligations
             // [...guestObligations, ...hostObligations].forEach((obligation) => {
-              guestObligations.forEach((obligation) => {
+              hostObligations.forEach((obligation) => {
               initialValues[obligation.labelName] = obligation.value || "";
               statusMap[obligation.labelName] = obligation.value?.endsWith("T")
                 ? "Approved"
@@ -281,6 +284,7 @@ export const ViewHostTermsByType = () => {
 
             setRes(data.terms);
             setTermValues(initialValues);
+            console.log("initial values checking", initialValues);
             setSelectedResources(initialResources);
             setStatuses(statusMap);
             setPermissions(data.terms.permissions);
@@ -572,9 +576,9 @@ export const ViewHostTermsByType = () => {
     setSelectedResourceId(resource.id);
     setShowPageInput(true);
     // console.log("resources selected", selectedResources);
-    // console.log("selection", selection);
+    console.log("page input", showPageInput);
   };
-
+  console.log("page input", showPageInput);
 
 //********************************************************** */
   const handleButtonClick2 = (labelName) => {
@@ -834,13 +838,15 @@ const appendPagesToTerms = (termValue) => {
       console.log("check2");
       // console.log("updated term values in submit", termValues);
       const termsValuePayload = {
-        
+
         ...Object.fromEntries(
           Object.entries(termValues).map(([key, value]) => {
-            // console.log("updated term values in submit", termValues);
+            console.log("updated term values in submit", termValues);
+            console.log("after", hostToGuestObligations);
             const obligation = hostToGuestObligations.find(
               (ob) => ob.labelName === key
             );
+            console.log("ob", obligation);
             const initialValue = obligation?.value || "";
             // console.log(initialValue, "initial Value");
 
@@ -1477,7 +1483,7 @@ console.log("hostToGuest", hostToGuestObligations);
                     </tr>
                   </thead>
                   <tbody>
-                  {hostToGuestTerms.map((obligation, index) => (
+                  {hostToGuestObligations.map((obligation, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{obligation.labelName}</td>
@@ -1744,6 +1750,85 @@ console.log("hostToGuest", hostToGuestObligations);
         }}>Cancel</button>
         </div>
        <div> */}
+       {showPageInput && (
+  <div className="page-input-modal">
+  <div>
+    <h3>Enter Page Range for {currentLabelName}</h3>
+    {errorMessage && <p className="error">{errorMessage}</p>}
+
+    <label>
+      From Page:
+      <input
+        type="number"
+        value={fromPage}
+        onChange={(e) => setFromPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    <label>
+      To Page:
+      <input
+        type="number"
+        value={toPage}
+        onChange={(e) => setToPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    
+  </div>
+  <div className="button-group">
+    <button onClick={handlePageSubmit}>Submit</button>
+    <button onClick={() =>{
+    setShowPageInput(false);
+    setErrorMessage(null);
+    setFromPage('');
+    setToPage('');
+  }}>Cancel</button>
+  </div>
+  </div>
+)}
+
+{showPageInput2 && (
+  <div className="page-input-modal">
+  <div>
+    <h3>Enter Page Range for {currentLabelName}</h3>
+    {errorMessage && <p className="error">{errorMessage}</p>}
+
+    <label>
+      From Page:
+      <input
+        type="number"
+        value={fromPage}
+        onChange={(e) => setFromPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    <label>
+      To Page:
+      <input
+        type="number"
+        value={toPage}
+        onChange={(e) => setToPage(e.target.value)}
+        min="1"
+      />
+    </label>
+
+    
+  </div>
+  <div className="button-group">
+    <button onClick={handlePageSubmit2}>Submit</button>
+    <button onClick={() =>{
+    setShowPageInput2(false);
+    setErrorMessage(null);
+    setFromPage('');
+    setToPage('');
+  }}>Cancel</button>
+  </div>
+  </div>
+)}
     {permissions?.canShareMoreData && (
   <div className="table-container">
     {/* Add this div for styling */}
@@ -1867,7 +1952,7 @@ console.log("hostToGuest", hostToGuestObligations);
       />
     )}
 
-{showPageInput && (
+{/* {showPageInput && (
   <div className="page-input-modal">
   <div>
     <h3>Enter Page Range for {currentLabelName}</h3>
@@ -1945,7 +2030,7 @@ console.log("hostToGuest", hostToGuestObligations);
   }}>Cancel</button>
   </div>
   </div>
-)}
+)} */}
   </div>
   </div>
 )}

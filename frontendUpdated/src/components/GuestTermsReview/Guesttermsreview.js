@@ -145,6 +145,7 @@ export const Guesttermsreview = () => {
         const data = await response.json();
         if (data.success) {
           setRes(data.terms);
+          console.log("res", data.terms);
           setResources(data.terms.resources || []);
 
           // Fetch permissions data if canShareMoreData is true

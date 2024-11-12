@@ -1037,20 +1037,25 @@ export const Guesttermsreview = () => {
         <div className="tooltip-container user-container">
           <div className="tooltip user-container">
             <FaUserCircle className="userIcon"/> &nbsp;
-            <span className="userName">
-              {renderUserTooltip('guest', conndetails?.guest_user?.username)} : {conndetails?.guest_user?.username || "Loading..."}&nbsp;
-            </span>&nbsp;
+            <span className="userName">{renderUserTooltip('guest',conndetails.guest_user?.username)} : {conndetails.guest_user?.username||"Loading..."} &nbsp;</span>
           </div>
-          <FaArrowCircleRight className="userIcon" /> &nbsp;
+          <i class="fa-solid fa-right-long"></i> &nbsp;
           <div className="tooltip user-container">
             <FaRegUserCircle className="userIcon"/>&nbsp;
-            <span className="userName">
-              {renderUserTooltip('host', conndetails?.host_user?.username)} : {conndetails?.host_user?.username || "Loading..."}
-            </span>
+            <span className="userName">{renderUserTooltip('host',conndetails.host_user?.username)} : {conndetails?.host_user?.username||"Loading..."}</span>
           </div>
-      </div>
-        {/* <FaUserCircle className="userIcon"/> : {conndetails?.guest_user?.username || "Loading..."} <FaArrowCircleRight className="userIcon" /> &nbsp; <FaRegUserCircle className="userIcon"/>&nbsp; :{" "}
-        {conndetails?.host_user?.username || "Loading..."} */}
+        </div>
+        <div className="tooltip-container user-container">
+          <div className="tooltip user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+            <i class="bi bi-person-fill-lock"></i> &nbsp;
+            <span className="userName">{renderUserTooltip('guest',conndetails.guest_locker?.name)} : {conndetails.guest_locker?.name||"Loading..."} &nbsp;</span>
+          </div>
+          <i class="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltip user-container" >
+            <i class="bi bi-person-lock"></i>&nbsp;
+            <span className="userName">{renderUserTooltip('host',conndetails.host_locker?.name)} : {conndetails.host_locker?.name||"Loading..."}</span>
+          </div>
+        </div>
       </div>
     </>
   );

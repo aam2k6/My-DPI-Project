@@ -572,12 +572,16 @@ const handleSaveResource = async (xnode) => {
     return;
   }
 
+  // Access the res object through the foreign key in xnode
+  const res = xnode.res;  // Assuming res is the foreign key in xnode
+  const currentVisibility = res ? res.visibility : undefined; // Access current visibility
+
   const payload = {
     locker_name: locker.name,
     owner_name: curruser.username,
     document_name: xnode.resource_name,
     new_document_name: resourceName,
-    new_visibility: resourceVisibility,
+    new_visibility: resourceVisibility || currentVisibility, // Update visibility
   };
 
   console.log("Payload:", payload);
@@ -602,7 +606,7 @@ const handleSaveResource = async (xnode) => {
       setXnodes((prevXnodes) =>
         prevXnodes.map((item) =>
           item.id === xnode.id
-            ? { ...item, resource_name: resourceName, visibility: resourceVisibility }
+            ? { ...item, resource_name: resourceName, visibility: resourceVisibility || currentVisibility }
             : item
         )
       );

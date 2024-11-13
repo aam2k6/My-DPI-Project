@@ -863,12 +863,25 @@ export const Guesttermsreview = () => {
       const hostUserUsername = conndetails.host_user.username;
       const guestUserUsername = conndetails.guest_user.username;
   
-      // Assuming `terms_value.doc` format, get `document_name` and `document_id`
-      const termsDoc = conndetails.terms_value.doc;
-      const [docNamePart, idPart] = termsDoc.split("|");
-      const documentName = docNamePart || "Unknown Document";
-      const documentId = idPart ? idPart.split(",")[0] : null;
-      const sharingType = "Share";
+      // Determine document details and sharing type from `terms_value`
+      const termsValue = conndetails.terms_value;
+      let documentName = "Unknown Document";
+      let documentId = null;
+      let sharingType = null;
+  
+      if (termsValue.share) {
+        // Use `share` details if available
+        const [sharingTypePart, idPart] = termsValue.share.split("|");
+        sharingType = sharingTypePart || "Unknown"; // Extract share type
+        documentName = sharingTypePart || documentName;
+        documentId = idPart ? idPart.split(",")[0] : documentId;
+      } else if (termsValue.transfer) {
+        // Use `transfer` details if available
+        const [sharingTypePart, idPart] = termsValue.transfer.split("|");
+        sharingType = sharingTypePart || "Unknown"; // Extract transfer type
+        documentName = sharingTypePart || documentName;
+        documentId = idPart ? idPart.split(",")[0] : documentId;
+      }
   
       const payload = {
         connection_name: connectionName,
@@ -897,8 +910,11 @@ export const Guesttermsreview = () => {
       if (data.success) {
         alert("Download successful!");
   
-        // Mark this resource as downloaded
-        setDownloadedResources((prev) => ({ ...prev, [resourceId]: true }));
+        // Change the color of the downloaded resource to green
+        const downloadedResource = document.getElementById(`resource-${resourceId}`);
+        if (downloadedResource) {
+          downloadedResource.style.color = "green";
+        }
   
         console.log("Download successful:", data.message);
       } else {
@@ -909,6 +925,7 @@ export const Guesttermsreview = () => {
       setError(err.message);
     }
   };
+  
   
   
   const renderObligations = () => {

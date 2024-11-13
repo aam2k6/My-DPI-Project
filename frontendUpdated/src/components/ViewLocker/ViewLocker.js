@@ -8,6 +8,7 @@ import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
+import Modal from "../Modal/Modal"; 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
   const location = useLocation();
@@ -26,7 +27,12 @@ export const ViewLocker = () => {
   const [trackerData, setTrackerData] = useState({});
   const [scanning, setScanning] = useState(false);
   const [qrResult, setQrResult] = useState(null);
-
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedResource, setSelectedResource] = useState(null);
+  const [resourceName, setResourceName] = useState("");
+  const [resourceFile, setResourceFile] = useState(null);
+  const [resourceVisibility, setResourceVisibility] = useState("private");
+  const [modalMessage, setModalMessage] = useState(null)
   const [VnodeResources, setVnodeResources] = useState([]);
   const [activeTab, setActiveTab] = useState("incoming");
   const [xnodes, setXnodes] = useState([]);
@@ -189,7 +195,7 @@ export const ViewLocker = () => {
         throw new Error("Failed to fetch resources");
       }
       const data = await response.json();
-      // console.log("resour", data);
+      console.log("resour", data);
       if (data.success) {
         setResources(data.resources);
       } else {
@@ -546,6 +552,141 @@ export const ViewLocker = () => {
       // setLoading(false);
     }
   };
+  console.log("doc",locker.name,curruser.username,xnodes.resource_name);
+xnodes.forEach((xnode) => {
+  console.log("Full xnode object:", xnode);
+});
+
+const handleEditClick = (xnode) => {
+  setSelectedResource(xnode);
+  setResourceName(xnode.resource_name); // Set current resource name from the xnode
+  setResourceVisibility(xnode.visibility); // Set current visibility from the xnode
+  setShowEditModal(true);
+};
+
+const handleSaveResource = async (xnode) => {
+  console.log("xnode in handleSaveResource:", xnode);
+
+  if (!xnode || !xnode.resource_name) {
+    console.error("Invalid resource structure or missing resource_name.");
+    return;
+  }
+
+  const payload = {
+    locker_name: locker.name,
+    owner_name: curruser.username,
+    document_name: xnode.resource_name,
+    new_document_name: resourceName,
+    new_visibility: resourceVisibility,
+  };
+
+  console.log("Payload:", payload);
+
+  try {
+    const token = Cookies.get("authToken");
+    const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Basic ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("Response Status:", response.status);
+    const data = await response.json();
+    console.log("Response Data:", data);
+
+    if (response.ok) {
+      // Optimistic update: Immediately update the state to reflect the changes
+      setXnodes((prevXnodes) =>
+        prevXnodes.map((item) =>
+          item.id === xnode.id
+            ? { ...item, resource_name: resourceName, visibility: resourceVisibility }
+            : item
+        )
+      );
+
+      setModalMessage({ message: "Resource updated successfully!", type: "success" });
+      setShowEditModal(false);
+    } else {
+      setModalMessage({ message: data.message || "Failed to update resource.", type: "failure" });
+    }
+  } catch (error) {
+    console.error("Error updating resource:", error);
+    setModalMessage({ message: "An error occurred while updating the resource.", type: "failure" });
+  }
+};
+
+
+  
+// console.log("doc",locker.name,curruser.username,xnodes.resource_name);
+// xnodes.forEach((xnode) => {
+//   console.log("Resource Name:", xnode.resource_name); // Log each resource_name
+// });
+const handleDeleteClick = async (xnode) => {
+  console.log("Xnode to be deleted:", xnode);  // Log the entire xnode object
+
+  if (!xnode.resource_name) {
+    console.error("Document name is missing in xnode!");
+    return;  // Exit the function if resource_name is missing
+  }
+
+  if (window.confirm("Do you want to delete this resource?")) {
+    const lockerName = locker.name;  // Locker name from xnode
+    const documentName = xnode.resource_name;  // Resource name from xnode
+    const ownerName = curruser.username;  // Owner name from curruser
+
+    const payload = {
+      locker_name: lockerName,
+      owner_name: ownerName,
+      document_name: documentName,  // Resource name from xnode
+    };
+
+    console.log("Payload to be sent:", payload);  // Log the payload to check before sending
+
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("Response from backend:", response);
+      const data = await response.json();
+      console.log("Response data:", data);
+
+      if (response.ok) {
+        // Remove the deleted xnode from the state immediately
+        setXnodes((prevXnodes) =>
+          prevXnodes.filter((item) => item.id !== xnode.id)
+        );
+        
+        setModalMessage({ message: "Resource deleted successfully!", type: "success" });
+      } else {
+        setModalMessage({ message: data.message || "Failed to delete resource.", type: "failure" });
+      }
+    } catch (error) {
+      setModalMessage({ message: "An error occurred while deleting the resource.", type: "failure" });
+      console.error("Error during delete:", error);
+    }
+  }
+};
+
+
+
+  const handleFileChange = (e) => {
+    setResourceFile(e.target.files[0]);
+  };
+
+  const handleCloseModal = () => {
+    setModalMessage(null);
+  };
+
 
 
   const content = (
@@ -697,10 +838,19 @@ export const ViewLocker = () => {
                             <span onClick={() =>
                               handleClick(xnode.id)
                             }>{xnode.resource_name}</span>
-                            <span className="resource-icon">
-                              <i class="fa-regular fa-pen-to-square" style={{paddingRight:"20px"}}></i>
-                              <i class="fa-regular fa-trash-can"></i>
-                            </span>
+                            
+                          <span className="resource-icons" style={{ marginLeft: "auto" }}>
+                            <i
+                              className="fa-regular fa-pen-to-square"
+                              style={{ paddingRight: "20px", cursor: "pointer" }}
+                              onClick={() => handleEditClick(xnode)}
+                            />
+                            <i
+                              className="fa-regular fa-trash-can"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleDeleteClick(xnode)}
+                            />
+                          </span>
                           </div>
                           {/* <div className="public-private">
                             {xnode.type === "private" ? <>Private</> : "Public"}
@@ -832,6 +982,47 @@ export const ViewLocker = () => {
                   </div>
                 </div>
               )}
+              
+              {/* Edit Resource Modal */}
+              {showEditModal && (
+  <div className="edit-modal">
+    <div className="modal-content">
+      <h3>Edit Resource</h3>
+      <label>Resource Name:</label>
+      <input
+        type="text"
+        value={resourceName}
+        onChange={(e) => setResourceName(e.target.value)}
+      />
+
+      <label>Visibility:</label>
+      <select
+        value={resourceVisibility}
+        onChange={(e) => setResourceVisibility(e.target.value)}
+      >
+        <option value="private">Private</option>
+        <option value="public">Public</option>
+      </select>
+
+      <div className="modal-buttons">
+        {/* Use an anonymous function to call handleSaveResource */}
+        <button onClick={() => handleSaveResource(selectedResource)}>Save</button>
+        <button onClick={() => setShowEditModal(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+        {/* Success/Failure Modal */}
+        {modalMessage && (
+          <Modal
+            message={modalMessage.message}
+            type={modalMessage.type}
+            onClose={handleCloseModal}
+          />
+        )}
+      
 
               {activeTab === "outgoing" && (
                 <div className="tab-panel">
@@ -920,8 +1111,11 @@ export const ViewLocker = () => {
             </div>
           </div>
         </div>
+        
       </div>
       {/* {pdfUrl && <PDFViewer pdfUrl={pdfUrl} />} */}
+      
     </div>
+    
   );
 };

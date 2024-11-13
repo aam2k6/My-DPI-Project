@@ -865,23 +865,33 @@ export const Guesttermsreview = () => {
   
       // Determine document details and sharing type from `terms_value`
       const termsValue = conndetails.terms_value;
+      console.log("termsssss",termsValue)
       let documentName = "Unknown Document";
       let documentId = null;
       let sharingType = null;
   
+      // Dynamically choose between share or transfer based on available data in terms_value
       if (termsValue.share) {
-        // Use `share` details if available
+        // Extract sharing type and document ID from the 'share' value
         const [sharingTypePart, idPart] = termsValue.share.split("|");
-        sharingType = sharingTypePart || "Unknown"; // Extract share type
+        sharingType = "share";  // Set sharingType as "share"
         documentName = sharingTypePart || documentName;
         documentId = idPart ? idPart.split(",")[0] : documentId;
       } else if (termsValue.transfer) {
-        // Use `transfer` details if available
+        // Extract sharing type and document ID from the 'transfer' value
         const [sharingTypePart, idPart] = termsValue.transfer.split("|");
-        sharingType = sharingTypePart || "Unknown"; // Extract transfer type
+        sharingType = "transfer";  // Set sharingType as "transfer"
         documentName = sharingTypePart || documentName;
         documentId = idPart ? idPart.split(",")[0] : documentId;
+      } else {
+        console.log("No sharing type found in terms_value.");
+        sharingType = "unknown";  // If neither share nor transfer is available
       }
+  
+      // Log the details
+      console.log("Sharing type:", sharingType);
+      console.log("Document name:", documentName);
+      console.log("Document ID:", documentId);
   
       const payload = {
         connection_name: connectionName,
@@ -891,7 +901,7 @@ export const Guesttermsreview = () => {
         guest_user_username: guestUserUsername,
         document_name: documentName,
         xnode_id: documentId,
-        sharing_type: sharingType,
+        sharing_type: sharingType,  // Send dynamic sharing type
       };
   
       console.log("Payload:", payload);
@@ -925,7 +935,6 @@ export const Guesttermsreview = () => {
       setError(err.message);
     }
   };
-  
   
   
   const renderObligations = () => {

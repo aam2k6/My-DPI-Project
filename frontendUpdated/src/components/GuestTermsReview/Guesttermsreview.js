@@ -37,6 +37,8 @@ export const Guesttermsreview = () => {
 
   const [statuses2, setStatuses2] = useState({});
   const [activeTab, setActiveTab] = useState("guest");
+  const [downloadedResources, setDownloadedResources] = useState({}); // Keeps track of downloaded resources by ID
+
 
 
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
@@ -850,7 +852,65 @@ export const Guesttermsreview = () => {
   const closeTermsPopup = () => {
     setShowTermsPopup(false);
   };
-
+  const handleDownload = async (resourceId) => {
+    try {
+      const token = Cookies.get("authToken");
+  
+      // Extract connection details from `conndetails`
+      const connectionName = conndetails.connection_name;
+      const hostLockerName = conndetails.host_locker.name;
+      const guestLockerName = conndetails.guest_locker.name;
+      const hostUserUsername = conndetails.host_user.username;
+      const guestUserUsername = conndetails.guest_user.username;
+  
+      // Assuming `terms_value.doc` format, get `document_name` and `document_id`
+      const termsDoc = conndetails.terms_value.doc;
+      const [docNamePart, idPart] = termsDoc.split("|");
+      const documentName = docNamePart || "Unknown Document";
+      const documentId = idPart ? idPart.split(",")[0] : null;
+      const sharingType = "Share";
+  
+      const payload = {
+        connection_name: connectionName,
+        host_locker_name: hostLockerName,
+        guest_locker_name: guestLockerName,
+        host_user_username: hostUserUsername,
+        guest_user_username: guestUserUsername,
+        document_name: documentName,
+        xnode_id: documentId,
+        sharing_type: sharingType,
+      };
+  
+      console.log("Payload:", payload);
+  
+      const response = await fetch(`${frontend_host}/download-resource/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        alert("Download successful!");
+  
+        // Mark this resource as downloaded
+        setDownloadedResources((prev) => ({ ...prev, [resourceId]: true }));
+  
+        console.log("Download successful:", data.message);
+      } else {
+        setError(data.error || "Failed to download resource");
+      }
+    } catch (err) {
+      console.error("Error downloading resource:", err);
+      setError(err.message);
+    }
+  };
+  
+  
   const renderObligations = () => {
     if (res && res.obligations) {
       return (
@@ -1290,6 +1350,11 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                                 <option value="rejected">Rejected</option>
                               </select>
                             </td>
+                            <td>
+  <button onClick={() => handleDownload(obligation)} className="download-button">
+    <i className="fa fa-download" aria-hidden="true"></i>
+  </button>
+</td>
                           </tr>
                         ))}
                       </tbody>

@@ -103,9 +103,9 @@ export const ViewHostTermsByType = () => {
     
       const connection_type_name = connectionTypeName;
       const host_locker_name = hostLockerName; 
-      const guest_locker_name =  locker.name;
+      const guest_locker_name =  guestLockerName;
       const host_user_username = hostUserUsername; 
-      const guest_user_username = curruser.username;
+      const guest_user_username = guestUserUsername;
   
       const token = Cookies.get("authToken"); 
   
@@ -904,7 +904,7 @@ const appendPagesToTerms = (termValue) => {
         guest_locker_name: guestLockerName,
         host_user_username: hostUserUsername,
         guest_user_username: guestUserUsername,
-        terms_value: updatedTermsValue,
+        terms_value_reverse: updatedTermsValue,
         resources: newResourcesData,
       };
       // console.log("resourcesData", payload.resources);

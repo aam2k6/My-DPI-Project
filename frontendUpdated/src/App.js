@@ -31,6 +31,7 @@ import CreateGlobalConnectionType from "./components/CreateGlobalConnectionType/
 import SettingsPage from "./components/Settings/SettingsPage";
 import {Displayterms }from "./components/Displayterms/Displayterms";
 import {ViewHostTermsByType} from "./components/GuestTermsReview/ViewHostTermsByType";
+import { HostTermsReview } from "./components/ViewTermsByTypeUser/HostTermsReview";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import GlobalTermsView from './components/GlobalTermsView/GlobalTermsView'; // Import the new component
 
@@ -279,6 +280,15 @@ function App() {
             element = {
               <ProtectedRoute>
                 <ViewHostTermsByType/>
+              </ProtectedRoute>
+            }
+            />
+
+          <Route
+            path = "/host-terms-review"
+            element = {
+              <ProtectedRoute>
+                <HostTermsReview/>
               </ProtectedRoute>
             }
             />

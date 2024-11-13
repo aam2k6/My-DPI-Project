@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
-import "./Guesttermsreview.css";
+import "./HostTermsReview.css";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 
 
-export const Guesttermsreview = () => {
+export const HostTermsReview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -36,7 +36,7 @@ export const Guesttermsreview = () => {
   const [revokeState, setRevokeState] = useState(true);
 
   const [statuses2, setStatuses2] = useState({});
-  const [activeTab, setActiveTab] = useState("guest");
+  const [activeTab, setActiveTab] = useState("host");
 
 
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
@@ -91,7 +91,7 @@ export const Guesttermsreview = () => {
       // console.log("Inside fetch terms");
       try {
         const token = Cookies.get("authToken");
-        const connectionTypeName = connection.connection_name
+        const connectionTypeName = connection?.connection_name
           .split("-")
           .shift()
           .trim();
@@ -127,7 +127,7 @@ export const Guesttermsreview = () => {
       try {
         const token = Cookies.get("authToken");
         const response = await fetch(
-          `host/show_terms/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`.replace(
+          `host/show_terms_reverse/?username=${connection.guest_user.username}&locker_name=${connection.guest_locker.name}&connection_name=${connection.connection_name}`.replace(
             /host/,
             frontend_host
           ),
@@ -145,6 +145,7 @@ export const Guesttermsreview = () => {
         const data = await response.json();
         if (data.success) {
           setRes(data.terms);
+          console.log("show_terms", data);
           console.log("res", data.terms);
           setResources(data.terms.resources || []);
 
@@ -216,10 +217,8 @@ export const Guesttermsreview = () => {
     };
 
     const fetchConnectionDetails = async () => {
-      const connectionTypeName =  connection.connection_name.split("-").shift().trim()
+      const connectionTypeName =  connection.connection_name.split("-").shift().trim();
       
-      console.log("guestTerms get-connection-details", connection);
-      console.log(connectionTypeName);
       try {
         const token = Cookies.get("authToken");
         const response = await fetch(
@@ -240,19 +239,17 @@ export const Guesttermsreview = () => {
         }
         const data = await response.json();
         if (data.connections) {
-          console.log("data conn", data);
-          setTermsValue(data.connections.terms_value || {});
+          console.log("data", data);
+          setTermsValue(data.connections.terms_value_reverse || {});
           setconndetails(data.connections);
           setConnectionDetails(data.connections);
 
-          console.log("terms_value:", data.connections.terms_value);
-           // Check if `terms_value` exists
-           console.log("terms_value_reverse:", data.connections.terms_value_reverse);
-          if (data.connections.terms_value) {
+          console.log("terms_value_reverse:", data.connections.terms_value_reverse); // Check if `terms_value` exists
+          if (data.connections.terms_value_reverse) {
             const initialStatuses = {};
             
             for (const [key, value] of Object.entries(
-              data.connections.terms_value
+              data.connections.terms_value_reverse
             )) {
               if (key !== "canShareMoreData") {
                 initialStatuses[key] = value.endsWith("T")
@@ -962,16 +959,20 @@ export const Guesttermsreview = () => {
   };
 
   const navigateToConnectionDetails = (connection) => {
-    console.log("print", connection); // Log the connection object
-    console.log("print 2", conndetails);
-    // Access connection_type_name safely
-    const connectionTypeName = conndetails?.connection_name.split("-").shift().trim();
+    // console.log("print", connection); // Log the connection object
 
+    // Access connection_type_name safely
+    // const connectionTypeName = connection.connection_type_name
+    //   ? connection.connection_type_name.split("-").shift().trim()
+    //   : undefined;
+
+    const connectionTypeName = conndetails?.connection_name.split("-").shift().trim();
 
     const connectionDescription = conndetails?.connection_description;
 
     // Use the owner_locker and owner_user from the connection object
     const hostLockerName = conndetails?.host_locker?.name; // Assuming lockerData has a 'name' property
+    // const hostUserUsername = connection.owner_user;
     const hostUserUsername = conndetails?.host_user?.username;
 
     const connectionName = conndetails.connection_name;
@@ -1144,15 +1145,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
               className={`tab-header ${
                 activeTab === "guest" ? "active" : ""
               }`}
-              onClick={() => setActiveTab("guest")}
-            >
-              Guest Connection Terms
-            </div>
-            <div
-              className={`tab-header ${
-                activeTab === "host" ? "active" : ""
-              }`}
-              onClick={() => navigate("/view-host-terms-by-type", {
+              onClick={() => navigate("/view-terms-by-type", {
                 state: {
                   connection_id: conndetails.connection_id,
                   connectionName: conndetails.connection_name,
@@ -1169,13 +1162,21 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                 },
               })}
             >
-              Host Connection Terms
+              Guest Data
+            </div>
+            <div
+              className={`tab-header ${
+                activeTab === "host" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("host")}
+            >
+              Host Data
             </div>
           </div>
           {/* Added Tabs */}
             {/* Added Tabs */}
           <div className="tab-content">
-            {activeTab=="guest" && (
+            {activeTab=="host" && (
               <>
                           <div className={showResources ? "split-view" : ""}>
                   <div className="table-container">
@@ -1201,7 +1202,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                     <button onClick={openTermsPopup} className="view-terms-link">
                       View Terms
                     </button>
-                    <h3>Guest Obligations</h3>
+                    <h3>Host Obligations</h3>
                     {showTermsPopup && (
                       <div className="terms-popup">
                         <div className="terms-popup-content">
@@ -1389,4 +1390,4 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
   );
 };
 
-export default Guesttermsreview;
+export default HostTermsReview;

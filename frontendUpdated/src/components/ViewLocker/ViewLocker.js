@@ -321,13 +321,14 @@ export const ViewLocker = () => {
   };
 
   const handleTracker = (connection) => {
-    console.log("navigate", {
+    console.log("navigate view-terms-by-type", {
       connection,
       guest_locker_id: connection.guest_locker?.locker_id,
       host_locker_id: connection.host_locker?.locker_id,
     });
     navigate("/view-terms-by-type", {
       state: {
+        connection: connection,
         connection_id: connection.connection_id,
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
@@ -352,6 +353,10 @@ export const ViewLocker = () => {
   };
 
   const handleConnectionClick = (connection) => {
+    console.log("navigate show-guest-users", {
+      connection,
+      locker,
+    });
     navigate("/show-guest-users", { state: { connection, locker } });
   };
   const handleIncomingInfo = (connection) => {

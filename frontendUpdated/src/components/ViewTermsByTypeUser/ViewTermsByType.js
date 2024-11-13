@@ -594,6 +594,7 @@ export const ViewTermsByType = () => {
     connection_id,
     guest_locker_id,
     host_locker_id,
+    connection,
   } = location.state || {};
 
 
@@ -1941,7 +1942,12 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
                 className={`tab-header ${
                   activeTab === "host" ? "active" : ""
                 }`}
-                onClick={() => setActiveTab("host")}
+                onClick={() => navigate("/host-terms-review", {
+                  state: {
+                    connection: connection,
+                    // connectionType: connectionType,
+                  },
+                })}
               >
                 Host Data
               </div>

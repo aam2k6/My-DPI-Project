@@ -559,7 +559,7 @@ xnodes.forEach((xnode) => {
 
 const handleEditClick = (xnode) => {
   setSelectedResource(xnode);
-  setResourceName(xnode.resource_name); // Set current resource name from the xnode
+  setResourceName(xnode.resource_name); 
   setResourceVisibility(xnode.visibility); // Set current visibility from the xnode
   setShowEditModal(true);
 };
@@ -573,7 +573,7 @@ const handleSaveResource = async (xnode) => {
   }
 
   // Access the res object through the foreign key in xnode
-  const res = xnode.res;  // Assuming res is the foreign key in xnode
+  const res = xnode.res;  
   const currentVisibility = res ? res.visibility : undefined; // Access current visibility
 
   const payload = {
@@ -581,7 +581,7 @@ const handleSaveResource = async (xnode) => {
     owner_name: curruser.username,
     document_name: xnode.resource_name,
     new_document_name: resourceName,
-    new_visibility: resourceVisibility || currentVisibility, // Update visibility
+    new_visibility: resourceVisibility || currentVisibility, 
   };
 
   console.log("Payload:", payload);
@@ -602,7 +602,7 @@ const handleSaveResource = async (xnode) => {
     console.log("Response Data:", data);
 
     if (response.ok) {
-      // Optimistic update: Immediately update the state to reflect the changes
+      
       setXnodes((prevXnodes) =>
         prevXnodes.map((item) =>
           item.id === xnode.id
@@ -637,17 +637,17 @@ const handleDeleteClick = async (xnode) => {
   }
 
   if (window.confirm("Do you want to delete this resource?")) {
-    const lockerName = locker.name;  // Locker name from xnode
-    const documentName = xnode.resource_name;  // Resource name from xnode
-    const ownerName = curruser.username;  // Owner name from curruser
+    const lockerName = locker.name; 
+    const documentName = xnode.resource_name;  
+    const ownerName = curruser.username; 
 
     const payload = {
       locker_name: lockerName,
       owner_name: ownerName,
-      document_name: documentName,  // Resource name from xnode
+      document_name: documentName,  
     };
 
-    console.log("Payload to be sent:", payload);  // Log the payload to check before sending
+    console.log("Payload to be sent:", payload);  
 
     try {
       const token = Cookies.get("authToken");
@@ -665,7 +665,7 @@ const handleDeleteClick = async (xnode) => {
       console.log("Response data:", data);
 
       if (response.ok) {
-        // Remove the deleted xnode from the state immediately
+        
         setXnodes((prevXnodes) =>
           prevXnodes.filter((item) => item.id !== xnode.id)
         );

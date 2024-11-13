@@ -1154,7 +1154,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                   guestLockerName: conndetails?.guest_locker?.name,
                   hostUserUsername: conndetails?.host_user?.username,
                   guestUserUsername: conndetails?.guest_user?.username,
-                  locker: conndetails?.host_locker,
+                  locker: conndetails?.guest_locker,
                   guest_locker_id: conndetails.guest_locker?.locker_id,
                   host_locker_id: conndetails.host_locker?.locker_id,
                   connection: connection,

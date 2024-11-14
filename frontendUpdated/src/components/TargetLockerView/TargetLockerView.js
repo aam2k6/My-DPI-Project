@@ -1512,7 +1512,7 @@ export const TargetLockerView = () => {
       )}
       <Navbar content={<>
         <div className="navbarBrand">{locker?.name}</div>
-        <div className="description7">Owner:<u>{parentUser?.username}</u></div>
+        <div className="descriptions">Owner:<u>{parentUser?.username}</u></div>
       </>} />
       <div style={{marginTop:"120px"}}>
         <Grid container className="page7description" justifyContent="center" alignItems="center">
@@ -1626,7 +1626,7 @@ export const TargetLockerView = () => {
                       <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
                     </div>
                     <div className="tracker">
-                      <button className="info-button1" onClick={() => handleInfo(connection)}> i </button>
+                      <button className="info-button" onClick={() => handleInfo(connection)}> i </button>
                       <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color }}>
                         {ratio}
                       </button>

@@ -231,3 +231,38 @@
 #connectionTerm .agreeLabel{
   font-weight: normal;
 }
+
+
+@media (max-width: 768px) {
+  #connectionTermHost {
+    overflow-x: hidden;
+  }
+}
+
+#connectionTermHost .connectionTermsContainer{
+  border: 2px solid rgb(107, 120, 231);
+  margin-top: 120px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.secondContainer{
+  padding:30px;
+}
+
+#connectionTermHost .main-heading{
+  text-align: center;
+}
+
+#connectionTermHost label{
+  font-weight: bold;
+  font-size: 18px;
+}
+
+#connectionTermHost .agreeLabel{
+  font-weight: normal;
+}
+
+#connectionTermHost input{
+  width: 84%;
+}

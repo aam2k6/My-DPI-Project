@@ -9,6 +9,7 @@ import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal"; 
 import { Grid } from "@mui/material"
+import Tooltip from '@mui/material/Tooltip';
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
   const location = useLocation();
@@ -830,47 +831,51 @@ const handleDeleteClick = async (xnode) => {
                         // style={{
                         //   color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red',}}
                       >
-                        <div className="resource-details">
-                          <div
-                            id={
-                              xnode.xnode_Type === "INODE"
-                                ? "documents"
-                                : "documents-byShare"
-                            }
-                            style={{ display: 'flex'}}
-                          >
-                            <span onClick={() =>
-                              handleClick(xnode.id)
-                            }>{xnode.resource_name}</span>
-                            
-                          <span className="resource-icons" style={{ marginLeft: "auto" }}>
-                            <i
-                              className="fa-regular fa-pen-to-square"
-                              style={{ paddingRight: "20px", cursor: "pointer" }}
-                              onClick={() => handleEditClick(xnode)}
-                            />
-                            <i
-                              className="fa-regular fa-trash-can"
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleDeleteClick(xnode)}
-                            />
-                          </span>
-                          </div>
-                          {/* <div className="public-private">
-                            {xnode.type === "private" ? <>Private</> : "Public"}
-                          </div> */}
-                        </div>
-                      </div>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="not-found">No Resources found.</p>
-                )}
+                        <div className="resource-details">                  <Tooltip
+                    title={
+                      <>
+                        <div><strong>Created:</strong> {new Date(xnode.created_at).toLocaleString()}</div>
+                        <div><strong>Validity:</strong> {new Date(xnode.validity_until).toLocaleString()}</div>
+                        <div><strong>Node Type:</strong> {xnode.xnode_Type}</div>
+                        <div><strong>Host User:</strong> {xnode.locker?.user || "N/A"}</div>
+                        <div><strong>Guest User:</strong> {xnode.connection?.guest_user || "N/A"}</div>
+
+                      </>
+                    }
+                    arrow
+                  >
+                    <div
+                      id={xnode.xnode_Type === "INODE" ? "documents" : "documents-byShare"}
+                      style={{ display: 'flex' }}
+                    >
+                      <span onClick={() => handleClick(xnode.id)}>{xnode.resource_name}</span>
+                      
+                      <span className="resource-icons" style={{ marginLeft: "auto" }}>
+                        <i
+                          className="fa-regular fa-pen-to-square"
+                          style={{ paddingRight: "20px", cursor: "pointer" }}
+                          onClick={() => handleEditClick(xnode)}
+                        />
+                        <i
+                          className="fa-regular fa-trash-can"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleDeleteClick(xnode)}
+                        />
+                      </span>
+                    </div>
+                  </Tooltip>
+                </div>
               </div>
-            </div>
-            <button className="page3button" onClick={handleUploadResource}>
-              Upload resource
-            </button>
+            ))}
+          </ul>
+        ) : (
+          <p className="not-found">No Resources found.</p>
+        )}
+      </div>
+    </div>
+    <button className="page3button" onClick={handleUploadResource}>
+      Upload resource
+    </button>
           </Grid>
           <Grid item md={1} xs={12} marginBottom={{md:"", xs:"50px"}}></Grid>
           <Grid item md={5.5} xs={12} className="b">

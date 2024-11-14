@@ -255,7 +255,7 @@ export const Displayterms = () => {
         <ul>
           {terms.map((term, index) => (
             <li key={index}>
-              <strong>{term.labelName}</strong> - {term.labelDescription}
+              <strong>{term.labelName}</strong> - {term.labelDescription} (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 ? term.hostPermissions.join(", ") : "None"})
             </li>
           ))}
         </ul>

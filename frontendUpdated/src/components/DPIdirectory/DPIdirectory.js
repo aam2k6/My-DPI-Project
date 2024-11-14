@@ -69,7 +69,7 @@ export const DPIdirectory = () => {
   };
 
   return (
-    <div id="dpi-directory">
+    <div id="dpi-directory" style={{ overflowY: 'auto', maxHeight: '100vh' }}>
       <Navbar />
       <div className="page5heroContainer" style={{marginTop:"120px"}}>
         <div className="search">

@@ -69,7 +69,7 @@ export const DPIdirectory = () => {
   };
 
   return (
-    <div>
+    <div id="dpi-directory">
       <Navbar />
       <div className="page5heroContainer" style={{marginTop:"120px"}}>
         <div className="search">

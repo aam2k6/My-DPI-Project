@@ -262,3 +262,7 @@
 #connectionTermHost .agreeLabel{
   font-weight: normal;
 }
+
+#connectionTermHost input{
+  width: 84%;
+}

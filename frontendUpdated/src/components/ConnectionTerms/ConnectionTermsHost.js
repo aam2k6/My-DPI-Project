@@ -400,7 +400,7 @@ const fetchGlobalTemplates = () => {
                 <Grid container>
                   <Grid item md={3.5} xs={12}>
                     <div className="connectionTerms-resourceHeading">
-                      Guest Obligations
+                      Host Obligations
                     </div>
                   </Grid>
                   <Grid item md={3.5} xs={12}>

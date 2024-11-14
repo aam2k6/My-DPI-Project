@@ -1130,60 +1130,61 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
       </span>
     );
   };
-  const handleDownload = async (resourceId) => {
+  const handleDownload = async (obligation) => {
     try {
       const token = Cookies.get("authToken");
-
+  
       // Extract connection details from `conndetails`
       const connectionName = conndetails.connection_name;
       const hostLockerName = conndetails.host_locker.name;
       const guestLockerName = conndetails.guest_locker.name;
       const hostUserUsername = conndetails.host_user.username;
       const guestUserUsername = conndetails.guest_user.username;
-
-      // Determine document details and sharing type from `terms_value`
+  
+      // Extract termsValue for document ID and namePart
       const termsValue = conndetails.terms_value;
-      console.log("termsssss", termsValue)
-      let documentName = "Unknown Document";
+      console.log("termsValue:", termsValue);
+  
       let documentId = null;
-      let sharingType = null;
-
-      // Dynamically choose between share or transfer based on available data in terms_value
-      if (termsValue.share) {
-        // Extract sharing type and document ID from the 'share' value
-        const [sharingTypePart, idPart] = termsValue.share.split("|");
-        sharingType = "share";  // Set sharingType as "share"
-        documentName = sharingTypePart || documentName;
-        documentId = idPart ? idPart.split(",")[0] : documentId;
-      } else if (termsValue.transfer) {
-        // Extract sharing type and document ID from the 'transfer' value
-        const [sharingTypePart, idPart] = termsValue.transfer.split("|");
-        sharingType = "transfer";  // Set sharingType as "transfer"
-        documentName = sharingTypePart || documentName;
-        documentId = idPart ? idPart.split(",")[0] : documentId;
+      let documentName = obligation.labelName;  // Default to labelName in case of no match
+  
+      // Check if termsValue contains the document name in a recognizable format
+      if (termsValue[documentName]) {
+        const termEntry = termsValue[documentName];
+  
+        // Check if the entry contains "|" indicating a format like "DocumentName|ID;AdditionalInfo"
+        if (termEntry.includes("|")) {
+          const [namePart, idPart] = termEntry.split("|");
+  
+          // Use namePart from termsValue as document name
+          documentName = namePart.trim();
+          documentId = idPart ? idPart.split(",")[0].split(";")[0].trim() : null;
+        }
       } else {
-        console.log("No sharing type found in terms_value.");
-        sharingType = "unknown";  // If neither share nor transfer is available
+        console.log("Document entry not found in termsValue for:", documentName);
       }
-
-      // Log the details
-      console.log("Sharing type:", sharingType);
-      console.log("Document name:", documentName);
-      console.log("Document ID:", documentId);
-
+  
+      // Log the sharing type, extracted document name, and document ID
+      console.log("Extracted Document name:", documentName);
+      console.log("Sharing type:", obligation.typeOfSharing);
+      console.log("Extracted Document ID:", documentId);
+  
+      // Prepare payload for the API request with document ID and namePart as document name
       const payload = {
         connection_name: connectionName,
         host_locker_name: hostLockerName,
         guest_locker_name: guestLockerName,
         host_user_username: hostUserUsername,
         guest_user_username: guestUserUsername,
-        document_name: documentName,
-        xnode_id: documentId,
-        sharing_type: sharingType,  // Send dynamic sharing type
+        document_name: documentName,  // Now from `namePart` in termsValue
+        sharing_type: obligation.typeOfSharing,
+        xnode_id: documentId,  // Document ID from parsed termsValue
       };
-
+  
+      // Log the payload to verify the data before making the request
       console.log("Payload:", payload);
-
+  
+      // Make API call to download resource
       const response = await fetch(`${frontend_host}/download-resource/`, {
         method: "POST",
         headers: {
@@ -1192,18 +1193,18 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
         },
         body: JSON.stringify(payload),
       });
-
+  
       const data = await response.json();
-
+  
       if (data.success) {
         alert("Download successful!");
-
-        // Change the color of the downloaded resource to green
-        const downloadedResource = document.getElementById(`resource-${resourceId}`);
+  
+        // Optionally, change the color of the downloaded resource to green
+        const downloadedResource = document.getElementById(`resource-${obligation.labelName}`);
         if (downloadedResource) {
           downloadedResource.style.color = "green";
         }
-
+  
         console.log("Download successful:", data.message);
       } else {
         setError(data.error || "Failed to download resource");
@@ -1213,6 +1214,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
       setError(err.message);
     }
   };
+  
 
 
   console.log("conn details", conndetails);

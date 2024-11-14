@@ -959,45 +959,46 @@ export const HostTermsReview = () => {
     }
   };
 
-  const navigateToConnectionDetails = (connection) => {
-    // console.log("print", connection); // Log the connection object
+ 
+const navigateToConnectionDetails = (connection) => {
+  // Log the connection object to verify its structure
+  console.log("Connection Object:", connection);
 
-    // Access connection_type_name safely
-    // const connectionTypeName = connection.connection_type_name
-    //   ? connection.connection_type_name.split("-").shift().trim()
-    //   : undefined;
+  // Safely access properties with optional chaining
+  const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+  const connectionDescription = connection?.connection_description;
+  const hostLockerName = connection?.host_locker?.name;
+  const hostLockerDescription = connection?.host_locker?.description;  // Add specific properties
+  const hostUserUsername = connection?.host_user?.username;
+  const connectionName = connection?.connection_name;
+  const createdTime = connection?.created_time;
+  const validityTime = connection?.validity_time;
+  const guestLockerName = connection?.guest_locker?.name 
+  const guestLockerId = connection?.guest_locker?.locker_id
+  // Check if created_time is undefined and log a message if so
+  if (!createdTime) {
+    console.warn("created_time is undefined for this connection.");
+  } else {
+    console.log("Date:", createdTime);
+  }
 
-    const connectionTypeName = conndetails?.connection_name.split("-").shift().trim();
+  // Navigate with safe properties
+  navigate("/show-connection-terms", {
+    state: {
+      connectionTypeName: connectionTypeName,
+      hostLockerName: hostLockerName,
+      hostLockerDescription: hostLockerDescription,  // Pass specific properties instead of the whole object
+      connectionName: connectionName,
+      connectionDescription: connectionDescription,
+      createdtime: createdTime,
+      validitytime: validityTime,
+      hostUserUsername: hostUserUsername,
+      guestLockerName,
+      
 
-    const connectionDescription = conndetails?.connection_description;
-
-    // Use the owner_locker and owner_user from the connection object
-    const hostLockerName = conndetails?.host_locker?.name; // Assuming lockerData has a 'name' property
-    // const hostUserUsername = connection.owner_user;
-    const hostUserUsername = conndetails?.host_user?.username;
-
-    const connectionName = conndetails.connection_name;
-
-    // Log the names to verify they're being retrieved correctly
-    // console.log("Host Locker Name:", hostLockerName);
-    // console.log("Host User Username:", hostUserUsername);
-    // console.log("Connection Type:", connectionTypeName);
-    // console.log("Description:", connectionDescription);
-    // console.log("Connection Name:", connectionName);
-
-    navigate("/display-terms", {
-      state: {
-        connectionTypeName: connectionTypeName,
-        hostLockerName: hostLockerName,
-        connectionName: connectionName,
-        connectionDescription: connectionDescription,
-        createdtime: connection.created_time,
-        validitytime: connection.validity_time,
-        hostUserUsername: hostUserUsername,
-        locker: conndetails.host_locker,
-      },
-    });
-  };
+    },
+  });
+};
 
   const userTooltips = {
     guest: "Guest",
@@ -1148,7 +1149,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
           Connection Name: {conndetails?.connection_name || "Loading..."}
           <button
             className="info-button"
-            onClick={() => navigateToConnectionDetails(connectionType)}
+            onClick={() => navigateToConnectionDetails(connection)}
             title="Show Connection Terms"
             style={{
               marginLeft: "10px",

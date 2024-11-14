@@ -993,7 +993,7 @@ const navigateToConnectionDetails = (connection) => {
       createdtime: createdTime,
       validitytime: validityTime,
       hostUserUsername: hostUserUsername,
-      guestLockerName,
+      locker: guestLockerName,
       
 
     },

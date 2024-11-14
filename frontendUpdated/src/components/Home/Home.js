@@ -469,7 +469,7 @@ const handleConsent = (connection) => {
       
 
      <div style={{marginTop:"120px"}}>
-     <div className="description">
+     <div className="descriptions">
         {curruser ? curruser.description : "None"}
       </div>
       <div className="heroContainer">

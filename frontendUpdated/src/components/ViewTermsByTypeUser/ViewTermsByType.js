@@ -2329,7 +2329,7 @@ export const ViewTermsByType = () => {
                     {showPageInput && (
                       <div className="page-input-modal">
                         <div>
-                          <h3>Enter Page Range for {currentLabelName}</h3>
+                          <h5><b>Enter Page Range for {currentLabelName}</b></h5>
                           {errorMessage && <p className="error">{errorMessage}</p>}
 
                           <label>

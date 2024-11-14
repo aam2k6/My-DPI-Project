@@ -289,6 +289,15 @@ const fetchGlobalTemplates = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (obligations.length === 0) {
+      setError("At least one obligation must be added.");
+      setModalMessage({
+        message: "At least one obligation must be added.",
+        type: "info",
+      });
+      setIsModalOpen(true); // Open modal with info message.
+      return;
+    }
     const token = Cookies.get("authToken");
 
     const finalData = {
@@ -443,6 +452,7 @@ const fetchGlobalTemplates = () => {
                             >
                               <label>
                                 <input
+                                  className="templete"
                                   type="checkbox"
                                   value={
                                     template.global_connection_type_template_id
@@ -504,13 +514,13 @@ const fetchGlobalTemplates = () => {
                           <option value="file">Upload File</option>
                           <option value="date">Add Date</option>
                       </select>
-                      <span className="tooltips">
+                      {!isTemplateModalOpen && <span className="tooltips">
                       ?
                         <span className="tooltiptext">
                           Choose the action type: Share, Transfer, Confer, or
                           Collateral.
                         </span>
-                      </span>
+                      </span>}
                     </div>
                   </div>
 
@@ -526,7 +536,7 @@ const fetchGlobalTemplates = () => {
                           <option value="confer">Confer</option>
                           <option value="collateral">Collateral</option>
                       </select>
-                      <span className="tooltips">
+                      {!isTemplateModalOpen && <span className="tooltips">
                       ?
                       <span className="tooltiptext">
                         <span>
@@ -556,7 +566,8 @@ const fetchGlobalTemplates = () => {
                         </span>
                         <br />
                       </span>
-                      </span>
+                      </span>}
+                      
                     </div>
                   </div>
 
@@ -641,12 +652,12 @@ const fetchGlobalTemplates = () => {
                     </div>
                     </div>
                     <div className="col-md-1">
-                    <span className="tooltips">
+                      {!isTemplateModalOpen && <span className="tooltips">
                       ?
                       <span className="tooltiptext">
                         Select host permissions: Reshare, Download, or Aggregate.
                       </span>
-                    </span>
+                    </span>}
                   </div>
                   </div>
 

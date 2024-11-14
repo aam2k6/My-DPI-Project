@@ -822,10 +822,7 @@ export const ConnectionTerms = () => {
 
   const handleSubmits = (event) => {
     // event.preventDefault();
-    if (obligations.length === 0) {
-      setError("At least one obligation must be added.");
-      return;
-    }
+    console.log()
     const connectionTermsData = {
       ...connectionData, // Spread data from previous page
       obligations,
@@ -840,8 +837,17 @@ export const ConnectionTerms = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const token = Cookies.get("authToken");
+    if (obligations.length === 0) {
+      setError("At least one obligation must be added.");
+      setModalMessage({
+        message: "At least one obligation must be added.",
+        type: "info",
+      });
+      setIsModalOpen(true); // Open modal with info message.
+      return;
+    }
 
+    const token = Cookies.get("authToken");
     const finalData = {
       ...connectionData,  // Contains lockerName, connectionName, connectionDescription, validity
       obligations: obligations.map(obligation => ({
@@ -992,7 +998,7 @@ export const ConnectionTerms = () => {
                                 }
                               >
                                 <label>
-                                  <input
+                                  <input className="templete"
                                     type="checkbox"
                                     value={
                                       template.global_connection_type_template_id
@@ -1054,13 +1060,14 @@ export const ConnectionTerms = () => {
                             <option value="file">Upload File</option>
                             <option value="date">Add Date</option>
                         </select>
-                        <span className="tooltips">
+                        {!isTemplateModalOpen && <span className="tooltips">
                         ?
                           <span className="tooltiptext">
                             Choose the action type: Share, Transfer, Confer, or
                             Collateral.
                           </span>
-                        </span>
+                        </span>}
+                        
                       </div>
                     </div>
 
@@ -1076,7 +1083,7 @@ export const ConnectionTerms = () => {
                             <option value="confer">Confer</option>
                             <option value="collateral">Collateral</option>
                         </select>
-                        <span className="tooltips">
+                        {!isTemplateModalOpen && <span className="tooltips">
                         ?
                         <span className="tooltiptext">
                           <span>
@@ -1106,7 +1113,7 @@ export const ConnectionTerms = () => {
                           </span>
                           <br />
                         </span>
-                        </span>
+                        </span>} 
                       </div>
                     </div>
 
@@ -1191,13 +1198,13 @@ export const ConnectionTerms = () => {
                       </div>
                       </div>
                       <div className="col-md-1">
-                      <span className="tooltips">
+                      {!isTemplateModalOpen && <span className="tooltips">
                         ?
                         <span className="tooltiptext">
                           Select host permissions: Reshare, Download, or Aggregate.
                         </span>
-                      </span>
-                    </div>
+                      </span>}
+                    </div> 
                     </div>
 
                     <div className="mb-1 row">

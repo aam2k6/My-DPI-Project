@@ -82,8 +82,13 @@
   box-sizing: border-box; 
 }
 
+
 #connectionTerm input{
   width: 84%;
+}
+
+#connectionTerm .templete{
+  width: 3%;
 }
 
 .parent-left-heading .connectionTerms-lockerForm select {
@@ -265,4 +270,8 @@
 
 #connectionTermHost input{
   width: 84%;
+}
+
+#connectionTermHost .templete{
+  width: 3%
 }

@@ -959,45 +959,46 @@ export const HostTermsReview = () => {
     }
   };
 
-  const navigateToConnectionDetails = (connection) => {
-    // console.log("print", connection); // Log the connection object
+ 
+const navigateToConnectionDetails = (connection) => {
+  // Log the connection object to verify its structure
+  console.log("Connection Object:", connection);
 
-    // Access connection_type_name safely
-    // const connectionTypeName = connection.connection_type_name
-    //   ? connection.connection_type_name.split("-").shift().trim()
-    //   : undefined;
+  // Safely access properties with optional chaining
+  const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+  const connectionDescription = connection?.connection_description;
+  const hostLockerName = connection?.host_locker?.name;
+  const hostLockerDescription = connection?.host_locker?.description;  // Add specific properties
+  const hostUserUsername = connection?.host_user?.username;
+  const connectionName = connection?.connection_name;
+  const createdTime = connection?.created_time;
+  const validityTime = connection?.validity_time;
+  const guestLockerName = connection?.guest_locker?.name 
+  const guestLockerId = connection?.guest_locker?.locker_id
+  // Check if created_time is undefined and log a message if so
+  if (!createdTime) {
+    console.warn("created_time is undefined for this connection.");
+  } else {
+    console.log("Date:", createdTime);
+  }
 
-    const connectionTypeName = conndetails?.connection_name.split("-").shift().trim();
+  // Navigate with safe properties
+  navigate("/show-connection-terms", {
+    state: {
+      connectionTypeName: connectionTypeName,
+      hostLockerName: hostLockerName,
+      hostLockerDescription: hostLockerDescription,  // Pass specific properties instead of the whole object
+      connectionName: connectionName,
+      connectionDescription: connectionDescription,
+      createdtime: createdTime,
+      validitytime: validityTime,
+      hostUserUsername: hostUserUsername,
+      guestLockerName,
+      
 
-    const connectionDescription = conndetails?.connection_description;
-
-    // Use the owner_locker and owner_user from the connection object
-    const hostLockerName = conndetails?.host_locker?.name; // Assuming lockerData has a 'name' property
-    // const hostUserUsername = connection.owner_user;
-    const hostUserUsername = conndetails?.host_user?.username;
-
-    const connectionName = conndetails.connection_name;
-
-    // Log the names to verify they're being retrieved correctly
-    // console.log("Host Locker Name:", hostLockerName);
-    // console.log("Host User Username:", hostUserUsername);
-    // console.log("Connection Type:", connectionTypeName);
-    // console.log("Description:", connectionDescription);
-    // console.log("Connection Name:", connectionName);
-
-    navigate("/display-terms", {
-      state: {
-        connectionTypeName: connectionTypeName,
-        hostLockerName: hostLockerName,
-        connectionName: connectionName,
-        connectionDescription: connectionDescription,
-        createdtime: connection.created_time,
-        validitytime: connection.validity_time,
-        hostUserUsername: hostUserUsername,
-        locker: conndetails.host_locker,
-      },
-    });
-  };
+    },
+  });
+};
 
   const userTooltips = {
     guest: "Guest",
@@ -1129,6 +1130,89 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
       </span>
     );
   };
+  const handleDownload = async (resourceId) => {
+    try {
+      const token = Cookies.get("authToken");
+
+      // Extract connection details from `conndetails`
+      const connectionName = conndetails.connection_name;
+      const hostLockerName = conndetails.host_locker.name;
+      const guestLockerName = conndetails.guest_locker.name;
+      const hostUserUsername = conndetails.host_user.username;
+      const guestUserUsername = conndetails.guest_user.username;
+
+      // Determine document details and sharing type from `terms_value`
+      const termsValue = conndetails.terms_value;
+      console.log("termsssss", termsValue)
+      let documentName = "Unknown Document";
+      let documentId = null;
+      let sharingType = null;
+
+      // Dynamically choose between share or transfer based on available data in terms_value
+      if (termsValue.share) {
+        // Extract sharing type and document ID from the 'share' value
+        const [sharingTypePart, idPart] = termsValue.share.split("|");
+        sharingType = "share";  // Set sharingType as "share"
+        documentName = sharingTypePart || documentName;
+        documentId = idPart ? idPart.split(",")[0] : documentId;
+      } else if (termsValue.transfer) {
+        // Extract sharing type and document ID from the 'transfer' value
+        const [sharingTypePart, idPart] = termsValue.transfer.split("|");
+        sharingType = "transfer";  // Set sharingType as "transfer"
+        documentName = sharingTypePart || documentName;
+        documentId = idPart ? idPart.split(",")[0] : documentId;
+      } else {
+        console.log("No sharing type found in terms_value.");
+        sharingType = "unknown";  // If neither share nor transfer is available
+      }
+
+      // Log the details
+      console.log("Sharing type:", sharingType);
+      console.log("Document name:", documentName);
+      console.log("Document ID:", documentId);
+
+      const payload = {
+        connection_name: connectionName,
+        host_locker_name: hostLockerName,
+        guest_locker_name: guestLockerName,
+        host_user_username: hostUserUsername,
+        guest_user_username: guestUserUsername,
+        document_name: documentName,
+        xnode_id: documentId,
+        sharing_type: sharingType,  // Send dynamic sharing type
+      };
+
+      console.log("Payload:", payload);
+
+      const response = await fetch(`${frontend_host}/download-resource/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Download successful!");
+
+        // Change the color of the downloaded resource to green
+        const downloadedResource = document.getElementById(`resource-${resourceId}`);
+        if (downloadedResource) {
+          downloadedResource.style.color = "green";
+        }
+
+        console.log("Download successful:", data.message);
+      } else {
+        setError(data.error || "Failed to download resource");
+      }
+    } catch (err) {
+      console.error("Error downloading resource:", err);
+      setError(err.message);
+    }
+  };
 
 
   console.log("conn details", conndetails);
@@ -1148,7 +1232,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
           Connection Name: {conndetails?.connection_name || "Loading..."}
           <button
             className="info-button"
-            onClick={() => navigateToConnectionDetails(connectionType)}
+            onClick={() => navigateToConnectionDetails(connection)}
             title="Show Connection Terms"
             style={{
               marginLeft: "10px",
@@ -1351,6 +1435,15 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                                   <option value="rejected">Rejected</option>
                                 </select>
                               </td>
+                              <td>
+  {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
+    <button onClick={() => handleDownload(obligation)} className="download-button">
+      <i className="fa fa-download" aria-hidden="true"></i>
+    </button>
+  ) : (
+    " "
+  )}
+</td>
                             </tr>
                           ))}
                         </tbody>

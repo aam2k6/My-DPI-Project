@@ -259,9 +259,9 @@ export const ConnectionTermsGlobal = () => {
 
       <div className="connectionTerms-heroContainer">
         {/* Global Name and Description */}
-        <div >
+        <div style={{paddingLeft:"20px"}}>
           <div className="mb-3 mt-3 row">
-            <label for="inputPassword" className="col-sm-2 col-md-1 col-form-label">Name</label>
+            <label className="col-sm-2 col-md-2 col-form-label">Name</label>
             <div className="col-md-3 col-sm-10 col-xs-10">
               <input
                 type="text"
@@ -273,7 +273,7 @@ export const ConnectionTermsGlobal = () => {
           </div>
 
           <div className="mb-3 row">
-            <label for="inputPassword" className="col-sm-2 col-md-1 col-form-label">Description</label>
+            <label className="col-sm-2 col-md-2 col-form-label">Description</label>
             <div className="col-md-3 col-sm-10 col-xs-10">
               <input
                 type="text"
@@ -285,7 +285,7 @@ export const ConnectionTermsGlobal = () => {
           </div>
 
           <div className="mb-3 row">
-            <label for="inputPassword" className="col-sm-2 col-md-1 col-form-label">Template/Policy</label>
+            <label className="col-sm-2 col-md-2 col-form-label">Template/Policy</label>
             <div className="col-md-3 col-sm-10 col-xs-10">
               <select className="form-select form-select-md" aria-label="Small select example" name="globaltype"
                 value={globalFormData.globaltype}
@@ -298,7 +298,7 @@ export const ConnectionTermsGlobal = () => {
           </div>
 
           <div className="mb-3 row">
-            <label for="inputPassword" className="col-sm-2 col-md-1 col-form-label">Domain</label>
+            <label className="col-sm-2 col-md-2 col-form-label">Domain</label>
             <div className="col-md-3 col-sm-10 col-xs-10">
               <select className="form-select form-select-md" aria-label="Small select example"
                 name="domain"
@@ -356,7 +356,7 @@ export const ConnectionTermsGlobal = () => {
                 </div>
 
                 <div className="mb-3 row">
-                  <label for="inputPassword" className="col-sm-2 col-md-2 col-form-label">Type of Action</label>
+                  <label className="col-sm-2 col-md-2 col-form-label">Type of Action</label>
                   <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
                     <select className="form-select form-select-md" aria-label="Small select example"
                         name="typeOfAction"
@@ -377,7 +377,7 @@ export const ConnectionTermsGlobal = () => {
                 </div>
 
                 <div className="mb-3 row">
-                  <label for="inputPassword" className="col-sm-2 col-md-2 col-form-label">Type of Sharing</label>
+                  <label className="col-sm-2 col-md-2 col-form-label">Type of Sharing</label>
                   <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
                     <select className="form-select form-select-md" aria-label="Small select example"
                       name="typeOfSharing"
@@ -456,8 +456,8 @@ export const ConnectionTermsGlobal = () => {
 
                 <div className="mb-3 row">
                   <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>
-                  <div className="col-md-10 col-sm-12">
-                  <div className="row d-flex">
+                  <div className="col-md-9 col-sm-12">
+                  <div className="row">
                     <div className="col-md-2 col-xs-2">
                       <input
                           type="checkbox"

@@ -266,3 +266,8 @@
 #connectionTerms .main-heading{
   text-align: center;
 }
+
+#connectionTerms label{
+  font-weight: bold;
+  font-size: 18px;
+}

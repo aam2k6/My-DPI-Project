@@ -1257,7 +1257,7 @@ export const ConnectionTerms = () => {
                       </div>
                     </div>
                     <div className="connectionTerms-btn">
-                      <button type="submit">Submit</button>
+                      <button type="submit">Next</button>
                     </div>
                   </form>
                 </div>

@@ -211,6 +211,9 @@ import { useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
+import{ Button, Grid, Grid2, Typography } from '@mui/material'
+import {Scanner} from '../Scanner/Scanner'
+
 
 // Helper function to capitalizeFirstLetter
 const capitalizeFirstLetter = (string) => {
@@ -451,157 +454,144 @@ const handleConsent = (connection) => {
 
   const content = (
     <>
-      <div className="navbarBrand">
+      <div className="navbarBrands">
         {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
       </div>
-      <div className="description">
-        {curruser ? curruser.description : "None"}
-      </div>
+      {/* <Typography> {curruser ? curruser.description : "None"}</Typography> */}
+      
     </>
   );
   return (
     <div>
+      <div>
       <Navbar content={content} />
+      </div>
+      
+
+     <div style={{marginTop:"120px"}}>
+     <div className="description">
+        {curruser ? curruser.description : "None"}
+      </div>
       <div className="heroContainer">
-        <div className="newLocker">
-          <h3>{showOutgoingConnections ? "Consent Dashboard" : "My Lockers"}</h3>
+        {/* <div> */}
+        
+         
+          <Grid container>
+            <Grid item md={4} xs={12} sx={{textAlign:"center"}}>
+              <h2>{showOutgoingConnections ? "Consent Dashboard" : "My Lockers"}</h2>
+            </Grid>
+            <Grid item md={4} xs={6}>
+              {!showOutgoingConnections && (
+              <Button  variant="contained" style={{fontWeight:"bold"}} onClick={handleNewLockerClick} size="small">
+                Create New Locker
+              </Button>
+            )}
+            </Grid>
+            <Grid item md={4} xs={6}>
+              <Button  variant="contained" style={{fontWeight:"bold"}} onClick={handleConsentDashboardClick} size="small" >
+              {showOutgoingConnections ? "Lockers" : "Consent Dashboard"} {/* Change button text based on state */}
+              </Button>
+            </Grid>
+          </Grid>
+          
 
-          {!showOutgoingConnections && (
-            <button id="newLockerBtn" onClick={handleNewLockerClick}>
-              Create New Locker
-            </button>
-          )}
-
-          <button id="consentDashboardBtn" onClick={handleConsentDashboardClick}>
-            {showOutgoingConnections ? "Lockers" : "Consent Dashboard"} {/* Change button text based on state */}
-          </button>
-        </div>
+          
+        {/* </div> */}
         {showOutgoingConnections ? (
   <div className="allOutgoingConnections">
     {outgoingConnections.length > 0 ? (
-      <div className="tableContainer"> {/* Added a container for scrolling */}
-        <table className="outgoingConnectionsTable">
-        <thead>
-  <tr>
-    <th>S.No</th>
-    <th>Connection Type</th>
-    <th>Host User</th>
-    <th>Host Locker</th>
-    <th>Guest Locker</th>
-    <th>Created On</th>
-    <th>Validity On</th>
-    <th>Actions</th> {/* New column for the I and C buttons */}
-  </tr>
-</thead>
-<tbody>
-  {outgoingConnections.map((connection, index) => (
-    <tr key={index}>
-      <td>{index + 1}</td>
-      <td>
-        {/* Connection name clickable */}
-        <button
-          className="connection-name-button"
-          onClick={() => navigateToViewTerms(connection)}
-          style={{
-            textDecoration: "underline",
-            background: "none",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            color: "inherit",
-            textAlign: "left",
-          }}
-        >
-          {connection.connection_name}
-        </button>
-        <div>{connection.connection_description}</div>
-      </td>
-      <td>{connection.host_user}</td>
-      <td>{connection.host_locker}</td>
-      <td>{connection.guest_locker}</td>
-      <td>{new Date(connection.created_on).toLocaleString()}</td>
-      <td>{new Date(connection.validity_time).toLocaleString()}</td>
-      <td>
-  <div id="conntent" style={{ display: "flex", justifyContent: "center" }}>
-    {/* I (Info) button with circular design */}
-    <button
-      className="connection-circle-button"
-      onClick={() => handleInfo(connection)}
-      style={{
-        backgroundColor: "#fff",    // Black background
-        color: "#000",              // White text for contrast
-        border: "2px solid #000",   // Black border
-        borderRadius: "50%",        // Circular shape
-        width: "30px",              // Width and height should be equal for perfect circle
-        height: "30px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontWeight: "bold",
-        marginRight: "10px",        // Spacing between buttons
-        cursor: "pointer",
-      }}
-    >
-      I
-    </button>
-
-    {/* C (Consent) button with circular design */}
-    <button
-      className="connection-circle-button"
-      onClick={() => handleConsent(connection)}
-      style={{
-        backgroundColor: "#fff",    // Black background
-        color: "#000",              // White text for contrast
-        border: "2px solid #000",   // Black border
-        borderRadius: "50%",        // Circular shape
-        width: "30px",              // Width and height should be equal for perfect circle
-        height: "30px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontWeight: "bold",
-        cursor: "pointer",
-      }}
-    >
-      C
-    </button>
-  </div>
-</td>
-
-
-    </tr>
-  ))}
-</tbody>
-
-
+      <div className="tableContainer table-responsive"> {/* Ensure no height constraints here */}
+        <table className="table table-bordered table-striped table-hover outgoingConnectionsTable">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Connection Type</th>
+              <th>Host User</th>
+              <th>Host Locker</th>
+              <th>Guest Locker</th>
+              <th>Created On</th>
+              <th>Validity On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {outgoingConnections.map((connection, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>
+                  <button
+                    className="connection-name-button"
+                    onClick={() => navigateToViewTerms(connection)}
+                    style={{
+                      textDecoration: "underline",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      color: "inherit",
+                      textAlign: "left",
+                    }}
+                  >
+                    {connection.connection_name}
+                  </button>
+                  <div>{connection.connection_description}</div>
+                </td>
+                <td>{connection.host_user}</td>
+                <td>{connection.host_locker}</td>
+                <td>{connection.guest_locker}</td>
+                <td>{new Date(connection.created_on).toLocaleString()}</td>
+                <td>{new Date(connection.validity_time).toLocaleString()}</td>
+                <td>
+                  <div id="conntent" className="d-flex justify-content-center">
+                    <button
+                      className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center me-2"
+                      onClick={() => handleInfo(connection)}
+                      style={{ width: "30px", height: "30px", fontWeight: "bold" }}
+                    >
+                      I
+                    </button>
+                    <button
+                      className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center"
+                      onClick={() => handleConsent(connection)}
+                      style={{ width: "30px", height: "30px", fontWeight: "bold" }}
+                    >
+                      C
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     ) : (
       <p>No outgoing connections found.</p>
     )}
   </div>
+          ) : (
+            <div className="allLockers">
+              {lockers.length > 0 ? (
+                lockers.map(locker => (
+                  <div key={locker.locker_id} className="page1-locker">
+                    <h4>{locker.name}</h4>
+                    {locker.is_frozen === false ? (
+                      <button className="btn btn-primary" id="openLockerBtn" onClick={() => handleClick(locker)}>
+                        Open
+                      </button>
+                    ) : (
+                      <button className="btn btn-secondary" id="openLockerBtn">Frozen</button>
+                    )}
+                    <p className="description2">{locker.description}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No lockers found.</p>
+              )}
+            </div>
+          )}
 
-        ) : (
-          <div className="allLockers">
-            {lockers.length > 0 ? (
-              lockers.map(locker => (
-                <div key={locker.locker_id} className="page1-locker">
-                  <h4>{locker.name}</h4>
-                  {locker.is_frozen === false ? (
-                    <button id="openLockerBtn" onClick={() => handleClick(locker)}>
-                      Open
-                    </button>
-                  ) : (
-                    <button id="openLockerBtn">Frozen</button>
-                  )}
-                  <p className="description2">{locker.description}</p>
-                </div>
-              ))
-            ) : (
-              <p>No lockers found.</p>
-            )}
-          </div>
-        )}
       </div>
+     </div>
+
     </div>
   );}

@@ -3,9 +3,17 @@
   display: flex;
   justify-content: space-between;
   /* align-items: center; */
-  margin-top: 0.5rem;
+  /* margin-top: 0.5rem; */
   padding: 0.5rem 1rem;
 }
+
+@media (max-width: 768px) {
+  .offcanvas.offcanvas-end {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 
 .navbarBrand {
   font-weight: bolder;
@@ -18,7 +26,7 @@
 }
 
 .navLinks a{
-  color: black;
+  color: black !important;
   text-decoration: none;
   font-weight: bolder;
   /* margin: 0 2rem;  */
@@ -86,19 +94,19 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding-left: 35px;
-  padding-right: 20px; 
-  margin-top: -5rem; 
+  /* padding-left: 35px; */
+  padding-right: 20px;  
 }
 
 .notification-dropdown {
   position: absolute;
-  top: 150px; /* Adjust based on the height of the navbar */
-  right: 20px; /* Adjust to align with your design */
+  /* right: 0px; */
+ /* Adjust based on the height of the navbar */
+ /* Adjust to align with your design */
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  min-width: 250px; /* Slightly increased width */
+  min-width: 320px; /* Slightly increased width */
   max-width: 350px; /* Slightly increased maximum width */
   z-index: 1;
   display: flex;
@@ -107,6 +115,8 @@
   max-height: 300px; /* Adjust height if necessary */
   overflow-y: auto; /* Enable scrolling if content is too long */
 }
+
+
 
 .notification-box {
   background-color: #f9f9f9;
@@ -123,22 +133,26 @@
 .notification-box:last-child {
   border-bottom: none;
 }
+.notification-bell {
+  font-size: 30px;
+}
 
 .notification-badge {
   position: absolute;
-  top: -10px; /* Adjust as needed */
-  left: 28px; /* Adjust distance from the left edge of the icon */
-  background-color: red; /* Badge background color */
-  color: white; /* Text color */
-  border-radius: 50%; /* Makes the badge circular */
-  width: 24px; /* Adjust size as needed */
-  height: 24px; /* Adjust size as needed */
+  top: -10px; /* Slightly above the icon */
+  left: -8px; /* Slightly to the right, closer to the icon */
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px; /* Adjust font size as needed */
-  font-weight: bold; /* Make the number bold */
+  font-size: 12px;
+  font-weight: bold;
 }
+
 
 .notification-box p {
   margin: 0.5rem 0;
@@ -159,13 +173,14 @@
   top: calc(100% + 0.5rem); /* Position below the user image */
   right: 0;
   background-color: #f9f9f9;
-  min-width: 160px;
+  min-width: 260px !important;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   z-index: 1;
   display: flex;
   flex-direction: column;
   padding: 0.5rem 0;
 }
+
 
 .dropdownContent button {
   color: black;
@@ -183,14 +198,22 @@
   background-color: #f1f1f1;
 }
 
-.profileContainer{
+/* .profileContainer{
  padding-left: 20px;
  padding-right: 40px;
+} */
+
+.profileContainer {
+  /* Remove flex or center alignment if applied */
+  display: block; /* or flex without justify-content:center */
+  text-align: left; /* Aligns text to the left */
 }
+
 
 .profileContainer img{
   display: "block";
-  margin: "0 auto" 
+  margin: "0 auto";
+  /* justify-content: center; */
 }
 .currusername {
   text-align: center;
@@ -199,11 +222,26 @@
   font-weight: bold;
 }
 
+
+@media (min-width: 992px) { /* Adjust the min-width as needed */
+  .center-large-screen {
+    display: flex; 
+    justify-content: center;
+  }
+}
+
+@media (max-width: 991px) {
+  .offcanvas.offcanvas-end {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 .username {
   font-size: medium;
   font-weight: bold;
   margin-top: 8px;
-  text-align: center;
+  /* text-align: center; */
 }
 
 .curruserdesc {
@@ -213,17 +251,8 @@
   font-weight: 200;
 }
 /* Dropdown content styles */
-.dropdownContent {
-  position: absolute;
-  top: calc(100% + 0.5rem); /* Position below the trigger */
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem 0;
-}
+
+
 
 .dropdownTrigger {
   cursor: pointer;
@@ -246,16 +275,29 @@
   text-align: left;
   cursor: pointer;
 }
-
+.show{
+  top: calc(100% + 0.5rem); /* Position below the trigger */
+  cursor: pointer;
+}
 .dropdownContent button:hover {
   background-color: #f1f1f1;
 }
-
-.navLinks {
-  position: relative; /* Necessary for dropdown positioning */
+.nav-link{
+  color: black;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.qr-scanner-overlay {
+.nav-item{
+  padding-left: 30px;
+}
+
+.navbar .dropdown-toggle::after {
+  display: none;
+}
+
+
+.qr-scanner-overlays {
   position: fixed;
   top: 0;
   left: 0;
@@ -268,18 +310,18 @@
   z-index: 1000; /* Ensure it appears above other content */
 }
 
-.qr-scanner-box {
+/*  */
+.qr-scanner-boxs {
   position: relative;
-  width: 90%; /* Responsive width */
+  width: 80%;
   max-width: 500px;
-  height: 80%;
+  height: auto;
   background: white;
-  border-radius: 12px; /* Rounded corners */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
-  overflow: hidden; /* Prevent overflow for contents */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
 }
-
-.qr-scanner-close {
+.qr-scanner-closes {
   position: absolute;
   top: 15px; /* Adjusted for better placement */
   right: 15px; /* Adjusted for better placement */
@@ -293,6 +335,13 @@
   transition: background 0.3s; /* Smooth transition on hover */
 }
 
-.qr-scanner-close:hover {
+.qr-scanner-closes:hover {
   background: darkred; /* Change color on hover */
+}
+
+/* Hide the QR scanner icon on screens 991px and below */
+@media (max-width: 991px) {
+  .qr-scanner-icons {
+    display: none;
+  }
 }

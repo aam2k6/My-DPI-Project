@@ -5,6 +5,7 @@ import { usercontext } from "../../usercontext";
 import "./page4.css";
 import Navbar from '../Navbar/Navbar';
 import { frontend_host } from '../../config';
+import { Grid, TextField, Button, Select, MenuItem, InputLabel, Typography, Box, Container } from '@mui/material';
 
 
 export const UploadResource = () => {
@@ -72,57 +73,95 @@ export const UploadResource = () => {
     <>
     <div className="navbarLockerName">Locker: {locker.name}</div>
           <div className="navbarLockerOwner">Owner: {curruser.username}</div>
-          <span className='uploadDescription'><p>{locker.description}</p></span>
+          {/* <span className='uploadDescription'><p>{locker.description}</p></span> */}
     </>
   );
 
   return (
     <div>
     <Navbar content = {content} />
+    
 
       {/* <div className="descriptionLocker">
         <p>{locker.description}</p>
       </div> */}
 
-      <div className="page4heroContainer">
-        <div className="page4resourceHeading">Resources</div>
-        <div className="page4lockerForm">
-          <form onSubmit={handleSubmit}>
-            <label>
-              <span>Name</span>
-              <input
-                type="text"
-                name="resourceName"
-                placeholder="Resource Name"
-                onChange={(e) => setResourceName(e.target.value)}
-                required
-              />
-            </label>
-            <label>
-              <span>Select File</span>
-              <input
-                type="file"
-                name="document"
-                onChange={(e) => setDocument(e.target.files[0])}
-                required
-              />
-            </label>
-            <label>
-              <span>Visibility</span>
-              <select
-                name="visibility"
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value)}
-                required
-              >
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
-            </label>
-            <button type="submit">Submit</button>
-          </form>
+      <div style={{marginTop:"120px"}}>  
+      <div className='uploadDescriptions'><p>{locker.description}</p></div>
+
+          <Container maxWidth="md">
+            <Box
+              sx={{
+                border: '1px solid blue',
+                borderRadius: '8px',
+                padding: '50px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <div className="page4resourceHeading">Resources</div>
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom fontWeight="bold" >
+                    Locker Name
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    type="text"
+                    name="resourceName"
+                    placeholder="Resource Name"
+                    onChange={(e) => setResourceName(e.target.value)}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom fontWeight="bold" >
+                    Select File
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    type="file"
+                    name="document"
+                    onChange={(e) => setDocument(e.target.files[0])}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom fontWeight="bold" >
+                    Visibility
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    select
+                    variant="outlined"
+                    name="visibility"
+                    value={visibility}
+                    onChange={(e) => setVisibility(e.target.value)}
+                    required>
+                    <MenuItem value="public">Public</MenuItem>
+                    <MenuItem value="private">Private</MenuItem>
+                  </TextField>
+                </Grid>
+              </Grid>
+              <Grid item xs={12} container justifyContent="center" mt={4}>
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+            </form>
+
+            </Box>
+        </Container>
         </div>
       </div>
-    </div>
   );
 };

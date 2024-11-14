@@ -1,3 +1,25 @@
+
+/* guestuser.css */
+.navbarBrands {
+  font-size: 24px; /* Default font size for larger screens */
+  font-weight: bold;
+
+}
+
+@media (max-width: 768px) {
+  .navbarBrands {
+    font-size: 18px; /* Adjusted font size for medium screens */
+    font-weight: bold;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbarBrands {
+    font-size: 14px !important;
+    font-weight: bold;
+     /* Further reduced font size for small screens */
+  }
+}
 .descriptionpage7 {
     font-size: 1.195rem; /* Slightly smaller font size for the description */
     color: rgb(44, 41, 41); /* Different color to distinguish from the name */
@@ -187,4 +209,5 @@
     cursor: pointer;
     font-weight: bold;
   }
+  
   

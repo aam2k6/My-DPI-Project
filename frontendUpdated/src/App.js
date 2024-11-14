@@ -34,6 +34,7 @@ import {ViewHostTermsByType} from "./components/GuestTermsReview/ViewHostTermsBy
 import { HostTermsReview } from "./components/ViewTermsByTypeUser/HostTermsReview";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import GlobalTermsView from './components/GlobalTermsView/GlobalTermsView'; // Import the new component
+import { Scanner } from "./components/Scanner/Scanner";
 
 
 
@@ -81,6 +82,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Home />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -89,6 +91,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateLocker />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -97,6 +100,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ViewLocker />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -105,6 +109,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <UploadResource />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -113,6 +118,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DPIdirectory />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -121,6 +127,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <TargetUserView />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -129,6 +136,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Connection />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -137,6 +145,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ConnectionTerms />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -145,6 +154,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ConnectionTermsHost />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -153,6 +163,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ConnectionTermsGlobal />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -161,6 +172,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <TargetLockerView />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -169,6 +181,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Admin />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -177,6 +190,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateConnectionType />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -185,6 +199,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateConnectionTerms />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -193,6 +208,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ViewTermsByType />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -201,6 +217,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateConnectionType />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -209,6 +226,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateConnectionTerms />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -217,6 +235,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Guestusers />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -225,18 +244,20 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Guesttermsreview />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
             <Route
               path="/create-global-connection-type"
-              element={<CreateGlobalConnectionType />}
+              element={<><CreateGlobalConnectionType /> <Scanner /></>}
             />
             <Route
               path="/manage-moderators"
               element={
                 <ProtectedRoute>
                   <ManageUsers role="moderator" />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -245,6 +266,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ManageUsers role="sys_admin" />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -253,6 +275,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <FreezeLockerConnection />
+                  <Scanner />
                 </ProtectedRoute>
               }
             />
@@ -262,6 +285,7 @@ function App() {
             element = {
               <ProtectedRoute>
                 <SettingsPage />
+                <Scanner />
               </ProtectedRoute>
             }
             />
@@ -270,16 +294,18 @@ function App() {
             element = {
               <ProtectedRoute>
                 <Displayterms/>
+                <Scanner />
               </ProtectedRoute>
             }
             />
-            <Route path="/GlobalTermsView" element={<GlobalTermsView />} /> {/* Add the new route */}
+            <Route path="/GlobalTermsView" element={<><GlobalTermsView /> <Scanner /></>} /> {/* Add the new route */}
 
             <Route
             path = "/view-host-terms-by-type"
             element = {
               <ProtectedRoute>
                 <ViewHostTermsByType/>
+                <Scanner />
               </ProtectedRoute>
             }
             />
@@ -289,6 +315,7 @@ function App() {
             element = {
               <ProtectedRoute>
                 <HostTermsReview/>
+                <Scanner />
               </ProtectedRoute>
             }
             />

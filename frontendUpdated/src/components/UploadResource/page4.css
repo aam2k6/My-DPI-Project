@@ -9,9 +9,9 @@
     font-size: 1.195rem;                          
 }
 
-.uploadDescription{
+.uploadDescriptions{
   font-size: 18px;
-  margin-left: 30px;
+  padding-left: 50px;
 }
 
 .page4heroContainer {
@@ -29,6 +29,7 @@
     margin-bottom: 4rem;
     /* margin-top: 0.1rem; */
     font-weight: bold;
+    text-align: center;
   }
   
   .page4lockerForm {

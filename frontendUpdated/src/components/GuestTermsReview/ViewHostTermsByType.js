@@ -1262,11 +1262,11 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
         {curruser ? curruser.description : "None"}
       </div> */}
 
-      <div className="navbarBrand">
+      <div className="navbarBrands">
       {connectionName}
       </div>
 
-      <br></br>
+      {/* <br></br>
       <div className="connection-details">
         Connection Name: {connectionName}
         <button
@@ -1330,7 +1330,7 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
             <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 
@@ -1418,629 +1418,695 @@ console.log("hostToGuest", hostToGuestObligations);
           <h3>Your Obligations</h3> */}
 
 
-      <div className="view-container">
-    <div className="b">
-            <div className="tabs">
-              <div
-                className={`tab-header ${
-                  activeTab === "guest" ? "active" : ""
-                }`}
-                onClick={() => navigate("/guest-terms-review", {
-                  state: {
-                    connection: connection,
-                    connectionType: connectionType,
-                  },
-                })}
-              >
-                Guest Connection Terms
-              </div>
-              <div
-                className={`tab-header ${
-                  activeTab === "host" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("host")}
-              >
-                Host Connection Terms
-              </div>
-            </div>
-          <div className="tab-content">
-          {activeTab === "host" && (
-            <div>
-      
-      <div className={showResources || showResources2 ? "split-view" : ""}>
-              <div className="table-container">
-                
-                <div className="center">
-                {globalTemplateNames.length > 0 && "Regulations used: "}
-                  <span style={{ fontWeight: "bold" }}>
-                    {globalTemplateNames.filter(Boolean).map((template, index) => (
-                      <span key={index}>
-                        <span 
-                style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                onClick={() => handleNavigation(template)}
-              >
-                {template.global_connection_type_name}
-              </span>
-                        {index < globalTemplateNames.filter(Boolean).length - 1 &&
-                          ", "}
-                      </span>
-                    ))}
-                  </span>
-                </div>
-                
-                <h3>Your Obligations</h3>
-      
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Sno</th>
-                      <th>Name</th>
-                      <th>purpose</th>
-                      <th>Type of share</th>
-                      <th>Enter value</th>
-                      <th>Host Privileges</th>
-                      <th>Status</th> {/* New column for Status */}
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {hostToGuestObligations.map((obligation, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{obligation.labelName}</td>
-                        <td>{obligation.purpose}</td>
-                        <td>
-                          <div className="tooltip">
-                            {obligation.typeOfSharing}
-                            {renderTooltip(obligation.typeOfSharing)}
-                          </div>
-                        </td>                  
-                        <td>{renderInputField(obligation)}</td>
-                        <td>
-                          {obligation.hostPermissions
-                            ? obligation.hostPermissions.join(", ")
-                            : "None"}
-                        </td>
-                        <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
-                        {/* Display status */}
-                        {/* <td>{obligation.labelDescription}</td> */}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div style={{ margin: "10px 0" }}>
-                <div>
-                  {
-                    <button style={{ marginLeft: "10px" }} onClick={handleSubmit}>
-                      Submit
-                    </button>
-                  }
-                </div>
-              </div>
-              <div>
-                {showResources && (
-                  <div className="resource-container">
-                    <h3>Select Resource for {currentLabelName}</h3>
-                    {/* {error && <p className="error">{error}</p>} */}
-      
-                    <ul>
-                      {xnodes.map((resource, index) => (
-                        <li key={index}>
-                          <div>
-                            <label>
-                              <input
-                                type="radio"
-                                name="selectedResource"
-                                value={resource.resource_name} //i changed here
-                                checked={
-                                  selection[currentLabelName]
-                                    ?.id === resource.id
-                                }
-                                onClick={() => handleResourceSelection(resource)}
-                              />
-                              {resource.resource_name}  <button id="view" onClick = {() => handleClick(resource.id)}>View</button>
-                            </label>
-                           
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                    <button onClick={() => setShowResources(false)}>Select</button>
-                  </div>
-                )}
-
-{showResources2 && (
-            <div className="resource-container">
-              <h3>Select Resource for {currentLabelName}</h3>
-              {/* {error && <p className="error">{error}</p>} */}
-
-              <ul>
-                {xnodes.map((resource, index) => (
-                  <li key={index}>
-                    <div>
-                      <label>
-                        <input
-                          type="radio"
-                          name="selectedResource"
-                          value={resource.resource_name} //i changed here
-                          checked={
-                            selection2[currentLabelName]
-                              ?.id === resource.id
-                          }
-                          onClick={() => handleResourceSelection2(resource)}
-                        />
-                        {resource.resource_name}  <button id="view" onClick = {() => handleClick(resource.id)}>View</button>
-                      </label>
-                     
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <button onClick={() => setShowResources2(false)}>Select</button>
-            </div>
-          )}
-          
-                 </div>
-              
-          </div>
-          <div>
-              </div>
-             <div>
-              {/* </div>
-              
-          </div>
-          <div>
-              </div>
-             <div>
-          {permissions?.canShareMoreData && (
-        <div className="table-container">
-
-          <h3>Share more data</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Sno</th>
-                <th>Name</th>
-                <th>Purpose</th>
-                <th>Type of Share</th>
-                <th>Value</th>
-                <th>Status</th> 
-              </tr>
-            </thead>
-            <tbody>
-              
-              {permissionsData.map((permission) => (
-                <tr key={permission.sno}>
-                  <td>{permission.sno}</td>
-                  <td>{permission.labelName}</td>
-                  <td>{permission.purpose || "None"}</td>
-                  
-                  <td>{permission.action}</td>
-                  <td>
-                    {permission.dataElement || "None"}
-                    
-                  </td>
-                  <td>Status Active</td> 
-                </tr>
-              ))}
-              {moreDataTerms.map((term, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>
-                    <input
-                      type="text"
-                      value={term.labelName}
-                      onChange={(e) =>
-                        updateTerm(index, "labelName", e.target.value)
-                      }
-                      placeholder="Label Name"
-                      required
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={term.purpose}
-                      onChange={(e) =>
-                        updateTerm(index, "purpose", e.target.value)
-                      }
-                      placeholder="Purpose"
-                      required
-                    />
-                  </td>
-                  <td>
-                    <select
-                      value={term.typeOfShare}
-                      onChange={(e) =>
-                        updateTerm(index, "typeOfShare", e.target.value)
-                      }
-                    >
-                      <option value="share">Share</option>
-                      <option value="transfer">Transfer</option>
-                      <option value="confer">Confer</option>
-                      <option value="collateral">Collateral</option>
-                    </select>
-                  </td>
-                  <td>
-                    
-                  
-                     <button onClick={() => handleButtonClick(term.labelName)}>
-                      {selectedResources[term.labelName]?.id ||
-                        "Upload File"}
-                    </button>
-                  </td>
-                  <td>Pending</td> 
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div style={{ margin: "20px 0" }}>
-            <div>
-              <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
-                Add New Term
-              </button>
-              <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-                Remove Last Term 
-              </button>
-              <button onClick={handleMoreSubmit}>Submit</button>
-            </div>
-               
-          {allObligationsApproved() && (
-        <div>
-          <h3 style={{ textAlign: "left", marginTop: "20px" }}>
-            Host Obligations
-          </h3>
-          <p>You will receive a receipt from the host</p>
-        </div>
-      )}
-      
-      {hostObligationMessage && (
-        <h3 style={{ textAlign: "center", marginTop: "20px" }}>
-          Host Obligation: {hostObligationMessage}
-        </h3>
-      )}
-               
-          {isModalOpen && (
-            <Modal
-              message={modalMessage.message}
-              onClose={handleCloseModal}
-              type={modalMessage.type}
-            />
-          )}
- */}
-
-      
-      {/* {showPageInput && (
-        <div className="page-input-modal">
-        <div>
-          <h3>Enter Page Range for {currentLabelName}</h3>
-          {errorMessage && <p className="error">{errorMessage}</p>}
-      
-          <label>
-            From Page:
-            <input
-              type="number"
-              value={fromPage}
-              onChange={(e) => setFromPage(e.target.value)}
-              min="1"
-            />
-          </label>
-          <br></br>
-      
-          <label>
-            To Page:
-            <input
-              type="number"
-              value={toPage}
-              onChange={(e) => setToPage(e.target.value)}
-              min="1"
-            />
-          </label>
-      
-          
-
-        </div>v
-        <div className="button-group">
-          <button onClick={handlePageSubmit}>Submit</button>
-          <button onClick={() =>{
-          setShowPageInput(false);
-          setErrorMessage(null);
-          setFromPage('');
-          setToPage('');
-        }}>Cancel</button>
-        </div>
-       <div> */}
-       {showPageInput && (
-  <div className="page-input-modal">
-  <div>
-    <h3>Enter Page Range for {currentLabelName}</h3>
-    {errorMessage && <p className="error">{errorMessage}</p>}
-
-    <label>
-      From Page:
-      <input
-        type="number"
-        value={fromPage}
-        onChange={(e) => setFromPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    <label>
-      To Page:
-      <input
-        type="number"
-        value={toPage}
-        onChange={(e) => setToPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    
-  </div>
-  <div className="button-group">
-    <button onClick={handlePageSubmit}>Submit</button>
-    <button onClick={() =>{
-    setShowPageInput(false);
-    setErrorMessage(null);
-    setFromPage('');
-    setToPage('');
-  }}>Cancel</button>
-  </div>
-  </div>
-)}
-
-{showPageInput2 && (
-  <div className="page-input-modal">
-  <div>
-    <h3>Enter Page Range for {currentLabelName}</h3>
-    {errorMessage && <p className="error">{errorMessage}</p>}
-
-    <label>
-      From Page:
-      <input
-        type="number"
-        value={fromPage}
-        onChange={(e) => setFromPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    <label>
-      To Page:
-      <input
-        type="number"
-        value={toPage}
-        onChange={(e) => setToPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    
-  </div>
-  <div className="button-group">
-    <button onClick={handlePageSubmit2}>Submit</button>
-    <button onClick={() =>{
-    setShowPageInput2(false);
-    setErrorMessage(null);
-    setFromPage('');
-    setToPage('');
-  }}>Cancel</button>
-  </div>
-  </div>
-)}
-    {permissions?.canShareMoreData && (
-  <div className="table-container">
-    {/* Add this div for styling */}
-    <h3>Share more data</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Sno</th>
-          <th>Name</th>
-          <th>Purpose</th>
-          <th>Type of Share</th>
-          <th>Value</th>
-          <th>Status</th> {/* Changed "Remove" to "Status" */}
-        </tr>
-      </thead>
-      <tbody>
-        
-        {permissionsData.map((permission) => (
-          <tr key={permission.sno}>
-            <td>{permission.sno}</td>
-            <td>{permission.labelName}</td>
-            <td>{permission.purpose || "None"}</td>
-            {/* Display "None" if empty */}
-            <td>{permission.share}</td>
-            <td>
-              <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button>
-              {/* Display "None" if empty */}
-            </td>
-            <td>{statuses2[permission.labelName]}</td> {/* Example status value */}
-          </tr>
-        ))}
-        {moreDataTerms.map((term, index) => (
-          <tr key={index}>
-            <td>{index + 1}</td>
-            <td>
-              <input
-                type="text"
-                value={term.labelName}
-                onChange={(e) =>
-                  updateTerm(index, "labelName", e.target.value)
-                }
-                placeholder="Label Name"
-                required
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                value={term.purpose}
-                onChange={(e) =>
-                  updateTerm(index, "purpose", e.target.value)
-                }
-                placeholder="Purpose"
-                required
-              />
-            </td>
-            <td>
-              <select
-                value={term.typeOfSharing}
-                onChange={(e) =>
-                  updateTerm(index, "typeOfSharing", e.target.value)
-                }
-              >
-                <option value="share">Share</option>
-                <option value="transfer">Transfer</option>
-                <option value="confer">Confer</option>
-                <option value="collateral">Collateral</option>
-              </select>
-            </td>
-            <td>
-              {/* <input
-              {/* <input
-                type="file"
-                onChange={(e) =>
-                  updateTerm(index, "enter_value", e.target.files[0])
-                }
-               
-                required
-              /> */}
-               <button onClick={() => handleButtonClick2(term.labelName)}>
-               {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] ||
-              "Upload File"}
-              </button>
-            </td>
-            <td>Pending</td> {/* Example status value */}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-    <div style={{ margin: "20px 0" }}>
-      <div>
-        <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
-          Add New Term
+      <div style={{marginTop:"120px"}}>
+      <div className="connection-details">
+        Connection Name: {connectionName}
+        <button
+          className="info-button"
+          onClick={() => navigateToConnectionTerms(connectionName)}
+          title="Show Connection Terms"
+          style={{
+            marginLeft: "10px",
+            cursor: "pointer",
+            background: "transparent",
+            border: "none",
+          }}
+        >
+          <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
         </button>
-        <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-          Remove Last Term {/* This removes the last term added */}
+        <button
+          //   className="info-button"
+          onClick={() => handleConsentAndInfo(connectionName)}
+        >
+          Revoke Consent
         </button>
-        <button onClick={handleMoreSubmit}>Submit</button>
+        <br></br>
+        <>
+        <div style={{paddingBottom:"8px"}}>
+        {globalTemplateNames.length > 0 && "Connection has been imported from "}
+  <span style={{ fontWeight: "bold" }}>
+    {globalTemplateNames.filter(Boolean).map((template, index) => (
+      <span key={index}>
+        <span 
+          style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          onClick={() => handleNavigation(template)}
+        >
+          {template.global_connection_type_name}
+        </span>
+        {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+      </span>
+
+    ))}
+     </span></div></>
+        {connectionDescription}
+        <br></br>
+        <div className="tooltip-container user-container">
+          <div className="tooltips user-container">
+            <FaUserCircle className="userIcon"/> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
+          </div>
+          <i class="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltips user-container">
+            <FaRegUserCircle className="userIcon"/>&nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
+          </div>
+        </div>
+        <div className="tooltip-container user-container">
+          <div className="tooltips user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+            <i class="bi bi-person-fill-lock"></i> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
+          </div>
+          <i class="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltips user-container" onClick={() => handleuserclick(hostUserUsername)}>
+            <i class="bi bi-person-lock"></i>&nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+          </div>
+        </div>
       </div>
-         
-    {allObligationsApproved() && (
-  <div>
-    <h3 style={{ textAlign: "left", marginTop: "20px" }}>
-      Host Obligations
-    </h3>
-    <p>You will receive a receipt from the host</p>
-  </div>
-)}
+        <div className="view-container">
+      <div className="b">
+              <div className="tabs">
+                <div
+                  className={`tab-header ${
+                    activeTab === "guest" ? "active" : ""
+                  }`}
+                  onClick={() => navigate("/guest-terms-review", {
+                    state: {
+                      connection: connection,
+                      connectionType: connectionType,
+                    },
+                  })}
+                >
+                  Guest Connection Terms
+                </div>
+                <div
+                  className={`tab-header ${
+                    activeTab === "host" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("host")}
+                >
+                  Host Connection Terms
+                </div>
+              </div>
+            <div className="tab-content">
+            {activeTab === "host" && (
+              <div>
+        
+        <div className={showResources || showResources2 ? "split-view" : ""}>
+                <div className="table-container">
+                  
+                  <div className="center">
+                  {globalTemplateNames.length > 0 && "Regulations used: "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {globalTemplateNames.filter(Boolean).map((template, index) => (
+                        <span key={index}>
+                          <span 
+                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => handleNavigation(template)}
+                >
+                  {template.global_connection_type_name}
+                </span>
+                          {index < globalTemplateNames.filter(Boolean).length - 1 &&
+                            ", "}
+                        </span>
+                      ))}
+                    </span>
+                  </div>
+                  
+                  <h3>Your Obligations</h3>
+        
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Sno</th>
+                        <th>Name</th>
+                        <th>purpose</th>
+                        <th>Type of share</th>
+                        <th>Enter value</th>
+                        <th>Host Privileges</th>
+                        <th>Status</th> {/* New column for Status */}
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {hostToGuestObligations.map((obligation, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{obligation.labelName}</td>
+                          <td>{obligation.purpose}</td>
+                          <td>
+                            <div className="tooltip">
+                              {obligation.typeOfSharing}
+                              {renderTooltip(obligation.typeOfSharing)}
+                            </div>
+                          </td>                  
+                          <td>{renderInputField(obligation)}</td>
+                          <td>
+                            {obligation.hostPermissions
+                              ? obligation.hostPermissions.join(", ")
+                              : "None"}
+                          </td>
+                          <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
+                          {/* Display status */}
+                          {/* <td>{obligation.labelDescription}</td> */}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{ margin: "10px 0" }}>
+                  <div>
+                    {
+                      <button style={{ marginLeft: "10px" }} onClick={handleSubmit}>
+                        Submit
+                      </button>
+                    }
+                  </div>
+                </div>
+                <div>
+                  {showResources && (
+                    <div className="resource-container">
+                      <h3>Select Resource for {currentLabelName}</h3>
+                      {/* {error && <p className="error">{error}</p>} */}
+        
+                      <ul>
+                        {xnodes.map((resource, index) => (
+                          <li key={index}>
+                            <div>
+                              <label>
+                                <input
+                                  type="radio"
+                                  name="selectedResource"
+                                  value={resource.resource_name} //i changed here
+                                  checked={
+                                    selection[currentLabelName]
+                                      ?.id === resource.id
+                                  }
+                                  onClick={() => handleResourceSelection(resource)}
+                                />
+                                {resource.resource_name}  <button id="view" onClick = {() => handleClick(resource.id)}>View</button>
+                              </label>
+                            
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                      <button onClick={() => setShowResources(false)}>Select</button>
+                    </div>
+                  )}
 
-{hostObligationMessage && (
-  <h3 style={{ textAlign: "center", marginTop: "20px" }}>
-    Host Obligation: {hostObligationMessage}
-  </h3>
-)}
-         
-    {isModalOpen && (
-      <Modal
-        message={modalMessage.message}
-        onClose={handleCloseModal}
-        type={modalMessage.type}
-      />
-    )}
+  {showResources2 && (
+              <div className="resource-container">
+                <h3>Select Resource for {currentLabelName}</h3>
+                {/* {error && <p className="error">{error}</p>} */}
 
-{/* {showPageInput && (
-  <div className="page-input-modal">
-  <div>
-    <h3>Enter Page Range for {currentLabelName}</h3>
-    {errorMessage && <p className="error">{errorMessage}</p>}
+                <ul>
+                  {xnodes.map((resource, index) => (
+                    <li key={index}>
+                      <div>
+                        <label>
+                          <input
+                            type="radio"
+                            name="selectedResource"
+                            value={resource.resource_name} //i changed here
+                            checked={
+                              selection2[currentLabelName]
+                                ?.id === resource.id
+                            }
+                            onClick={() => handleResourceSelection2(resource)}
+                          />
+                          {resource.resource_name}  <button id="view" onClick = {() => handleClick(resource.id)}>View</button>
+                        </label>
+                      
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={() => setShowResources2(false)}>Select</button>
+              </div>
+            )}
+            
+                  </div>
+                
+            </div>
+            <div>
+                </div>
+              <div>
+                {/* </div>
+                
+            </div>
+            <div>
+                </div>
+              <div>
+            {permissions?.canShareMoreData && (
+          <div className="table-container">
 
-    <label>
-      From Page:
-      <input
-        type="number"
-        value={fromPage}
-        onChange={(e) => setFromPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    <label>
-      To Page:
-      <input
-        type="number"
-        value={toPage}
-        onChange={(e) => setToPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    
-  </div>
-  <div className="button-group">
-    <button onClick={handlePageSubmit}>Submit</button>
-    <button onClick={() =>{
-    setShowPageInput(false);
-    setErrorMessage(null);
-    setFromPage('');
-    setToPage('');
-  }}>Cancel</button>
-  </div>
-  </div>
-)}
-
-{showPageInput2 && (
-  <div className="page-input-modal">
-  <div>
-    <h3>Enter Page Range for {currentLabelName}</h3>
-    {errorMessage && <p className="error">{errorMessage}</p>}
-
-    <label>
-      From Page:
-      <input
-        type="number"
-        value={fromPage}
-        onChange={(e) => setFromPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    <label>
-      To Page:
-      <input
-        type="number"
-        value={toPage}
-        onChange={(e) => setToPage(e.target.value)}
-        min="1"
-      />
-    </label>
-
-    
-  </div>
-  <div className="button-group">
-    <button onClick={handlePageSubmit2}>Submit</button>
-    <button onClick={() =>{
-    setShowPageInput2(false);
-    setErrorMessage(null);
-    setFromPage('');
-    setToPage('');
-  }}>Cancel</button>
-  </div>
-  </div>
-)} */}
-  </div>
-  </div>
-)}
-
-</div>
-        </div>
-      )}
+            <h3>Share more data</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Sno</th>
+                  <th>Name</th>
+                  <th>Purpose</th>
+                  <th>Type of Share</th>
+                  <th>Value</th>
+                  <th>Status</th> 
+                </tr>
+              </thead>
+              <tbody>
+                
+                {permissionsData.map((permission) => (
+                  <tr key={permission.sno}>
+                    <td>{permission.sno}</td>
+                    <td>{permission.labelName}</td>
+                    <td>{permission.purpose || "None"}</td>
+                    
+                    <td>{permission.action}</td>
+                    <td>
+                      {permission.dataElement || "None"}
+                      
+                    </td>
+                    <td>Status Active</td> 
+                  </tr>
+                ))}
+                {moreDataTerms.map((term, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>
+                      <input
+                        type="text"
+                        value={term.labelName}
+                        onChange={(e) =>
+                          updateTerm(index, "labelName", e.target.value)
+                        }
+                        placeholder="Label Name"
+                        required
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={term.purpose}
+                        onChange={(e) =>
+                          updateTerm(index, "purpose", e.target.value)
+                        }
+                        placeholder="Purpose"
+                        required
+                      />
+                    </td>
+                    <td>
+                      <select
+                        value={term.typeOfShare}
+                        onChange={(e) =>
+                          updateTerm(index, "typeOfShare", e.target.value)
+                        }
+                      >
+                        <option value="share">Share</option>
+                        <option value="transfer">Transfer</option>
+                        <option value="confer">Confer</option>
+                        <option value="collateral">Collateral</option>
+                      </select>
+                    </td>
+                    <td>
+                      
+                    
+                      <button onClick={() => handleButtonClick(term.labelName)}>
+                        {selectedResources[term.labelName]?.id ||
+                          "Upload File"}
+                      </button>
+                    </td>
+                    <td>Pending</td> 
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div style={{ margin: "20px 0" }}>
+              <div>
+                <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
+                  Add New Term
+                </button>
+                <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
+                  Remove Last Term 
+                </button>
+                <button onClick={handleMoreSubmit}>Submit</button>
+              </div>
+                
+            {allObligationsApproved() && (
+          <div>
+            <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+              Host Obligations
+            </h3>
+            <p>You will receive a receipt from the host</p>
           </div>
+        )}
+        
+        {hostObligationMessage && (
+          <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+            Host Obligation: {hostObligationMessage}
+          </h3>
+        )}
+                
+            {isModalOpen && (
+              <Modal
+                message={modalMessage.message}
+                onClose={handleCloseModal}
+                type={modalMessage.type}
+              />
+            )}
+  */}
+
+        
+        {/* {showPageInput && (
+          <div className="page-input-modal">
+          <div>
+            <h3>Enter Page Range for {currentLabelName}</h3>
+            {errorMessage && <p className="error">{errorMessage}</p>}
+        
+            <label>
+              From Page:
+              <input
+                type="number"
+                value={fromPage}
+                onChange={(e) => setFromPage(e.target.value)}
+                min="1"
+              />
+            </label>
+            <br></br>
+        
+            <label>
+              To Page:
+              <input
+                type="number"
+                value={toPage}
+                onChange={(e) => setToPage(e.target.value)}
+                min="1"
+              />
+            </label>
+        
+            
+
+          </div>v
+          <div className="button-group">
+            <button onClick={handlePageSubmit}>Submit</button>
+            <button onClick={() =>{
+            setShowPageInput(false);
+            setErrorMessage(null);
+            setFromPage('');
+            setToPage('');
+          }}>Cancel</button>
+          </div>
+        <div> */}
+        {showPageInput && (
+    <div className="page-input-modal">
+    <div>
+      <h3>Enter Page Range for {currentLabelName}</h3>
+      {errorMessage && <p className="error">{errorMessage}</p>}
+
+      <label>
+        From Page:
+        <input
+          type="number"
+          value={fromPage}
+          onChange={(e) => setFromPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      <label>
+        To Page:
+        <input
+          type="number"
+          value={toPage}
+          onChange={(e) => setToPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      
+    </div>
+    <div className="button-group">
+      <button onClick={handlePageSubmit}>Submit</button>
+      <button onClick={() =>{
+      setShowPageInput(false);
+      setErrorMessage(null);
+      setFromPage('');
+      setToPage('');
+    }}>Cancel</button>
     </div>
     </div>
+  )}
+
+  {showPageInput2 && (
+    <div className="page-input-modal">
+    <div>
+      <h3>Enter Page Range for {currentLabelName}</h3>
+      {errorMessage && <p className="error">{errorMessage}</p>}
+
+      <label>
+        From Page:
+        <input
+          type="number"
+          value={fromPage}
+          onChange={(e) => setFromPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      <label>
+        To Page:
+        <input
+          type="number"
+          value={toPage}
+          onChange={(e) => setToPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      
+    </div>
+    <div className="button-group">
+      <button onClick={handlePageSubmit2}>Submit</button>
+      <button onClick={() =>{
+      setShowPageInput2(false);
+      setErrorMessage(null);
+      setFromPage('');
+      setToPage('');
+    }}>Cancel</button>
+    </div>
+    </div>
+  )}
+      {permissions?.canShareMoreData && (
+    <div className="table-container">
+      {/* Add this div for styling */}
+      <h3>Share more data</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Sno</th>
+            <th>Name</th>
+            <th>Purpose</th>
+            <th>Type of Share</th>
+            <th>Value</th>
+            <th>Status</th> {/* Changed "Remove" to "Status" */}
+          </tr>
+        </thead>
+        <tbody>
+          
+          {permissionsData.map((permission) => (
+            <tr key={permission.sno}>
+              <td>{permission.sno}</td>
+              <td>{permission.labelName}</td>
+              <td>{permission.purpose || "None"}</td>
+              {/* Display "None" if empty */}
+              <td>{permission.share}</td>
+              <td>
+                <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button>
+                {/* Display "None" if empty */}
+              </td>
+              <td>{statuses2[permission.labelName]}</td> {/* Example status value */}
+            </tr>
+          ))}
+          {moreDataTerms.map((term, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>
+                <input
+                  type="text"
+                  value={term.labelName}
+                  onChange={(e) =>
+                    updateTerm(index, "labelName", e.target.value)
+                  }
+                  placeholder="Label Name"
+                  required
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  value={term.purpose}
+                  onChange={(e) =>
+                    updateTerm(index, "purpose", e.target.value)
+                  }
+                  placeholder="Purpose"
+                  required
+                />
+              </td>
+              <td>
+                <select
+                  value={term.typeOfSharing}
+                  onChange={(e) =>
+                    updateTerm(index, "typeOfSharing", e.target.value)
+                  }
+                >
+                  <option value="share">Share</option>
+                  <option value="transfer">Transfer</option>
+                  <option value="confer">Confer</option>
+                  <option value="collateral">Collateral</option>
+                </select>
+              </td>
+              <td>
+                {/* <input
+                {/* <input
+                  type="file"
+                  onChange={(e) =>
+                    updateTerm(index, "enter_value", e.target.files[0])
+                  }
+                
+                  required
+                /> */}
+                <button onClick={() => handleButtonClick2(term.labelName)}>
+                {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] ||
+                "Upload File"}
+                </button>
+              </td>
+              <td>Pending</td> {/* Example status value */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ margin: "20px 0" }}>
+        <div>
+          <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
+            Add New Term
+          </button>
+          <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
+            Remove Last Term {/* This removes the last term added */}
+          </button>
+          <button onClick={handleMoreSubmit}>Submit</button>
+        </div>
+          
+      {allObligationsApproved() && (
+    <div>
+      <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+        Host Obligations
+      </h3>
+      <p>You will receive a receipt from the host</p>
+    </div>
+  )}
+
+  {hostObligationMessage && (
+    <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+      Host Obligation: {hostObligationMessage}
+    </h3>
+  )}
+          
+      {isModalOpen && (
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModal}
+          type={modalMessage.type}
+        />
+      )}
+
+  {/* {showPageInput && (
+    <div className="page-input-modal">
+    <div>
+      <h3>Enter Page Range for {currentLabelName}</h3>
+      {errorMessage && <p className="error">{errorMessage}</p>}
+
+      <label>
+        From Page:
+        <input
+          type="number"
+          value={fromPage}
+          onChange={(e) => setFromPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      <label>
+        To Page:
+        <input
+          type="number"
+          value={toPage}
+          onChange={(e) => setToPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      
+    </div>
+    <div className="button-group">
+      <button onClick={handlePageSubmit}>Submit</button>
+      <button onClick={() =>{
+      setShowPageInput(false);
+      setErrorMessage(null);
+      setFromPage('');
+      setToPage('');
+    }}>Cancel</button>
+    </div>
+    </div>
+  )}
+
+  {showPageInput2 && (
+    <div className="page-input-modal">
+    <div>
+      <h3>Enter Page Range for {currentLabelName}</h3>
+      {errorMessage && <p className="error">{errorMessage}</p>}
+
+      <label>
+        From Page:
+        <input
+          type="number"
+          value={fromPage}
+          onChange={(e) => setFromPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      <label>
+        To Page:
+        <input
+          type="number"
+          value={toPage}
+          onChange={(e) => setToPage(e.target.value)}
+          min="1"
+        />
+      </label>
+
+      
+    </div>
+    <div className="button-group">
+      <button onClick={handlePageSubmit2}>Submit</button>
+      <button onClick={() =>{
+      setShowPageInput2(false);
+      setErrorMessage(null);
+      setFromPage('');
+      setToPage('');
+    }}>Cancel</button>
+    </div>
+    </div>
+  )} */}
+    </div>
+    </div>
+  )}
+
+  </div>
+          </div>
+        )}
+            </div>
+      </div>
+        </div>
+      </div>
     </div>
     
   );

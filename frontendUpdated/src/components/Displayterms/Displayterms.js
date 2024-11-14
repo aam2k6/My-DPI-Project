@@ -153,6 +153,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
+import { Grid } from "@mui/material"
 
 export const Displayterms = () => {
 
@@ -248,7 +249,7 @@ export const Displayterms = () => {
   }, [curruser, connectionTypeName, hostUserUsername, hostLockerName, locker.name, navigate]);
 
   const renderTermsSection = (terms, title) => (
-    <div className="terms-section">
+    <div className="termsSection">
       <h3>{title}</h3>
       {terms && terms.length > 0 ? (
         <ul>
@@ -336,7 +337,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
   const content = (
     <>
       <div className="navbarBrand">{curruser ? capitalizeFirstLetter(curruser.username): "None"}</div>
-      <div className="description">
+      <div className="descriptions">
         {curruser ? curruser.description : "None"}
       </div>
     </>
@@ -346,7 +347,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
   return (
     <div>
       <Navbar content={content} />
-      <div className="connection-details1">
+      <div className="connection-details1" style={{marginTop:"120px"}}>
         <div className="connectionName1">Connection Type Name: {connectionTypeName}</div>
         <div className="connectionName2">
           {globalTemplateNames.length > 0 && "Connection has been imported from "}
@@ -365,7 +366,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
           </span>
         </div>       
        <div className="dates">
-        <div style={{fontSize:"18px"}}>
+        <div style={{fontSize:"18px", width:"65%"}}>
           {connectionDescription}
         </div>
         <br></br>Created on: {new Date(createdtime).toLocaleString()}
@@ -374,8 +375,9 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
       </div>
 
 
-      <div className="view-container">
-      <div className="b">
+      <div className="show-connection">
+      <Grid container className="view-container">
+      <Grid item xs={12}  className="b">
         <div className="tabs">
           <div
             className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
@@ -418,8 +420,9 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
             )}
           </div>
         </div>
+      </Grid>
+      </Grid>
       </div>
-    </div>
 
      
     </div>

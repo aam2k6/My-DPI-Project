@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import { frontend_host } from '../../config';
 import { FaArrowDown, FaArrowRight } from 'react-icons/fa';
+import {Grid} from '@mui/material'
 
 
 export default function CreateGlobalConnectionType() {
@@ -91,8 +92,10 @@ export default function CreateGlobalConnectionType() {
   return (
     <div className="manage-connection-page">
       <Navbar />
-      {isSystemAdmin && <Sidebar />} {/* Show Sidebar only for System Admin */}
-      <div className="manage-connection-content">
+      <div style={{marginTop:"120px"}}>
+      {/* {isSystemAdmin && <Sidebar />} */}
+      <Grid container className="" paddingLeft={{md:"30%", xs:"10%"}}>
+        <Grid md={12}>
         <h1>GLOBAL CONNECTIONS</h1>
         {error && <p className="error">{error}</p>}
 
@@ -177,6 +180,9 @@ export default function CreateGlobalConnectionType() {
             </button>
           </div>
         )}
+ 
+        </Grid>
+      </Grid>
       </div>
     </div>
   );

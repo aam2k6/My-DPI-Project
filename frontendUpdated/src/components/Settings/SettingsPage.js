@@ -128,6 +128,7 @@ import './SettingsPage.css';
 import Navbar from '../Navbar/Navbar';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Using FontAwesome icons
 import { frontend_host } from '../../config';
+import { Button, Grid } from '@mui/material'
 
 export default function SettingsPage() {
     const { curruser, setUser } = useContext(usercontext);
@@ -196,7 +197,7 @@ export default function SettingsPage() {
     return (
         <>
             <Navbar />
-            <div className="settings-page">
+            <div className="settings-page" style={{marginTop:"120px"}}>
                 <h1>User Profile</h1>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <div className="profile-info">
@@ -241,16 +242,22 @@ export default function SettingsPage() {
                         </div>
                     </div>
                 )}
-                <div className="profile-actions">
-                    <button onClick={handleEditToggle}>
-                        {isEditing ? 'Cancel' : 'Edit Profile'}
-                    </button>
-                    {isEditing && (
-                        <button onClick={handleSave}>
-                            Save Changes
-                        </button>
-                    )}
-                </div>
+                <Grid container className="" spacing={2}>
+                    <Grid item md={3} xs={12}>
+                        <Button fullWidth variant="contained" onClick={handleEditToggle}>
+                            {isEditing ? 'Cancel' : 'Edit Profile'}
+                        </Button>
+                    </Grid>
+                    <Grid md={3}></Grid>
+                    <Grid md={3}></Grid>
+                    <Grid item md={3} xs={12}>
+                        {isEditing && (
+                            <Button fullWidth variant="contained" onClick={handleSave}>
+                                Save Changes
+                            </Button>
+                        )}
+                    </Grid>
+                </Grid>
             </div>
         </>
     );

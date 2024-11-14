@@ -10,7 +10,7 @@
     align-items: center;
 }
 
-.modal {
+.modals {
     background: rgb(255, 255, 255);
     padding: 20px;
     border-radius: 5px;
@@ -18,13 +18,13 @@
     text-align: center;
 }
 
-.modal p {
+.modals p {
     margin-bottom: 20px;
     font-size: large;
     font-weight: bold;
 }
 
-.modal button {
+.modals button {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -36,7 +36,7 @@
     margin: 2px;
 }
 
-.modal button:hover {
+.modals button:hover {
     background-color: #0056b3;
 }
 

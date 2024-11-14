@@ -278,3 +278,28 @@
       margin-top: 1rem;
     }
   }
+
+  
+  .view-container{
+    margin-left: 0 !important;
+  }
+  .terms-sections{
+    margin-top: -2rem;
+    padding: 20px;
+    margin-left: 20px; 
+    width: 100%;
+    /*font-weight: bold;*/
+    font-size: large;
+  }
+  
+  .show-connection{
+    padding-left: 45px;
+    padding-right: 45px;
+  }
+
+  @media (max-width: 768px) {
+    .show-connection{
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }

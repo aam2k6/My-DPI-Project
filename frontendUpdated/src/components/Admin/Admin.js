@@ -7,6 +7,7 @@ import "./Admin.css";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal"; // Import the Modal component
 import { frontend_host } from "../../config";
+import { Grid } from '@mui/material'
 
 export const Admin = () => {
   const location = useLocation();
@@ -254,7 +255,7 @@ export const Admin = () => {
   };
 
   const content = (
-    <div className="navbarBrand">
+    <div className="navbarBrands">
       {/* ADD THIS */}
       <p>Locker Admin: {locker.name}</p>
     </div>
@@ -434,11 +435,11 @@ export const Admin = () => {
   return (
     <div>
       <Navbar content={content} />
-      <button onClick={gotopage12createconnection} className="admin-btn">
+      <button onClick={gotopage12createconnection} className="admin-btn" style={{marginTop:"120px"}}>
         Create New Connection Type
       </button>
-
-      <div className="page8parent">
+      <Grid container padding={"30px"}>
+      <Grid item md={9} xs={12} className="page8parent">
         <div className="descriptionadmin">Existing Connections Type</div>
         {filteredConnections.length > 0 ? (
           filteredConnections.map((connection) => (
@@ -615,9 +616,12 @@ export const Admin = () => {
         ) : (
           <p>No connections found.</p>
         )}
-      </div>
+      </Grid>
+      </Grid>
+     
 
-      <div className="page8parent">
+      <Grid container padding={"30px"}>
+      <Grid item className="page8parent" md={9} xs={12}>
         <div className="descriptionadmin">Locker</div>
         {filteredLockers.length > 0 ? (
           filteredLockers.map((locker) => (
@@ -635,7 +639,7 @@ export const Admin = () => {
         ) : (
           <p>No lockers found.</p>
         )}
-      </div>
+      </Grid>
       {/* Edit Locker Modal */}
       {showEditModal && (
         <div className="edit-modal">
@@ -680,6 +684,7 @@ export const Admin = () => {
           onClose={handleCloseModal} // Close the message modal
         />
       )}
+      </Grid>
     </div>
   );
 };

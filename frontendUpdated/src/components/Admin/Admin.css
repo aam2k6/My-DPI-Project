@@ -67,7 +67,7 @@
 .page8parent {
   padding: 1rem;
   border: 2px solid rgb(107, 120, 231);
-  margin: 2rem;
+  /* margin: 2rem; */
   width: 100%; /* Adjusted to use full width of the parent container */
   max-width: 80rem; /* Ensures a reasonable max width */
   max-height: 17rem;

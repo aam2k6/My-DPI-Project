@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import "./Navbar.css";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -8,9 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { frontend_host } from "../../config";
 import { MdOutlineQrCodeScanner } from "react-icons/md";
-import { QrReader } from 'react-qr-reader'; // Corrected import statement
-
-
+import { QrReader } from 'react-qr-reader';
+import { Grid } from '@mui/material'
 
 export default function Navbar({ content, lockerAdmin, lockerObj }) {
   const capitalizeFirstLetter = (string) => {
@@ -28,9 +27,17 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   const [scanning, setScanning] = useState(false); // State to manage QR scanner visibility
   const [isQRModalOpen, setIsQRModalOpen] = useState(false); // State for QR modal
   const [qrData, setQrData] = useState(null); // State for QR data
-  
- 
+  const notificationsRef = useRef(null);
+  const profileDropdownRef = useRef(null);
+  const directoryRef = useRef(null);
+  // const { curruser } = useContext(usercontext);
+  const isSystemAdmin = curruser && (curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin');
 
+  // const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
+  const [isGlobalConnectionOpen, setIsGlobalConnectionOpen] = useState(false);
+
+  // const toggleDirectoryDropdown = () => setIsDirectoryOpen(!isDirectoryOpen);
+  const toggleGlobalConnectionDropdown = () => setIsGlobalConnectionOpen(!isGlobalConnectionOpen);
 
   const handleDPIDirectory = () => {
     navigate("/dpi-directory");
@@ -42,6 +49,15 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
 
   const handleHomeClick = () => {
     navigate("/home");
+  
+    // Check if Bootstrap's Offcanvas is defined in the global scope
+    const offcanvas = document.querySelector('.offcanvas');
+    if (window.bootstrap) {
+      const bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvas);
+      if (bsOffcanvas) {
+        bsOffcanvas.hide();
+      }
+    }
   };
 
   const handleLogout = () => {
@@ -68,6 +84,58 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setIsNotificationsOpen(false);
+      }
+    };
+  
+    if (isNotificationsOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+  
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isNotificationsOpen]);
+  
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleClickOutsideDirectory = (event) => {
+      if (directoryRef.current && !directoryRef.current.contains(event.target)) {
+        setIsDirectoryOpen(false);
+      }
+    };
+
+    if (isDirectoryOpen) {
+      document.addEventListener("mousedown", handleClickOutsideDirectory);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutsideDirectory);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideDirectory);
+    };
+  }, [isDirectoryOpen]);
+  
+  
 
   const fetchNotifications = async () => {
     try {
@@ -114,7 +182,11 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   };
 
   const handleAdminSettings = () => {
-    navigate("/create-global-connection-type");
+    if (isSystemAdmin) {
+      toggleGlobalConnectionDropdown();
+    } else {
+      handleGlobalConnectionDirectory();
+    }
   };
 
   const handleModeratorSettings = () => {
@@ -128,6 +200,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
       await markAllNotificationsAsRead();
     }
   };
+  
 
   const markAllNotificationsAsRead = async () => {
     try {
@@ -185,7 +258,14 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
     }
   };
 
- 
+  // const handleGlobalConnectionClick = () => {
+  //   if (isSystemAdmin) {
+  //     handleGlobalConnectionDirectory();
+  //   } else {
+  //     handleGlobalConnectionDirectory();
+  //   }
+  // };
+
   const handleQRScanner = (event) => {
     event.stopPropagation(); // Prevent event from bubbling up
     setIsQRModalOpen(true); // Open the QR modal
@@ -255,157 +335,254 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   };
   
 
+// Inside your component
+const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsSmallScreen(window.innerWidth < 768); // Adjust based on your breakpoint
+  };
+
+  // Add event listener
+  window.addEventListener('resize', handleResize);
+
+  // Initial check on mount
+  handleResize();
+
+  // Clean up event listener on unmount
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+const handleManageAdmin = () => {
+  navigate("/manage-admins");
+};
+
+const handleManageModerators = () => {
+  navigate("/manage-moderators");
+};
+
+const handleFreezeLockerConnection = () => {
+  navigate("/freeze-locker-connection");
+};
+
   return (
-    <nav className="navbar">
-      <div className="wrap">{content}</div>
+    <>
+      <nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top" style={{marginTop:0}}>
+        <div className="container-fluid">
+          {/* <a className="navbar-brand" href="#">Offcanvas navbar</a> */}
+          <Grid container>
+            <Grid item xs={10} md={6}>
+              <div className="wrap">{content}</div>
+            </Grid>
+            <Grid item xs={2} md={6}>
+              <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasNavbar"
+              aria-controls="offcanvasNavbar"
+              aria-label="Toggle navigation"
+            >
+              <span className="navbar-toggler-icon"></span>
+              </button>
+              <div
+                className="offcanvas offcanvas-end"
+                tabindex="-1"
+                id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel"
+              >
+                <div className="offcanvas-header">
+                  <h5 className="offcanvas-title" id="offcanvasNavbarLabel">{content}</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="offcanvas-body">
+                  <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    {lockerAdmin && (
+                      <li className="nav-item">
+                        <a
+                          className="nav-link active"
+                          aria-current="page"
+                          onClick={handleConnection}
+                        >
+                          Locker Admin
+                        </a>
+                      </li>
+                    )}
+                    <li className="nav-item dropdown" ref={directoryRef}>
+                      <a
+                        className="nav-link dropdown-toggle"
+                        role="button"
+                        onClick={toggleDirectoryDropdown} // Use toggle function here
+                        aria-expanded={isDirectoryOpen}
+                      >
+                        Directory
+                      </a>
+                      {isDirectoryOpen && ( // Conditionally render the dropdown items
+                        <ul className="dropdown-menu show"> {/* Add 'show' class for Bootstrap visibility */}
+                          <div className="">
+                            <li>
+                              <a className="dropdown-item" onClick={handleDPIDirectory}>
+                                DPI Directory
+                              </a>
+                            </li>
+                            <li>
+                              <a className="dropdown-item" onClick={handleGlobalConnectionDirectory}>
+                                Global Connection Directory
+                              </a>
+                            </li>
+                          </div>
+                        </ul>
+                      )}
+                    </li>
 
-      <div className="navbarLinks">
-        {lockerAdmin && (
-          <ul>
-            <li className="navLinks">
-              <a href="#" onClick={handleConnection}>
-                Locker Admin
-              </a>
-            </li>
-          </ul>
-        )}
+                    <li className="nav-item" style={{cursor:"pointer"}}>
+                      <a className="nav-link" onClick={handleHomeClick}>
+                        Home
+                      </a>
+                    </li>
+                    <li className="nav-item dropdown"  ref={notificationsRef}>
+                      <a className="nav-link dropdown-toggle" role="button" onClick={toggleNotifications}>
+                        <div className="notification-icon">
+                          <FontAwesomeIcon
+                            icon={faBell}
+                            className="notification-bell"
+                            size="2x"
+                          />
+                          {notifications.some((n) => !n.read) && (
+                            <span className="notification-badge">
+                              {notifications.filter((n) => !n.read).length}
+                            </span>
+                          )}
+                        </div>
+                      </a>
 
-        
-{/* Directory dropdown */}
-<ul className="navLinks">
-  <li className="navLinks">
-    <a href="#" onClick={(e) => { e.preventDefault(); toggleDirectoryDropdown(); }} className="dropdownTrigger">
-      Directory
-    </a>
-    {isDirectoryOpen && (
-      <div className="dropdownContent">
-        <button onClick={handleDPIDirectory}>DPI Directory</button>
-        <button onClick={handleGlobalConnectionDirectory}>Global Connection Directory</button>
-      </div>
-    )}
-  </li>
-</ul>
+                      {isNotificationsOpen && (
+                        <ul className="dropdownmenu"> {/* Add 'show' to make dropdown visible */}
+                        <div className="">
+                            <div className="notification-dropdown dropdownContent" min-width={{xs:"", md:"450px"}}>
+                              <h4>Notifications</h4>
+                              {notifications.length > 0 ? (
+                                notifications.map((notification) => (
+                                  <li className="dropdown-item" key={notification.id}>
+                                    <div
+                                        key={notification.id}
+                                        className={`notification-box ${
+                                          notification.read ? "read" : "unread"
+                                        }`}
+                                        onClick={() => markNotificationAsRead(notification.id)}
+                                      >
+                                    <p>
+                                      <b>{notification.guest_user}</b> has requested for Lockers{" "}
+                                      <b>{notification.host_locker_name}</b> from the
+                                      connection <b>{notification.connection_type_name}</b>
+                                    </p>
+                                    <p>{new Date(notification.created_at).toLocaleString()}</p>
+                                    </div>
+                                  </li>
+                                ))
+                              ) : (
+                                <p>No notifications found.</p>
+                              )}
+                            </div>
+                        </div>
+                        </ul>
+                      )}
+                    </li>
+                    <li className="nav-item" style={{cursor:"pointer"}}>
+                    <div className="nav-link qr-scanner-icons" onClick={handleQRScanner}>
+                      <MdOutlineQrCodeScanner size={24} />
+                    </div>
+                    </li>
+                    {isQRModalOpen && (
+                      <div className="qr-scanner-overlays">
+                        <div className="qr-scanner-boxs">
+                          <QrReader
+                            onResult={(result, error) => {
+                              if (result) {
+                                handleScan(result?.text);  // Directly call handleScan with the scanned text
+                              }
+                              if (error) {
+                                handleError(error);  // Call handleError for any errors
+                              }
+                            }}
+                            constraints={{ facingMode: "environment" }}  // Use the back camera
+                            style={{ width: "100%", height: "100%" }}
+                          />
+                          <button className="qr-scanner-closes" onClick={handleQRModalClose}>Close</button>
+                        </div>
+                      </div>
+                    )}
+                    <li className="nav-item dropdown" ref={profileDropdownRef}>
+                      <a
+                        className="nav-link dropdown-toggle"
+                        role="button"
+                        onClick={toggleDropdown}
+                      >
+                        <div className="profileContainer">
+                          <div className="center-large-screen"                           >
+                            <img
+                              src={userImage}
+                              alt="User Icon"
+                              className="dropdownImage"
+                            />
+                          </div>
+                          <div className="username">{capitalizeFirstLetter(curruser.username)}</div>
+                        </div>
+                      </a>
+                        {isOpen && (
+                        <ul className="dropdownmenu">
+                          <div className="dropdownContent">
+                            <li className="dropdown-items" style={{listStyle:"none"}}>
+                              <div className="currusername">
+                                {capitalizeFirstLetter(curruser.username)}
+                              </div>
+                              <div className="curruserdesc">{curruser.description}</div>
+                            </li>
 
+                            <li className="dropdown-item dropdown">
+                              {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
+                                <button onClick={handleAdminSettings}>System Admin Settings</button>
+                              )}
+                            </li>
+                            {isSystemAdmin && isGlobalConnectionOpen && (
+                              <ul className="dropdown-menu show">
+                                <li><a onClick={handleManageAdmin} className="dropdown-item">Manage Admin</a></li>
+                                <li><a onClick={handleManageModerators} className="dropdown-item">Mangae Moderators</a></li>
+                                <li><a  onClick={handleFreezeLockerConnection} className="dropdown-item">Freeze Connection/Locker</a></li>
+                              </ul>
+                            )}
 
+                            <li className="dropdown-item">
+                              {curruser.user_type === "moderator" && (
+                                <button onClick={handleModeratorSettings}>Moderator Settings</button>
+                              )}
+                            </li>
 
-        <ul>
-          <li className="navLinks">
-            <a href="#" onClick={handleHomeClick}>
-              Home
-            </a>
-          </li>
-        </ul>
+                            <li className="dropdown-item">
+                              <button onClick={handleSettings}>Settings</button>
+                            </li>
+                            
+                            <li className="dropdown-item">
+                              <button onClick={handleLogout}>Logout</button>
+                            </li>
+                          </div>
+                        </ul>
+                      )}
 
-        {/* Notification Bell */}
-        <div className="notification-icon" onClick={toggleNotifications}>
-          <FontAwesomeIcon icon={faBell} className="notification-bell" size="2x" />
-          {notifications.some((n) => !n.read) && (
-            <span className="notification-badge">
-              {notifications.filter((n) => !n.read).length}
-            </span>
-          )}
+                    </li>
+
+                  </ul>
+                </div>
+              </div>
+            </Grid>
+          </Grid>
         </div>
-        
-        {isNotificationsOpen && (
-          <div className="notification-dropdown">
-            <h3>Notifications</h3>
-            {notifications.length > 0 ? (
-              notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`notification-box ${notification.read ? "read" : "unread"}`}
-                  onClick={() => markNotificationAsRead(notification.id)}
-                >
-                  <p>
-                    <b>{notification.guest_user} </b> has requested for
-                    Locker <b>{notification.host_locker_name} </b> from the
-                    connection <b>{notification.connection_type_name}</b>
-                  </p>
-                  <p>
-                    {new Date(notification.created_at).toLocaleString()}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No notifications found.</p>
-            )}
-          </div>
-        )}
-
-         {/* QR Scanner Button */}
-      <ul className="navbarFirstLink">
-        <li>
-          <div className="qr-scanner-icon" onClick={handleQRScanner}>
-            <MdOutlineQrCodeScanner size={24} />
-          </div>
-        </li>
-      </ul>
-
-      {/* QR Code Scanner Modal */}
-      {isQRModalOpen && (
-  <div className="qr-scanner-overlay">
-    <div className="qr-scanner-box">
-      <QrReader
-        onResult={(result, error) => {
-          if (result) {
-            handleScan(result?.text);  // Directly call handleScan with the scanned text
-          }
-          if (error) {
-            handleError(error);  // Call handleError for any errors
-          }
-        }}
-        constraints={{ facingMode: "environment" }}  // Use the back camera
-        style={{ width: "100%", height: "100%" }}
-      />
-      <button className="qr-scanner-close" onClick={handleQRModalClose}>Close</button>
-    </div>
-  </div>
-
-        )}
-        <ul className="navbarThirdLink">
-          <li>
-            <div className="profileContainer">
-              <img
-                src={userImage}
-                alt="User Icon"
-                onClick={toggleDropdown}
-                className="dropdownImage"
-                style={{ display: "block", margin: "0 auto" }}
-              />
-              <div className="username" onClick={toggleDropdown}>
-                {capitalizeFirstLetter(curruser.username)}
-              </div>
-            </div>
-
-            {isOpen && (
-              <div className="dropdownContent">
-                <div className="currusername">
-                  {capitalizeFirstLetter(curruser.username)}
-                </div>
-                <div className="curruserdesc">{curruser.description}</div>
-
-                {(curruser.user_type === "sys_admin" ||
-                  curruser.user_type === "system_admin") && (
-                  <button onClick={handleAdminSettings}>
-                    System Admin Settings
-                  </button>
-                )}
-
-                {curruser.user_type === "moderator" && (
-                  <button onClick={handleModeratorSettings}>
-                    Moderator Settings
-                  </button>
-                )}
-
-                <button onClick={handleSettings}>Settings</button>
-                <button onClick={handleLogout}>Logout</button>
-              </div>
-            )}
-          </li>
-        </ul>
-      </div>
-       
-    
-    </nav>
+      </nav>
+    </>
   );
 }

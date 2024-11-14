@@ -1122,6 +1122,7 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import Modal from '../Modal/Modal.jsx';
 import QRCode from "react-qr-code";
+import { Grid, Box } from '@mui/material'
 
 export const TargetLockerView = () => {
   const navigate = useNavigate();
@@ -1513,124 +1514,131 @@ export const TargetLockerView = () => {
         <div className="navbarBrand">{locker?.name}</div>
         <div className="description7">Owner:<u>{parentUser?.username}</u></div>
       </>} />
-      
-      <div className="page7description">
-        <div className="descriptionpage7">{locker?.description}</div>
-        <button onClick={handleClick} className="new-connection-btn-1">Create New Connection</button>
-      </div>
-      
-      <div className="page7container">
-        <div className="notvisible">
-          <div className="page7publicresources">
-            <p>Resources</p>
-            {/* {resources.length > 0 ? (
-              resources.map((resource) => (
-                <div className="page7resource" key={resource.resource_id}>
-                  <div id="documentspage7" onClick={() => handleResourceClick(resource.i_node_pointer)}>
-                    {resource.document_name}
+      <div style={{marginTop:"120px"}}>
+        <Grid container className="page7description" justifyContent="center" alignItems="center">
+          <Grid item md={10} sm={12} >
+            <div className="descriptions">{locker?.description}</div>
+          </Grid>
+          <Grid item  md={1.5} sm={12}>
+            {/* <Box display="flex" justifyContent="center" textAlign="center"> */}
+            <button onClick={handleClick} className="new-connection-btns-1">Create New Connection</button>
+            {/* </Box> */}
+          </Grid>
+        </Grid>
+        
+        <Grid container className="page7containers" padding={{md:"4rem"}}>
+          <Grid container md={5} className="notvisible">
+            <Grid item md={12} className="page7publicresource">
+              <p>Resources</p>
+              {/* {resources.length > 0 ? (
+                resources.map((resource) => (
+                  <div className="page7resource" key={resource.resource_id}>
+                    <div id="documentspage7" onClick={() => handleResourceClick(resource.i_node_pointer)}>
+                      {resource.document_name}
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p id="page7nores">No resources found.</p>
-            )} */}
-            {xnodes.length > 0 ? (
-                  <ul>
-                    {xnodes.map((xnode, index) => (
-                      <div
-                        key={xnode.id}
-                        className="resource-item"
-                        // style={{
-                        //   color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red',}}
-                      >
-                        <div className="resource-details">
-                          <div
-                            id={
-                              xnode.xnode_Type === "INODE"
-                                ? "documents"
-                                : "documents-byShare"
-                            }
-                            onClick={() =>
-                              handleXnodeClick(xnode.id)
-                            }
-                          >
-                            {xnode.resource_name}
+                ))
+              ) : (
+                <p id="page7nores">No resources found.</p>
+              )} */}
+              {xnodes.length > 0 ? (
+                    <ul>
+                      {xnodes.map((xnode, index) => (
+                        <div
+                          key={xnode.id}
+                          className="resource-item"
+                          // style={{
+                          //   color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red',}}
+                        >
+                          <div className="resource-details">
+                            <div
+                              id={
+                                xnode.xnode_Type === "INODE"
+                                  ? "documents"
+                                  : "documents-byShare"
+                              }
+                              onClick={() =>
+                                handleXnodeClick(xnode.id)
+                              }
+                            >
+                              {xnode.resource_name}
+                            </div>
+                            {/* <div className="public-private">
+                              {xnode.type === "private" ? <>Private</> : "Public"}
+                            </div> */}
                           </div>
-                          {/* <div className="public-private">
-                            {xnode.type === "private" ? <>Private</> : "Public"}
-                          </div> */}
                         </div>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="not-found">No Resources found.</p>
+                  )}
+            </Grid>
+
+            <Grid item md={12} className="page7publicresource" marginTop={"3rem"}>
+              <p>Available Connection Types</p>
+              {otherConnections.length > 0 ? (
+                otherConnections.map((connection) => (
+                  <div className="page7connection" key={connection.connection_type_id}>
+                    <div id="connectionpage7">
+                      <div onClick={() => handleConnectionClick(connection)}>
+                        <h4 className="clickable-tag"><u>{connection.connection_type_name}</u></h4>
                       </div>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="not-found">No Resources found.</p>
-                )}
-          </div>
-
-          <div className="page7publicresources">
-            <p>Available Connection Types</p>
-            {otherConnections.length > 0 ? (
-              otherConnections.map((connection) => (
-                <div className="page7connection" key={connection.connection_type_id}>
-                  <div id="connectionpage7">
-                    <div onClick={() => handleConnectionClick(connection)}>
-                      <h4 className="clickable-tag"><u>{connection.connection_type_name}</u></h4>
-                    </div>
-                    <div id="availconntype">
-                      Description: {connection.connection_description}
-                    </div>
-                    <div id="availconntype">
-                      Created On: {new Date(connection.created_time).toLocaleDateString()}
-                    </div>
-                    <div id="availconntype">
-                      Valid Until: {new Date(connection.validity_time).toLocaleDateString()}
-                    </div>
-                    {/* "Scan QR" link to show QR code */}
-                    <div id="availconntype">
-                      <button onClick={() => handleShowQrCode(connection)}>Scan QR</button>
-                      
+                      <div id="availconntype">
+                        Description: {connection.connection_description}
+                      </div>
+                      <div id="availconntype">
+                        Created On: {new Date(connection.created_time).toLocaleDateString()}
+                      </div>
+                      <div id="availconntype">
+                        Valid Until: {new Date(connection.validity_time).toLocaleDateString()}
+                      </div>
+                      {/* "Scan QR" link to show QR code */}
+                      <div id="availconntype">
+                        <button onClick={() => handleShowQrCode(connection)}>Scan QR</button>
+                        
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
+              ) : (
+                <p id="noconnfound">No available connection type found.</p>
+              )}
+            </Grid>
+          </Grid>
+          <Grid item md={1} sm={12}></Grid>
+          <Grid item md={6} xs={12} className="page7containersB" marginTop={{xs:"3rem", md:"0"}}>
+            <p>My connections with {locker?.name} locker of {parentUser?.username}: </p>
+            {outgoingConnections.length > 0 ? (
+              outgoingConnections.map((connection, index) => {
+                const tracker = trackerData[connection.connection_id];
+                const color = tracker ? getStatusColor(tracker) : "gray";
+                const ratio = tracker ? calculateRatio(tracker) : "Loading...";
+                
+                return (
+                  <div className="page7myconnections" key={index}>
+                    <div id="conntent">
+                      <h4 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
+                        {connection.connection_name}
+                      </h4>
+                      <div>{connection.host_user.username} &lt;&gt; {connection.guest_user.username}</div>
+                      <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
+                      <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
+                    </div>
+                    <div className="tracker">
+                      <button className="info-button1" onClick={() => handleInfo(connection)}> i </button>
+                      <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color }}>
+                        {ratio}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
             ) : (
-              <p id="noconnfound">No available connection type found.</p>
+              <p id="noconnfound">No outgoing connections found.</p>
             )}
-          </div>
-        </div>
-
-        <div className="page7containerB">
-          <p>My connections with {locker?.name} locker of {parentUser?.username}: </p>
-          {outgoingConnections.length > 0 ? (
-            outgoingConnections.map((connection, index) => {
-              const tracker = trackerData[connection.connection_id];
-              const color = tracker ? getStatusColor(tracker) : "gray";
-              const ratio = tracker ? calculateRatio(tracker) : "Loading...";
-              
-              return (
-                <div className="page7myconnections" key={index}>
-                  <div id="conntent">
-                    <h4 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
-                      {connection.connection_name}
-                    </h4>
-                    <div>{connection.host_user.username} &lt;&gt; {connection.guest_user.username}</div>
-                    <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
-                    <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
-                  </div>
-                  <div className="tracker">
-                    <button className="info-button1" onClick={() => handleInfo(connection)}> i </button>
-                    <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color }}>
-                      {ratio}
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <p id="noconnfound">No outgoing connections found.</p>
-          )}
-        </div>
+          </Grid>
+        </Grid>
       </div>
     </div>
   );

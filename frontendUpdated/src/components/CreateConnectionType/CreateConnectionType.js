@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
 import { frontend_host } from '../../config';
+import { Grid } from '@mui/material'
 
 export const CreateConnectionType = () => {
     const navigate = useNavigate();
@@ -137,29 +138,37 @@ const content = (
 )
     return (
         <>
-        <Navbar content = {content} />
-        
-            <div className="page12typeofconn">
-                {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username }&lt;&gt; {parentUser.username}) <p className = "noBold">Description: {selectedConnectionType.connection_description}</p></div> }
-                
-            </div>
-            <div className="page12parentconnections">
-                <div className="page12hostlocker">
-                    <pre>Host User: {parentUser.username} <br />Host Locker: {locker.name}</pre>
+            <Navbar content = {content} />
+            <div style={{marginTop:"120px"}}>
+                <div className="page12typeofconn">
+                    <h2>
+                    {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username }&lt;&gt; {parentUser.username}) <p className = "noBold">Description: {selectedConnectionType.connection_description}</p></div> }
+                    </h2>                    
                 </div>
-                <span className='createconnectionmylock'><pre>Select My Locker</pre></span>
-                <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
-                    {lockers && lockers.map(locker => (
-                        <option key={locker.locker_id} value={locker.name}>{locker.name}</option>
-                    ))}
-                </select>
+                <Grid container className="page12parentconnections">
+                    <Grid item md={2} xs={12} className="page12hostlocker">
+                        <pre>Host User: {parentUser.username} <br />Host Locker: {locker.name}</pre>
+                    </Grid>
+                    <Grid item md={2} xs={12}>
+
+                    </Grid>
+                   <Grid item md={8} xs={12} className='d-flex'>
+                    <span className='createconnectionmylock'><pre>Select My Locker</pre></span>
+                    <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
+                        {lockers && lockers.map(locker => (
+                            <option key={locker.locker_id} value={locker.name}>{locker.name}</option>
+                        ))}
+                    </select>
+                   </Grid>
+                </Grid>
+                {selectedConnectionType && (
+                    <div className="page12paragraph">
+                        <u>"{selectedConnectionType.connection_type_name}"</u> For this connection type you will need to fulfill the following obligations. Click on the next button.
+                        <button onClick={handleNextClick} className="next-btn">Next</button>
+                    </div>
+                )}
             </div>
-            {selectedConnectionType && (
-                <div className="page12paragraph">
-                    <u>"{selectedConnectionType.connection_type_name}"</u> For this connection type you will need to fulfill the following obligations. Click on the next button.
-                    <button onClick={handleNextClick} className="next-btn">Next</button>
-                </div>
-            )}
+           
         </>
     );
 };

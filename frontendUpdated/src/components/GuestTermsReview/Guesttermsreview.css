@@ -213,3 +213,8 @@
 .view-terms-link:hover {
     text-decoration: underline;
 }
+
+.view-containers{
+    border: 2px solid rgb(107, 120, 231);
+    padding: 10px;
+}

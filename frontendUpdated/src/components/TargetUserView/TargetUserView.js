@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
+import { Button } from '@mui/material'
 
 export const TargetUserView = () => {
   const navigate = useNavigate();
@@ -81,20 +82,22 @@ export const TargetUserView = () => {
   const content = (
     <>
     <div className="navbarBrand">{user ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : 'None'}</div>
-          <div className="description">{user ? user.description : 'None'}</div></>
+          </>
   );
 
   return (
     <div>
       <Navbar content = {content}/>
-
-      <div className="heroContainer">
+      
+     <div style={{marginTop:"120px"}}>
+     <div className="description" >{user ? user.description : 'None'}</div>
+     <div className="heroContainers">
         <div className="newLocker">
           <h3></h3>
           {/* <button id="newLockerBtn" onClick={handleNewLockerClick}>
             Create New Locker
           </button> */}
-        </div>
+        </div>  
         <div className="page6-allLockers">
           {error && <div className="error">{error}</div>}
           {Array.isArray(allLockers) && allLockers.length > 0 ? (
@@ -102,10 +105,10 @@ export const TargetUserView = () => {
               <div key={lockers.locker_id} className="page6-locker">
                 <h4>{lockers.name}</h4>
                 
-                {lockers.is_frozen === false && <button id="docsBtn" onClick={() => handleLockersClick(lockers)}>
+                {lockers.is_frozen === false && <Button id="docsBtn" variant="contained" onClick={() => handleLockersClick(lockers)}>
                   Open
-                </button>} 
-                {lockers.is_frozen === true && <button id="docsBtn">Frozen</button> }
+                </Button>} 
+                {lockers.is_frozen === true && <Button id="docsBtn" variant="contained">Frozen</Button> }
                 
                 <p className="description2">{lockers.description}</p>
               </div>
@@ -115,6 +118,7 @@ export const TargetUserView = () => {
           )}
         </div>
       </div>
+     </div>
     </div>
   );
 }

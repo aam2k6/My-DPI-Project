@@ -137,9 +137,10 @@
   font-size:small;
 }
 
-  .description {
+  .descriptions {
     font-size: 0.995rem; /* Slightly smaller font size for the description */
     color: rgb(44, 41, 41); /* Different color to distinguish from the name */
+    margin-left: 2rem;
   }
   
   .navbarLinks{
@@ -290,5 +291,29 @@
   
     .homenewLocker button {
       margin-top: 1rem;
+    }
+  }
+
+
+  .view-container{
+    margin-left: 0 !important;
+  }
+  .termsSections{
+    margin-top: -2rem;
+    padding: 20px;
+    width: 100%;
+    /*font-weight: bold;*/
+    font-size: large;
+  }
+  
+  .show-connection{
+    padding-left: 45px;
+    padding-right: 45px;
+  }
+
+  @media (max-width: 768px) {
+    .show-connection{
+      padding-left: 20px;
+      padding-right: 20px;
     }
   }

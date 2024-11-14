@@ -18,7 +18,7 @@ export default function Modal({ message, onClose, type, revoke, onRevoke, viewTe
   
     return (
       <div className="modal-overlay">
-        <div className={`modal ${modalClass}`}>
+        <div className={`modals ${modalClass}`}>
           <p>{message}</p>
           {children} {/* Render children here */}
           <button onClick={onClose}>Close</button>

@@ -1,10 +1,11 @@
-import React, { useState,useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
-import "./page2.css";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
+import { Container, Grid, TextField, Button, Typography,Box} from "@mui/material";
+import "./page2.css";
 
 export const CreateLocker = () => {
   const navigate = useNavigate();
@@ -52,36 +53,68 @@ export const CreateLocker = () => {
       });
   };
 
-
   useEffect(() => {
     if (!curruser) {
         navigate('/');
         return;
     }
-  },[]);
-
+  }, []);
 
   return (
     <div>
       <Navbar />
 
-      <div className="page2heroContainer">
-        <form className="page2lockerForm" onSubmit={handleSubmit}>
-          <label>
-            <span>Locker Name</span>
-            <input type="text" name="lockerName" placeholder="Enter Locker Name" onChange={(e) => setLockerName(e.target.value)} />
-          </label>
-
-          <label>
-            <span>Description </span>
-            <input type="text" name="lockerDescription" placeholder="Enter description" onChange={(e) => setDescription(e.target.value)} />
-          </label>
-
-          <button type="submit">Submit</button>
-
+      <Container maxWidth="sm" style={{ marginTop: "120px"}}>
+        <Box
+          sx={{
+            border: '1px solid blue',
+            borderRadius: '8px',
+            padding: '50px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+          }}
+        >
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom fontWeight="bold" >
+                Locker Name
+              </Typography>
+              <TextField
+                fullWidth
+                variant="outlined"
+                value={lockerName}
+                onChange={(e) => setLockerName(e.target.value)}
+                placeholder="Enter Locker Name"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom fontWeight="bold">
+                Description
+              </Typography>
+              <TextField
+                fullWidth
+                variant="outlined"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter description"
+              />
+            </Grid>
+            <Grid item xs={12} container justifyContent="center">
+              <Grid item>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
         </form>
-
-      </div>
+        </Box>
+      </Container>
     </div>
   );
 };

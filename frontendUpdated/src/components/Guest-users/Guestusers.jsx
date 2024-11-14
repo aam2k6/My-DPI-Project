@@ -5,6 +5,16 @@ import { usercontext } from "../../usercontext";
 import "./guestuser.css";
 import Navbar from '../Navbar/Navbar';
 import { frontend_host } from '../../config';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Typography,
+  Grid,
+  TextField,
+} from '@mui/material';
 
 export const Guestusers = () => {
   const navigate = useNavigate();
@@ -180,18 +190,29 @@ export const Guestusers = () => {
     <>
       {connectionType && (
         <>
-          <div className="navbarBrand">{connectionType.connection_type_name} 
-          <button
-        className="info-button"
-        onClick={() => navigateToConnDetails(connectionType)}
-        title="Show Connection Terms"
-        style={{ marginLeft: "10px", cursor: "pointer", background: "transparent", border: "none" }}
-      >
-        <i className="fa fa-info-circle" style={{ fontSize: '16px' }}></i>
-      </button></div>
-          <div className="description">{connectionType.connection_description}</div>
-          <div id='conntentguest'>Created On: {new Date(connectionType.created_time).toLocaleDateString()}</div>
+          <div className="navbarBrands">{connectionType.connection_type_name} 
+          <i className="fa fa-info-circle"  onClick={() => navigateToConnDetails(connectionType)}
+            title="Show Connection Terms" style={{ fontSize: '16px', marginLeft:"10px" }}></i>
+
+            {/* <button
+            className="info-button"
+            onClick={() => navigateToConnDetails(connectionType)}
+            title="Show Connection Terms"
+            style={{ marginLeft: "10px", cursor: "pointer", background: "transparent", border: "none" }}
+            >
+              <i className="fa fa-info-circle" style={{ fontSize: '16px' }}></i>
+            </button> */}
+          </div>
+          {/* <div className="description">{connectionType.connection_description}</div> */}
+          {/* <details>
+  <summary class="truncate">
+    <span class="content"></span>
+  </summary>
+  <p>{connectionType.connection_description}</p>
+  <div id='conntentguest'>Created On: {new Date(connectionType.created_time).toLocaleDateString()}</div>
           <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div>
+</details> */}
+          
         </>
       )}
     </>
@@ -200,20 +221,44 @@ export const Guestusers = () => {
   return (
     <div>
       <Navbar content={content} />
-      <div className="page5heroContainer">
-        <h4 className='guestusers'>Guest Users</h4>
+      <Box className="page5heroContainer" marginTop={{md:"150px", xs:"100px"}}>
+        <h4 className='guestusers' style={{textAlign:"center",marginBottom:"25px", fontWeight:"bold"}}>Guest Users</h4>
         <div className="search">
           <form onSubmit={handleSearch}>
-            <div className="searchContainer">
-              <div className="inputContainer">
-                <input type="text" placeholder="Search guest users" name="search" value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)} />
-              </div>
-              <button className="find" type="submit">Search</button>
+            <div className="inputContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginLeft:"20px", marginRight:"20px"}}>
+              <TextField
+                type="text"
+                size='small'
+                placeholder="Search guest users"
+                name="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: "200px",
+                  marginRight: "0.5rem",
+                  // padding: "0.25rem 0.5rem",
+                  border: "2px solid black",
+                  borderRadius: "10px"
+                }}
+              />
+              
+              <Button
+                className="find"
+                variant="contained"
+                type="submit"
+                size='small'
+                style={{
+                  minWidth: "80px",
+                  padding: "0.5rem 1rem",
+                  fontWeight: "bold",
+                }}
+              >
+                Search
+              </Button>
             </div>
           </form>
         </div>
-        <div className="page5container">
+        <Grid container spacing={{md:20, xs:4, sm:4}} className="page5container" padding={{md:10, sm:2, xs:2}}>
           {/* {error && <div className="error">{error}</div>} */}
           {filteredConnections.length > 0 ? (
             filteredConnections.map((connection, index) => {
@@ -223,30 +268,38 @@ export const Guestusers = () => {
                 ? calculateRatio(tracker)
                 : "Loading...";
               return (
-                <div key={index} className="card">
+                <Grid item xs={12} sm={6} md={4} >
+                  <div key={index} className="card">
                   <h4>{connection.guest_user.username}</h4>
                   <p>{connection.guest_user.description}</p>
                   <p> Locker: {connection.guest_locker.name}</p>
-                  <button
+                  <CardActions sx={{ justifyContent: 'center' }}>
+                  <Button
                     className='cardButton'
+                    size='small'
+                    variant='contained'
+                    fontWeight="bold"
                     onClick={() => handleConnectionClick(connection)}
                   >
                     View Details
-                  </button>
-                  <button id = "track"
+                  </Button>
+                  </CardActions>
+                  <Button id = "track"
                     onClick={() => handleConnectionClick(connection)}
                     style={{ backgroundColor: color }}
                   >
                     {ratio}
-                  </button >
+                  </Button >
                 </div>
+                </Grid>
+                
               );
             })
           ) : (
             <p>No guest users found.</p>
           )}
-        </div>
-      </div>
+        </Grid>
+      </Box>
     </div>
 
   );

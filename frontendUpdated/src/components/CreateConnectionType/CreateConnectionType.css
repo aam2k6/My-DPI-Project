@@ -1,15 +1,17 @@
 .page12typeofconn {
   font-size: 1.95rem;
   font-weight: bolder;
-  margin-left: 3rem;
+  /* margin-left: 3rem; */
+  padding: 30px;
+  padding-top: 0px;
 }
 
 .page12hostlocker {
   font-size: 1.25rem;
-  width: 25rem;
+  /* width: 25rem; */
   height: 4rem;
   margin-top: 3rem;
-  margin-left: 1rem;
+  /* margin-left: 1rem; */
   margin-right: 1rem; /* Adjusted to be more centered */
   padding: 1rem;
   border: 2px solid rgb(107, 120, 231);
@@ -18,7 +20,8 @@
 .page12parentconnections {
   display: flex;
   align-items: flex-start; /* Adjusted alignment */
-  margin-left: 3rem;
+  /* margin-left: 3rem; */
+  padding: 30px;
 }
 
 .page12hostlocker div {
@@ -30,7 +33,7 @@
   margin-left: 3rem;
   font-size: 1.25rem;
   padding: 2rem; /* Added padding for better spacing */
-  width: 50rem;
+  /* width: 50rem; */
   height: auto; /* Adjusted height for content flexibility */
   background-color: #f4f6f8;
   border-radius: 0.5rem;

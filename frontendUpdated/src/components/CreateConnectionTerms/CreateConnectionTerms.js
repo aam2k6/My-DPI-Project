@@ -705,7 +705,7 @@ import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config";import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
-
+import { Grid } from '@mui/material'
 
 // import res from "./object";
 
@@ -725,6 +725,7 @@ export const CreateConnectionTerms = () => {
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
   const [activeTab, setActiveTab] = useState("guest");
+  
 
   const {
     connectionName,
@@ -740,7 +741,7 @@ export const CreateConnectionTerms = () => {
     lockerComplete,
   
   } = location.state || {};
-  console.log(
+  console.log("data",
     connectionName,
     hostLockerName,
     connectionTypeName,
@@ -759,6 +760,7 @@ export const CreateConnectionTerms = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+  
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -1107,7 +1109,7 @@ export const CreateConnectionTerms = () => {
     
   };
   const renderTermsSection = (terms, title) => (
-    <div className="terms-section">
+    <div className="terms-sections">
       <h3>{title}</h3>
       {terms && terms.length > 0 ? (
         <ul>
@@ -1206,15 +1208,29 @@ const renderUserTooltip = (userType) => {
   );
 };
 
-const handleuserclick = (hostUserUsername) => {
-  console.log(hostUserUsername);
-  navigate(`/target-user-view`, { state: { user: { username: hostUserUsername } } });
-}
+const handleGuestClick = (lockerComplete) => {
+  navigate('/view-locker', {
+    state: {
+      user: { username: curruser.username },
+      locker: lockerComplete,
+    }
+  });
+};
+
+const handleHostClick = (hostUserUsername, hostLockerName) => {
+  navigate('/target-locker-view', {
+    state: {
+      user:{username: hostUserUsername},
+      locker:  {name: hostLockerName} ,
+    },
+  });
+};
+
 
 const content = (
   <>
-    <div className="navbarBrand">{connectionName}</div>
-    <br />
+    <div className="navbarBrands">{connectionName}</div>
+    {/* <br />
     <div className="connection-details">
       Connection Name: {connectionName} <br />
       <h3>
@@ -1258,7 +1274,7 @@ const content = (
           <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
         </div>
       </div>
-    </div>
+    </div> */}
   </>
 );
 
@@ -1268,8 +1284,55 @@ console.log(res, "res");
 return (
   <div>
     <Navbar content={content} />
-    <div className="view-container">
-      <div className="b">
+    <div style={{marginTop:"120px"}}>
+      <div className="connection-details">
+        Connection Name: {connectionName} <br />
+        <h3>
+          {globalTemplateNames.length > 0 && "Connection has been imported from "}
+          <span style={{ fontWeight: "bold" }}>
+            {globalTemplateNames.filter(Boolean).map((template, index) => (
+              <span key={index}>
+                <span 
+                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => handleNavigation(template)}
+                >
+                  {template.global_connection_type_name}
+                </span>
+                {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+              </span>
+            ))}
+          </span>
+        </h3>
+        {connectionDescription}<br />
+        
+        <div className="tooltip-container user-container">
+          <div className="tooltips user-container">
+            <FaUserCircle className="userIcon" /> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {curruser.username} &nbsp;</span>
+          </div>
+          <i className="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltips user-container">
+            <FaRegUserCircle className="userIcon" /> &nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
+          </div>
+        </div>
+
+        <div className="tooltip-container user-container">
+          <div className="tooltips user-container" onClick={() => handleGuestClick(lockerComplete)} style={{ cursor: 'pointer' }}>
+            <i className="bi bi-person-fill-lock"></i> &nbsp;
+            <span className="userName">{renderUserTooltip('guest')} : {locker} &nbsp;</span>
+          </div>
+          <i className="fa-solid fa-right-long"></i> &nbsp;
+          <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername,hostLockerName)}>
+            <i className="bi bi-person-lock"></i> &nbsp;
+            <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+   <div className="show-connection">
+   <Grid container className="view-container">
+      <Grid item xs={12} className="b">
         <div className="tabs">
           <div
             className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
@@ -1289,7 +1352,7 @@ return (
             {activeTab === "guest" && (
               <div>
                 <div className="page13headterms">Your Obligations</div>
-                <div className="page13lowerterms">{renderObligations("guest")}</div>
+                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderObligations("guest")}</div>
                 <div className="page13headterms">Your Permissions</div>
                 <div className="page13lowerterms">{renderPermissions("guest")}</div>
                 <div className="page13headterms">Your Forbidden Terms</div>
@@ -1312,8 +1375,8 @@ return (
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </Grid>
+    </Grid>
 
     {isModalOpen && (
       <Modal
@@ -1322,37 +1385,46 @@ return (
         type={modalMessage.type}
       />
     )}
-
+    <div>
+      
     {showConsent && Iagree === "0" && (
-      <div>
-        <div className="page13button">
+      <Grid container>
+        <Grid item xs={12} md={6} className="page13button">
           <button
             className="page13iagree0button"
             onClick={handleIagreebutton}
           >
             I Agree
           </button>
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     )}
 
+    </div>
+    <div>
     {showConsent && Iagree === "1" && (
-      <div className="page13parent13state1">
-        <div className="page13consent">
-          Consent Given on : {consentData.consent_given}
-          <br />
-          Consent valid Until : {consentData.valid_until}
-        </div>
-        <div className="page13button">
-          <button
-            className="page13iagree1button"
-            onClick={handleRevokebutton}
-          >
-            Revoke
-          </button>
-        </div>
-      </div>
-    )}
+          <Grid container className="page13parent13state1">
+            <Grid item xs={12} md={2}></Grid>
+            <Grid item xs={12} md={4} className="page13consent" mb={3}>
+              Consent Given on : {consentData.consent_given}
+              <br />
+              Consent valid Until : {consentData.valid_until}
+            </Grid>
+            <Grid xs={12} md={2}></Grid>
+            <Grid item xs={12} md={4} className="page13button" mb={3}>
+              <button
+                className="page13iagree1button"
+                onClick={handleRevokebutton}
+              >
+                Revoke
+              </button>
+            </Grid>
+          </Grid>
+        )}
+    </div>
+   </div>
+
+    
   </div>
 );
 }

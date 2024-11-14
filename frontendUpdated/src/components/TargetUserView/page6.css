@@ -147,8 +147,8 @@
   }
   
   /* Hero Container */
-  .heroContainer {
-    margin-top: 2rem;
+  .heroContainers {
+    margin-top: 0rem !important;
     margin-left: 5rem;
     width: 50%;
   }
@@ -208,7 +208,7 @@
   
   /* Responsive Design */
   @media (max-width: 768px) {
-    .heroContainer {
+    .heroContainers {
       width: 90%;
       margin-left: 1rem;
       margin-top: 4rem;

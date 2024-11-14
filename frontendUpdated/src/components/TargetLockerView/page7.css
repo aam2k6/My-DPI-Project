@@ -1,9 +1,16 @@
 
-.descriptionpage7 {
+.descriptionspage7 {
   font-size: 1.30rem !important; /* Slightly smaller font size for the description */
   color: rgb(44, 41, 41); /* Different color to distinguish from the name */
   margin-top: -2rem !important;
+  padding-left: 50px;
 
+}
+@media (max-width: 991px) {
+  .descriptionspage7 {
+    text-align: center;
+    padding:1rem;
+  }
 }
 .description7{
   font-size: 1.195rem; /* Slightly smaller font size for the description */
@@ -18,19 +25,19 @@
   align-items: center;
 }
 
-.new-connection-btn-1{
+.new-connection-btns-1{
   background-color: #007bff;
   color: #fff;
   /* width: auto; */
   border: none;
-  padding: 1rem 0.75rem;
+  padding: 12px;
   border-radius: 0.25rem;
   cursor: pointer;
   font-weight: bolder;
   /* padding: 0.5rem 0.25rem;  */
-  max-width: 200px;
+  max-width: auto;
 }
-.page7container{
+.page7containers{
   
   /* border: 2px solid rgb(107, 120, 231);  */
 
@@ -42,7 +49,7 @@
   align-items:top;
   height: auto;
   margin-top: 3rem;
-  margin-left: 3rem;
+  /* margin-left: 3rem; */
   padding: 2rem;
   /* overflow-y: auto; */
 
@@ -74,17 +81,17 @@
 
   
 }
-.page7publicresources{
+.page7publicresource{
      
-  width: 80%;
+  /* width: 80%; */
   padding: 1rem;
   margin-top: 3rem;
   height: 20rem;
   max-height: 20rem;
   border: 2px solid rgb(107, 120, 231);
 
-  margin-left: 2rem;
-  margin-right: 2rem;
+  /* margin-left: 2rem; */
+  /* margin-right: 2rem; */
 
   overflow-y: auto;
   
@@ -111,16 +118,18 @@
   cursor: pointer;
 } 
 
-.page7containerB{
+.page7containersB{
      margin-top: 3rem;
-  width: 45%;
+  width: 80%;
   padding: 1rem;
   
   height: 30rem;
   max-height: 30rem;
   border: 2px solid rgb(107, 120, 231);
-  margin-left: 15rem;
+  /* margin-left: 15rem; */
   overflow-y: auto;
+  font-size: 1.5625rem;
+    font-weight: bolder;
   
   
 }
@@ -162,7 +171,7 @@
   cursor: pointer;
 } */
 
-.page7publicresources,.page7containerB p{
+.page7publicresource,.page7containerB p{
   font-size: 1.5625rem;
   
   font-weight: bolder;

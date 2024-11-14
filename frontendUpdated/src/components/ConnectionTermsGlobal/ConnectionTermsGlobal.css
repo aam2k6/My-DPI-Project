@@ -19,6 +19,7 @@
   
   .parent-left-heading-title{
     margin: 2rem;
+    padding: 2rem;
     display: flex;
     justify-content: space-between;
   
@@ -43,11 +44,11 @@
   
   /* Container Styles */
   .connectionTerms-heroContainer {
-    border: 2px solid rgb(107, 120, 231);
-    display: flex;
-    padding: 2rem;
-    margin: 3rem;
-    justify-content: center;
+    /* border: 2px solid rgb(107, 120, 231); */
+    /* display: flex; */
+    /* padding: 1rem; */
+    margin: 2rem;
+    /* justify-content: center; */
     align-items: flex-start;
     flex-direction: column;
   }
@@ -63,7 +64,7 @@
   /* Left Column Styles */
   .parent-left-heading {
     padding: 1rem;
-    width: 95%;
+    width: 100% !important;
     margin-right: 2rem;
     border: 2px solid rgb(107, 120, 231);
   }
@@ -226,8 +227,8 @@
 .connectionTerms-heroContainer .obligation-label span, 
 .parent-left-heading .obligation-label span {
     flex: 0 0 120px;  
-    text-align: right; 
-    padding-right: 0.5rem; 
+    /* text-align: right;  */
+    /* padding-right: 0.5rem;  */
 }
 
 .connectionTerms-heroContainer .obligation-label input, 
@@ -243,4 +244,25 @@
 
 .connectionTerms-heroContainer{
   margin-top: 0px;
+}
+
+@media (max-width: 768px) {
+  #connectionTerms {
+    overflow-x: hidden;
+  }
+}
+
+#connectionTerms .connectionTermsContainer{
+  border: 2px solid rgb(107, 120, 231);
+  margin-top: 120px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.secondContainer{
+  padding:30px;
+}
+
+#connectionTerms .main-heading{
+  text-align: center;
 }

@@ -18,7 +18,9 @@
 
 .view-container{
     border: 2px solid rgb(107, 120, 231);
-    margin: 40px;
+    /* margin: 40px; */
+    margin-top: 40px;
+    margin-bottom: 40px;
     padding: 10px;
 }
 
@@ -227,5 +229,34 @@
   }
   
   
-
-
+  .tooltips {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+  
+  .tooltips .tooltiptext {
+    visibility: hidden;
+    width: 12.5rem;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 0.3125rem;
+    padding: 0.625rem;
+    position: absolute;
+    z-index: 1;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: normal;
+    font-size: 0.875rem;
+  }
+  
+  .tooltips:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  
+  }

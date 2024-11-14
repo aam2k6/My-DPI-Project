@@ -110,10 +110,10 @@
   float: left;
   margin-left: 2rem;
 }
-.container .b {
+.containers .b {
   max-height: 27rem; /* Set a max height for scrolling */
   overflow-y: auto; /* Enable vertical scrolling */
-  margin-right: 5rem;
+  /* margin-right: 20px; */
   width: 42%;
   /* height: 30rem; */
   float: right;
@@ -223,9 +223,9 @@
 }
 .conn {
   border: 2px solid rgb(107, 120, 231);
-  margin-bottom: 2rem;
-  margin-left: 2rem;
-  margin-right: 2rem;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
   margin-top: 2rem;
   padding: 1rem;
   max-height: 10rem;
@@ -365,13 +365,15 @@ overflow-x: auto;
   width: 2rem;
   height: 2rem;
   font-size: 1rem;
-  margin-top: -3rem;
+  margin-top: -2rem;
   margin-left: auto; /* Align to the right */
 }
 
 .info-button2:hover {
   background-color: #333; /* Slightly lighter black on hover */
+  color: white;
 }
+
 .tabs {
   display: flex;
   border-bottom: 2px solid #ccc;
@@ -425,7 +427,7 @@ overflow-x: auto;
   position: relative;
   width: 80%;
   max-width: 500px;
-  height: 80%;
+  height: auto;
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -438,7 +440,7 @@ overflow-x: auto;
   background: red;
   color: white;
   border: none;
-  padding: 10px 20px; /* Rectangular shape with more padding */
+  padding: 8px 20px; /* Rectangular shape with more padding */
   cursor: pointer;
   font-size: 16px;
   border-radius: 4px;

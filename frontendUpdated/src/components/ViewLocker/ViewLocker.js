@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from "react";
 import "./page3.css";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +8,7 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal"; 
+import { Grid } from "@mui/material"
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
   const location = useLocation();
@@ -706,7 +706,7 @@ const handleDeleteClick = async (xnode) => {
   return (
     <div>
       <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
-      <div className="container">
+      <div className="containers" style={{marginTop:"150px"}}>
         <div className="locker-description">
           {locker ? ` ${locker.description}` : "Description"}
         </div>
@@ -740,8 +740,8 @@ const handleDeleteClick = async (xnode) => {
           )}
         </div> */}
 
-        <div className="container-2 clearfix">
-          <div className="a">
+        <Grid container padding={{md:"50px",xs:"20px"}}>
+          <Grid item md={5.5} xs={12} className="a">
             <div className="res">
               <h3>Resources</h3>
             </div>
@@ -822,7 +822,7 @@ const handleDeleteClick = async (xnode) => {
         <p>No Resources available</p>
       )} */}
                 {xnodes.length > 0 ? (
-                  <ul>
+                  <ul style={{paddingTop:"40px"}}>
                     {xnodes.map((xnode, index) => (
                       <div
                         key={xnode.id}
@@ -871,8 +871,9 @@ const handleDeleteClick = async (xnode) => {
             <button className="page3button" onClick={handleUploadResource}>
               Upload resource
             </button>
-          </div>
-          <div className="b">
+          </Grid>
+          <Grid item md={1} xs={12} marginBottom={{md:"", xs:"50px"}}></Grid>
+          <Grid item md={5.5} xs={12} className="b">
             <h3 id="mycon">My Connections:</h3>
             <div className="tabs">
               <div
@@ -951,34 +952,41 @@ const handleDeleteClick = async (xnode) => {
                   <div className="conn">
                     {otherConnections.length > 0 ? (
                       otherConnections.map((connection) => (
-                        <div
+                        <Grid container
                           key={connection.connection_type_id}
                           className="viewlockerconnections"
                         >
-                          <h4 id="connectiontype">
-                            <button
-                              className="connection-name-button"
-                              onClick={() => handleConnectionClick(connection)}
-                              style={{
-                                textDecoration: "none",
-                                background: "none",
-                                border: "none",
-                                padding: 0,
-                                cursor: "pointer",
-                                color: "inherit",
-                              }}
+                          <Grid item md={11} xs={10}>
+                            <h4 id="connectiontype">
+                              <button
+                                className="connection-name-button"
+                                onClick={() => handleConnectionClick(connection)}
+                                style={{
+                                  textDecoration: "none",
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  cursor: "pointer",
+                                  color: "inherit",
+                                }}
+                              >
+                                <u>{connection.connection_type_name}</u>
+                              </button>{" "}
+                              (users: {connection.incoming_count})
+                            </h4>
+                          </Grid>
+
+                          <Grid item md={1} xs={1}>
+                            <i class="bi bi-info-circle " style={{fontSize:"20px", fontWeight:"bold"}} onClick={() => handleIncomingInfo(connection)}></i>
+
+                            {/* <button
+                              className="info-button2"
+                              onClick={() => handleIncomingInfo(connection)}
                             >
-                              <u>{connection.connection_type_name}</u>
-                            </button>{" "}
-                            (users: {connection.incoming_count})
-                          </h4>
-                          <button
-                            className="info-button2"
-                            onClick={() => handleIncomingInfo(connection)}
-                          >
-                            i
-                          </button>
-                        </div>
+                              i
+                            </button> */}
+                          </Grid>
+                        </Grid>
                       ))
                     ) : (
                       <p>No connections found.</p>
@@ -1044,43 +1052,46 @@ const handleDeleteClick = async (xnode) => {
                             : "Loading...";
 
                           return (
-                            <div
+                            <Grid container 
                               key={connection.connection_id}
                               className="viewlockerconnections"
                             >
-                              <div id="conntent">
-                                <button
-                                  className="connection-name-button"
-                                  onClick={() => handleTracker(connection)}
-                                  style={{
-                                    textDecoration: "underline",
-                                    background: "none",
-                                    border: "none",
-                                    padding: 0,
-                                    cursor: "pointer",
-                                    color: "inherit",
-                                  }}
-                                >
-                                  {connection.connection_name}
-                                </button>
-                              </div>
-                              <div id="conntent">
-                                {connection.guest_locker.name} &lt;&gt;{" "}
-                                {connection.host_locker.name}
-                              </div>
-                              <div id="conntent">
-                                Created On:{" "}
-                                {new Date(
-                                  connection.created_time
-                                ).toLocaleString()}
-                              </div>
-                              <div id="conntent">
-                                Valid Until:{" "}
-                                {new Date(
-                                  connection.validity_time
-                                ).toLocaleString()}
-                              </div>
-                              <div className="Lockertracker">
+                             
+                             <Grid item md={7.9} xs={12}>
+                                <div id="conntent">
+                                  <button
+                                    className="connection-name-button"
+                                    onClick={() => handleTracker(connection)}
+                                    style={{
+                                      textDecoration: "underline",
+                                      background: "none",
+                                      border: "none",
+                                      padding: 0,
+                                      cursor: "pointer",
+                                      color: "inherit",
+                                    }}
+                                  >
+                                    {connection.connection_name}
+                                  </button>
+                                </div>
+                                <div id="conntent">
+                                  {connection.guest_locker.name} &lt;&gt;{" "}
+                                  {connection.host_locker.name}
+                                </div>
+                                <div id="conntent">
+                                  Created On:{" "}
+                                  {new Date(
+                                    connection.created_time
+                                  ).toLocaleString()}
+                                </div>
+                                <div id="conntent">
+                                  Valid Until:{" "}
+                                  {new Date(
+                                    connection.validity_time
+                                  ).toLocaleString()}
+                                </div>
+                             </Grid>
+                              <Grid item  paddingTop={{md:"50px",xs:""}} md={4.1} xs={12}>
                                 <button
                                   className="info-button"
                                   onClick={() =>
@@ -1101,8 +1112,8 @@ const handleDeleteClick = async (xnode) => {
                                 >
                                   {ratio}
                                 </button>
-                              </div>
-                            </div>
+                              </Grid>
+                            </Grid>
                           );
                         }
                       )
@@ -1113,8 +1124,8 @@ const handleDeleteClick = async (xnode) => {
                 </div>
               )}
             </div>
-          </div>
-        </div>
+          </Grid>
+        </Grid>
         
       </div>
       {/* {pdfUrl && <PDFViewer pdfUrl={pdfUrl} />} */}

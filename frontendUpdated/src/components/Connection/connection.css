@@ -1,7 +1,7 @@
 .navbarLockerName-terms, .navbarLockerOwner-terms {
   font-weight: bolder;
   font-size: 1.5625rem;
-  margin-left: 20rem;
+  /* margin-left: 20rem; */
 }
 
 .descriptionLocker{
@@ -26,16 +26,9 @@
     /* margin-top: 0.1rem; */
     font-weight: bold;
   }
-  
-  .connection-lockerForm {
-    
-    display: flex;
-    flex-direction: column;
-    width: 85%; /* Adjust as needed */
-    /* max-width: 600px; */
 
-  }
-  .connection-lockerForm select{
+
+  .connection-lockerForms select{
     width: 57%;
     margin-left: 3rem;
     padding: 0.5rem;
@@ -43,7 +36,7 @@
     
   }
   
-  .connection-lockerForm label {
+  .connection-lockerForms label {
     display: flex;
     flex-direction: row;
     margin-bottom: 5rem;
@@ -51,40 +44,41 @@
    
   }
 
-  .connection-lockerForm input {
-    padding: 0.5rem ;
+  .connection-lockerForms input {
+    /* padding: 0.5rem ; */
     /* margin-top: 0.5rem; */
     border: 2px solid rgb(107, 120, 231);
-    margin-left: 3rem;
+    /* margin-left: 3rem; */
     border-radius: 0.25rem; 
-    width: 55%;
+    /* width: 55%; */
+    height: 70%;
     
   }
   #kerak{
     margin-left: 1.2rem;
   }
   
-  .connection-lockerForm button {
+  .connection-lockerForms button {
     background-color: #007bff;
     color: #fff;
     width: auto;
     border: none;
-    padding: 1rem 0.75rem;
+    padding: 1rem 2rem;
     border-radius: 0.25rem;
     cursor: pointer;
     font-weight: bolder;
     /* padding: 0.5rem 0.25rem;  */
-    max-width: 200px;
+    /* max-width: 200px; */
 
   }
 
-  .connection-lockerForm label span {
+  .connection-lockerForms label span {
     margin-right: 5rem; /* Space between label text and input */
     font-size: 1.45rem;
     font-weight: bolder;
     flex: 0.4;
   }
   
-  .connection-lockerForm button:hover {
+  .connection-lockerForms button:hover {
     background-color: #0056b3;
   }

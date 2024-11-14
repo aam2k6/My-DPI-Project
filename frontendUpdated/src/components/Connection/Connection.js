@@ -8,6 +8,7 @@ import "./connection.css";
 import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
+import { Container, Grid, TextField, Button, Typography,Box} from "@mui/material";
 
 export const Connection = () => {
   const navigate = useNavigate();
@@ -74,57 +75,84 @@ export const Connection = () => {
 
   const content = (
     <>
-      <div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
-      <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
+      <div className="navbarBrands">Locker : {locker_conn?.name}</div>
+      <div className="navbarBrands">Owner : {curruser.username}</div>
     </>
   );
 
   return (
     <>
       <Navbar content={content}></Navbar>
-      <Panel />
-      <div className="Panelcontent">
-        <div className="connection-heroContainer">
+      {/* <Panel /> */}
+      <Container maxWidth="md" style={{marginTop:"120px"}}>
+        <div>
+          {/* <div className="connection-resourceHeading">Connection</div> */}
+          <div className="connection-lockerForms">
+          <Box
+          sx={{
+            border: '1px solid blue',
+            borderRadius: '8px',
+            padding: '50px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+          }}
+        >
           <div className="connection-resourceHeading">Connection</div>
-          <div className="connection-lockerForm">
-            <form className="connection-lockerForm" onSubmit={handleSubmit}>
-              <label>
-                <span>Locker</span>
-                <input value={locker_conn ? locker_conn.name : ""} readOnly />
-              </label>
-              <label>
-                <span>Name</span>
-                <input
-                  type="text"
-                  name="connectionName"
-                  placeholder="Connection Type Name"
-                  onChange={(e) => setConnectionName(e.target.value)}
-                />
-              </label>
-              <label>
-                <span>Description </span>
-                <input
-                  id="kerak"
-                  type="text"
-                  name="connectionDescription"
-                  placeholder="Description"
-                  onChange={(e) => setConnectionDescription(e.target.value)}
-                />
-              </label>
-              <label>
-                <span>Validity</span>
-                <input
-                  type="date"
-                  name="validity"
-                  placeholder="Calendar Picker"
-                  onChange={(e) => setValidity(e.target.value)}
-                />
-              </label>
-              <button type="submit">Next</button>
-            </form>
+          <form  onSubmit={handleSubmit}>
+            <Grid container className=" mb-4">
+                <Grid item md={2} sm={2} xs={12}>
+                <Typography variant="h6" gutterBottom fontWeight="bold" >Locker
+                </Typography>
+                </Grid>
+                <Grid item md={8} sm={8} xs={12}>
+                <TextField  fullWidth variant="outlined" value={locker_conn ? locker_conn.name : ""} readOnly />
+                </Grid>
+            </Grid>
+
+            <Grid container className=" mb-4">
+                <Grid item md={2} sm={2} xs={12}>
+                <Typography variant="h6" gutterBottom fontWeight="bold" >Name
+                </Typography>
+                </Grid>
+                <Grid item md={8} sm={8} xs={12}>
+                <TextField  fullWidth variant="outlined" type="text"
+                name="connectionName"
+                placeholder="Connection Type Name"
+                onChange={(e) => setConnectionName(e.target.value)} />
+                </Grid>
+            </Grid>
+
+            <Grid container className=" mb-4">
+                <Grid item md={2} sm={2} xs={12}>
+                <Typography variant="h6" gutterBottom fontWeight="bold" >Description
+                </Typography>
+                </Grid>
+                <Grid item md={8} sm={8} xs={12}>
+                <TextField  fullWidth variant="outlined" 
+                type="text"
+                name="connectionDescription"
+                placeholder="Description"
+                onChange={(e) => setConnectionDescription(e.target.value)} />
+                </Grid>
+            </Grid>
+
+            <Grid container className=" mb-4">
+                <Grid item md={2} sm={2} xs={12}>
+                <Typography variant="h6" gutterBottom fontWeight="bold" >Validity
+                </Typography>
+                </Grid>
+                <Grid item md={8} sm={8} xs={12}>
+                <TextField  fullWidth variant="outlined"  type="date"
+                name="validity"
+                placeholder="Calendar Picker"
+                onChange={(e) => setValidity(e.target.value)} />
+                </Grid>
+            </Grid>
+            <Button type="submit">Next</Button>
+          </form>
+        </Box>
           </div>
         </div>
-      </div>
+      </Container>
     </>
   );
 };

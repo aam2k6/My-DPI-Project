@@ -2,7 +2,7 @@
 .navbarLockerName-terms, .navbarLockerOwner-terms {
   font-weight: bolder;
   font-size: 1.5625rem;
-  margin-left: 20rem;
+  /* margin-left: 20rem; */
 }
 
 .descriptionLocker {
@@ -28,11 +28,11 @@
   border: 2px solid rgb(107, 120, 231);
   display: flex;
   padding: 2rem;
-  margin: 3rem;
+  margin: 1rem;
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  margin-left: 320px;
+  /* margin-left: 320px; */
   margin-top: auto;
 }
 
@@ -80,6 +80,10 @@
   border-radius: 0.25rem;
   width: 65%;
   box-sizing: border-box; 
+}
+
+#connectionTerm input{
+  width: 84%;
 }
 
 .parent-left-heading .connectionTerms-lockerForm select {
@@ -152,7 +156,7 @@
   gap: 1rem;
 }
 
- button {
+ /* button {
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -160,11 +164,11 @@
   border-radius: 0.25rem;
   cursor: pointer;
   font-weight: bolder;
-}
+} */
 
-button:hover {
+/* button:hover {
   background-color: #0056b3;
-}
+} */
 
 /* Tooltip Styles */
 .tooltip {
@@ -198,4 +202,32 @@ button:hover {
   opacity: 1;
 
 }
+@media (max-width: 768px) {
+  #connectionTerm {
+    overflow-x: hidden;
+  }
+}
 
+#connectionTerm .connectionTermsContainer{
+  border: 2px solid rgb(107, 120, 231);
+  margin-top: 120px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.secondContainer{
+  padding:30px;
+}
+
+#connectionTerm .main-heading{
+  text-align: center;
+}
+
+#connectionTerm label{
+  font-weight: bold;
+  font-size: 18px;
+}
+
+#connectionTerm .agreeLabel{
+  font-weight: normal;
+}

@@ -271,3 +271,7 @@
   font-weight: bold;
   font-size: 18px;
 }
+
+#connectionTerms input{
+  width: 98%;
+}

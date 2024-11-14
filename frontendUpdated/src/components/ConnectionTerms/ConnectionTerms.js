@@ -541,6 +541,7 @@ import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
+import { Grid } from "@mui/material"
 
 export const ConnectionTerms = () => {
   const navigate = useNavigate();
@@ -923,13 +924,13 @@ export const ConnectionTerms = () => {
 
   const content = (
     <>
-      <div className="navbarLockerName-terms">Locker : {locker_conn?.name}</div>
-      <div className="navbarLockerOwner-terms">Owner : {curruser.username}</div>
+      <div className="navbarBrands">Locker : {locker_conn?.name}</div>
+      <div className="navbarBrands">Owner : {curruser.username}</div>
     </>
   );
 
   return (
-    <>
+    <div id="connectionTerm">
       {isModalOpen && (
         <Modal
           message={modalMessage.message}
@@ -938,33 +939,42 @@ export const ConnectionTerms = () => {
         />
       )}
       <Navbar content={content}></Navbar>
-      <div className="page-container">
-        <Panel />
-        <div className="Panelcontent">
+      <div>
+        {/* <Panel /> */}
+        <div className="Panelcontent" style={{marginTop:"120px"}}>
           <div className="connectionTerms-heroContainer-nonglobal">
-            <div className="main-heading">Guest Terms Of Service</div>
-            <div className="parent-container">
-              <div className="parent-left-heading">
-                <div className="parent-left-heading-title">
-                  <div className="connectionTerms-resourceHeading">
-                    Guest Obligations
-                  </div>
-                  <button
-                    className="handle-obligation"
-                    type="button"
-                    onClick={handleAddObligation}
-                  >
-                    Add Obligations
-                  </button>
-                  <button
-                    className="import-template-btn"
-                    onClick={() => {
-                      fetchGlobalTemplates();
-                      setIsTemplateModalOpen(true);
-                    }}
-                  >
-                    Import Global Connection Template
-                  </button>
+            {/* <div className="main-heading">Guest Terms Of Service</div> */}
+            <Grid container className="parent-container ">
+              <Grid item xs={12} md={8} className="parent-left-heading">
+                <div>
+                  <Grid container>
+                    <Grid item md={3.5} xs={12}>
+                      <div className="connectionTerms-resourceHeading">
+                        Guest Obligations
+                      </div>
+                    </Grid>
+                    <Grid item md={3.5} xs={12}>
+                      <button
+                        className=""
+                        type="button"
+                        onClick={handleAddObligation}
+                      >
+                        Add Obligations
+                      </button>
+                    </Grid>
+                    <Grid item md={5} xs={12} paddingTop={{xs:"12px", md:"0px"}}>
+                      <button
+                        className=""
+                        onClick={() => {
+                          fetchGlobalTemplates();
+                          setIsTemplateModalOpen(true);
+                        }}
+                      >
+                        Import Global Connection Template
+                      </button>
+                    </Grid>
+                    
+                  </Grid>
                   {isTemplateModalOpen && (
                     <Modal
                       message="Select Global Templates"
@@ -1017,55 +1027,56 @@ export const ConnectionTerms = () => {
 
                 <div className="connectionTerms-lockerForm">
                   <form
-                    className="connectionTerms-lockerForm"
                     onSubmit={handleSubmit}
                   >
-                    <label className="obligation-label">
-                      <span>Label</span>
-                      <input
-                        type="text"
-                        name="labelName"
-                        placeholder="Label of data shared"
-                        value={formData.labelName}
-                        onChange={handleInputChange}
-                      />
-                    </label>
 
-                    <label className="obligation-label">
-                      <span>Type of Action</span>
-                      <select
-                        className="Title"
-                        name="typeOfAction"
-                        value={formData.typeOfAction}
-                        onChange={handleInputChange}
-                      >
-                        <option value="text">Add Value</option>
-                        <option value="file">Upload File</option>
-                        <option value="date">Add Date</option>
-                      </select>
-                      <span className="tooltip">
+                    <div className="mb-3 row">
+                      <label className="col-sm-2 col-md-2 col-form-label">Label</label>
+                      <div className="col-md-10 col-sm-10 col-xs-10">
+                        <input 
+                           type="text"
+                           name="labelName"
+                           placeholder="Label of data shared"
+                           value={formData.labelName}
+                           onChange={handleInputChange} className="form-control" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row">
+                      <label className="col-sm-2 col-md-2 col-form-label">Type of Action</label>
+                      <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
+                        <select className="form-select form-select-md" aria-label="Small select example"
+                            name="typeOfAction"
+                            value={formData.typeOfAction}
+                            onChange={handleInputChange} >
+                            <option value="text">Add Value</option>
+                            <option value="file">Upload File</option>
+                            <option value="date">Add Date</option>
+                        </select>
+                        <span className="tooltips">
                         ?
-                        <span className="tooltiptext">
-                          Choose the action type: Share, Transfer, Confer, or
-                          Collateral.
+                          <span className="tooltiptext">
+                            Choose the action type: Share, Transfer, Confer, or
+                            Collateral.
+                          </span>
                         </span>
-                      </span>
-                    </label>
+                      </div>
+                    </div>
 
-                    <label className="obligation-label">
-                      <span>Type of Sharing</span>
-                      <select
-                        className="Title"
-                        name="typeOfSharing"
-                        value={formData.typeOfSharing}
-                        onChange={handleInputChange}
-                      >
-                        <option value="share">Share</option>
-                        <option value="transfer">Transfer</option>
-                        <option value="confer">Confer</option>
-                        <option value="collateral">Collateral</option>
-                      </select>
-                      <span className="tooltip">
+                    <div className="mb-3 row">
+                      <label className="col-sm-2 col-md-2 col-form-label">Type of Sharing</label>
+                      <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
+                        <select className="form-select form-select-md" aria-label="Small select example"
+                            name="typeOfSharing"
+                            value={formData.typeOfSharing}
+                            onChange={handleInputChange} >
+                            <option value="share">Share</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="confer">Confer</option>
+                            <option value="collateral">Collateral</option>
+                        </select>
+                        <span className="tooltips">
                         ?
                         <span className="tooltiptext">
                           <span>
@@ -1095,45 +1106,58 @@ export const ConnectionTerms = () => {
                           </span>
                           <br />
                         </span>
-                      </span>
-                    </label>
-                    <label className="obligation-label">
-                      <span>Purpose</span>
-                      <input
-                        type="text"
-                        name="purpose"
-                        placeholder="purpose of collecting data"
-                        value={formData.purpose}
-                        onChange={handleInputChange}
-                      />
-                    </label>
+                        </span>
+                      </div>
+                    </div>
 
-                    <label className="obligation-label">
-                      <span>Description</span>
-                      <input
-                        type="text"
-                        name="labelDescription"
-                        placeholder="Description of the obligation"
-                        value={formData.labelDescription}
-                        onChange={handleInputChange}
-                      />
-                    </label>
+                    <div className="mb-3 row">
+                      <label className="col-sm-2 col-md-2 col-form-label">Purpose</label>
+                      <div className="col-md-10 col-sm-10 col-xs-10">
+                        <input 
+                           type="text"
+                           name="purpose"
+                           placeholder="purpose of collecting data"
+                           value={formData.purpose}
+                           onChange={handleInputChange} className="form-control" 
+                        />
+                      </div>
+                    </div>
 
-                    <label className="obligation-label">
-                      <span>Host Permissions</span>
-                      <div className="multiselect-container">
-                        <label key="reshare">
+                    <div className="mb-3 row">
+                      <label className="col-sm-2 col-md-2 col-form-label">Description</label>
+                      <div className="col-md-10 col-sm-10 col-xs-10">
+                        <input 
+                           type="text"
+                           name="labelDescription"
+                           placeholder="Description of the obligation"
+                           value={formData.labelDescription}
+                           onChange={handleInputChange} className="form-control" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row">
+                      <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>
+                      <div className="col-md-9 col-sm-12">
+                      <div className="row">
+                        <div className="col-2">
                           <input
                             type="checkbox"
                             value="reshare"
-                            checked={formData.hostPermissions.includes(
-                              "reshare"
-                            )}
-                            onChange={handleHostPermissionsChange}
+                              checked={formData.hostPermissions.includes(
+                                "reshare"
+                              )}
+                              onChange={handleHostPermissionsChange}
                           />
-                          Reshare
-                        </label>
-                        <label key="download">
+                        </div>
+                        <div className="col-md-6">
+                          <label key="reshare"> 
+                            Reshare
+                          </label>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-2">
                           <input
                             type="checkbox"
                             value="download"
@@ -1142,76 +1166,104 @@ export const ConnectionTerms = () => {
                             )}
                             onChange={handleHostPermissionsChange}
                           />
-                          Download
-                        </label>
-                        <label key="aggregate">
-                          <input
-                            type="checkbox"
-                            value="aggregate"
-                            checked={formData.hostPermissions.includes(
-                              "aggregate"
-                            )}
-                            onChange={handleHostPermissionsChange}
-                          />
-                          Aggregate
-                        </label>
+                        </div>
+                        <div className="col-md-6">
+                          <label key="download"> 
+                            Download
+                          </label>
+                        </div>
                       </div>
-                      <span className="tooltip">
+                      <div className="row">
+                        <div className="col-2">
+                        <input
+                          type="checkbox"
+                          value="aggregate"
+                          checked={formData.hostPermissions.includes(
+                            "aggregate"
+                          )}
+                          onChange={handleHostPermissionsChange}/>
+                        </div>
+                        <div className="col-md-6">
+                          <label key="aggregate"> 
+                            Aggregate
+                          </label>
+                        </div>
+                      </div>
+                      </div>
+                      <div className="col-md-1">
+                      <span className="tooltips">
                         ?
                         <span className="tooltiptext">
-                          Select host permissions: Reshare, Download, or
-                          Aggregate.
+                          Select host permissions: Reshare, Download, or Aggregate.
                         </span>
                       </span>
-                    </label>
+                    </div>
+                    </div>
 
-                    <h2>Permissions</h2>
-                    <label className="permission-label" key="canShareMore">
-                      <span className="permission-labels">
-                        Can the guest share more data
-                      </span>
-                      <input
-                        type="checkbox"
-                        name="canShareMore"
-                        checked={formData.canShareMore}
-                        onChange={handleCheckboxChange}
-                      />
-                    </label>
+                    <div className="mb-1 row">
+                      <h4><b>Permissions</b></h4>
+                    </div>
 
-                    <label className="permission-label" key="canDownload">
-                      <span className="permission-labels">
-                        Can they download the data
-                      </span>
-                      <input
-                        type="checkbox"
-                        name="canDownload"
-                        checked={formData.canDownload}
-                        onChange={handleCheckboxChange}
-                      />
-                    </label>
-                    <h2>Forbidden</h2>
-                    <label className="permission-label">
-                      <span>
-                        {formData.forbidden
-                          ? "You cannot unilaterally close the connection."
-                          : "You can unilaterally close the connection."}
-                      </span>
-                      <input
-                        type="checkbox"
-                        name="forbidden"
-                        checked={formData.forbidden}
-                        onChange={handleCheckboxChange}
-                      />
-                    </label>
+                    <div className="mb-3 row">
+                      <div className="col-md-6 col-xs-12">
+                        <label className="col-md-7 col-xs-12 agreeLabel">
+                          Can the guest share more data
+                        </label>
+                      </div>
+                      <div className="col-6">
+                        <input
+                          type="checkbox"
+                          name="canShareMore"
+                          checked={formData.canShareMore}
+                          onChange={handleCheckboxChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <div className="col-md-6 col-xs-12">
+                        <label className="col-md-6 col-xs-12  agreeLabel">
+                          Can they download the data
+                        </label>
+                      </div>
+                      <div className="col-6">
+                        <input
+                          type="checkbox"
+                          name="canDownload"
+                          checked={formData.canDownload}
+                          onChange={handleCheckboxChange}
+                        />
+                      </div>
+                    </div>
 
+                    <div className="mb-1 row">
+                      <h4><b>Forbidden</b></h4>
+                    </div>
+
+                    <div className="mb-3 row">
+                      <div className="col-md-6 col-xs-12">
+                        <label className="col-md-6 col-xs-12  agreeLabel">
+                          {formData.forbidden
+                            ? "You cannot unilaterally close the connection."
+                            : "You can unilaterally close the connection."}
+                        </label>
+                      </div>
+                      <div className="col-6">
+                        <input
+                          type="checkbox"
+                          name="forbidden"
+                          checked={formData.forbidden}
+                          onChange={handleCheckboxChange}
+                        />
+                      </div>
+                    </div>
                     <div className="connectionTerms-btn">
-                      <button type="submit">Next</button>
+                      <button type="submit">Submit</button>
                     </div>
                   </form>
                 </div>
-              </div>
+              </Grid>
 
-              <div className="parent-right-heading">
+              <Grid item xs={12} md={3} className="parent-right-heading" marginTop={{md:"0px", xs:"30px"}}>
                 {obligations.map((obligation, index) => (
                   <div key={index}>
                     <button
@@ -1228,11 +1280,11 @@ export const ConnectionTerms = () => {
                     </button>
                   </div>
                 ))}
-              </div>
-            </div>
+              </Grid>
+            </Grid>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

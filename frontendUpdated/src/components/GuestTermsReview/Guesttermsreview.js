@@ -1433,10 +1433,14 @@ export const Guesttermsreview = () => {
                                   </select>
                                 </td>
                                 <td>
-                                  <button onClick={() => handleDownload(obligation)} className="download-button">
-                                    <i className="fa fa-download" aria-hidden="true"></i>
-                                  </button>
-                                </td>
+  {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
+    <button onClick={() => handleDownload(obligation)} className="download-button">
+      <i className="fa fa-download" aria-hidden="true"></i>
+    </button>
+  ) : (
+    " "
+  )}
+</td>
                               </tr>
                             ))}
                           </tbody>

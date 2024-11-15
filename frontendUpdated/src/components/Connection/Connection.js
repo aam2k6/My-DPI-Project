@@ -147,7 +147,7 @@ export const Connection = () => {
                 onChange={(e) => setValidity(e.target.value)} />
                 </Grid>
             </Grid>
-            <Button type="submit">Next</Button>
+            <button type="submit">Next</button>
           </form>
         </Box>
           </div>

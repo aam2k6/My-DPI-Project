@@ -100,10 +100,10 @@
 }
 
 /* Right Column Styles */
-.parent-right-heading {
+.parent-right-headings {
   border: 2px solid rgb(107, 120, 231);
   width: 45%;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   gap: 10px; 
   padding: 1rem;
@@ -111,17 +111,22 @@
 }
 
 
-.obligation-button {
+.obligation-buttons {
   /* margin-left: 25%;  */
   
   align-items: center;
-  padding: 0.5rem; 
+  padding: 0.4rem; 
   border: 1px solid #ccc; 
   border-radius: 5px; 
   background-color: #f0f0f0; 
   cursor: pointer; 
   color: black;
-  width: 50%;
+  width: 100%;
+}
+
+.obligation-buttons:hover{
+  background-color:  #1976d2;;
+  color: #fff;
 }
 
 .handle-obligation{

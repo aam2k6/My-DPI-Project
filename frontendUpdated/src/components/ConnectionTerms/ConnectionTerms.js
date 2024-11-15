@@ -541,7 +541,7 @@ import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
-import { Grid } from "@mui/material"
+import { Grid, Button } from "@mui/material"
 
 export const ConnectionTerms = () => {
   const navigate = useNavigate();
@@ -1270,24 +1270,32 @@ export const ConnectionTerms = () => {
                 </div>
               </Grid>
 
-              <Grid item xs={12} md={3} className="parent-right-heading" marginTop={{md:"0px", xs:"30px"}}>
+              <Grid item xs={12} md={3} className="parent-right-headings" marginTop={{ md: "0px", xs: "30px" }}>
                 {obligations.map((obligation, index) => (
-                  <div key={index}>
-                    <button
-                      className="obligation-button"
-                      onClick={() => handleLoadObligation(index)}
-                    >
-                      {obligation.labelName}
-                    </button>
-                    <button
-                      className="remove-obligation-button"
-                      onClick={() => handleRemoveObligation(index)}
-                    >
-                      Remove
-                    </button>
-                  </div>
+                  <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"} justifyContent={"center"}>
+                    <Grid item xs={6}>
+                      <button
+                       type="button"
+                       color= "secondary"
+                        className="btn btn-outline-secondary obligation-buttons"
+                        onClick={() => handleLoadObligation(index)}
+                      >
+                        {obligation.labelName}
+                      </button>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Button
+                        className="remove-obligation-button"
+                        variant="contained"
+                        onClick={() => handleRemoveObligation(index)}
+                      >
+                        Remove
+                      </Button>
+                    </Grid>
+                  </Grid>
                 ))}
               </Grid>
+
             </Grid>
           </div>
         </div>

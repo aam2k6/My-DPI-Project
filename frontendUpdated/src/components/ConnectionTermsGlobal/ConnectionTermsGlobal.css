@@ -169,11 +169,21 @@
     gap: 1rem;
   }
   
-   button {
+  .remove-obligation-button {
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: bolder;
+  }
+
+  button{
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     cursor: pointer;
     font-weight: bolder;

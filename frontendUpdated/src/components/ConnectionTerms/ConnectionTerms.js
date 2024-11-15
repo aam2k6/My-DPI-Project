@@ -1284,13 +1284,13 @@ export const ConnectionTerms = () => {
                       </button>
                     </Grid>
                     <Grid item xs={6}>
-                      <Button
+                      <button
                         className="remove-obligation-button"
                         variant="contained"
                         onClick={() => handleRemoveObligation(index)}
                       >
                         Remove
-                      </Button>
+                      </button>
                     </Grid>
                   </Grid>
                 ))}

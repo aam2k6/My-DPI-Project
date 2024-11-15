@@ -275,3 +275,7 @@
 #connectionTerms input{
   width: 98%;
 }
+
+#connectionTermHost .agreeLabel{
+  font-weight: normal !important;
+}

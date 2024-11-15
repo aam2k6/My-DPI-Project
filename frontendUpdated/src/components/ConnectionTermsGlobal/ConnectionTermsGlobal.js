@@ -525,11 +525,11 @@ export const ConnectionTermsGlobal = () => {
 
                 <div className="mb-3 row">
                   <div className="col-md-6 col-xs-12">
-                    <label className="permission-labels">
+                    <label className="col-md-7 col-xs-12" style={{fontWeight:"normal"}}>
                       Can the guest share more data
                     </label>
                   </div>
-                  <div className="col-md-6 col-xs-12">
+                  <div className="col-6">
                     <input
                       type="checkbox"
                       name="canShareMore"
@@ -540,7 +540,7 @@ export const ConnectionTermsGlobal = () => {
                 </div>
                 <div className="mb-3 row">
                 <div className="col-md-6 col-xs-12">
-                    <label className="col-md-6 col-xs-12">
+                    <label className="col-md-6 col-xs-12" style={{fontWeight:"normal"}}>
                       Can they download the data
                     </label>
                   </div>
@@ -559,12 +559,12 @@ export const ConnectionTermsGlobal = () => {
                 </div>
 
                 <div className="mb-3 row">
-                  <div className="col-md-6 col-xs-12">
-                    <label>
+                  <div className="col-md-6 col-xs-12 agreeLabel">
+                    <label className="col-md-6 col-xs-12" style={{fontWeight:"normal"}}>
                     You cannot unilaterally close the connection
                     </label>
                   </div>
-                  <div className="col-md-6 col-xs-12">
+                  <div className="col-6">
                   <input
                     type="checkbox"
                     name="forbidden"

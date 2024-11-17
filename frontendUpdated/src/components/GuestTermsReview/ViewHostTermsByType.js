@@ -287,7 +287,8 @@ export const ViewHostTermsByType = () => {
             console.log("initial values checking", initialValues);
             setSelectedResources(initialResources);
             setStatuses(statusMap);
-            setPermissions(data.terms.permissions);
+            setPermissions(data.terms.permissions.host_to_guest);
+            console.log("permissions", data.terms.permissions, data.terms);
           } else {
             console.error("No obligations found in data.data.obligations");
             setError("No obligations available in the fetched data");
@@ -1180,7 +1181,7 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
   };
   // console.log(uniqueGlobalConnTypeIds, globalTemplates,  globalTemplateNames, "name");
   const allObligationsApproved = () => {
-    return res?.obligations.every((obligation) => statuses[obligation.labelName] === "Approved");
+    return res?.hostToGuestObligations?.every((obligation) => statuses[obligation.labelName] === "Approved");
   };
   // const handleNavigation = (template) => {
   //   if (template) {

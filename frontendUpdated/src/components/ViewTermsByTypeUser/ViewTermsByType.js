@@ -798,7 +798,8 @@ export const ViewTermsByType = () => {
           setTermValues(initialValues);
           setSelectedResources(initialResources);
           setStatuses(statusMap);
-          setPermissions(data.terms.permissions);
+          setPermissions(data.terms.permissions.guest_to_host);
+          console.log("check", data.terms.permissions.guest_to_host?.canShareMoreData);
         } else {
           console.error("No obligations found in data.data.obligations");
           setError("No obligations available in the fetched data");
@@ -1634,11 +1635,11 @@ export const ViewTermsByType = () => {
     }
   };
 
-  const handlePermissionChange = (index, value) => {
-    const newPermissions = [...permissions];
-    newPermissions[index] = value;
-    setPermissions(newPermissions);
-  };
+  // const handlePermissionChange = (index, value) => {
+  //   const newPermissions = [...permissions];
+  //   newPermissions[index] = value;
+  //   setPermissions(newPermissions);
+  // };
 
   // const uniqueGlobalConnTypeIds = [...new Set(terms
   //   .filter(term => term.global_conn_type_id !== null)
@@ -1689,7 +1690,7 @@ export const ViewTermsByType = () => {
   };
   // console.log(uniqueGlobalConnTypeIds, globalTemplates,  globalTemplateNames, "name");
   const allObligationsApproved = () => {
-    return res?.obligations.every((obligation) => statuses[obligation.labelName] === "Approved");
+    return res?.guestToHostObligations?.every((obligation) => statuses[obligation.labelName] === "Approved");
   };
   // const handleNavigation = (template) => {
   //   if (template) {
@@ -2406,7 +2407,7 @@ export const ViewTermsByType = () => {
                       </div>
                     )}
 
-                    {permissions?.canShareMoreData && (
+                    {true && (
                       <div className="table-container">
                         {/* Add this div for styling */}
                         <h3>Share more data</h3>

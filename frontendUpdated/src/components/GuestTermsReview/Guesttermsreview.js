@@ -219,7 +219,7 @@ export const Guesttermsreview = () => {
     };
 
     const fetchConnectionDetails = async () => {
-      const connectionTypeName = connection.connection_name.split("-").shift().trim()
+      const connectionTypeName = connection?.connection_name?.split("-").shift().trim()
 
       console.log("guestTerms get-connection-details", connection);
       console.log(connectionTypeName);

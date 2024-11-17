@@ -219,7 +219,7 @@ export const HostTermsReview = () => {
 
     const fetchConnectionDetails = async () => {
       console.log("error chck", connection);
-      const connectionTypeName =  connection.connection_name.split("-").shift().trim();
+      const connectionTypeName =  connection?.connection_name?.split("-").shift().trim();
       
       try {
         const token = Cookies.get("authToken");

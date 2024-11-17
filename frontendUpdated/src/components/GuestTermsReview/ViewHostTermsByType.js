@@ -99,7 +99,7 @@ export const ViewHostTermsByType = () => {
     }
 
     const fetchConnectionDetails = async () => {
-      const connectionTypeName = connectionName.split("-").shift().trim();
+      const connectionTypeName = connectionName?.split("-").shift().trim();
     
       const connection_type_name = connectionTypeName;
       const host_locker_name = hostLockerName; 

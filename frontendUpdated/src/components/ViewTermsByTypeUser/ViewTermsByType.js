@@ -2064,8 +2064,8 @@ export const ViewTermsByType = () => {
                               <td>{obligation.labelName}</td>
                               <td>{obligation.purpose}</td>
                               <td>
-                                <div className="tooltip">
-                                  {obligation.typeOfSharing}
+                                <div className="tooltips">
+                                <span>{obligation.typeOfSharing}</span>
                                   {renderTooltip(obligation.typeOfSharing)}
                                 </div>
                               </td>

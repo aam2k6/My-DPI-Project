@@ -52,7 +52,7 @@ export const HostTermsReview = () => {
   //         </div>
   //     </div>
   // );
-  console.log(connection, connectionType);
+  console.log("start",connection, connectionType);
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
     const message = await handleRevoke(connection_id);
@@ -218,6 +218,7 @@ export const HostTermsReview = () => {
     };
 
     const fetchConnectionDetails = async () => {
+      console.log("error chck", connection);
       const connectionTypeName =  connection.connection_name.split("-").shift().trim();
       
       try {
@@ -567,7 +568,7 @@ export const HostTermsReview = () => {
       
 
       // Create the terms_value object from the obligations
-      const terms_value = res?.obligations.reduce((acc, obligation) => {
+      const terms_value_reverse = res?.obligations.reduce((acc, obligation) => {
         console.log(res?.obligations, "data not extra")
         // Determine the status for the current obligation
         const status =
@@ -617,7 +618,7 @@ export const HostTermsReview = () => {
         //   acc[obligation.labelName] = `${resourceName};${status}`;
         //   return acc;
         // }, {});
-        terms_value.canShareMoreData = {
+        terms_value_reverse.canShareMoreData = {
           ...termsValue.canShareMoreData,
         };
       }
@@ -633,7 +634,7 @@ export const HostTermsReview = () => {
         guest_locker_name: conndetails.guest_locker.name,
         host_user_username: conndetails.host_user.username,
         guest_user_username: conndetails.guest_user.username,
-        terms_value: terms_value,
+        terms_value_reverse: terms_value_reverse,
         resources: {
           Transfer: resourcesToTransfer,
           Share: resourcesToShare,
@@ -742,7 +743,7 @@ export const HostTermsReview = () => {
       
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/transfer-resource/`,
+        `${frontend_host}/transfer-resource-reverse/`,
         {
           method: "POST",
           headers: {
@@ -791,7 +792,7 @@ export const HostTermsReview = () => {
       
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/share-resource/`.replace(/host/, frontend_host),
+        `host/share-resource-reverse/`.replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -1408,7 +1409,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                               </td>
                               <td>{obligation.purpose}</td>
                               <td>
-                                <div className="tooltip">
+                                <div className="tooltips">
                                   {obligation.typeOfSharing}
                                   {renderTooltip(obligation.typeOfSharing)}
                                 </div>

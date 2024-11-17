@@ -1554,7 +1554,7 @@ console.log("hostToGuest", hostToGuestObligations);
                           <td>{obligation.labelName}</td>
                           <td>{obligation.purpose}</td>
                           <td>
-                            <div className="tooltip">
+                            <div className="tooltips">
                               {obligation.typeOfSharing}
                               {renderTooltip(obligation.typeOfSharing)}
                             </div>

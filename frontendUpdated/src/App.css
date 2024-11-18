@@ -2,3 +2,8 @@
 body{
     font-family: "Poppins", sans-serif;
 }
+
+.App{
+    overflow-y: auto;
+    max-height: 100vh;
+}

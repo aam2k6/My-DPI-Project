@@ -1015,6 +1015,26 @@ const navigateToConnectionDetails = (connection) => {
     );
   };
 
+  const handleGuestClick = () => {
+    
+    navigate('/view-locker', {
+      state: {
+        user: { username: conndetails.guest_user.username },
+        locker: conndetails.guest_locker,
+      }
+    });
+  };
+
+  const handleHostClick = () => {
+    
+    navigate('/target-locker-view', {
+      state: {
+        user:{username: conndetails.host_user.username},
+        locker:  conndetails.host_locker,
+      },
+    });
+  };
+
   const content = (
     <>
       <div className="navbarBrands">{curruser ? curruser.username : "None"}</div>
@@ -1262,12 +1282,12 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
             </div>
           </div>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+            <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
               <i class="bi bi-person-fill-lock"></i> &nbsp;
               <span className="userName">{renderUserTooltip('guest',conndetails.guest_locker?.name)} : {conndetails.guest_locker?.name||"Loading..."} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container" >
+            <div className="tooltips user-container" onClick={() => handleHostClick()}>
               <i class="bi bi-person-lock"></i>&nbsp;
               <span className="userName">{renderUserTooltip('host',conndetails.host_locker?.name)} : {conndetails.host_locker?.name||"Loading..."}</span>
             </div>

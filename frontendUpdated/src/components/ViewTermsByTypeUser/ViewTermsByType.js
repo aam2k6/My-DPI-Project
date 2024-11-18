@@ -1762,6 +1762,24 @@ export const ViewTermsByType = () => {
     );
   };
 
+  const handleGuestClick = (locker) => {
+    navigate('/view-locker', {
+      state: {
+        user: { username: curruser.username },
+        locker: locker,
+      }
+    });
+  };
+  
+  const handleHostClick = (hostUserUsername, hostLockerName) => {
+    navigate('/target-locker-view', {
+      state: {
+        user:{username: hostUserUsername},
+        locker:  {name: hostLockerName} ,
+      },
+    });
+  };
+
   console.log("selection", selection);
   const content = (
     <>
@@ -1958,12 +1976,12 @@ export const ViewTermsByType = () => {
             </div>
           </div>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+            <div className="tooltips user-container"  onClick={() => handleGuestClick(locker)} style={{ cursor: 'pointer' }}>
               <i class="bi bi-person-fill-lock"></i> &nbsp;
               <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleuserclick(hostUserUsername)}>
+            <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername,hostLockerName)}>
               <i class="bi bi-person-lock"></i>&nbsp;
               <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
             </div>

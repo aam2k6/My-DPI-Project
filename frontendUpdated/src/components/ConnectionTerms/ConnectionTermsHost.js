@@ -46,9 +46,8 @@ export const ConnectionTermsHost = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false); // To toggle dropdown visibility
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false
-
-  );
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [navigateHome , setNavigateHome] = useState(false)
 
 
 const fetchGlobalTemplates = () => {
@@ -154,6 +153,10 @@ const fetchGlobalTemplates = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
+    if (navigateHome) {
+      navigate("/home");
+      setNavigateHome(false); // Reset the state to avoid navigation in other cases
+    }
   };
 
   const handleCheckboxChange = (event) => {
@@ -329,17 +332,33 @@ const fetchGlobalTemplates = () => {
       .then(async (response) => {
         const data = await response.json();
         if (response.ok) {
-          console.log("Data successfully posted:", data);
-          navigate("/home"); // Navigate on success
-        } else {
-          console.error("Failed to post data:", data);
-          setError(data.message || "Failed to post data");
+          // setError("Connection Type successfully created!");
+          setModalMessage({
+            message: "Connection Type successfully created!",
+            type: "success",
+          });
+          setIsModalOpen(true);
+          setNavigateHome(true);
+        }  else {
+          // General error handling.
+          console.error("Error:", data.error);
+          setError(data.error);
+          setModalMessage({
+            message: data.error,
+            type: "error",
+          });
+          setIsModalOpen(true); // Open modal with error message.
         }
       })
       .catch((error) => {
-        console.error("Network error:", error);
-        setError("An error occurred while submitting data.");
-      });
+        console.error("Error:", error);
+        setError("An error occurred while submitting the data.");
+        setModalMessage({
+          message: "An error occurred while submitting the data.",
+          type: "error",
+        });
+        setIsModalOpen(true); // Open modal with error message.
+  });
   };
   
   

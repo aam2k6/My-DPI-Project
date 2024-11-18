@@ -733,6 +733,7 @@ export const CreateConnectionTerms = () => {
     connectionTypeName,
     hostUserUsername,
     connectionDescription,
+    guestUserUsername,
     locker,
     showConsent,
     guest_locker_id,
@@ -746,6 +747,7 @@ export const CreateConnectionTerms = () => {
     hostLockerName,
     connectionTypeName,
     connectionDescription,
+    guestUserUsername,
     hostUserUsername,
     locker,
     guest_locker_id,
@@ -754,7 +756,8 @@ export const CreateConnectionTerms = () => {
     lockerComplete,
   );
 
-  console.log("guest locker", locker);
+  console.log("guest name",guestUserUsername,);
+
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -1308,7 +1311,7 @@ return (
         <div className="tooltip-container user-container">
           <div className="tooltips user-container">
             <FaUserCircle className="userIcon" /> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {curruser.username} &nbsp;</span>
+            <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
           </div>
           <i className="fa-solid fa-right-long"></i> &nbsp;
           <div className="tooltips user-container">

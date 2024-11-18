@@ -82,8 +82,24 @@ export const ViewHostTermsByType = () => {
     host_locker_id,
     connection, 
     connectionType,
+    guestLocker
   } = location.state || {};
 
+  console.log("data",
+    connectionName,
+    connectionDescription,
+    hostLockerName,
+    guestLockerName,
+    hostUserUsername,
+    guestUserUsername,
+    locker,
+    connection_id,
+    guest_locker_id,
+    host_locker_id,
+    connection, 
+    connectionType,
+    guestLocker
+  )
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -1074,6 +1090,7 @@ const appendPagesToTerms = (termValue) => {
       const connectionTypeName = connectionName.split("-").shift().trim();
 
       // console.log("conntype", connectionTypeName);
+      console.log("navigate", guestUserUsername)
 
       navigate("/show-connection-terms", {
         state: {
@@ -1081,6 +1098,7 @@ const appendPagesToTerms = (termValue) => {
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
           connectionTypeName,
+          guestUserUsername:guestUserUsername,
           hostUserUsername: hostUserUsername,
           locker: locker.name,
           showConsent: false,
@@ -1253,6 +1271,28 @@ console.log("Unique Global Conn Type Ids:", uniqueGlobalConnTypeIds);
     );
   };
 
+
+
+  const handleHostClick = (hostUserUsername, hostLockerName) => {
+    navigate('/view-locker', {
+      state: {
+        user:{username: hostUserUsername},
+        locker:  locker ,
+      },
+    });
+  };
+
+
+  const handleGuestClick = () => {
+    navigate('/target-locker-view', {
+      state: {
+        user: { username: guestUserUsername },
+        locker:   guestLocker
+      }
+    });
+  };
+  
+  
   console.log("selection", selection);
   const content = (
     <>
@@ -1473,12 +1513,12 @@ console.log("hostToGuest", hostToGuestObligations);
           </div>
         </div>
         <div className="tooltip-container user-container">
-          <div className="tooltips user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+          <div className="tooltips user-container" onClick={() => handleGuestClick(locker)} style={{ cursor: 'pointer' }}>
             <i class="bi bi-person-fill-lock"></i> &nbsp;
             <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
           </div>
           <i class="fa-solid fa-right-long"></i> &nbsp;
-          <div className="tooltips user-container" onClick={() => handleuserclick(hostUserUsername)}>
+          <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername,hostLockerName)}>
             <i class="bi bi-person-lock"></i>&nbsp;
             <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
           </div>

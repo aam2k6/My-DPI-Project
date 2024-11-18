@@ -874,19 +874,49 @@ export const ConnectionTerms = () => {
       },
       body: JSON.stringify(finalData),
     })
-      .then(async (response) => {
-        const data = await response.json();
-        if (response.ok) {
-          console.log("Data successfully posted:", data);
-          handleSubmits()
-        } else {
-          console.error("Failed to post data:", data);
-          setError(data.message || "Failed to post data");
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-        setError("An error occurred while submitting data.");
+    .then((response) =>
+            response.json().then((data) => ({ status: response.status, data }))
+          )
+          .then(({ status, data }) => {
+            if (status === 201) {
+              // Success case: show success modal and reset form if needed.
+              setModalMessage({
+                message: "Connection Type successfully created!",
+                type: "success",
+              });
+              setIsModalOpen(true);
+              handleSubmits()
+              // Optionally, reset the form after successful creation.
+            } else if (status === 400 && data.error.includes("already exists")) {
+              // Handle the case where the connection type already exists.
+              setError(
+                "Connection type with this name already exists in the same locker."
+              );
+              setModalMessage({
+                message:
+                  "Connection type with this name already exists in the same locker.",
+                type: "error",
+              });
+              setIsModalOpen(true);
+            } else {
+              // General error handling.
+              console.error("Error:", data.error);
+              setError(data.error);
+              setModalMessage({
+                message: data.error,
+                type: "error",
+              });
+              setIsModalOpen(true); // Open modal with error message.
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            setError("An error occurred while submitting the data.");
+            setModalMessage({
+              message: "An error occurred while submitting the data.",
+              type: "error",
+            });
+            setIsModalOpen(true); // Open modal with error message.
       });
   };
   

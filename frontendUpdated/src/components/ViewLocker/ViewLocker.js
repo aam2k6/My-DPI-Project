@@ -402,6 +402,7 @@ export const ViewLocker = () => {
         hostLockerName: connection.host_locker?.name,
         connectionTypeName, // Pass the extracted connection_type_name
         hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
         locker: locker.name,
         showConsent: false,
         guest_locker_id: connection.guest_locker?.id,
@@ -435,7 +436,8 @@ export const ViewLocker = () => {
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
         hostLockerName: connection.host_locker?.name,
-        connectionTypeName, // Pass the extracted connection_type_name
+        connectionTypeName, 
+        guestUserUsername: connection.guest_user?.username,
         // connectionTypeName: connection.connection_type_name,
         hostUserUsername: connection.host_user?.username,
         locker: locker.name,

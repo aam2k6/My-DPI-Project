@@ -1259,6 +1259,7 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching other connections");
     }
   };
+  console.log(locker)
 
   const fetchConnections = async () => {
     try {
@@ -1411,10 +1412,11 @@ export const TargetLockerView = () => {
             locker:connection.guest_locker?.name ,
             connectionTypeName,
             connectionDescription:connection.connection_description,
+            lockerComplete: connection.guest_locker,
           },
         });
       };
-
+console.log()
   const handleConnectionClick = (connection) => {
     navigate("/make-connection", {
       state: {

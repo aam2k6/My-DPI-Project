@@ -1098,6 +1098,27 @@ export const Guesttermsreview = () => {
     );
   };
 
+  const handleGuestClick = () => {
+    
+    navigate('/target-locker-view', {
+      state: {
+        user: { username: conndetails.guest_user.username },
+        locker: conndetails.guest_locker,
+      }
+    });
+  };
+  console.log(conndetails.guest_locker)
+
+  const handleHostClick = () => {
+    
+    navigate('/view-locker', {
+      state: {
+        user:{username: conndetails.host_user.username},
+        locker:  conndetails.host_locker,
+      },
+    });
+  };
+
   const content = (
     <>
       <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
@@ -1261,12 +1282,12 @@ export const Guesttermsreview = () => {
             </div>
           </div>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => navigate("/home")} style={{ cursor: 'pointer' }}>
+            <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
               <i class="bi bi-person-fill-lock"></i> &nbsp;
               <span className="userName">{renderUserTooltip('guest', conndetails.guest_locker?.name)} : {conndetails.guest_locker?.name || "Loading..."} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container" >
+            <div className="tooltips user-container" onClick={() => handleHostClick()}>
               <i class="bi bi-person-lock"></i>&nbsp;
               <span className="userName">{renderUserTooltip('host', conndetails.host_locker?.name)} : {conndetails.host_locker?.name || "Loading..."}</span>
             </div>
@@ -1301,6 +1322,7 @@ export const Guesttermsreview = () => {
                       host_locker_id: conndetails.host_locker?.locker_id,
                       connection: connection,
                       connectionType: connectionType,
+                      guestLocker: conndetails.guest_locker
                     },
                   })}
                 >

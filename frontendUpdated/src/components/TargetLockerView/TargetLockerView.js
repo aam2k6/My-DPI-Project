@@ -1618,22 +1618,22 @@ console.log()
                 const ratio = tracker ? calculateRatio(tracker) : "Loading...";
                 
                 return (
-                  <div className="page7myconnections" key={index}>
-                    <div id="conntent">
+                  <Grid container className="page7myconnection" key={index}>
+                    <Grid item id="conntent" md={7.9} xs={12}>
                       <h4 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
                         {connection.connection_name}
                       </h4>
                       <div>{connection.host_user.username} &lt;&gt; {connection.guest_user.username}</div>
                       <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
                       <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
-                    </div>
-                    <div className="tracker">
+                    </Grid>
+                    <Grid item  paddingTop={{md:"50px",xs:""}} md={4.1} xs={12}>
                       <button className="info-button" onClick={() => handleInfo(connection)}> i </button>
-                      <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color }}>
+                      <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color,padding:"0px", fontSize:"22px" }}>
                         {ratio}
                       </button>
-                    </div>
-                  </div>
+                    </Grid>
+                  </Grid>
                 );
               })
             ) : (

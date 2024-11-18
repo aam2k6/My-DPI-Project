@@ -1359,7 +1359,7 @@ return (
                 <div className="page13headterms">Your Permissions</div>
                 <div className="page13lowerterms">{renderPermissions("guest")}</div>
                 <div className="page13headterms">Your Forbidden Terms</div>
-                <div className="page13lowerterms">{renderForbidden("guest")}</div>
+                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderForbidden("guest")}</div>
                 <div className="page13headterms">Default Host Privileges</div>
                 By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
               </div>
@@ -1367,11 +1367,11 @@ return (
             {activeTab === "host" && (
               <div>
                 <div className="page13headterms">Host Obligations</div>
-                <div className="page13lowerterms">{renderObligations("host")}</div>
+                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderObligations("host")}</div>
                 <div className="page13headterms">Host Permissions</div>
                 <div className="page13lowerterms">{renderPermissions("host")}</div>
-                <div className="page13headterms">Host Forbidden Terms</div>
-                <div className="page13lowerterms">{renderForbidden("host")}</div>
+                <div className="page13headterms" >Host Forbidden Terms</div>
+                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderForbidden("host")}</div>
                 <div className="page13headterms">Default Host Privileges</div>
                 By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
               </div>

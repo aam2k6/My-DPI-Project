@@ -1700,9 +1700,9 @@ export const TargetLockerView = () => {
                 return (
                   <Grid container className="page7myconnection" key={index}>
                     <Grid item id="conntent" md={7.9} xs={12}>
-                      <h4 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
+                      <h5 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
                         {connection.connection_name}
-                      </h4>
+                      </h5>
                       <div>{connection.host_user.username} &lt;&gt; {connection.guest_user.username}</div>
                       <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
                       <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>

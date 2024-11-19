@@ -575,7 +575,7 @@
 //       </div>
 //     </>
 //   );
-  
+
 //   const handleInfo = (connection) => {
 //     const connectionTypeName = connection.connection_name.split('-').pop().trim();
 //     navigate("/show-connection-terms", {
@@ -603,7 +603,7 @@
 //   };
 
 //   return (
-    
+
 //     <div>
 //       <>{isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}</>
 //       <Navbar content={content} />
@@ -644,7 +644,7 @@
 //                     >
 //                       <h4 className="clickable-tag">
 //                         <u>{connection.connection_type_name}</u>
-                    
+
 //                       </h4>
 //                     </div>
 //                     <div id="availconntype">
@@ -707,11 +707,11 @@
 // ) : (
 //   <p id="noconnfound">No outgoing connections found.</p>
 // )}
-  
+
 //         </div>
 //       </div>
 //     </div>
-    
+
 //   );
 // };
 // import React, { useContext, useEffect, useState } from "react";
@@ -986,14 +986,14 @@
 //       host_username: parentUser.username,
 //       host_locker_name: locker.name,
 //     });
-  
+
 //     setQrData(qrContent); // Set the QR code data with relevant information
 //     setIsModalOpen(true); // Open the modal with QR code
 //   };
 //   const handleQrScan = (qrData) => {
 //     try {
 //       const parsedData = JSON.parse(qrData); // Parse the QR content
-  
+
 //       // Navigate to the terms page with the parsed data
 //       navigate('/show-connection-terms', {
 //         state: {
@@ -1009,8 +1009,8 @@
 //       console.error("Error parsing QR data:", error);
 //     }
 //   };
-  
-  
+
+
 
 //   return (
 //     <div>
@@ -1021,12 +1021,12 @@
 //         <div className="navbarBrand">{locker?.name}</div>
 //         <div className="description7">Owner:<u>{parentUser?.username}</u></div>
 //       </>} />
-      
+
 //       <div className="page7description">
 //         <div className="descriptionpage7">{locker?.description}</div>
 //         <button onClick={handleClick} className="new-connection-btn-1">Create New Connection</button>
 //       </div>
-      
+
 //       <div className="page7container">
 //         <div className="notvisible">
 //           <div className="page7publicresources">
@@ -1065,7 +1065,7 @@
 //                     {/* "Scan QR" link to show QR code */}
 //                     <div id="availconntype">
 //                       <button onClick={() => handleShowQrCode(connection)}>Scan QR</button>
-                      
+
 //                     </div>
 //                   </div>
 //                 </div>
@@ -1083,7 +1083,7 @@
 //               const tracker = trackerData[connection.connection_id];
 //               const color = tracker ? getStatusColor(tracker) : "gray";
 //               const ratio = tracker ? calculateRatio(tracker) : "Loading...";
-              
+
 //               return (
 //                 <div className="page7myconnections" key={index}>
 //                   <div id="conntent">
@@ -1145,6 +1145,7 @@ export const TargetLockerView = () => {
   const [qrData, setQrData] = useState("");  // State for QR code data
   const [xnodes, setXnodes] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showInfo, setShowInfo] = useState(null);
 
   useEffect(() => {
     if (!curruser) {
@@ -1193,7 +1194,7 @@ export const TargetLockerView = () => {
 
       if (data.xnode_list) {
         setXnodes(data.xnode_list);
-        
+
       } else {
         setError(data.message || "Failed to fetch Xnodes");
       }
@@ -1335,7 +1336,7 @@ export const TargetLockerView = () => {
         }));
 
       }
-       else {
+      else {
         setError(data.message || "Failed to fetch tracker data");
       }
     } catch (error) {
@@ -1346,12 +1347,12 @@ export const TargetLockerView = () => {
   };
 
   const handleClick = () => {
-    if(otherConnections.length > 0){
+    if (otherConnections.length > 0) {
       navigate("/make-connection", {
         state: { hostuser: parentUser, hostlocker: locker, selectedConnectionType: null, },
       });
     }
-    else{
+    else {
       setModalMessage({ message: "No available connection types found. Cannot create a new connection.", type: 'info' });
       setIsModalOpen(true);
     }
@@ -1367,7 +1368,7 @@ export const TargetLockerView = () => {
     navigate("/view-terms-by-type", {
       state: {
         connectionName: connection.connection_name,
-        connectionDescription:connection.connection_description,
+        connectionDescription: connection.connection_description,
         hostLockerName: connection.host_locker?.name,
         guestLockerName: connection.guest_locker?.name,
         hostUserUsername: connection.host_user?.username,
@@ -1379,7 +1380,7 @@ export const TargetLockerView = () => {
 
   const getStatusColor = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
-    if (tracker.count_T === totalObligations && tracker.count_R === 0 ) {
+    if (tracker.count_T === totalObligations && tracker.count_R === 0) {
 
       return "green";
     } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
@@ -1397,26 +1398,26 @@ export const TargetLockerView = () => {
   };
 
   const handleInfo = (connection) => {
-        console.log("conn in i", connection);
-        const connectionTypeName = connection.connection_name.split('-').shift().trim();
-        console.log(connectionTypeName)
-        console.log("lock",connection.guest_locker?.name);
-        navigate("/show-connection-terms", {
-          state: {
-            //connectionId: connection.connection_id,
-            connectionName: connection.connection_name,
-            hostLockerName: connection.host_locker?.name,
-            guestLockerName: connection.guest_locker?.name,
-            hostUserUsername: connection.host_user?.username,
-            guestUserUsername: connection.guest_user?.username,
-            locker:connection.guest_locker?.name ,
-            connectionTypeName,
-            connectionDescription:connection.connection_description,
-            lockerComplete: connection.guest_locker,
-          },
-        });
-      };
-console.log()
+    console.log("conn in i", connection);
+    const connectionTypeName = connection.connection_name.split('-').shift().trim();
+    console.log(connectionTypeName)
+    console.log("lock", connection.guest_locker?.name);
+    navigate("/show-connection-terms", {
+      state: {
+        //connectionId: connection.connection_id,
+        connectionName: connection.connection_name,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: connection.guest_locker?.name,
+        connectionTypeName,
+        connectionDescription: connection.connection_description,
+        lockerComplete: connection.guest_locker,
+      },
+    });
+  };
+  console.log()
   const handleConnectionClick = (connection) => {
     navigate("/make-connection", {
       state: {
@@ -1431,25 +1432,25 @@ console.log()
     const connectionName = `${connection.connection_type_name}-${curruser.username}:${parentUser.username}`;
     console.log("show qr", connection);
     const qrContent = JSON.stringify({
-      connection_name: connectionName, 
+      connection_name: connectionName,
       connection_type_name: connection.connection_type_name,
       connection_description: connection.connection_description,
       host_username: parentUser.username,
       host_locker_name: locker.name,
     });
-  
+
     console.log("QR Content Generated:", qrContent); // Debugging
-  
+
     setQrData(qrContent);
     setIsModalOpen(true);
   };
-  
-  
-  
+
+
+
   const handleQrScan = (qrData) => {
     try {
       const parsedData = JSON.parse(qrData); // Parse the QR content
-  
+
       // Navigate to the "Make Connection" page with the parsed data
       navigate("/make-connection", {
         state: {
@@ -1465,15 +1466,15 @@ console.log()
       console.error("Error parsing QR data:", error);
     }
   };
-  
+
   const handleXnodeClick = async (xnode_id) => {
 
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}`.replace(
-                  /host/,
-                  frontend_host
-                ), {
+        /host/,
+        frontend_host
+      ), {
         method: 'GET',
         headers: {
           Authorization: `Basic ${token}`,
@@ -1511,56 +1512,60 @@ console.log()
 
   const content = (
     <>
-       <div className="navbarBrands">{locker?.name}</div>
-       <div>Owner:<u>{parentUser?.username}</u></div>
+      <div className="navbarBrands">{locker?.name}</div>
+      <div>Owner:<u>{parentUser?.username}</u></div>
 
-      
 
-       <div>
+
       <div>
-        {isExpanded ? (
-          // Show full content when expanded
-          <span>{locker?.description}</span>
-        ) : (
-          // Show only the first word with ellipsis when collapsed
-          <span>
-            {firstTwoWords}...
-            <button
-              onClick={() => setIsExpanded(true)} // Expand on click
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'blue',
-                textDecoration: 'underline',
-                marginLeft: '-10px',
-              }}
-            >
-              Read more
-            </button>
-          </span>
+        <div>
+          {isExpanded ? (
+            // Show full content when expanded
+            <span>{locker?.description}</span>
+          ) : (
+            // Show only the first word with ellipsis when collapsed
+            <span>
+              {firstTwoWords}...
+              <button
+                onClick={() => setIsExpanded(true)} // Expand on click
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'blue',
+                  textDecoration: 'underline',
+                  marginLeft: '-10px',
+                }}
+              >
+                Read more
+              </button>
+            </span>
+          )}
+        </div>
+
+        {isExpanded && (
+          // Show "Show less" button when content is expanded
+          <button
+            onClick={() => setIsExpanded(false)} // Collapse on click
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'blue',
+              textDecoration: 'underline',
+              marginTop: '5px',
+            }}
+          >
+            Read less
+          </button>
         )}
       </div>
-
-      {isExpanded && (
-        // Show "Show less" button when content is expanded
-        <button
-          onClick={() => setIsExpanded(false)} // Collapse on click
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'blue',
-            textDecoration: 'underline',
-            marginTop: '5px',
-          }}
-        >
-          Read less
-        </button>
-      )}
-    </div>
     </>
   )
+
+  const handleToggle = (id) => {
+    setShowInfo(showInfo === id ? null : id); // Toggle visibility
+  };
 
 
   return (
@@ -1569,19 +1574,19 @@ console.log()
         <Modal message={modalMessage.message || <QRCode value={qrData} />} onClose={handleCloseModal} type={modalMessage.type || "info"} />
       )}
       <Navbar content={content} />
-      <div style={{marginTop:"140px"}}>
+      <div style={{ marginTop: "140px" }}>
         <Grid container className="page7description" justifyContent="center" alignItems="center">
           <Grid item md={10} sm={12} >
-            
+
           </Grid>
-          <Grid item  md={1.5} sm={12}>
+          <Grid item md={1.5} sm={12}>
             {/* <Box display="flex" justifyContent="center" textAlign="center"> */}
             <button onClick={handleClick} className="new-connection-btns-1">Create New Connection</button>
             {/* </Box> */}
           </Grid>
         </Grid>
-        
-        <Grid container className="page7containers" padding={{md:"4rem"}}>
+
+        <Grid container className="page7containers" padding={{ md: "4rem" }}>
           <Grid container md={5} className="notvisible">
             <Grid item md={12} className="page7publicresource">
               <p>Resources</p>
@@ -1597,61 +1602,83 @@ console.log()
                 <p id="page7nores">No resources found.</p>
               )} */}
               {xnodes.length > 0 ? (
-                    <ul>
-                      {xnodes.map((xnode, index) => (
+                <ul>
+                  {xnodes.map((xnode, index) => (
+                    <div
+                      key={xnode.id}
+                      className="resource-item"
+                    // style={{
+                    //   color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red',}}
+                    >
+                      <div className="resource-details">
                         <div
-                          key={xnode.id}
-                          className="resource-item"
-                          // style={{
-                          //   color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red',}}
+                          id={
+                            xnode.xnode_Type === "INODE"
+                              ? "documents"
+                              : "documents-byShare"
+                          }
+                          onClick={() =>
+                            handleXnodeClick(xnode.id)
+                          }
                         >
-                          <div className="resource-details">
-                            <div
-                              id={
-                                xnode.xnode_Type === "INODE"
-                                  ? "documents"
-                                  : "documents-byShare"
-                              }
-                              onClick={() =>
-                                handleXnodeClick(xnode.id)
-                              }
-                            >
-                              {xnode.resource_name}
-                            </div>
-                            {/* <div className="public-private">
+                          {xnode.resource_name}
+                        </div>
+                        {/* <div className="public-private">
                               {xnode.type === "private" ? <>Private</> : "Public"}
                             </div> */}
-                          </div>
-                        </div>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="not-found">No Resources found.</p>
-                  )}
+                      </div>
+                    </div>
+                  ))}
+                </ul>
+              ) : (
+                <p className="not-found">No Resources found.</p>
+              )}
             </Grid>
 
             <Grid item md={12} className="page7publicresource" marginTop={"3rem"}>
               <p>Available Connection Types</p>
               {otherConnections.length > 0 ? (
                 otherConnections.map((connection) => (
-                  <div className="page7connection" key={connection.connection_type_id}>
+                  <div className="page7connection" key={connection.connection_type_id} style={{ paddingBottom: "20px", cursor: "pointer" }}>
                     <div id="connectionpage7">
                       <div onClick={() => handleConnectionClick(connection)}>
                         <h4 className="clickable-tag"><u>{connection.connection_type_name}</u></h4>
                       </div>
-                      <div id="availconntype">
-                        Description: {connection.connection_description}
-                      </div>
-                      <div id="availconntype">
-                        Created On: {new Date(connection.created_time).toLocaleDateString()}
-                      </div>
-                      <div id="availconntype">
-                        Valid Until: {new Date(connection.validity_time).toLocaleDateString()}
-                      </div>
+                      <>
+                        <div style={{marginTop:"-12px"}}>
+                          <button onClick={() => handleToggle(connection.connection_type_id)} style={{
+                            textDecoration: "underline",
+                            background: "none",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                            color: "blue",
+                            fontSize: "14px",
+                            
+                          }}>
+                            {showInfo === connection.connection_type_id ? "Info" : "Info"}
+                          </button>
+                        </div>
+
+                        {/* Only show details for the expanded connection */}
+                        {showInfo === connection.connection_type_id && (
+                          <div>
+                            <div id="availconntype">
+                              Description: {connection.connection_description}
+                            </div>
+                            <div id="availconntype">
+                              Created On: {new Date(connection.created_time).toLocaleDateString()}
+                            </div>
+                            <div id="availconntype">
+                              Valid Until: {new Date(connection.validity_time).toLocaleDateString()}
+                            </div>
+                          </div>
+                        )}
+                      </>
                       {/* "Scan QR" link to show QR code */}
                       <div id="availconntype">
                         <button onClick={() => handleShowQrCode(connection)}>Scan QR</button>
-                        
+
                       </div>
                     </div>
                   </div>
@@ -1662,14 +1689,14 @@ console.log()
             </Grid>
           </Grid>
           <Grid item md={1} sm={12}></Grid>
-          <Grid item md={6} xs={12} className="page7containersB" marginTop={{xs:"3rem", md:"0"}}>
+          <Grid item md={6} xs={12} className="page7containersB" marginTop={{ xs: "3rem", md: "0" }}>
             <p>My connections with {locker?.name} locker of {parentUser?.username}: </p>
             {outgoingConnections.length > 0 ? (
               outgoingConnections.map((connection, index) => {
                 const tracker = trackerData[connection.connection_id];
                 const color = tracker ? getStatusColor(tracker) : "gray";
                 const ratio = tracker ? calculateRatio(tracker) : "Loading...";
-                
+
                 return (
                   <Grid container className="page7myconnection" key={index}>
                     <Grid item id="conntent" md={7.9} xs={12}>
@@ -1680,9 +1707,9 @@ console.log()
                       <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
                       <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
                     </Grid>
-                    <Grid item  paddingTop={{md:"50px",xs:""}} md={4.1} xs={12}>
+                    <Grid item paddingTop={{ md: "50px", xs: "" }} md={4.1} xs={12}>
                       <button className="info-button" onClick={() => handleInfo(connection)}> i </button>
-                      <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color,padding:"0px", fontSize:"22px" }}>
+                      <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color, padding: "0px", fontSize: "22px" }}>
                         {ratio}
                       </button>
                     </Grid>

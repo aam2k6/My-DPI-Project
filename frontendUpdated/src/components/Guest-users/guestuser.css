@@ -15,7 +15,7 @@
 
 @media (max-width: 480px) {
   .navbarBrands {
-    font-size: 14px !important;
+    font-size: 18px !important;
     font-weight: bold;
      /* Further reduced font size for small screens */
   }

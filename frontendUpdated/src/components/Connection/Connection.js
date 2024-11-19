@@ -23,6 +23,12 @@ export const Connection = () => {
   const [connectionDescription, setConnectionDescription] = useState(null);
   const [validity, setValidity] = useState(null);
   const [selectedLocker, setSelectedLocker] = useState(null);
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (!curruser) {
       navigate("/");
@@ -76,7 +82,7 @@ export const Connection = () => {
   const content = (
     <>
       <div className="navbarBrands">Locker : {locker_conn?.name}</div>
-      <div className="navbarBrands">Owner : {curruser.username}</div>
+      <div className="navbarBrands">Owner : {capitalizeFirstLetter(curruser.username)} </div>
     </>
   );
 

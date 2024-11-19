@@ -1144,7 +1144,7 @@ export const TargetLockerView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrData, setQrData] = useState("");  // State for QR code data
   const [xnodes, setXnodes] = useState([]);
-
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (!curruser) {
@@ -1506,20 +1506,73 @@ console.log()
     }
   };
 
+  const firstTwoWords = locker?.description?.split(' ').slice(0, 2).join(' ') || '';
+
+
+  const content = (
+    <>
+       <div className="navbarBrands">{locker?.name}</div>
+       <div>Owner:<u>{parentUser?.username}</u></div>
+
+      
+
+       <div>
+      <div>
+        {isExpanded ? (
+          // Show full content when expanded
+          <span>{locker?.description}</span>
+        ) : (
+          // Show only the first word with ellipsis when collapsed
+          <span>
+            {firstTwoWords}...
+            <button
+              onClick={() => setIsExpanded(true)} // Expand on click
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'blue',
+                textDecoration: 'underline',
+                marginLeft: '-10px',
+              }}
+            >
+              Read more
+            </button>
+          </span>
+        )}
+      </div>
+
+      {isExpanded && (
+        // Show "Show less" button when content is expanded
+        <button
+          onClick={() => setIsExpanded(false)} // Collapse on click
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'blue',
+            textDecoration: 'underline',
+            marginTop: '5px',
+          }}
+        >
+          Read less
+        </button>
+      )}
+    </div>
+    </>
+  )
+
 
   return (
     <div>
       {isModalOpen && (
         <Modal message={modalMessage.message || <QRCode value={qrData} />} onClose={handleCloseModal} type={modalMessage.type || "info"} />
       )}
-      <Navbar content={<>
-        <div className="navbarBrand">{locker?.name}</div>
-        <div className="descriptions">Owner:<u>{parentUser?.username}</u></div>
-      </>} />
-      <div style={{marginTop:"120px"}}>
+      <Navbar content={content} />
+      <div style={{marginTop:"140px"}}>
         <Grid container className="page7description" justifyContent="center" alignItems="center">
           <Grid item md={10} sm={12} >
-            <div className="descriptions">{locker?.description}</div>
+            
           </Grid>
           <Grid item  md={1.5} sm={12}>
             {/* <Box display="flex" justifyContent="center" textAlign="center"> */}

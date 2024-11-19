@@ -181,6 +181,10 @@
   font-weight: 400;
 }
 
+.not-found{
+  font-size: medium;
+  font-weight: 400;
+}
 
 #availconntype{
   font-size: 0.75rem;

@@ -336,8 +336,8 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
 
   const content = (
     <>
-      <div className="navbarBrand">{curruser ? capitalizeFirstLetter(curruser.username): "None"}</div>
-      <div className="descriptions">
+      <div className="navbarBrands">{curruser ? capitalizeFirstLetter(curruser.username): "None"}</div>
+      <div>
         {curruser ? curruser.description : "None"}
       </div>
     </>

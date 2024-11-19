@@ -85,13 +85,13 @@
 //             'Content-Type': 'application/json'
 //           }
 //         });
-  
+
 //         if (!response.ok) {
 //           const errorData = await response.json();
 //           setError(errorData.error || 'Failed to fetch notifications');
 //           return;
 //         }
-  
+
 //         const data = await response.json();
 //         if (data.success) {
 //           setNotifications(data.notifications || []);
@@ -170,12 +170,12 @@
 //             lockers.map(locker => (
 //               <div key={locker.locker_id} className="page1-locker">
 //                 <h4>{locker.name}</h4>
-                
+
 //                 {locker.is_frozen === false && <button id="openLockerBtn" onClick={() => handleClick(locker)}>Open</button>}
 //                 {locker.is_frozen === true && <button id="openLockerBtn">Frozen</button>}
-    
+
 //                 <p className="description2">{locker.description}</p>
-               
+
 //               </div>
 //             ))
 //           ) : (
@@ -211,8 +211,8 @@ import { useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
-import{ Button, Grid, Grid2, Typography } from '@mui/material'
-import {Scanner} from '../Scanner/Scanner'
+import { Button, Grid, Grid2, Typography } from '@mui/material'
+import { Scanner } from '../Scanner/Scanner'
 
 
 // Helper function to capitalizeFirstLetter
@@ -224,11 +224,12 @@ const capitalizeFirstLetter = (string) => {
 export const Home = () => {
   const navigate = useNavigate();
   const [lockers, setLockers] = useState([]);
-  const [notifications, setNotifications] = useState([]); 
-  const [outgoingConnections, setOutgoingConnections] = useState([]); 
+  const [notifications, setNotifications] = useState([]);
+  const [outgoingConnections, setOutgoingConnections] = useState([]);
   const [error, setError] = useState(null);
   const { curruser } = useContext(usercontext);
   const [showOutgoingConnections, setShowOutgoingConnections] = useState(false); // Toggle state
+  const [expandedIndex, setExpandedIndex] = useState(null);
 
   useEffect(() => {
     if (!curruser) {
@@ -236,7 +237,7 @@ export const Home = () => {
       return;
     }
   }, [curruser, navigate]);
-  
+
 
   useEffect(() => {
     const fetchLockers = async () => {
@@ -348,107 +349,107 @@ export const Home = () => {
         setError('An error occurred while fetching outgoing connections.');
       }
     }
-    
-};
-const navigateToViewTerms = (connection) => {
-  const locker = connection.guest_locker;
-  console.log("Connection ID:", connection.connection_id);
-  console.log("Connection Name:", connection.connection_name);
-  console.log("Connection Description:", connection.connection_description);
-  console.log("Host Locker Name:", connection.host_locker);
-  console.log("Guest Locker Name:", connection.guest_locker);
-  console.log("Host User Username:", connection.host_user);
-  console.log("Guest User Username:", curruser.username);
-  console.log("Locker Details:",locker);
 
-  navigate("/view-terms-by-type", {
-    state: {
-      connection_id: connection.connection_id,
+  };
+  const navigateToViewTerms = (connection) => {
+    const locker = connection.guest_locker;
+    console.log("Connection ID:", connection.connection_id);
+    console.log("Connection Name:", connection.connection_name);
+    console.log("Connection Description:", connection.connection_description);
+    console.log("Host Locker Name:", connection.host_locker);
+    console.log("Guest Locker Name:", connection.guest_locker);
+    console.log("Host User Username:", connection.host_user);
+    console.log("Guest User Username:", curruser.username);
+    console.log("Locker Details:", locker);
+
+    navigate("/view-terms-by-type", {
+      state: {
+        connection_id: connection.connection_id,
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker,
+        guestLockerName: connection.guest_locker,
+        hostUserUsername: connection.host_user,
+        guestUserUsername: curruser.username,
+        locker: locker,
+      },
+    });
+  };
+
+  const handleInfo = (connection) => {
+    const connectionParts = connection.connection_name.split(/[-:]/).map(part => part.trim());
+    const connectionTypeName = connectionParts[0];  // Extract connection type
+    const guestUserUsername = connectionParts[1];   // Extract guest username
+    const hostUserUsername = connectionParts[2];
+    const locker = connection.guest_locker;
+
+
+    console.log("Navigating with state:", {
       connectionName: connection.connection_name,
+      hostLockerName: connection.host_locker?.name,
+      guestLockerName: connection.guest_locker?.name,
+      hostUserUsername: connection.host_user?.username,
+      guestUserUsername: connection.guest_user?.username,
+      locker: connection.guest_locker?.name,
+      connectionTypeName,
       connectionDescription: connection.connection_description,
-      hostLockerName: connection.host_locker,  
-      guestLockerName: connection.guest_locker, 
-      hostUserUsername: connection.host_user, 
-      guestUserUsername: curruser.username, 
-      locker: locker, 
-    },
-  });
-};
+    });
 
-const handleInfo = (connection) => {
-  const connectionParts = connection.connection_name.split(/[-:]/).map(part => part.trim());
-  const connectionTypeName = connectionParts[0];  // Extract connection type
-  const guestUserUsername = connectionParts[1];   // Extract guest username
-  const hostUserUsername = connectionParts[2];  
-  const locker = connection.guest_locker;
-  
+    navigate("/show-connection-terms", {
+      state: {
+        connection_id: connection.connection_id,
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker,
+        guestLockerName: connection.guest_locker,
+        hostUserUsername: connection.host_user,
+        guestUserUsername: curruser.username,
+        locker: locker,
+        connectionTypeName
+      },
+    });
+  };
 
-  console.log("Navigating with state:", {
-    connectionName: connection.connection_name,
-    hostLockerName: connection.host_locker?.name,
-    guestLockerName: connection.guest_locker?.name,
-    hostUserUsername: connection.host_user?.username,
-    guestUserUsername: connection.guest_user?.username,
-    locker:connection.guest_locker?.name,
-    connectionTypeName,
-    connectionDescription:connection.connection_description,     
-  });
 
-  navigate("/show-connection-terms", {
-    state: {
-      connection_id: connection.connection_id,
+
+  const handleConsent = (connection) => {
+    // Split the connection_name using both '-' and ':' to get relevant parts
+    const connectionParts = connection.connection_name.split(/[-:]/).map(part => part.trim());
+    const connectionTypeName = connectionParts[0];  // The first part is the connection type
+    const guestUserUsername = connectionParts[1];   // The second part is the guest username
+    const hostUserUsername = connectionParts[2];    // The third part is the host locker name
+
+    // Ensure that locker IDs are not undefined by extracting from the connection object
+    const guestLockerId = connection.guest_locker?.id
+    const hostLockerId = connection.host_locker?.id
+    const locker = connection.guest_locker;
+
+
+    console.log("Navigating with state:", {
       connectionName: connection.connection_name,
-      connectionDescription: connection.connection_description,
-      hostLockerName: connection.host_locker,  
-      guestLockerName: connection.guest_locker, 
-      hostUserUsername: connection.host_user, 
-      guestUserUsername: curruser.username, 
-      locker: locker,   
-      connectionTypeName                 
-    },
-  });
-};
-
-
-
-const handleConsent = (connection) => {
-  // Split the connection_name using both '-' and ':' to get relevant parts
-  const connectionParts = connection.connection_name.split(/[-:]/).map(part => part.trim());
-  const connectionTypeName = connectionParts[0];  // The first part is the connection type
-  const guestUserUsername = connectionParts[1];   // The second part is the guest username
-  const hostUserUsername = connectionParts[2];    // The third part is the host locker name
-
-  // Ensure that locker IDs are not undefined by extracting from the connection object
-  const guestLockerId = connection.guest_locker?.id
-  const hostLockerId = connection.host_locker?.id 
-  const locker = connection.guest_locker;
-
-
-  console.log("Navigating with state:", {
-    connectionName: connection.connection_name,
-    connectionTypeName,       
-    guestUserUsername,        
-    hostUserUsername,         
-    guestLockerId,            
-    hostLockerId,             
-    connection_id: connection.connection_id,
-  });
-
-  navigate("/show-connection-terms", {
-    state: {
+      connectionTypeName,
+      guestUserUsername,
+      hostUserUsername,
+      guestLockerId,
+      hostLockerId,
       connection_id: connection.connection_id,
-      connectionName: connection.connection_name,
-      connectionDescription: connection.connection_description,
-      hostLockerName: connection.host_locker,  
-      guestLockerName: connection.guest_locker, 
-      hostUserUsername: connection.host_user, 
-      guestUserUsername: curruser.username, 
-      locker: locker,   
-      connectionTypeName, 
-      showConsent: true,              
-    },
-  });
-};
+    });
+
+    navigate("/show-connection-terms", {
+      state: {
+        connection_id: connection.connection_id,
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker,
+        guestLockerName: connection.guest_locker,
+        hostUserUsername: connection.host_user,
+        guestUserUsername: curruser.username,
+        locker: locker,
+        connectionTypeName,
+        showConsent: true,
+      },
+    });
+  };
 
 
 
@@ -457,117 +458,154 @@ const handleConsent = (connection) => {
       <div className="navbarBrands">
         {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
       </div>
+      <div>
+        {curruser ? curruser.description : "None"}
+      </div>
       {/* <Typography> {curruser ? curruser.description : "None"}</Typography> */}
-      
+
     </>
   );
+
+
+  const toggleExpand = (index) => {
+    setExpandedIndex(expandedIndex === index ? null : index); // Toggle expand/collapse
+  };
   return (
     <div>
       <div>
-      <Navbar content={content} />
+        <Navbar content={content} />
       </div>
-      
 
-     <div style={{marginTop:"120px"}}>
-     <div className="descriptions">
-        {curruser ? curruser.description : "None"}
-      </div>
-      <div className="heroContainer">
-        {/* <div> */}
-        
-         
+
+      <div style={{ marginTop: "120px" }}>
+        <div className="heroContainer">
+          {/* <div> */}
+
+
           <Grid container>
-            <Grid item md={4} xs={12} sx={{textAlign:"center"}}>
+            <Grid item md={4} xs={12} sx={{ textAlign: "center" }}>
               <h2>{showOutgoingConnections ? "Consent Dashboard" : "My Lockers"}</h2>
             </Grid>
             <Grid item md={4} xs={6}>
               {!showOutgoingConnections && (
-              <Button  variant="contained" style={{fontWeight:"bold"}} onClick={handleNewLockerClick} size="small">
-                Create New Locker
-              </Button>
-            )}
+                <Button variant="contained" style={{ fontWeight: "bold" }} onClick={handleNewLockerClick} size="small">
+                  Create New Locker
+                </Button>
+              )}
             </Grid>
             <Grid item md={4} xs={6}>
-              <Button  variant="contained" style={{fontWeight:"bold"}} onClick={handleConsentDashboardClick} size="small" >
-              {showOutgoingConnections ? "Lockers" : "Consent Dashboard"} {/* Change button text based on state */}
+              <Button variant="contained" style={{ fontWeight: "bold" }} onClick={handleConsentDashboardClick} size="small" >
+                {showOutgoingConnections ? "Lockers" : "Consent Dashboard"} {/* Change button text based on state */}
               </Button>
             </Grid>
           </Grid>
-          
 
-          
-        {/* </div> */}
-        {showOutgoingConnections ? (
-  <div className="allOutgoingConnections">
-    {outgoingConnections.length > 0 ? (
-      <div className="tableContainer table-responsive"> {/* Ensure no height constraints here */}
-        <table className="table table-bordered table-striped table-hover outgoingConnectionsTable">
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Connection Type</th>
-              <th>Host User</th>
-              <th>Host Locker</th>
-              <th>Guest Locker</th>
-              <th>Created On</th>
-              <th>Validity On</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {outgoingConnections.map((connection, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>
-                  <button
-                    className="connection-name-button"
-                    onClick={() => navigateToViewTerms(connection)}
-                    style={{
-                      textDecoration: "underline",
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                      color: "inherit",
-                      textAlign: "left",
-                    }}
-                  >
-                    {connection.connection_name}
-                  </button>
-                  <div>{connection.connection_description}</div>
-                </td>
-                <td>{connection.host_user}</td>
-                <td>{connection.host_locker}</td>
-                <td>{connection.guest_locker}</td>
-                <td>{new Date(connection.created_on).toLocaleString()}</td>
-                <td>{new Date(connection.validity_time).toLocaleString()}</td>
-                <td>
-                  <div id="conntent" className="d-flex justify-content-center">
-                    <button
-                      className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center me-2"
-                      onClick={() => handleInfo(connection)}
-                      style={{ width: "30px", height: "30px", fontWeight: "bold" }}
-                    >
-                      I
-                    </button>
-                    <button
-                      className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center"
-                      onClick={() => handleConsent(connection)}
-                      style={{ width: "30px", height: "30px", fontWeight: "bold" }}
-                    >
-                      C
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ) : (
-      <p>No outgoing connections found.</p>
-    )}
-  </div>
+
+
+          {/* </div> */}
+          {showOutgoingConnections ? (
+            <div className="allOutgoingConnections">
+              {outgoingConnections.length > 0 ? (
+                <div className="tableContainer table-responsive"> {/* Ensure no height constraints here */}
+                  <table className="table table-bordered table-striped table-hover outgoingConnectionsTable">
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>Connection Type</th>
+                        <th>Host User</th>
+                        <th>Host Locker</th>
+                        <th>Guest Locker</th>
+                        <th>Created On</th>
+                        <th>Validity On</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {outgoingConnections.map((connection, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>
+                            <button
+                              className="connection-name-button"
+                              onClick={() => navigateToViewTerms(connection)}
+                              style={{
+                                textDecoration: "underline",
+                                background: "none",
+                                border: "none",
+                                padding: 0,
+                                cursor: "pointer",
+                                color: "inherit",
+                                textAlign: "left",
+                              }}
+                            >
+                              {connection.connection_name}
+                            </button>
+                            {expandedIndex === index && (
+                              <div>
+                                <div>{connection.connection_description}</div>
+                                <button
+                                  onClick={() => toggleExpand(index)}
+                                  style={{
+                                    textDecoration: "underline",
+                                    background: "none",
+                                    border: "none",
+                                    padding: 0,
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                >
+                                  Read less
+                                </button>
+                              </div>
+                            )}
+                            {expandedIndex !== index && (
+                              <button
+                                onClick={() => toggleExpand(index)}
+                                style={{
+                                  textDecoration: "underline",
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  cursor: "pointer",
+                                  color: "blue"
+                                }}
+                              >
+                                Read more
+                              </button>
+                            )}
+                          </td>
+                          <td>{connection.host_user}</td>
+                          <td>{connection.host_locker}</td>
+                          <td>{connection.guest_locker}</td>
+                          <td>{new Date(connection.created_on).toLocaleString()}</td>
+                          <td>{new Date(connection.validity_time).toLocaleString()}</td>
+                          <td>
+                            <div id="conntent" className="d-flex justify-content-center">
+                              <button
+                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center me-2"
+                                onClick={() => handleInfo(connection)}
+                                style={{ width: "30px", height: "30px", fontWeight: "bold" }}
+                              >
+                                I
+                              </button>
+                              <button
+                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center"
+                                onClick={() => handleConsent(connection)}
+                                style={{ width: "30px", height: "30px", fontWeight: "bold" }}
+                              >
+                                C
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p>No outgoing connections found.</p>
+              )}
+            </div>
           ) : (
             <div className="allLockers">
               {lockers.length > 0 ? (
@@ -590,8 +628,9 @@ const handleConsent = (connection) => {
             </div>
           )}
 
+        </div>
       </div>
-     </div>
 
     </div>
-  );}
+  );
+}

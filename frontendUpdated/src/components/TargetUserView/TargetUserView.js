@@ -81,8 +81,9 @@ export const TargetUserView = () => {
 
   const content = (
     <>
-    <div className="navbarBrand">{user ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : 'None'}</div>
-          </>
+      <div className="navbarBrands">{user ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : 'None'}</div>
+      <div>{user ? user.description : 'None'}</div>
+    </>
   );
 
   return (
@@ -90,7 +91,6 @@ export const TargetUserView = () => {
       <Navbar content = {content}/>
       
      <div style={{marginTop:"120px"}}>
-     <div className="description" >{user ? user.description : 'None'}</div>
      <div className="heroContainers">
         <div className="newLocker">
           <h3></h3>

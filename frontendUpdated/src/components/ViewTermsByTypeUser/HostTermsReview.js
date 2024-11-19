@@ -40,6 +40,11 @@ export const HostTermsReview = () => {
   const [activeTab, setActiveTab] = useState("host");
 
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -1037,7 +1042,10 @@ const navigateToConnectionDetails = (connection) => {
 
   const content = (
     <>
-      <div className="navbarBrands">{curruser ? curruser.username : "None"}</div>
+      <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
+      <div>
+          {curruser ? curruser.description : "None"}
+        </div>
       {/* <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -1247,14 +1255,10 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
       <Navbar content={content} />
 
       <div style={{marginTop:"120px"}}>
-
-        <div className="descriptions">
-          {curruser ? curruser.description : "None"}
-        </div>
         <div className="connection-details">
           Connection Name: {conndetails?.connection_name || "Loading..."}
           <button
-            className="info-button"
+            className="info-button info"
             onClick={() => navigateToConnectionDetails(connection)}
             title="Show Connection Terms"
             style={{
@@ -1294,7 +1298,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
           </div>
         </div>
 
-        <div className="view-container">
+        <div className="view-container" style={{marginLeft:"120px"}}>
           <div className="b">
             <div className="tabs">
               <div

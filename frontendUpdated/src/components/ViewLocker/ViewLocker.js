@@ -698,9 +698,12 @@ const handleDeleteClick = async (xnode) => {
 
   const content = (
     <>
-      <div className="navbarBrand">
+      <div className="navbarBrands">
         {locker ? `Locker: ${locker.name}` : "Locker"}
       </div>
+      <div>
+          {locker ? ` ${locker.description}` : "Description"}
+        </div>
     </>
   );
   // console.log("res vnode", VnodeResources);
@@ -710,9 +713,9 @@ const handleDeleteClick = async (xnode) => {
     <div>
       <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
       <div className="containers" style={{marginTop:"150px"}}>
-        <div className="locker-description">
+        {/* <div className="locker-description">
           {locker ? ` ${locker.description}` : "Description"}
-        </div>
+        </div> */}
         {/* QR Scanner Section
         {scanning && (
           <div className="qr-scanner-overlay">

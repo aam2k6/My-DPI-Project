@@ -260,3 +260,8 @@
     opacity: 1;
   
   }
+
+  .info :hover{
+    /* background-color: black; */
+    color: black;
+  }

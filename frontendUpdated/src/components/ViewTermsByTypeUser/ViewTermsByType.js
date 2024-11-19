@@ -1591,6 +1591,7 @@ export const ViewTermsByType = () => {
           hostLockerName: hostLockerName,
           connectionTypeName,
           hostUserUsername: hostUserUsername,
+          guestUserUsername: guestUserUsername,
           locker: locker.name,
           showConsent: false,
           lockerComplete: locker,
@@ -1624,6 +1625,7 @@ export const ViewTermsByType = () => {
           hostLockerName: hostLockerName,
           connectionTypeName,
           hostUserUsername: hostUserUsername,
+          guestUserUsername: guestUserUsername,
           locker: locker.name,
           showConsent: true,
           guest_locker_id,
@@ -1790,7 +1792,7 @@ export const ViewTermsByType = () => {
         {curruser ? curruser.description : "None"}
       </div> */}
 
-      <div className="navbarBrand">
+      <div className="navbarBrands">
         {connectionName}
       </div>
 
@@ -1926,7 +1928,7 @@ export const ViewTermsByType = () => {
         <div className="connection-details">
           Connection Name: {connectionName}
           <button
-            className="info-button"
+            className="info-button info"
             onClick={() => navigateToConnectionTerms(connectionName)}
             title="Show Connection Terms"
             style={{

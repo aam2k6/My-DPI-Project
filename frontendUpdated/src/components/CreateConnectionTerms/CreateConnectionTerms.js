@@ -1333,9 +1333,9 @@ return (
         </div>
       </div>
     </div>
-   <div className="show-connection">
-   <Grid container className="view-container">
-      <Grid item xs={12} className="b">
+   <div>
+   <div className="view-container">
+      <div className="b">
         <div className="tabs">
           <div
             className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
@@ -1378,8 +1378,8 @@ return (
             )}
           </div>
         </div>
-      </Grid>
-    </Grid>
+      </div>
+    </div>
 
     {isModalOpen && (
       <Modal

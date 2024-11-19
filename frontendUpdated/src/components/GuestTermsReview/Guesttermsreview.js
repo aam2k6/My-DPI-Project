@@ -54,6 +54,12 @@ export const Guesttermsreview = () => {
   //         </div>
   //     </div>
   // );
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   console.log(connection, connectionType);
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
@@ -1121,7 +1127,10 @@ export const Guesttermsreview = () => {
 
   const content = (
     <>
-      <div className="navbarBrand">{curruser ? curruser.username : "None"}</div>
+      <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
+      <div>
+        {curruser ? curruser.description : "None"}
+      </div>
       {/* <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -1247,9 +1256,9 @@ export const Guesttermsreview = () => {
 
       <div style={{ marginTop: '120px' }}>
 
-        <div className="descriptions">
+        {/* <div className="description">
           {curruser ? curruser.description : "None"}
-        </div>
+        </div> */}
 
         <div className="connection-details">
           Connection Name: {conndetails?.connection_name || "Loading..."}

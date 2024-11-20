@@ -7,14 +7,27 @@
 }
 
 .page12hostlocker {
-  font-size: 1.25rem;
-  /* width: 25rem; */
-  height: 4rem;
-  margin-top: 3rem;
-  /* margin-left: 1rem; */
-  margin-right: 1rem; /* Adjusted to be more centered */
-  padding: 1rem;
+  font-size: 1.2rem;
+  width: auto;
+  /* height: 3rem; */
+  margin-top: 40px;
+  margin-left: 1rem;
+  /* margin-right: 1rem; */
+  padding: 12px 20px;
+  border-radius: 5px;
   border: 2px solid rgb(107, 120, 231);
+}
+
+@media (max-width: 768px) { /* Adjusts styles for screens smaller than 768px */
+  .page12hostlocker {
+    font-size: 1rem;
+    width: 100%; /* Ensures it takes full width on small screens */
+    margin-top: 40px;
+    margin-left: 0.5rem;
+    margin-right: 0.2rem; /* Add margin-right for spacing */
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
 }
 
 .page12parentconnections {
@@ -29,8 +42,7 @@
 }
 
 .page12paragraph {
-  margin-top: 7rem;
-  margin-left: 3rem;
+  margin-top: 5rem;
   font-size: 1.25rem;
   padding: 2rem; /* Added padding for better spacing */
   /* width: 50rem; */
@@ -39,16 +51,16 @@
   border-radius: 0.5rem;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: space-between; /* Flexbox to align content and button */
+  /* justify-content: space-between; */
   align-items: center; /* Center-align items vertically */
 }
 
 .page12paragraph button {
   background-color: #007bff;
   color: #fff;
-  width: 5rem;
+  /* width: 5rem; */
   border: none;
-  padding: 1rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
   cursor: pointer;
   font-weight: bolder;
@@ -59,7 +71,7 @@
 }
 
 .createconnectionmylock {
-  margin-top: 4rem;
+  margin-top: 3rem;
   font-size: large;
   font-weight: 500;
 }

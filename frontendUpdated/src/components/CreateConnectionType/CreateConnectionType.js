@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
 import { frontend_host } from '../../config';
-import { Grid } from '@mui/material'
+import { Grid, Box, Button } from '@mui/material'
 
 export const CreateConnectionType = () => {
     const navigate = useNavigate();
@@ -37,21 +37,21 @@ export const CreateConnectionType = () => {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                setLockers(data.lockers || []); // Ensure array
-                if (!selectedLocker && data.lockers.length > 0) {
-                    setSelectedLocker(data.lockers[0]);
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setLockers(data.lockers || []); // Ensure array
+                    if (!selectedLocker && data.lockers.length > 0) {
+                        setSelectedLocker(data.lockers[0]);
+                    }
+                } else {
+                    setError(data.message || data.error);
                 }
-            } else {
-                setError(data.message || data.error);
-            }
-        })
-        .catch(error => {
-            setError("An error occurred while fetching lockers.");
-            console.error("Error:", error);
-        });
+            })
+            .catch(error => {
+                setError("An error occurred while fetching lockers.");
+                console.error("Error:", error);
+            });
     }, [curruser]);
 
     useEffect(() => {
@@ -65,21 +65,21 @@ export const CreateConnectionType = () => {
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    setConnectionTypes(data.connection_types || []); // Ensure array
-                    if (!selectedConnectionType && data.connection_types.length > 0) {
-                        setSelectedConnectionType(data.connection_types[0]);
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        setConnectionTypes(data.connection_types || []); // Ensure array
+                        if (!selectedConnectionType && data.connection_types.length > 0) {
+                            setSelectedConnectionType(data.connection_types[0]);
+                        }
+                    } else {
+                        setError(data.message || data.error);
                     }
-                } else {
-                    setError(data.message || data.error);
-                }
-            })
-            .catch(error => {
-                setError("An error occurred while fetching connection types.");
-                console.error("Error:", error);
-            });
+                })
+                .catch(error => {
+                    setError("An error occurred while fetching connection types.");
+                    console.error("Error:", error);
+                });
         }
     }, [parentUser, locker]);
 
@@ -98,22 +98,23 @@ export const CreateConnectionType = () => {
     console.log("locker", locker.name);
     const handleNextClick = (event) => {
         event.preventDefault(); // Prevent the default form submission
-    
+
         // Ensure all required data is present
         if (!selectedConnectionType || !parentUser || !curruser || !locker || !selectedLocker) {
             console.error('Missing necessary data to proceed');
             setError("Required data is missing.");
             return;
         }
-    
+
         console.log('Navigating to show connection terms');
-    
+
         // Navigate to the terms page with state data
         navigate('/show-connection-terms', {
             state: {
                 connectionTypeName: selectedConnectionType.connection_type_name,
-                connectionDescription:selectedConnectionType.connection_description,
+                connectionDescription: selectedConnectionType.connection_description,
                 locker: selectedLocker.name,
+                guestUserUsername:curruser.username,
                 hostUserUsername: parentUser.username,
                 hostLockerName: locker.name,
                 connectionName: `${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`,
@@ -122,53 +123,74 @@ export const CreateConnectionType = () => {
             }
         });
     };
-    
 
-console.log(connectionTypes);
-const content = (
-    <>
-     <select className="navbarBrand" name="connectionType" onChange={handleConnectionTypeChange} value={selectedConnectionType ? selectedConnectionType.connection_type_name : ''}>
-    <option value="" disabled>Select Connection Type</option>
-    {connectionTypes && connectionTypes.map(type => (
-        <option key={type.connection_type_id} value={type.connection_type_name}>{type.connection_type_name}</option>
-    ))}
-</select>
-    </>
-   
-)
-    return (
+
+    console.log(connectionTypes);
+    const content = (
         <>
-            <Navbar content = {content} />
-            <div style={{marginTop:"120px"}}>
+            <select className="navbarBrands" style={{ fontSize: "20px", marginTop: "5px", padding: "8px", borderRadius: "5px" }} name="connectionType" onChange={handleConnectionTypeChange} value={selectedConnectionType ? selectedConnectionType.connection_type_name : ''}>
+                <option value="" disabled>Select Connection Type</option>
+                {connectionTypes && connectionTypes.map(type => (
+                    <option key={type.connection_type_id} value={type.connection_type_name}>{type.connection_type_name}</option>
+                ))}
+            </select>
+        </>
+
+    )
+    return (
+        <div id='make-connection'>
+            <Navbar content={content} />
+            <div style={{ marginTop: "120px" }}>
                 <div className="page12typeofconn">
-                    <h2>
-                    {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username }&lt;&gt; {parentUser.username}) <p className = "noBold">Description: {selectedConnectionType.connection_description}</p></div> }
-                    </h2>                    
+                    <h6>
+                        {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username} <i class="bi bi-arrows"></i> {parentUser.username}) <p className="">Description: {selectedConnectionType.connection_description}</p></div>}
+                    </h6>
                 </div>
+                <div style={{border:"2px solid blue",margin:"20px"}}>
                 <Grid container className="page12parentconnections">
-                    <Grid item md={2} xs={12} className="page12hostlocker">
-                        <pre>Host User: {parentUser.username} <br />Host Locker: {locker.name}</pre>
+                    <Grid item md={2} sm={12} xs={12}>
+                        <Box className="make-Box"
+                            sx={{
+                                padding: '5px 10px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                boxShadow: 3,
+                                borderRadius: 2,
+                                backgroundColor: "#f9f9f9;",
+                                border: "2px solid rgb(107, 120, 231)",
+                                paddingTop:"18px"
+                            }}
+                        >
+                            <p>Host User: {parentUser.username}</p><p style={{marginTop:"-12px"}}>Host Locker: {locker.name}</p>
+                        </Box>
                     </Grid>
-                    <Grid item md={2} xs={12}>
+                    <Grid item md={1} xs={12}>
 
                     </Grid>
-                   <Grid item md={8} xs={12} className='d-flex'>
-                    <span className='createconnectionmylock'><pre>Select My Locker</pre></span>
-                    <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
-                        {lockers && lockers.map(locker => (
-                            <option key={locker.locker_id} value={locker.name}>{locker.name}</option>
-                        ))}
-                    </select>
-                   </Grid>
+                    <Grid item md={9} xs={12} className='d-flex'>
+                        <span className='createconnectionmylock'><pre>Select My Locker</pre></span>
+                        <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
+                            {lockers && lockers.map(locker => (
+                                <option key={locker.locker_id} value={locker.name}>{locker.name}</option>
+                            ))}
+                        </select>
+                    </Grid>
                 </Grid>
                 {selectedConnectionType && (
-                    <div className="page12paragraph">
-                        <u>"{selectedConnectionType.connection_type_name}"</u> For this connection type you will need to fulfill the following obligations. Click on the next button.
-                        <button onClick={handleNextClick} className="next-btn">Next</button>
-                    </div>
+                   <div style={{margin:"30px"}}>
+                     <Grid container className="page12paragraph"  display={"flex"} justifyContent={"center"}>
+                        <u>"{selectedConnectionType.connection_type_name}"</u><span style={{marginLeft:"15px", marginRight:"15px"}}>For this connection type you will need to fulfill the following obligations. Click on the next button.</span>
+
+                        <div>
+                        <Button onClick={handleNextClick} className="next-btn">Next</Button>
+                        </div>
+                    </Grid>
+                   </div>
                 )}
+                </div>
             </div>
-           
-        </>
+
+        </div>
     );
 };

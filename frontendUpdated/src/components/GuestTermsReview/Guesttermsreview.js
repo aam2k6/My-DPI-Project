@@ -26,6 +26,7 @@ export const Guesttermsreview = () => {
   const [resourcesData, setResourcesData] = useState({
     share: [],
     transfer: [],
+    confer:[]
   });
   const [permissionsData, setPermissionsData] = useState([]);
   const [terms, setTerms] = useState([]);
@@ -473,6 +474,7 @@ export const Guesttermsreview = () => {
           // Initialize new arrays for transfer and share
           const newTransfer = [...new Set(prevResourcesData.transfer)];
           const newShare = [...new Set(prevResourcesData.share)];
+          const newConfer = [...new Set(prevResourcesData.confer)];
 
           // const newShare = [];
           // const newTransfer = [];
@@ -497,6 +499,8 @@ export const Guesttermsreview = () => {
                 newTransfer.push(currentValue);
               } else if (currentType === "share" && !newShare.includes(currentValue)) {
                 newShare.push(currentValue);
+              }  else if (currentType === "confer" && !newConfer.includes(currentValue)) {
+                newConfer.push(currentValue);
               }
             }
           });
@@ -505,6 +509,7 @@ export const Guesttermsreview = () => {
           return {
             transfer: [...new Set(newTransfer)],
             share: [...new Set(newShare)],
+            confer: [...new Set(newConfer)],
           };
         });
 
@@ -637,6 +642,7 @@ export const Guesttermsreview = () => {
 
       const resourcesToTransfer = resourcesData.transfer;
       const resourcesToShare = resourcesData.share;
+      const resourcesToConfer = resourcesData.confer;
 
       const requestBody = {
         connection_name: conndetails.connection_name,
@@ -648,6 +654,7 @@ export const Guesttermsreview = () => {
         resources: {
           Transfer: resourcesToTransfer,
           Share: resourcesToShare,
+          Confer: resourcesToConfer,
         },
       };
 
@@ -692,6 +699,11 @@ export const Guesttermsreview = () => {
       // Share resources
       if (resourcesToShare.length > 0) {
         await handleShareResource();
+      }
+
+       // Confer resources
+      if(resourcesToConfer.length > 0) {
+        await handleConferResource();
       }
 
       navigate("/home");
@@ -841,6 +853,55 @@ export const Guesttermsreview = () => {
       throw err; // Rethrow error to be handled by the main try-catch
     }
   };
+
+  const handleConferResource = async () => {
+    try {
+      console.log(JSON.stringify({
+        connection_name: conndetails.connection_name,
+        host_locker_name: conndetails.host_locker.name,
+        guest_locker_name: conndetails.guest_locker.name,
+        host_user_username: conndetails.host_user.username,
+        guest_user_username: conndetails.guest_user.username,
+        validity_until: conndetails.validity_time,
+      }));
+
+      const token = Cookies.get("authToken");
+      const response = await fetch(
+        `${frontend_host}/confer-resource/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`,
+          },
+          body: JSON.stringify({
+            connection_name: conndetails.connection_name,
+            host_locker_name: conndetails.host_locker.name,
+            guest_locker_name: conndetails.guest_locker.name,
+            host_user_username: conndetails.host_user.username,
+            guest_user_username: conndetails.guest_user.username,
+            validity_until: conndetails.validity_time,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log(response.error);
+        throw new Error("Failed to confer resource");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        alert("Resource confer successful");
+      } else {
+        setError(data.error || "Failed to confer resource");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
 
   // const handleResourceClick = (filePath) => {
   //     const url = `host/media/documents/${filePath}`.replace(/host/, frontend_host);
@@ -1331,7 +1392,8 @@ export const Guesttermsreview = () => {
                       host_locker_id: conndetails.host_locker?.locker_id,
                       connection: connection,
                       connectionType: connectionType,
-                      guestLocker: conndetails.guest_locker
+                      guestLocker: conndetails.guest_locker,
+                      hostLocker: conndetails.host_locker
                     },
                   })}
                 >

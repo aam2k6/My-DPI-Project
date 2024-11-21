@@ -177,6 +177,15 @@
   flex: 1;
 }
 
+#documents-byConfer {
+  text-decoration: underline;
+  color: green;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  font-size: 1.25rem;
+  flex: 1;
+}
+
 .not-found{
   margin-left: 2rem;
 }

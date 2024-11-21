@@ -35,6 +35,7 @@ export const ViewLocker = () => {
   const [resourceVisibility, setResourceVisibility] = useState("private");
   const [modalMessage, setModalMessage] = useState(null)
   const [VnodeResources, setVnodeResources] = useState([]);
+  const [SnodeResources, setSnodeResources] = useState([]);
   const [activeTab, setActiveTab] = useState("incoming");
   const [xnodes, setXnodes] = useState([]);
   // const [correspondingNames, setCorrespondingNames] = useState([]);
@@ -45,6 +46,7 @@ export const ViewLocker = () => {
       fetchConnectionsAndOtherConnections(); // Combine the two fetches
       fetchResources(); // Keep resources fetch separate
       fetchVnodeResources();
+      fetchSnodeResources();
       fetchXnodes();
     }
   }, [locker]);
@@ -243,6 +245,41 @@ export const ViewLocker = () => {
     }
   };
 
+  const fetchSnodeResources = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({ host_locker_id: locker.locker_id });
+
+      const response = await fetch(
+        `host/get-snodes/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch resources");
+      }
+
+      const data = await response.json();
+      console.log("data", data);
+      console.log("vnodes", data.data);
+
+      //if (data.success) {
+      setSnodeResources(data.data);
+      //} else {
+      //setError(data.message || "Failed to fetch resources");
+      //}
+      //}
+    } catch (error) {
+      console.error("Error fetching resources:", error);
+      setError("An error occurred while fetching resources");
+    }
+  };
+
   const fetchAllTrackerData = (outgoingConnections) => {
     outgoingConnections.forEach((connection) => {
       fetchTrackerData(connection);
@@ -346,6 +383,8 @@ export const ViewLocker = () => {
         locker: locker,
         guest_locker_id: connection.guest_locker?.locker_id,
         host_locker_id: connection.host_locker?.locker_id,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
       },
     });
   };
@@ -399,6 +438,7 @@ export const ViewLocker = () => {
       state: {
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
+        guestLockerName: connection.guest_locker?.name,
         hostLockerName: connection.host_locker?.name,
         connectionTypeName, // Pass the extracted connection_type_name
         hostUserUsername: connection.host_user?.username,
@@ -408,6 +448,8 @@ export const ViewLocker = () => {
         guest_locker_id: connection.guest_locker?.id,
         host_locker_id: connection.host_locker?.id,
         lockerComplete: locker,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
       },
     });
   };
@@ -423,18 +465,23 @@ export const ViewLocker = () => {
     console.log("Navigating with state:", {
       connectionName: connection.connection_name,
       hostLockerName: connection.host_locker?.name,
+      guestLockerName: connection.guest_locker?.name,
       connectionTypeName, // Pass the extracted connection_type_name
       hostUserUsername: connection.host_user?.username,
+      guestUserUsername: connection.guest_user?.username,
       locker: locker,
       guest_locker_id: connection.guest_locker?.id,
       host_locker_id: connection.host_locker?.id,
       connection_id: connection.connection_id,
+      hostLocker: connection.host_locker,
+      guestLocker: connection.guest_locker
     });
 
     navigate("/show-connection-terms", {
       state: {
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
+        guestLockerName: connection.guest_locker?.name,
         hostLockerName: connection.host_locker?.name,
         connectionTypeName, 
         guestUserUsername: connection.guest_user?.username,
@@ -446,6 +493,8 @@ export const ViewLocker = () => {
         host_locker_id: connection.host_locker?.id,
         connection_id: connection.connection_id,
         lockerComplete: locker,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
       },
     });
   };
@@ -850,7 +899,13 @@ const handleDeleteClick = async (xnode) => {
                     arrow
                   >
                     <div
-                      id={xnode.xnode_Type === "INODE" ? "documents" : "documents-byShare"}
+                      id={
+                        xnode.xnode_Type === "INODE"
+                          ? "documents"
+                          : xnode.xnode_Type === "SNODE"
+                          ? "documents-byConfer"
+                          : "documents-byShare"
+                      }
                       style={{ display: 'flex' }}
                     >
                       <span onClick={() => handleClick(xnode.id)}>{xnode.resource_name}</span>

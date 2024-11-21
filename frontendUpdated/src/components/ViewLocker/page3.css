@@ -171,7 +171,16 @@
 #documents-byShare {
   text-decoration: underline;
   color: rgb(255, 38, 0);
-  margin-bottom: 2rem;
+  margin-bottom: 1.3rem;
+  margin-left: 2rem;
+  font-size: 1.25rem;
+  flex: 1;
+}
+
+#documents-byConfer {
+  text-decoration: underline;
+  color: green;
+  margin-bottom: 1.3rem;
   margin-left: 2rem;
   font-size: 1.25rem;
   flex: 1;

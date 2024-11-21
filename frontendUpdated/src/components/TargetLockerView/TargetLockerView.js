@@ -1410,6 +1410,7 @@ export const TargetLockerView = () => {
         guestLockerName: connection.guest_locker?.name,
         hostUserUsername: connection.host_user?.username,
         guestUserUsername: connection.guest_user?.username,
+        hostLocker: connection.host_locker,
         locker: connection.guest_locker?.name,
         connectionTypeName,
         connectionDescription: connection.connection_description,

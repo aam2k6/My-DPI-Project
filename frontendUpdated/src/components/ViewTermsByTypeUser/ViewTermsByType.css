@@ -265,3 +265,13 @@
     /* background-color: black; */
     color: black;
   }
+
+.longconnectionDescription{
+    width: 44%;
+}
+
+@media (max-width: 991px) {
+    .longconnectionDescription {
+        width: 90%; /* Full width on smaller screens */
+    }
+}

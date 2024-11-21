@@ -590,11 +590,13 @@ export const ViewTermsByType = () => {
     guestLockerName,
     hostUserUsername,
     guestUserUsername,
+    hostLocker,
     locker,
     connection_id,
     guest_locker_id,
     host_locker_id,
     connection,
+    guestLocker
   } = location.state || {};
 
 
@@ -1590,11 +1592,14 @@ export const ViewTermsByType = () => {
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
           connectionTypeName,
+          guestLockerName:guestLockerName,
           hostUserUsername: hostUserUsername,
           guestUserUsername: guestUserUsername,
           locker: locker.name,
           showConsent: false,
           lockerComplete: locker,
+          hostLocker: hostLocker,
+          guestLocker: guestLocker,
         },
       });
     } else {
@@ -1624,6 +1629,7 @@ export const ViewTermsByType = () => {
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
           connectionTypeName,
+          guestLockerName:guestLockerName,
           hostUserUsername: hostUserUsername,
           guestUserUsername: guestUserUsername,
           locker: locker.name,
@@ -1632,6 +1638,8 @@ export const ViewTermsByType = () => {
           host_locker_id,
           connection_id,
           lockerComplete: locker,
+          hostLocker: hostLocker,
+          guestLocker: guestLocker,
         },
       });
     }
@@ -1764,20 +1772,20 @@ export const ViewTermsByType = () => {
     );
   };
 
-  const handleGuestClick = (locker) => {
+  const handleGuestClick = () => {
     navigate('/view-locker', {
       state: {
         user: { username: curruser.username },
-        locker: locker,
+        locker: guestLocker,
       }
     });
   };
   
-  const handleHostClick = (hostUserUsername, hostLockerName) => {
+  const handleHostClick = () => {
     navigate('/target-locker-view', {
       state: {
         user:{username: hostUserUsername},
-        locker:  {name: hostLockerName} ,
+        locker:  hostLocker ,
       },
     });
   };
@@ -1948,7 +1956,7 @@ export const ViewTermsByType = () => {
           </button>
           <br></br>
           <>
-            <div style={{ paddingBottom: "8px" }}>
+            <div className="longconnectionDescription" style={{ paddingBottom: "4px"}}>
               {globalTemplateNames.length > 0 && "Connection has been imported from "}
               <span style={{ fontWeight: "bold" }}>
                 {globalTemplateNames.filter(Boolean).map((template, index) => (
@@ -1963,9 +1971,9 @@ export const ViewTermsByType = () => {
                   </span>
 
                 ))}
-              </span></div></>
+              </span>
           {connectionDescription}
-          <br></br>
+          </div></>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container">
               <FaUserCircle className="userIcon" /> &nbsp;
@@ -1978,12 +1986,12 @@ export const ViewTermsByType = () => {
             </div>
           </div>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container"  onClick={() => handleGuestClick(locker)} style={{ cursor: 'pointer' }}>
+            <div className="tooltips user-container"  onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
               <i class="bi bi-person-fill-lock"></i> &nbsp;
               <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername,hostLockerName)}>
+            <div className="tooltips user-container" onClick={() => handleHostClick()}>
               <i class="bi bi-person-lock"></i>&nbsp;
               <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
             </div>

@@ -730,6 +730,7 @@ export const CreateConnectionTerms = () => {
   const {
     connectionName,
     hostLockerName,
+    guestLockerName,
     connectionTypeName,
     hostUserUsername,
     connectionDescription,
@@ -740,11 +741,14 @@ export const CreateConnectionTerms = () => {
     host_locker_id,
     connection_id,
     lockerComplete,
-  
+    hostLocker,
+    guestLocker
+    
   } = location.state || {};
   console.log("data",
     connectionName,
     hostLockerName,
+    guestLockerName,
     connectionTypeName,
     connectionDescription,
     guestUserUsername,
@@ -754,9 +758,11 @@ export const CreateConnectionTerms = () => {
     host_locker_id,
     connection_id,
     lockerComplete,
+    hostLocker,
+    guestLocker
   );
 
-  console.log("guest name",guestUserUsername,);
+  console.log("guest name",guestLocker,);
 
 
   const capitalizeFirstLetter = (string) => {
@@ -875,6 +881,7 @@ export const CreateConnectionTerms = () => {
         setLoading(false);
       }
     };
+    console.log("datas",guestLockerName,hostLockerName)
 
     //fetch terms from the api
     const fetchTerms = async () => {
@@ -1245,20 +1252,20 @@ const renderUserTooltip = (userType) => {
   );
 };
 
-const handleGuestClick = (lockerComplete) => {
+const handleGuestClick = () => {
   navigate('/view-locker', {
     state: {
       user: { username: curruser.username },
-      locker: lockerComplete,
+      locker: guestLocker,
     }
   });
 };
 
-const handleHostClick = (hostUserUsername, hostLockerName) => {
+const handleHostClick = () => {
   navigate('/target-locker-view', {
     state: {
       user:{username: hostUserUsername},
-      locker:  {name: hostLockerName} ,
+      locker:  hostLocker ,
     },
   });
 };
@@ -1318,6 +1325,15 @@ const content = (
 console.log("I agree", Iagree);
 console.log(res, "res");
 
+const handledisagreebutton = () => {
+  navigate('/target-locker-view', {
+    state: {
+      user:{username: hostUserUsername},
+      locker:  hostLocker ,
+    },
+  });
+}
+
 return (
   <div>
     <Navbar content={content} />
@@ -1355,12 +1371,12 @@ return (
         </div>
 
         <div className="tooltip-container user-container">
-          <div className="tooltips user-container" onClick={() => handleGuestClick(lockerComplete)} style={{ cursor: 'pointer' }}>
+          <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
             <i className="bi bi-person-fill-lock"></i> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {locker} &nbsp;</span>
+            <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
           </div>
           <i className="fa-solid fa-right-long"></i> &nbsp;
-          <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername,hostLockerName)}>
+          <div className="tooltips user-container" onClick={() => handleHostClick()}>
             <i className="bi bi-person-lock"></i> &nbsp;
             <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
           </div>
@@ -1426,14 +1442,24 @@ return (
       
     {showConsent && Iagree === "0" && (
       <Grid container>
-        <Grid item xs={12} md={6} className="page13button">
+        <Grid item md={4} xs={1}></Grid>
+        <Grid item xs={5.5} md={2} className="page13button">
           <button
-            className="page13iagree0button"
+            className="page13iagree0buttons"
             onClick={handleIagreebutton}
           >
-            I Agree
+            Agree
           </button>
         </Grid>
+        <Grid item xs={5.5} md={2} className="page13button">
+        <button
+            className="page13iagree0buttons"
+            onClick={() => handledisagreebutton()}
+          >
+            Disagree
+          </button>
+        </Grid>
+        <Grid item md={4} xs={0}></Grid>
       </Grid>
     )}
 
@@ -1450,7 +1476,7 @@ return (
             <Grid xs={12} md={2}></Grid>
             <Grid item xs={12} md={4} className="page13button" mb={3}>
               <button
-                className="page13iagree1button"
+                className="page13iagree1buttons"
                 onClick={handleRevokebutton}
               >
                 Revoke

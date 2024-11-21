@@ -117,9 +117,11 @@ export const CreateConnectionType = () => {
                 guestUserUsername:curruser.username,
                 hostUserUsername: parentUser.username,
                 hostLockerName: locker.name,
+                guestLockerName: selectedLocker.name,
                 connectionName: `${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`,
                 showConsent: true,
                 lockerComplete: selectedLocker,
+                hostLocker:locker
             }
         });
     };
@@ -143,12 +145,12 @@ export const CreateConnectionType = () => {
             <div style={{ marginTop: "120px" }}>
                 <div className="page12typeofconn">
                     <h6>
-                        {selectedConnectionType && <div>{selectedConnectionType.connection_type_name} ({curruser.username} <i class="bi bi-arrows"></i> {parentUser.username}) <p className="">Description: {selectedConnectionType.connection_description}</p></div>}
+                        {selectedConnectionType && <div><b>{selectedConnectionType.connection_type_name} ({curruser.username} <i class="bi bi-arrows"></i> {parentUser.username})</b> <p className="">Description: {selectedConnectionType.connection_description}</p></div>}
                     </h6>
                 </div>
                 <div style={{border:"2px solid blue",margin:"20px"}}>
                 <Grid container className="page12parentconnections">
-                    <Grid item md={2} sm={12} xs={12}>
+                    <Grid item md={2.5} sm={4} xs={12}>
                         <Box className="make-Box"
                             sx={{
                                 padding: '5px 10px',
@@ -165,25 +167,47 @@ export const CreateConnectionType = () => {
                             <p>Host User: {parentUser.username}</p><p style={{marginTop:"-12px"}}>Host Locker: {locker.name}</p>
                         </Box>
                     </Grid>
-                    <Grid item md={1} xs={12}>
+                    <Grid item md={1} sm={2} xs={12}>
 
                     </Grid>
-                    <Grid item md={9} xs={12} className='d-flex'>
-                        <span className='createconnectionmylock'><pre>Select My Locker</pre></span>
-                        <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
+                    <Grid item md={3.7} sm={6} xs={12}>
+                    <Box className="make-Box"  marginTop={{ xs: "15px", sm: "15px", md: 0,}}
+                            sx={{
+                                padding: '5px 10px',
+                                display: 'flex',
+                                // flexDirection: 'column',
+                                // justifyContent: 'center',
+                                boxShadow: 3,
+                                borderRadius: 2,
+                                backgroundColor: "#f9f9f9;",
+                                border: "2px solid rgb(107, 120, 231)",
+                                // paddingTop:"18px",
+                                paddingBottom:"18px"
+                            }}
+                        >
+                           <Grid container>
+                           <Grid item md={6} sm={12} xs={12}>
+                                <span className='createconnectionmylock'><pre><b>Select Your Locker</b></pre></span>
+                           </Grid>
+                           <Grid item md={6} sm={12} xs={12}>
+                           <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
                             {lockers && lockers.map(locker => (
                                 <option key={locker.locker_id} value={locker.name}>{locker.name}</option>
                             ))}
                         </select>
+                           </Grid>
+                           </Grid>
+                            </Box>
                     </Grid>
                 </Grid>
                 {selectedConnectionType && (
                    <div style={{margin:"30px"}}>
-                     <Grid container className="page12paragraph"  display={"flex"} justifyContent={"center"}>
-                        <u>"{selectedConnectionType.connection_type_name}"</u><span style={{marginLeft:"15px", marginRight:"15px"}}>For this connection type you will need to fulfill the following obligations. Click on the next button.</span>
+                     <Grid container className="page12paragraph" display={"flex"}>
+                        {/* <u>"{selectedConnectionType.connection_type_name}"</u><span style={{marginLeft:"15px", marginRight:"15px"}}>For this connection type you will need to fulfill the following obligations. Click on the next button.</span> */}
+                    <span>Click next to fulfill the obligations of this connection.</span>
 
                         <div>
-                        <Button onClick={handleNextClick} className="next-btn">Next</Button>
+                        <Button style={{marginLeft:"10px"}} onClick={handleNextClick} className="next-btn">Next</Button>
                         </div>
                     </Grid>
                    </div>

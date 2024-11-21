@@ -82,7 +82,8 @@ export const ViewHostTermsByType = () => {
     host_locker_id,
     connection, 
     connectionType,
-    guestLocker
+    guestLocker,
+    hostLocker
   } = location.state || {};
 
   console.log("data",
@@ -98,7 +99,8 @@ export const ViewHostTermsByType = () => {
     host_locker_id,
     connection, 
     connectionType,
-    guestLocker
+    guestLocker,
+    hostLocker
   )
 
   const handleCloseModal = () => {
@@ -1097,12 +1099,15 @@ const appendPagesToTerms = (termValue) => {
           connectionName: connectionName, // Pass the string as connectionName
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
+          guestLockerName:guestLockerName,
           connectionTypeName,
           guestUserUsername:guestUserUsername,
           hostUserUsername: hostUserUsername,
           locker: locker.name,
           showConsent: false,
           lockerComplete: locker,
+          hostLocker: hostLocker,
+          guestLocker: guestLocker,
         },
       });
     } else {
@@ -1112,6 +1117,8 @@ const appendPagesToTerms = (termValue) => {
       );
     }
   };
+
+  console.log("datas",hostLocker)
 
   const handleConsentAndInfo = (connection) => {
     if (typeof connection === "string") {
@@ -1133,12 +1140,16 @@ const appendPagesToTerms = (termValue) => {
           hostLockerName: hostLockerName,
           connectionTypeName,
           hostUserUsername: hostUserUsername,
+          guestUserUsername:guestUserUsername,
+          guestLockerName:guestLockerName,
           locker: locker.name,
           showConsent: true,
           guest_locker_id,
           host_locker_id,
           connection_id,
           lockerComplete: locker,
+          hostLocker: hostLocker,
+          guestLocker: guestLocker
         },
       });
     }

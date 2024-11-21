@@ -51,23 +51,21 @@
      padding: 3rem;
 }
 
-.page13button{
-    margin-left:  10rem;
-}
- .page13iagree0button{
-    width: 20rem;
+ .page13iagree0buttons{
+    width: 8rem;
     font-size: 1.25rem;
 
     background-color: #007bff;
     color: #fff;
     /* width: auto; */
     border: none;
-    padding: 1rem 0.75rem;
+    /* padding: 1rem 0.75rem; */
     border-radius: 0.25rem;
     cursor: pointer;
     font-weight: bolder;
     /* padding: 0.5rem 0.25rem;  */
     /* max-width: 200px; */
+    margin-bottom: 12px;
 }
 
 .page13iagree1button{

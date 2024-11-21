@@ -990,15 +990,15 @@ export const ConnectionTerms = () => {
                       </div>
                     </Grid>
                     <Grid item md={3.5} xs={12}>
-                      <button
+                      {/* <button
                         className=""
                         type="button"
                         onClick={handleAddObligation}
                       >
                         Add Obligations
-                      </button>
+                      </button> */}
                     </Grid>
-                    <Grid item md={5} xs={12} paddingTop={{xs:"12px", md:"0px"}}>
+                    <Grid item md={5} xs={12}>
                       <button
                         className=""
                         onClick={() => {
@@ -1236,7 +1236,17 @@ export const ConnectionTerms = () => {
                       </span>}
                     </div> 
                     </div>
-
+                    <Grid container marginBottom={2}>
+                      <Grid item md={4} xs={12}>
+                        <button
+                          className=""
+                          type="button"
+                          onClick={handleAddObligation}
+                        >
+                          Add Obligations
+                        </button>
+                      </Grid>
+                    </Grid>
                     <div className="mb-1 row">
                       <h4><b>Permissions</b></h4>
                     </div>

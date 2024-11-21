@@ -29,15 +29,22 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   const [qrData, setQrData] = useState(null); // State for QR data
   const notificationsRef = useRef(null);
   const profileDropdownRef = useRef(null);
+  const systemDropdownRef = useRef(null);
+  const lockerSettingDropdownRef = useRef(null);
+  const connectionSettingDropdownRef = useRef(null);
   const directoryRef = useRef(null);
   // const { curruser } = useContext(usercontext);
   const isSystemAdmin = curruser && (curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin');
 
   // const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const [isGlobalConnectionOpen, setIsGlobalConnectionOpen] = useState(false);
+  const [isLockerSettingOpen, setIsLockerSettingOpen] = useState(false)
+  const [isConnectionSettingOpen, setIsConnectionSettingOpen] = useState(false)
 
   // const toggleDirectoryDropdown = () => setIsDirectoryOpen(!isDirectoryOpen);
   const toggleGlobalConnectionDropdown = () => setIsGlobalConnectionOpen(!isGlobalConnectionOpen);
+  const toggleLockerSettingDropdown = () => setIsLockerSettingOpen(!isLockerSettingOpen)
+  const toggleConnectionSettingDropdown = () => setIsConnectionSettingOpen(!isConnectionSettingOpen)
 
   const handleDPIDirectory = () => {
     navigate("/dpi-directory");
@@ -49,7 +56,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
 
   const handleHomeClick = () => {
     navigate("/home");
-  
+
     // Check if Bootstrap's Offcanvas is defined in the global scope
     const offcanvas = document.querySelector('.offcanvas');
     if (window.bootstrap) {
@@ -92,30 +99,64 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
         setIsNotificationsOpen(false);
       }
     };
-  
+
     if (isNotificationsOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-  
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isNotificationsOpen]);
-  
+
 
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+    const handleClickSystemOutside = (event) => {
+      // if (
+      //   systemDropdownRef.current &&
+      //   !systemDropdownRef.current.contains(event.target)
+      // ) {
+      //   setIsGlobalConnectionOpen(false); // Close dropdown on outside click
+      // }
+      if (systemDropdownRef.current && !systemDropdownRef.current.contains(event.target)) {
+        setIsGlobalConnectionOpen(false);
       }
     };
-  
-    document.addEventListener("mousedown", handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickSystemOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickSystemOutside);
     };
-  }, [isOpen]);
+  }, [systemDropdownRef]);
+
+  useEffect(() => {
+    const handleClickLokerOutside = (event) => {
+      if (lockerSettingDropdownRef.current && !lockerSettingDropdownRef.current.contains(event.target)) {
+        setIsLockerSettingOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickLokerOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickLokerOutside);
+    };
+  }, [lockerSettingDropdownRef]);
+
+  useEffect(() => {
+    const handleClickConnectionOutside = (event) => {
+      if (connectionSettingDropdownRef.current && !connectionSettingDropdownRef.current.contains(event.target)) {
+        setIsConnectionSettingOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickConnectionOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickConnectionOutside);
+    };
+  }, [connectionSettingDropdownRef]);
+
+
 
   useEffect(() => {
     const handleClickOutsideDirectory = (event) => {
@@ -134,8 +175,20 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
       document.removeEventListener("mousedown", handleClickOutsideDirectory);
     };
   }, [isDirectoryOpen]);
-  
-  
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
 
   const fetchNotifications = async () => {
     try {
@@ -184,8 +237,18 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   const handleAdminSettings = () => {
     if (isSystemAdmin) {
       toggleGlobalConnectionDropdown();
-    } else {
-      handleGlobalConnectionDirectory();
+    }
+  };
+
+  const handleLockerSettings = () => {
+    if (isSystemAdmin) {
+      toggleLockerSettingDropdown();
+    }
+  };
+
+  const handleConnectionSettings = () => {
+    if (isSystemAdmin) {
+      toggleConnectionSettingDropdown();
     }
   };
 
@@ -200,7 +263,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
       await markAllNotificationsAsRead();
     }
   };
-  
+
 
   const markAllNotificationsAsRead = async () => {
     try {
@@ -290,14 +353,14 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
     // Refresh the page when closing the scanner
     window.location.reload();
   };
-  
+
 
   const handleScan = (data) => {
     if (data) {
       try {
         const parsedData = JSON.parse(data);
         console.log("Scanned QR Data:", parsedData);
-  
+
         // Check for essential fields and handle optional ones
         if (
           parsedData.connection_name &&
@@ -316,7 +379,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
               },
             },
           });
-  
+
           // Stop scanning and reload the page
           setScanning(false);
           window.location.reload(); // This will reload the page after navigating
@@ -328,46 +391,46 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
       }
     }
   };
-  
+
 
   const handleError = (err) => {
     console.error(err); // Log any error during scanning
   };
-  
 
-// Inside your component
-const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-useEffect(() => {
-  const handleResize = () => {
-    setIsSmallScreen(window.innerWidth < 768); // Adjust based on your breakpoint
+  // Inside your component
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 768); // Adjust based on your breakpoint
+    };
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Initial check on mount
+    handleResize();
+
+    // Clean up event listener on unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleManageAdmin = () => {
+    navigate("/manage-admins");
   };
 
-  // Add event listener
-  window.addEventListener('resize', handleResize);
+  const handleManageModerators = () => {
+    navigate("/manage-moderators");
+  };
 
-  // Initial check on mount
-  handleResize();
-
-  // Clean up event listener on unmount
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
-
-const handleManageAdmin = () => {
-  navigate("/manage-admins");
-};
-
-const handleManageModerators = () => {
-  navigate("/manage-moderators");
-};
-
-const handleFreezeLockerConnection = () => {
-  navigate("/freeze-locker-connection");
-};
+  const handleFreezeLockerConnection = () => {
+    navigate("/freeze-locker-connection");
+  };
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top" style={{marginTop:0}}>
+      <nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top" style={{ marginTop: 0 }}>
         <div className="container-fluid">
           {/* <a className="navbar-brand" href="#">Offcanvas navbar</a> */}
           <Grid container>
@@ -376,14 +439,14 @@ const handleFreezeLockerConnection = () => {
             </Grid>
             <Grid item xs={2} md={6}>
               <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#offcanvasNavbar"
-              aria-controls="offcanvasNavbar"
-              aria-label="Toggle navigation"
-            >
-              <span className="navbar-toggler-icon"></span>
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar"
+                aria-label="Toggle navigation"
+              >
+                <span className="navbar-toggler-icon"></span>
               </button>
               <div
                 className="offcanvas offcanvas-end"
@@ -440,12 +503,12 @@ const handleFreezeLockerConnection = () => {
                       )}
                     </li>
 
-                    <li className="nav-item" style={{cursor:"pointer"}}>
+                    <li className="nav-item" style={{ cursor: "pointer" }}>
                       <a className="nav-link" onClick={handleHomeClick}>
                         Home
                       </a>
                     </li>
-                    <li className="nav-item dropdown"  ref={notificationsRef}>
+                    <li className="nav-item dropdown" ref={notificationsRef}>
                       <a className="nav-link dropdown-toggle" role="button" onClick={toggleNotifications}>
                         <div className="notification-icon">
                           <FontAwesomeIcon
@@ -463,25 +526,24 @@ const handleFreezeLockerConnection = () => {
 
                       {isNotificationsOpen && (
                         <ul className="dropdownmenu"> {/* Add 'show' to make dropdown visible */}
-                        <div className="">
-                            <div className="notification-dropdown dropdownContent" min-width={{xs:"", md:"450px"}}>
+                          <div className="">
+                            <div className="notification-dropdown dropdownContent" min-width={{ xs: "", md: "450px" }}>
                               <h4>Notifications</h4>
                               {notifications.length > 0 ? (
                                 notifications.map((notification) => (
                                   <li className="dropdown-item" key={notification.id}>
                                     <div
-                                        key={notification.id}
-                                        className={`notification-box ${
-                                          notification.read ? "read" : "unread"
+                                      key={notification.id}
+                                      className={`notification-box ${notification.read ? "read" : "unread"
                                         }`}
-                                        onClick={() => markNotificationAsRead(notification.id)}
-                                      >
-                                    <p>
-                                      <b>{notification.guest_user}</b> has requested for Lockers{" "}
-                                      <b>{notification.host_locker_name}</b> from the
-                                      connection <b>{notification.connection_type_name}</b>
-                                    </p>
-                                    <p>{new Date(notification.created_at).toLocaleString()}</p>
+                                      onClick={() => markNotificationAsRead(notification.id)}
+                                    >
+                                      <p>
+                                        <b>{notification.guest_user}</b> has requested for Lockers{" "}
+                                        <b>{notification.host_locker_name}</b> from the
+                                        connection <b>{notification.connection_type_name}</b>
+                                      </p>
+                                      <p>{new Date(notification.created_at).toLocaleString()}</p>
                                     </div>
                                   </li>
                                 ))
@@ -489,14 +551,14 @@ const handleFreezeLockerConnection = () => {
                                 <p>No notifications found.</p>
                               )}
                             </div>
-                        </div>
+                          </div>
                         </ul>
                       )}
                     </li>
-                    <li className="nav-item" style={{cursor:"pointer"}}>
-                    <div className="nav-link qr-scanner-icons" onClick={handleQRScanner}>
-                      <MdOutlineQrCodeScanner size={24} />
-                    </div>
+                    <li className="nav-item" style={{ cursor: "pointer" }}>
+                      <div className="nav-link qr-scanner-icons" onClick={handleQRScanner}>
+                        <MdOutlineQrCodeScanner size={24} />
+                      </div>
                     </li>
                     {isQRModalOpen && (
                       <div className="qr-scanner-overlays">
@@ -534,28 +596,59 @@ const handleFreezeLockerConnection = () => {
                           <div className="username">{capitalizeFirstLetter(curruser.username)}</div>
                         </div>
                       </a>
-                        {isOpen && (
+                      {isOpen && (
                         <ul className="dropdownmenu">
                           <div className="dropdownContent">
-                            <li className="dropdown-items" style={{listStyle:"none"}}>
+                            <li className="dropdown-items" style={{ listStyle: "none" }}>
                               <div className="currusername">
                                 {capitalizeFirstLetter(curruser.username)}
                               </div>
                               <div className="curruserdesc">{curruser.description}</div>
                             </li>
 
-                            <li className="dropdown-item dropdown">
+                            <li className="dropdown-item dropdown" ref={systemDropdownRef}>
                               {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
-                                <button onClick={handleAdminSettings}>System Admin Settings</button>
+                                <div>
+                                  <button onClick={handleAdminSettings}>System Admin Settings</button>
+                                  {isSystemAdmin && isGlobalConnectionOpen && (
+
+                                    <ul className="dropdown-menu menu1 show">
+                                      <li><a onClick={handleManageAdmin} className="dropdown-item">Manage Admin</a></li>
+                                      <li><a onClick={handleManageModerators} className="dropdown-item">Manage Moderators</a></li>
+                                      {/* <li><a onClick={handleFreezeLockerConnection} className="dropdown-item">Freeze Connection/Locker</a></li> */}
+                                    </ul>
+
+                                  )}
+                                </div>
                               )}
                             </li>
-                            {isSystemAdmin && isGlobalConnectionOpen && (
-                              <ul className="dropdown-menu show">
-                                <li><a onClick={handleManageAdmin} className="dropdown-item">Manage Admin</a></li>
-                                <li><a onClick={handleManageModerators} className="dropdown-item">Mangae Moderators</a></li>
-                                <li><a  onClick={handleFreezeLockerConnection} className="dropdown-item">Freeze Connection/Locker</a></li>
-                              </ul>
-                            )}
+
+                            <li className="dropdown-item dropdown" ref={lockerSettingDropdownRef}>
+                              {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
+                                <div >
+                                  <button onClick={handleLockerSettings}>Locker Settings</button>
+                                  {isSystemAdmin && isLockerSettingOpen && (
+                                    <ul className="dropdown-menu menu2 show">
+                                      <li><a onClick={handleFreezeLockerConnection} className="dropdown-item">Freeze Connection/Locker</a></li>
+                                    </ul>
+                                  )}
+                                </div>
+                              )}
+                            </li>
+
+                            <li className="dropdown-item dropdown" ref={connectionSettingDropdownRef}>
+                              {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
+                                <div>
+                                  <button onClick={handleConnectionSettings}>Connection Settings</button>
+                                  {isSystemAdmin && isConnectionSettingOpen && (
+                                    <ul className="dropdown-menu menu2 show">
+                                      <li><a onClick={handleGlobalConnectionDirectory} className="dropdown-item">Create Global Connection</a></li>
+                                    </ul>
+                                  )}
+                                </div>
+                              )}
+                            </li>
+
 
                             <li className="dropdown-item">
                               {curruser.user_type === "moderator" && (
@@ -566,7 +659,7 @@ const handleFreezeLockerConnection = () => {
                             <li className="dropdown-item">
                               <button onClick={handleSettings}>Settings</button>
                             </li>
-                            
+
                             <li className="dropdown-item">
                               <button onClick={handleLogout}>Logout</button>
                             </li>

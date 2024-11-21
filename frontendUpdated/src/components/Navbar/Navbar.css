@@ -286,6 +286,7 @@
   color: black;
   font-size: 18px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .nav-item{
@@ -344,4 +345,35 @@
   .qr-scanner-icons {
     display: none;
   }
+}
+
+.dropdown-wrapper {
+  position: relative; /* Ensures dropdown menu positions relative to this wrapper */
+  display: inline-block;
+}
+
+.menu1 {
+  position: absolute;
+  top: 30px; /* Aligns the top of the dropdown with the button */
+  left: -195px; /* Adjust this value to position the menu on the left side */
+  background-color: #fff; /* Dropdown background color */
+  border: 1px solid #ddd; /* Optional border */
+  padding: 10px;
+  list-style: none;
+  z-index: 10; /* Ensures the dropdown appears above other elements */
+  display: block;
+  min-width: 150px;
+}
+
+.menu2 {
+  position: absolute;
+  top: 30px; /* Aligns the top of the dropdown with the button */
+  left: -240px; /* Adjust this value to position the menu on the left side */
+  background-color: #fff; /* Dropdown background color */
+  border: 1px solid #ddd; /* Optional border */
+  padding: 10px;
+  list-style: none;
+  z-index: 10; /* Ensures the dropdown appears above other elements */
+  display: block;
+  min-width: 150px;
 }

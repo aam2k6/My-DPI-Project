@@ -6,6 +6,7 @@ import Sidebar from "../Sidebar/Sidebar";
 import { usercontext } from "../../usercontext";
 import { frontend_host } from "../../config";
 import './GlobalTermsView.css'; // Make sure to create the relevant CSS file
+import { Grid } from '@mui/material';
 
 const GlobalTermsView = () => {
   const navigate = useNavigate();
@@ -107,16 +108,19 @@ const GlobalTermsView = () => {
     });
   };
   return (
-    <div className="global-terms-view-page">
+    <div className="global-terms-view-page" id="global-terms-view">
     <Navbar />
-    {isSystemAdmin && <Sidebar />} {/* Show Sidebar only for System Admin */}
-    <div className="terms-content-container">
-      <div className="header-with-button">
-      <h2>Global Connection Terms - {connectionTypeName}</h2>
-          {!hide && isSystemAdmin && ( // Show the Edit button only for System Admin
-            <button className="edit-button" onClick={handleEditClick}>Edit</button>
-          )}
-        </div>
+    {/* {isSystemAdmin && <Sidebar />} Show Sidebar only for System Admin */}
+   <div style={{marginTop: '100px'}}>
+   <div className="terms-content-container">
+      <Grid container className="header-with-button">
+        <Grid item md={11.5} sm={12} xs={12}>
+          <h2>Global Connection Terms - {connectionTypeName}</h2>
+        </Grid>
+        <Grid item md={0.5} sm={12} xs={12}>
+          {isSystemAdmin && <button className="edit-button" onClick={handleEditClick}>Edit</button>}
+        </Grid>
+        </Grid>
 
         <p>{connectionTypeDescription}</p>
 
@@ -140,6 +144,7 @@ const GlobalTermsView = () => {
           <p>Loading terms...</p>
         )}
       </div>
+   </div>
     </div>
   );
 };

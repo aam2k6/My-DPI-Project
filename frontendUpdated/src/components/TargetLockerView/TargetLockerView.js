@@ -1170,12 +1170,9 @@ export const TargetLockerView = () => {
     try {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_id: locker.locker_id });
-
+  
       const response = await fetch(
-        `host/get-all-xnodes-for-locker/?${params}`.replace(
-          /host/,
-          frontend_host
-        ),
+        `host/get-all-xnodes-for-locker/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {
@@ -1184,17 +1181,18 @@ export const TargetLockerView = () => {
           },
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Failed to fetch Xnodes");
       }
-
+  
       const data = await response.json();
       console.log("xnode data", data);
-
+  
       if (data.xnode_list) {
-        setXnodes(data.xnode_list);
-
+        // Filter to include only `inode` nodetype
+        const inodes = data.xnode_list.filter(node => node.xnode_Type === "INODE");
+        setXnodes(inodes);
       } else {
         setError(data.message || "Failed to fetch Xnodes");
       }
@@ -1203,6 +1201,7 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching Xnodes");
     }
   };
+  
 
 
   const fetchResources = async () => {

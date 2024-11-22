@@ -911,11 +911,13 @@ const handleDeleteClick = async (xnode) => {
                       <span onClick={() => handleClick(xnode.id)}>{xnode.resource_name}</span>
                       
                       <span className="resource-icons" style={{ marginLeft: "auto" }}>
-                        <i
-                          className="fa-regular fa-pen-to-square"
-                          style={{ paddingRight: "20px", cursor: "pointer" }}
-                          onClick={() => handleEditClick(xnode)}
-                        />
+                      {xnode.xnode_Type === "INODE" && (
+    <i
+      className="fa-regular fa-pen-to-square"
+      style={{ paddingRight: "20px", cursor: "pointer" }}
+      onClick={() => handleEditClick(xnode)}
+    />
+  )}
                         <i
                           className="fa-regular fa-trash-can"
                           style={{ cursor: "pointer" }}

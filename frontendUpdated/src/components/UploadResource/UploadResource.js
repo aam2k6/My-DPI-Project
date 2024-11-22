@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import "./page4.css";
 import Navbar from '../Navbar/Navbar';
+import Modal from '../Modal/Modal'; 
 import { frontend_host } from '../../config';
 import { Grid, TextField, Button, Select, MenuItem, InputLabel, Typography, Box, Container } from '@mui/material';
 
@@ -16,6 +17,9 @@ export const UploadResource = () => {
   const [document, setDocument] = useState(null);
   const [visibility, setVisibility] = useState("public"); // Default value set to Public
   const navigate = useNavigate();
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+ const [errorModalMessage, setErrorModalMessage] = useState('');
+
 
 
 
@@ -30,6 +34,12 @@ export const UploadResource = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (document && document.type !== 'application/pdf') {
+      setErrorModalMessage('Only PDF files are allowed.');
+      setIsErrorModalOpen(true);
+      return;
+    }
+  
 
     const data = new FormData();
     data.append('locker_name', locker.name);
@@ -79,7 +89,13 @@ export const UploadResource = () => {
 
   return (
     <div>
-    <Navbar content = {content} />
+     <Navbar content={content} />
+      {isErrorModalOpen && (
+        <Modal
+          message={errorModalMessage}
+          onClose={() => setIsErrorModalOpen(false)}
+        />
+      )}
     
 
       {/* <div className="descriptionLocker">

@@ -1118,14 +1118,26 @@ export const CreateConnectionTerms = () => {
     // navigate(`/target-locker-view`);
     
   };
-  const renderTermsSection = (terms, title) => (
+  const renderTermsSection = (terms, title, userType) => (
     <div className="terms-sections">
       <h3>{title}</h3>
       {terms && terms.length > 0 ? (
         <ul>
           {terms.map((term, index) => (
             <li key={index}>
-              <strong>{term.labelName}</strong> - {term.labelDescription} (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 ? term.hostPermissions.join(", ") : "None"})
+              <strong>
+                {userType === "guest"
+                  ? term.typeOfSharing === "collateral"
+                    ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
+                    : `Guest shall ${term.typeOfSharing} ${term.labelName} - ${term.labelDescription}`
+                  : term.typeOfSharing === "collateral"
+                  ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
+                  : `Host will ${term.typeOfSharing} ${term.labelName} - ${term.labelDescription}`}
+              </strong> 
+              - {term.labelDescription} 
+              (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 
+                ? term.hostPermissions.join(", ") 
+                : "None"})
             </li>
           ))}
         </ul>
@@ -1138,8 +1150,8 @@ export const CreateConnectionTerms = () => {
   const renderObligations = (userType) => {
     if (res && res.obligations) {
       return userType === "guest"
-        ? renderTermsSection(res.obligations.guest_to_host)
-        : renderTermsSection(res.obligations.host_to_guest);
+        ? renderTermsSection(res.obligations.guest_to_host, "", "guest")
+        : renderTermsSection(res.obligations.host_to_guest, "", "host");
     }
     return <p>No obligations available.</p>;
   };
@@ -1151,10 +1163,9 @@ export const CreateConnectionTerms = () => {
         : res.permissions.host_to_guest;
       return (
         <div className="permissions">
-          {/* <h3>{userType === "guest" ? "Guest's Permissions" : "Host's Permissions"}</h3> */}
           <ul>
-            <li>{permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
-            <li>{permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li>
+            <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
+            <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li>
           </ul>
         </div>
       );
@@ -1164,9 +1175,32 @@ export const CreateConnectionTerms = () => {
   
   const renderForbidden = (userType) => {
     if (res && res.forbidden) {
-      return userType === "guest"
-        ? renderTermsSection(res.forbidden.guest_to_host)
-        : renderTermsSection(res.forbidden.host_to_guest);
+      return (
+        <div className="terms-sections">
+          {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"] &&
+          res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].length > 0 ? (
+            <ul>
+              {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].map(
+                (term, index) => (
+                  <li key={index}>
+                    <strong>
+                      {userType === "guest"
+                        ? `Guest  ${term.labelName} - ${term.labelDescription}`
+                        : `Host  ${term.labelName} - ${term.labelDescription}`}
+                    </strong>
+                    (Host Privilege:{" "}
+                    {term.hostPermissions && term.hostPermissions.length > 0
+                      ? term.hostPermissions.join(", ")
+                      : "None"})
+                  </li>
+                )
+              )}
+            </ul>
+          ) : (
+            <p>No forbidden terms available.</p>
+          )}
+        </div>
+      );
     }
     return <p>No forbidden terms available.</p>;
   };

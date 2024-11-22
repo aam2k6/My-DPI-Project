@@ -248,15 +248,26 @@ export const Displayterms = () => {
     fetchGlobalTemplates();
   }, [curruser, connectionTypeName, hostUserUsername, hostLockerName, locker.name, navigate]);
 
-  const renderTermsSection = (terms, title) => (
+  const renderTermsSection = (terms, title, userType) => (
     <div className="termsSection">
       <h3>{title}</h3>
       {terms && terms.length > 0 ? (
         <ul>
           {terms.map((term, index) => (
             <li key={index}>
-              <strong>{term.labelName}</strong> - {term.labelDescription} (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 ? term.hostPermissions.join(", ") : "None"})
-            </li>
+              <strong>
+          {userType === "guest"
+            ? term.typeOfSharing === "collateral"
+              ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
+              : `Guest shall ${term.typeOfSharing} ${term.labelName} - ${term.labelDescription}`
+            : term.typeOfSharing === "collateral"
+            ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
+            : `Host will ${term.typeOfSharing} ${term.labelName} - ${term.labelDescription}`}
+        </strong>
+        (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 
+          ? term.hostPermissions.join(", ") 
+          : "None"})
+      </li>
           ))}
         </ul>
       ) : (
@@ -265,42 +276,74 @@ export const Displayterms = () => {
     </div>
   );
   
-  const renderObligations = (userType) => {
-    if (res && res.obligations) {
-      return userType === "guest"
-        ? renderTermsSection(res.obligations.guest_to_host)
-        : renderTermsSection(res.obligations.host_to_guest);
-    }
-    return <p>No obligations available.</p>;
-  };
   
-  const renderPermissions = (userType) => {
-    if (res && res.permissions) {
-      const permissionsData = userType === "guest"
-        ? res.permissions.guest_to_host
-        : res.permissions.host_to_guest;
-      return (
-        <div className="permissions">
-          {/* <h3>{userType === "guest" ? "Guest's Permissions" : "Host's Permissions"}</h3> */}
+const renderObligations = (userType) => {
+  if (res && res.obligations) {
+    return userType === "guest"
+      ? renderTermsSection(res.obligations.guest_to_host, "", "guest")
+      : renderTermsSection(res.obligations.host_to_guest, "", "host");
+  }
+  return <p>No obligations available.</p>;
+};
+
+const renderPermissions = (userType) => {
+  if (res && res.permissions) {
+    const permissionsData = userType === "guest"
+      ? res.permissions.guest_to_host
+      : res.permissions.host_to_guest;
+    return (
+      <div className="permissions">
+        <ul>
+          <li>
+            {userType === "guest"
+              ? `Guest ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`
+              : `Host ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`}
+          </li>
+          <li>
+            {userType === "guest"
+              ? `Guest ${permissionsData.canDownloadData ? "Can" : "Cannot"} download data`
+              : `Host ${permissionsData.canDownloadData ? "Can" : "Cannot"} download data`}
+          </li>
+        </ul>
+      </div>
+    );
+  }
+  return <p>No permissions available.</p>;
+};
+
+const renderForbidden = (userType) => {
+  if (res && res.forbidden) {
+    return (
+      <div className="termsSection">
+        {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"] &&
+        res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].length > 0 ? (
           <ul>
-            <li>{permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
-            <li>{permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li>
+            {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].map(
+              (term, index) => (
+                <li key={index}>
+                  <strong>
+                    {userType === "guest"
+                      ? `Guest  ${term.labelName} - ${term.labelDescription}`
+                      : `Host  ${term.labelName} - ${term.labelDescription}`}
+                  </strong>
+                  (Host Privilege:{" "}
+                  {term.hostPermissions && term.hostPermissions.length > 0
+                    ? term.hostPermissions.join(", ")
+                    : "None"})
+                </li>
+              )
+            )}
           </ul>
-        </div>
-      );
-    }
-    return <p>No permissions available.</p>;
-  };
-  
-  const renderForbidden = (userType) => {
-    if (res && res.forbidden) {
-      return userType === "guest"
-        ? renderTermsSection(res.forbidden.guest_to_host)
-        : renderTermsSection(res.forbidden.host_to_guest);
-    }
-    return <p>No forbidden terms available.</p>;
-  };
-  
+        ) : (
+          <p>No forbidden terms available.</p>
+        )}
+      </div>
+    );
+  }
+  return <p>No forbidden terms available.</p>;
+};
+
+
 console.log(res);
 
 

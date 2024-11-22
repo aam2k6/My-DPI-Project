@@ -48,7 +48,7 @@ export const ConnectionTermsHost = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [navigateHome , setNavigateHome] = useState(false)
-
+  const [selectedTemplateDetails, setSelectedTemplateDetails] = useState(null);
 
 const fetchGlobalTemplates = () => {
   const token = Cookies.get("authToken");
@@ -72,15 +72,54 @@ const fetchGlobalTemplates = () => {
 };
 
   
-  const handleTemplateSelection = (templateId) => {
-    setSelectedTemplateIds((prev) => {
-      const updatedIds = prev.includes(templateId)
-        ? prev.filter((id) => id !== templateId)
-        : [...prev, templateId];
+  // const handleTemplateSelection = (templateId) => {
+  //   setSelectedTemplateIds((prev) => {
+  //     const updatedIds = prev.includes(templateId)
+  //       ? prev.filter((id) => id !== templateId)
+  //       : [...prev, templateId];
 
-      // console.log("Updated Selected Template IDs:", updatedIds); // Log the updated IDs
-      return updatedIds;
+  //     // console.log("Updated Selected Template IDs:", updatedIds); // Log the updated IDs
+  //     return updatedIds;
+  //   });
+  // };
+
+  const handleTemplateSelection = (template) => {
+    const { global_connection_type_template_id, global_connection_type_name, global_connection_type_description } = template;
+
+    console.log("ID:", global_connection_type_template_id);
+    console.log("Type Name:", global_connection_type_name);
+    console.log("Type Description:", global_connection_type_description);
+
+    // Store the details in state
+    setSelectedTemplateDetails({
+      id: global_connection_type_template_id,
+      name: global_connection_type_name,
+      description: global_connection_type_description,
     });
+
+    // Update the selected templates as needed
+    setSelectedTemplateIds((prevSelected) =>
+      prevSelected.includes(global_connection_type_template_id)
+        ? prevSelected.filter((id) => id !== global_connection_type_template_id)
+        : [...prevSelected, global_connection_type_template_id]
+    );
+  };
+
+  const handleInfo = () => {
+
+
+    if (setSelectedTemplateDetails) {
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: selectedTemplateDetails.name,
+          connectionTypeDescription: selectedTemplateDetails.description,
+          template_Id: selectedTemplateDetails.id,
+        },
+      });
+    }
+
+    // Navigate with the extracted data
+
   };
 
   const handleFetchObligations = () => {
@@ -106,6 +145,7 @@ const fetchGlobalTemplates = () => {
             const obligationsWithGlobalId = obligations.map((obligation) => ({
               ...obligation,
               global_conn_type_id: templateId,  // Add global_conn_type_id
+              showInfo: true,
             }));
   
   
@@ -169,7 +209,16 @@ const fetchGlobalTemplates = () => {
 
   const handleAddObligation = () => {
     if (formData.labelName.trim() !== "") {
-      setObligations([...obligations, { ...formData }]);
+      // Add the formData along with showInfo: false
+      const newObligation = {
+        ...formData, // Spread the formData to add its properties
+        showInfo: false, // Set showInfo to false for newly added obligations
+      };
+  
+      // Update the obligations state with the new obligation
+      setObligations((prev) => [...prev, newObligation]);
+  
+      // Optionally reset formData after adding the obligation
       setFormData(initialFormData);
     }
   };
@@ -480,9 +529,7 @@ const fetchGlobalTemplates = () => {
                                     template.global_connection_type_template_id
                                   )}
                                   onChange={() =>
-                                    handleTemplateSelection(
-                                      template.global_connection_type_template_id
-                                    )
+                                    handleTemplateSelection(template)
                                   }
                                 />
                                 {template.global_connection_type_name} (ID:{" "}
@@ -755,10 +802,10 @@ const fetchGlobalTemplates = () => {
               </div>
             </Grid>
 
-            <Grid item xs={12} md={3} className="parent-right-headings" marginTop={{ md: "0px", xs: "30px" }}>
+            <Grid item xs={12} sm={12} md={3} className="parent-right-headings" marginTop={{ md: "0px", xs: "30px" }}>
                 {obligations.map((obligation, index) => (
-                  <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"} justifyContent={"center"}>
-                    <Grid item xs={6}>
+                  <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"}>
+                    <Grid item md={6} sm={6} xs={6}>
                       <button
                        type="button"
                        color= "secondary"
@@ -768,15 +815,20 @@ const fetchGlobalTemplates = () => {
                         {obligation.labelName}
                       </button>
                     </Grid>
-                    <Grid item xs={6}>
-                      <Button
+                    <Grid item md={4} sm={4} xs={5}>
+                      <button
                         className="remove-obligation-button"
+                        style={{ width: "auto" }}
                         variant="contained"
                         onClick={() => handleRemoveObligation(index)}
                       >
                         Remove
-                      </Button>
+                      </button>
                     </Grid>
+                    {obligation.showInfo && (<Grid item md={1} sm={1} xs={1}>
+                      <i className="bi bi-info-circle"
+                        style={{ cursor: "pointer" }}></i>
+                    </Grid>)}
                   </Grid>
                 ))}
               </Grid>

@@ -577,6 +577,7 @@ export const ConnectionTerms = () => {
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [selectedTemplateDetails, setSelectedTemplateDetails] = useState(null);
 
   const fetchGlobalTemplates = () => {
     const token = Cookies.get("authToken");
@@ -599,16 +600,48 @@ export const ConnectionTerms = () => {
       });
   };
 
-  const handleTemplateSelection = (templateId) => {
-    setSelectedTemplateIds((prev) => {
-      const updatedIds = prev.includes(templateId)
-        ? prev.filter((id) => id !== templateId)
-        : [...prev, templateId];
+  const handleTemplateSelection = (template) => {
+    const { global_connection_type_template_id, global_connection_type_name, global_connection_type_description } = template;
 
-      // console.log("Updated Selected Template IDs:", updatedIds); // Log the updated IDs
-      return updatedIds;
+    console.log("ID:", global_connection_type_template_id);
+    console.log("Type Name:", global_connection_type_name);
+    console.log("Type Description:", global_connection_type_description);
+
+    // Store the details in state
+    setSelectedTemplateDetails({
+      id: global_connection_type_template_id,
+      name: global_connection_type_name,
+      description: global_connection_type_description,
     });
+
+    // Update the selected templates as needed
+    setSelectedTemplateIds((prevSelected) =>
+      prevSelected.includes(global_connection_type_template_id)
+        ? prevSelected.filter((id) => id !== global_connection_type_template_id)
+        : [...prevSelected, global_connection_type_template_id]
+    );
   };
+
+
+
+  const handleInfo = () => {
+
+
+    if (setSelectedTemplateDetails) {
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: selectedTemplateDetails.name,
+          connectionTypeDescription: selectedTemplateDetails.description,
+          template_Id: selectedTemplateDetails.id,
+        },
+      });
+    }
+
+    // Navigate with the extracted data
+
+  };
+
+
 
   const handleFetchObligations = () => {
     const token = Cookies.get("authToken");
@@ -633,6 +666,7 @@ export const ConnectionTerms = () => {
             const obligationsWithGlobalId = obligations.map((obligation) => ({
               ...obligation,
               global_conn_type_id: templateId, // Add global_conn_type_id
+              showInfo: true,
             }));
 
             // Combine obligations, permissions, and forbidden into a single array or separate arrays
@@ -688,14 +722,29 @@ export const ConnectionTerms = () => {
     });
   };
 
+  // const handleAddObligation = () => {
+  //   if (formData.labelName.trim() !== "") {
+  //     setObligations([...obligations, { ...formData }]);
+  //     setFormData(initialFormData);
+  //   }
+  // };
+
   const handleAddObligation = () => {
     if (formData.labelName.trim() !== "") {
-      setObligations([...obligations, { ...formData }]);
+      // Add the formData along with showInfo: false
+      const newObligation = {
+        ...formData, // Spread the formData to add its properties
+        showInfo: false, // Set showInfo to false for newly added obligations
+      };
+  
+      // Update the obligations state with the new obligation
+      setObligations((prev) => [...prev, newObligation]);
+  
+      // Optionally reset formData after adding the obligation
       setFormData(initialFormData);
     }
   };
-
-  const handleLoadObligation = (index) => {
+    const handleLoadObligation = (index) => {
     setFormData(obligations[index]);
   };
 
@@ -716,7 +765,7 @@ export const ConnectionTerms = () => {
       formData.typeOfSharing === removedObligation.typeOfSharing &&
       formData.purpose === removedObligation.purpose &&
       formData.hostPermissions.join(",") ===
-        removedObligation.hostPermissions.join(",") &&
+      removedObligation.hostPermissions.join(",") &&
       formData.canShareMore === removedObligation.canShareMore &&
       formData.canDownload === removedObligation.canDownload
     ) {
@@ -817,8 +866,8 @@ export const ConnectionTerms = () => {
   //     });
   // };
 
-  
-  
+
+
 
   const handleSubmits = (event) => {
     // event.preventDefault();
@@ -851,21 +900,21 @@ export const ConnectionTerms = () => {
     const finalData = {
       ...connectionData,  // Contains lockerName, connectionName, connectionDescription, validity
       obligations: obligations.map(obligation => ({
-         ...obligation,
-         global_conn_type_id: obligation.global_conn_type_id || null,  // Optional field if needed by the API
+        ...obligation,
+        global_conn_type_id: obligation.global_conn_type_id || null,  // Optional field if needed by the API
       })),
       permissions: {
-         canShareMoreData: formData.canShareMore,
-         canDownloadData: formData.canDownload,
+        canShareMoreData: formData.canShareMore,
+        canDownloadData: formData.canDownload,
       },
       forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
       from: "GUEST",
       to: "HOST"
-   };
-   
+    };
+
     console.log("Data to be posted:", finalData); // Verify the structure and values
 
-  
+
     fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
       method: "POST",
       headers: {
@@ -874,52 +923,52 @@ export const ConnectionTerms = () => {
       },
       body: JSON.stringify(finalData),
     })
-    .then((response) =>
-            response.json().then((data) => ({ status: response.status, data }))
-          )
-          .then(({ status, data }) => {
-            if (status === 201) {
-              // Success case: show success modal and reset form if needed.
-              setModalMessage({
-                message: "Connection Type successfully created!",
-                type: "success",
-              });
-              setIsModalOpen(true);
-              handleSubmits()
-              // Optionally, reset the form after successful creation.
-            } else if (status === 400 && data.error.includes("already exists")) {
-              // Handle the case where the connection type already exists.
-              setError(
-                "Connection type with this name already exists in the same locker."
-              );
-              setModalMessage({
-                message:
-                  "Connection type with this name already exists in the same locker.",
-                type: "error",
-              });
-              setIsModalOpen(true);
-            } else {
-              // General error handling.
-              console.error("Error:", data.error);
-              setError(data.error);
-              setModalMessage({
-                message: data.error,
-                type: "error",
-              });
-              setIsModalOpen(true); // Open modal with error message.
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            setError("An error occurred while submitting the data.");
-            setModalMessage({
-              message: "An error occurred while submitting the data.",
-              type: "error",
-            });
-            setIsModalOpen(true); // Open modal with error message.
+      .then((response) =>
+        response.json().then((data) => ({ status: response.status, data }))
+      )
+      .then(({ status, data }) => {
+        if (status === 201) {
+          // Success case: show success modal and reset form if needed.
+          setModalMessage({
+            message: "Connection Type successfully created!",
+            type: "success",
+          });
+          setIsModalOpen(true);
+          handleSubmits()
+          // Optionally, reset the form after successful creation.
+        } else if (status === 400 && data.error.includes("already exists")) {
+          // Handle the case where the connection type already exists.
+          setError(
+            "Connection type with this name already exists in the same locker."
+          );
+          setModalMessage({
+            message:
+              "Connection type with this name already exists in the same locker.",
+            type: "error",
+          });
+          setIsModalOpen(true);
+        } else {
+          // General error handling.
+          console.error("Error:", data.error);
+          setError(data.error);
+          setModalMessage({
+            message: data.error,
+            type: "error",
+          });
+          setIsModalOpen(true); // Open modal with error message.
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setError("An error occurred while submitting the data.");
+        setModalMessage({
+          message: "An error occurred while submitting the data.",
+          type: "error",
+        });
+        setIsModalOpen(true); // Open modal with error message.
       });
   };
-  
+
 
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
@@ -977,7 +1026,7 @@ export const ConnectionTerms = () => {
       <Navbar content={content}></Navbar>
       <div>
         {/* <Panel /> */}
-        <div className="Panelcontent" style={{marginTop:"120px"}}>
+        <div className="Panelcontent" style={{ marginTop: "120px" }}>
           <div className="connectionTerms-heroContainer-nonglobal">
             {/* <div className="main-heading">Guest Terms Of Service</div> */}
             <Grid container className="parent-container ">
@@ -1009,7 +1058,7 @@ export const ConnectionTerms = () => {
                         Import Global Connection Template
                       </button>
                     </Grid>
-                    
+
                   </Grid>
                   {isTemplateModalOpen && (
                     <Modal
@@ -1036,11 +1085,8 @@ export const ConnectionTerms = () => {
                                     checked={selectedTemplateIds.includes(
                                       template.global_connection_type_template_id
                                     )}
-                                    onChange={() =>
-                                      handleTemplateSelection(
-                                        template.global_connection_type_template_id
-                                      )
-                                    }
+                                    onChange={() => handleTemplateSelection(template)}
+
                                   />
                                   {template.global_connection_type_name} (ID:{" "}
                                   {template.global_connection_type_template_id})
@@ -1069,12 +1115,12 @@ export const ConnectionTerms = () => {
                     <div className="mb-3 row">
                       <label className="col-sm-2 col-md-2 col-form-label">Label</label>
                       <div className="col-md-10 col-sm-10 col-xs-10">
-                        <input 
-                           type="text"
-                           name="labelName"
-                           placeholder="Label of data shared"
-                           value={formData.labelName}
-                           onChange={handleInputChange} className="form-control" 
+                        <input
+                          type="text"
+                          name="labelName"
+                          placeholder="Label of data shared"
+                          value={formData.labelName}
+                          onChange={handleInputChange} className="form-control"
                         />
                       </div>
                     </div>
@@ -1083,21 +1129,21 @@ export const ConnectionTerms = () => {
                       <label className="col-sm-2 col-md-2 col-form-label">Type of Action</label>
                       <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
                         <select className="form-select form-select-md" aria-label="Small select example"
-                            name="typeOfAction"
-                            value={formData.typeOfAction}
-                            onChange={handleInputChange} >
-                            <option value="text">Add Value</option>
-                            <option value="file">Upload File</option>
-                            <option value="date">Add Date</option>
+                          name="typeOfAction"
+                          value={formData.typeOfAction}
+                          onChange={handleInputChange} >
+                          <option value="text">Add Value</option>
+                          <option value="file">Upload File</option>
+                          <option value="date">Add Date</option>
                         </select>
                         {!isTemplateModalOpen && <span className="tooltips">
-                        ?
+                          ?
                           <span className="tooltiptext">
                             Choose the action type: Share, Transfer, Confer, or
                             Collateral.
                           </span>
                         </span>}
-                        
+
                       </div>
                     </div>
 
@@ -1105,57 +1151,57 @@ export const ConnectionTerms = () => {
                       <label className="col-sm-2 col-md-2 col-form-label">Type of Sharing</label>
                       <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
                         <select className="form-select form-select-md" aria-label="Small select example"
-                            name="typeOfSharing"
-                            value={formData.typeOfSharing}
-                            onChange={handleInputChange} >
-                            <option value="share">Share</option>
-                            <option value="transfer">Transfer</option>
-                            <option value="confer">Confer</option>
-                            <option value="collateral">Collateral</option>
+                          name="typeOfSharing"
+                          value={formData.typeOfSharing}
+                          onChange={handleInputChange} >
+                          <option value="share">Share</option>
+                          <option value="transfer">Transfer</option>
+                          <option value="confer">Confer</option>
+                          <option value="collateral">Collateral</option>
                         </select>
                         {!isTemplateModalOpen && <span className="tooltips">
-                        ?
-                        <span className="tooltiptext">
-                          <span>
-                            Transfer: You are transferring ownership of this
-                            resource. You will no longer have access to this
-                            resource after this operation.
+                          ?
+                          <span className="tooltiptext">
+                            <span>
+                              Transfer: You are transferring ownership of this
+                              resource. You will no longer have access to this
+                              resource after this operation.
+                            </span>
+                            <br />
+                            <span>
+                              Confer: You are going to transfer ownership of the
+                              resource, but the recipient cannot modify the
+                              contents of what you have conferred. You still have
+                              rights over this resource.
+                            </span>
+                            <br />
+                            <span>
+                              Share: You are not transferring ownership of this
+                              resource, but the recipient can view your resource.
+                              The recipient cannot do anything else.
+                            </span>
+                            <br />
+                            <span>
+                              Collateral: You are temporarily transferring
+                              ownership to the recipient. After this operation,
+                              you cannot change anything in the resource and can
+                              use this as agreed with the recipient.
+                            </span>
+                            <br />
                           </span>
-                          <br />
-                          <span>
-                            Confer: You are going to transfer ownership of the
-                            resource, but the recipient cannot modify the
-                            contents of what you have conferred. You still have
-                            rights over this resource.
-                          </span>
-                          <br />
-                          <span>
-                            Share: You are not transferring ownership of this
-                            resource, but the recipient can view your resource.
-                            The recipient cannot do anything else.
-                          </span>
-                          <br />
-                          <span>
-                            Collateral: You are temporarily transferring
-                            ownership to the recipient. After this operation,
-                            you cannot change anything in the resource and can
-                            use this as agreed with the recipient.
-                          </span>
-                          <br />
-                        </span>
-                        </span>} 
+                        </span>}
                       </div>
                     </div>
 
                     <div className="mb-3 row">
                       <label className="col-sm-2 col-md-2 col-form-label">Purpose</label>
                       <div className="col-md-10 col-sm-10 col-xs-10">
-                        <input 
-                           type="text"
-                           name="purpose"
-                           placeholder="purpose of collecting data"
-                           value={formData.purpose}
-                           onChange={handleInputChange} className="form-control" 
+                        <input
+                          type="text"
+                          name="purpose"
+                          placeholder="purpose of collecting data"
+                          value={formData.purpose}
+                          onChange={handleInputChange} className="form-control"
                         />
                       </div>
                     </div>
@@ -1163,12 +1209,12 @@ export const ConnectionTerms = () => {
                     <div className="mb-3 row">
                       <label className="col-sm-2 col-md-2 col-form-label">Description</label>
                       <div className="col-md-10 col-sm-10 col-xs-10">
-                        <input 
-                           type="text"
-                           name="labelDescription"
-                           placeholder="Description of the obligation"
-                           value={formData.labelDescription}
-                           onChange={handleInputChange} className="form-control" 
+                        <input
+                          type="text"
+                          name="labelDescription"
+                          placeholder="Description of the obligation"
+                          value={formData.labelDescription}
+                          onChange={handleInputChange} className="form-control"
                         />
                       </div>
                     </div>
@@ -1176,65 +1222,65 @@ export const ConnectionTerms = () => {
                     <div className="mb-3 row">
                       <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>
                       <div className="col-md-9 col-sm-12">
-                      <div className="row">
-                        <div className="col-2">
-                          <input
-                            type="checkbox"
-                            value="reshare"
+                        <div className="row">
+                          <div className="col-2">
+                            <input
+                              type="checkbox"
+                              value="reshare"
                               checked={formData.hostPermissions.includes(
                                 "reshare"
                               )}
                               onChange={handleHostPermissionsChange}
-                          />
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <label key="reshare">
+                              Reshare
+                            </label>
+                          </div>
                         </div>
-                        <div className="col-md-6">
-                          <label key="reshare"> 
-                            Reshare
-                          </label>
+                        <div className="row">
+                          <div className="col-2">
+                            <input
+                              type="checkbox"
+                              value="download"
+                              checked={formData.hostPermissions.includes(
+                                "download"
+                              )}
+                              onChange={handleHostPermissionsChange}
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <label key="download">
+                              Download
+                            </label>
+                          </div>
                         </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-2">
-                          <input
-                            type="checkbox"
-                            value="download"
-                            checked={formData.hostPermissions.includes(
-                              "download"
-                            )}
-                            onChange={handleHostPermissionsChange}
-                          />
+                        <div className="row">
+                          <div className="col-2">
+                            <input
+                              type="checkbox"
+                              value="aggregate"
+                              checked={formData.hostPermissions.includes(
+                                "aggregate"
+                              )}
+                              onChange={handleHostPermissionsChange} />
+                          </div>
+                          <div className="col-md-6">
+                            <label key="aggregate">
+                              Aggregate
+                            </label>
+                          </div>
                         </div>
-                        <div className="col-md-6">
-                          <label key="download"> 
-                            Download
-                          </label>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-2">
-                        <input
-                          type="checkbox"
-                          value="aggregate"
-                          checked={formData.hostPermissions.includes(
-                            "aggregate"
-                          )}
-                          onChange={handleHostPermissionsChange}/>
-                        </div>
-                        <div className="col-md-6">
-                          <label key="aggregate"> 
-                            Aggregate
-                          </label>
-                        </div>
-                      </div>
                       </div>
                       <div className="col-md-1">
-                      {!isTemplateModalOpen && <span className="tooltips">
-                        ?
-                        <span className="tooltiptext">
-                          Select host permissions: Reshare, Download, or Aggregate.
-                        </span>
-                      </span>}
-                    </div> 
+                        {!isTemplateModalOpen && <span className="tooltips">
+                          ?
+                          <span className="tooltiptext">
+                            Select host permissions: Reshare, Download, or Aggregate.
+                          </span>
+                        </span>}
+                      </div>
                     </div>
                     <Grid container marginBottom={2}>
                       <Grid item md={4} xs={12}>
@@ -1310,28 +1356,32 @@ export const ConnectionTerms = () => {
                 </div>
               </Grid>
 
-              <Grid item xs={12} md={3} className="parent-right-headings" marginTop={{ md: "0px", xs: "30px" }}>
-                {obligations.map((obligation, index) => (
-                  <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"} justifyContent={"center"}>
-                    <Grid item xs={6}>
+              <Grid item xs={12} sm={12} md={3} className="parent-right-headings" marginTop={{ md: "0px", xs: "30px" }}>
+                {obligations.map((obligation, index, template) => (
+                  <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"}  >
+                    <Grid item md={6} sm={6} xs={6}>
                       <button
-                       type="button"
-                       color= "secondary"
+                        type="button"
+                        color="secondary"
                         className="btn btn-outline-secondary obligation-buttons"
                         onClick={() => handleLoadObligation(index)}
                       >
                         {obligation.labelName}
                       </button>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item md={4} sm={4} xs={5}>
                       <button
                         className="remove-obligation-button"
+                        style={{ width: "auto" }}
                         variant="contained"
                         onClick={() => handleRemoveObligation(index)}
                       >
                         Remove
                       </button>
                     </Grid>
+                    {obligation.showInfo && (<Grid item md={1} sm={1} xs={1}>
+                      <i className="bi bi-info-circle" style={{ cursor: "pointer" }}></i>
+                    </Grid>)}
                   </Grid>
                 ))}
               </Grid>

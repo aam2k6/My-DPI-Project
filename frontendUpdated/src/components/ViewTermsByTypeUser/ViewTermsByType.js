@@ -582,6 +582,7 @@ export const ViewTermsByType = () => {
   const [hostToGuestTerms, setHostToGuestTerms] = useState([]);
   const [guestToHostObligations, setGuestToHostObligations] = useState([]);
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
+  const [showRevokeConsentModal, setShowRevokeConsentModal] = useState(false);
 
   const {
     connectionName,
@@ -1791,6 +1792,10 @@ export const ViewTermsByType = () => {
   };
 
   console.log("selection", selection);
+  const handleRevokeConsentConfirm = () => {
+    setShowRevokeConsentModal(false); // Close the modal
+    handleConsentAndInfo(connectionName); // Execute revoke consent action
+  };
   const content = (
     <>
       {/* <div className="navbarBrand">
@@ -1949,11 +1954,10 @@ export const ViewTermsByType = () => {
             <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
           </button>
           <button
-            //   className="info-button"
-            onClick={() => handleConsentAndInfo(connectionName)}
-          >
-            Revoke Consent
-          </button>
+    onClick={() => setShowRevokeConsentModal(true)} // Trigger confirmation modal
+  >
+    Revoke Consent
+  </button>
           <br></br>
           <>
             <div className="longconnectionDescription" style={{ paddingBottom: "4px"}}>
@@ -2152,6 +2156,15 @@ export const ViewTermsByType = () => {
                           <button onClick={() => setShowResources(false)}>Select</button>
                         </div>
                       )}
+                      {showRevokeConsentModal && (
+  <Modal
+    message="Are you sure you want to revoke consent?"
+    type="confirmation"
+    onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
+    onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
+  />
+)}
+
 
                       {showResources2 && (
                         <div className="resource-container">

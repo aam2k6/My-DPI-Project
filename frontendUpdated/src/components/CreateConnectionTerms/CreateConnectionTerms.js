@@ -725,6 +725,10 @@ export const CreateConnectionTerms = () => {
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
   const [activeTab, setActiveTab] = useState("guest");
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showRevokeConfirmationModal, setShowRevokeConfirmationModal] = useState(false);
+
+
   
 
   const {
@@ -1333,7 +1337,10 @@ const handledisagreebutton = () => {
     },
   });
 }
-
+const handleRevokeConfirm = () => {
+  setShowRevokeConfirmationModal(false); // Close the modal
+  handleRevokebutton(); // Execute revoke action
+};
 return (
   <div>
     <Navbar content={content} />
@@ -1431,60 +1438,82 @@ return (
       </div>
     </div>
 
-    {isModalOpen && (
-      <Modal
-        message={modalMessage.message}
-        onClose={handleCloseModal}
-        type={modalMessage.type}
-      />
-    )}
-    <div>
-      
-    {showConsent && Iagree === "0" && (
-      <Grid container>
-        <Grid item md={4} xs={1}></Grid>
-        <Grid item xs={5.5} md={2} className="page13button">
-          <button
-            className="page13iagree0buttons"
-            onClick={handleIagreebutton}
-          >
-            Agree
-          </button>
-        </Grid>
-        <Grid item xs={5.5} md={2} className="page13button">
-        <button
-            className="page13iagree0buttons"
-            onClick={() => handledisagreebutton()}
-          >
-            Disagree
-          </button>
-        </Grid>
-        <Grid item md={4} xs={0}></Grid>
-      </Grid>
-    )}
+    {
+  isModalOpen && (
+    <Modal
+      message={modalMessage.message}
+      onClose={handleCloseModal}
+      type={modalMessage.type}
+    />
+  )
+}
+{showConfirmationModal && (
+  <Modal
+    message="Are you sure you want to agree?"
+    type="confirmation"
+    onClose={() => setShowConfirmationModal(false)} // Close on "No"
+    onConfirm={() => {
+      setShowConfirmationModal(false); // Close modal
+      handleIagreebutton(); // Execute agree action
+    }}
+  />
+)}
+{showRevokeConfirmationModal && (
+    <Modal
+      message="Are you sure you want to revoke?"
+      type="confirmation"
+      onClose={() => setShowRevokeConfirmationModal(false)} // Close modal on "No"
+      onConfirm={handleRevokeConfirm} // Call the confirmation action
+    />
+  )}
 
-    </div>
-    <div>
-    {showConsent && Iagree === "1" && (
-          <Grid container className="page13parent13state1">
-            <Grid item xs={12} md={2}></Grid>
-            <Grid item xs={12} md={4} className="page13consent" mb={3}>
-              Consent Given on : {consentData.consent_given}
-              <br />
-              Consent valid Until : {consentData.valid_until}
-            </Grid>
-            <Grid xs={12} md={2}></Grid>
-            <Grid item xs={12} md={4} className="page13button" mb={3}>
-              <button
-                className="page13iagree1buttons"
-                onClick={handleRevokebutton}
-              >
-                Revoke
-              </button>
-            </Grid>
-          </Grid>
-        )}
-    </div>
+<div>
+  {showConsent && Iagree === "0" && (
+    <Grid container>
+      <Grid item md={4} xs={1}></Grid>
+      <Grid item xs={5.5} md={2} className="page13button">
+        <button
+          className="page13iagree0buttons"
+          onClick={() => setShowConfirmationModal(true)} // Trigger confirmation modal
+        >
+          Agree
+        </button>
+      </Grid>
+      <Grid item xs={5.5} md={2} className="page13button">
+        <button
+          className="page13iagree0buttons"
+          onClick={() => handledisagreebutton()}
+        >
+          Disagree
+        </button>
+      </Grid>
+      <Grid item md={4} xs={0}></Grid>
+    </Grid>
+  )}
+</div>
+
+<div>
+  {showConsent && Iagree === "1" && (
+    <Grid container className="page13parent13state1">
+      <Grid item xs={12} md={2}></Grid>
+      <Grid item xs={12} md={4} className="page13consent" mb={3}>
+        Consent Given on : {consentData.consent_given}
+        <br />
+        Consent valid Until : {consentData.valid_until}
+      </Grid>
+      <Grid xs={12} md={2}></Grid>
+      <Grid item xs={12} md={4} className="page13button" mb={3}>
+      <button
+          className="page13iagree1buttons"
+          onClick={() => setShowRevokeConfirmationModal(true)} // Trigger confirmation modal
+        >
+          Revoke
+        </button>
+      </Grid>
+    </Grid>
+  )}
+</div>
+
    </div>
 
     

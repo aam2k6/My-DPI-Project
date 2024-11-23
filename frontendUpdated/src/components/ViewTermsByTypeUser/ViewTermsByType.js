@@ -2153,7 +2153,7 @@ export const ViewTermsByType = () => {
                               </li>
                             ))}
                           </ul>
-                          <button onClick={() => setShowResources(false)}>Select</button>
+                          <button className="btn btn-primary clsoeBtn" style={{backgroundColor:"#007bff"}} onClick={() => setShowResources(false)}>Close</button>
                         </div>
                       )}
                       {showRevokeConsentModal && (

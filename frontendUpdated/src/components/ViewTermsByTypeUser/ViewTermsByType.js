@@ -2153,7 +2153,7 @@ export const ViewTermsByType = () => {
                               </li>
                             ))}
                           </ul>
-                          <button className="btn btn-primary clsoeBtn" style={{backgroundColor:"#007bff"}} onClick={() => setShowResources(false)}>Close</button>
+                          <button className="btn btn-primary clsoeBtn" style={{backgroundColor:"#007bff"}} onClick={() => setShowResources(false)}>Cancel</button>
                         </div>
                       )}
                       {showRevokeConsentModal && (
@@ -2168,7 +2168,7 @@ export const ViewTermsByType = () => {
 
                       {showResources2 && (
                         <div className="resource-container">
-                          <h3>Select Resource for {currentLabelName}</h3>
+                          <h3 style={{fontWeight:"bold"}}>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
 
                           <ul>

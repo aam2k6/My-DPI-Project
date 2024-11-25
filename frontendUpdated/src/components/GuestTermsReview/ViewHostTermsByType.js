@@ -1662,7 +1662,7 @@ console.log("hostToGuest", hostToGuestObligations);
                           </li>
                         ))}
                       </ul>
-                      <button onClick={() => setShowResources(false)}>Select</button>
+                      <button className="btn btn-primary clsoeBtn" style={{backgroundColor:"#007bff"}} onClick={() => setShowResources(false)}>Cancel</button>
                     </div>
                   )}
 
@@ -1870,7 +1870,7 @@ console.log("hostToGuest", hostToGuestObligations);
         {showPageInput && (
     <div className="page-input-modal">
     <div>
-      <h3>Enter Page Range for {currentLabelName}</h3>
+      <h5 style={{fontWeight:"bold"}}>Enter Page Range for {currentLabelName}</h5>
       {errorMessage && <p className="error">{errorMessage}</p>}
 
       <label>

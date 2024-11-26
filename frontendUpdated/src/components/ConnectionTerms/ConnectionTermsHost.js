@@ -51,6 +51,10 @@ export const ConnectionTermsHost = () => {
   const [navigateHome , setNavigateHome] = useState(false)
   const [selectedTemplateDetails, setSelectedTemplateDetails] = useState(null);
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 const fetchGlobalTemplates = () => {
   const token = Cookies.get("authToken");
   fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
@@ -456,7 +460,7 @@ const fetchGlobalTemplates = () => {
   const content = (
     <>
       <div className="navbarBrands">Locker : {locker_conn?.name}</div>
-      <div className="navbarBrands">Owner : {curruser.username}</div>
+      <div className="navbarBrands">Owner : {capitalizeFirstLetter(curruser.username)}</div>
     </>
   );
   

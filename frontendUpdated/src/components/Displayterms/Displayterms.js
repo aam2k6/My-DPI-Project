@@ -259,10 +259,10 @@ export const Displayterms = () => {
           {userType === "guest"
             ? term.typeOfSharing === "collateral"
               ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-              : `Guest shall ${term.typeOfSharing} ${term.labelName} - ${term.labelDescription}`
+              : `Guest shall ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`
             : term.typeOfSharing === "collateral"
             ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-            : `Host will ${term.typeOfSharing} ${term.labelName} - ${term.labelDescription}`}
+            : `Host will ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`}
         </strong>
         (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 
           ? term.hostPermissions.join(", ") 

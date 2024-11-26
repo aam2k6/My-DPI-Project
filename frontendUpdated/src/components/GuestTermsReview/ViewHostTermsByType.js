@@ -823,7 +823,7 @@ export const ViewHostTermsByType = () => {
       setToPage('');
     }
   };
-  
+
   const appendPagesToTerms = (termValue) => {
     // console.log("in append", termValue);
     setTermValues((prevTerms) => ({
@@ -1954,7 +1954,7 @@ export const ViewHostTermsByType = () => {
                             />
                           </label>
 
-                          <span className="or-text">OR</span>
+                          <p className="or-text">OR</p>
 
                           <label>
                             Select Complete Pages &nbsp; &nbsp;

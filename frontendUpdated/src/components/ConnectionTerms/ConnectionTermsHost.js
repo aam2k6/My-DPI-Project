@@ -753,12 +753,12 @@ const fetchGlobalTemplates = () => {
                   </div>
 
                   <div className="mb-3 row">
-                    <div className="col-md-6 col-xs-12">
-                      <label className="col-md-7 col-xs-12 agreeLabel">
+                    <div className="col-md-5 col-xs-12">
+                      <label className="agreeLabel">
                         Can the guest share more data
                       </label>
                     </div>
-                    <div className="col-6">
+                    <div className="col-md-1 col-xs-2">
                       <input
                         type="checkbox"
                         name="canShareMore"
@@ -788,14 +788,14 @@ const fetchGlobalTemplates = () => {
                   </div>
 
                   <div className="mb-3 row">
-                    <div className="col-md-6 col-xs-12">
-                      <label className="col-md-6 col-xs-12  agreeLabel">
+                    <div className="col-md-5 col-xs-12">
+                      <label className="agreeLabel">
                         {formData.forbidden
                           ? "Host cannot unilaterally close the connection."
                           : "Host can unilaterally close the connection."}
                       </label>
                     </div>
-                    <div className="col-6">
+                    <div className="col-md-1 col-xs-2">
                       <input
                         type="checkbox"
                         name="forbidden"

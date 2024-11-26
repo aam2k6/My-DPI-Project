@@ -16,7 +16,8 @@ export const UploadResource = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resourceName, setResourceName] = useState("");
   const [document, setDocument] = useState(null);
-  const [visibility, setVisibility] = useState("public"); // Default value set to Public
+  const [visibility, setVisibility] = useState("public");
+  const [validityTime, setValidityTime] = useState(null); 
   const navigate = useNavigate();
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
  const [errorModalMessage, setErrorModalMessage] = useState('');
@@ -47,6 +48,8 @@ export const UploadResource = () => {
     data.append('resource_name', resourceName);
     data.append('type', visibility);
     data.append('document', document);
+    data.append('validity_time', validityTime); // Add validity time
+
 
     const token = Cookies.get('authToken');
 
@@ -141,6 +144,17 @@ export const UploadResource = () => {
                     <option value="public">Public</option>
                     <option value="private">Private</option>
                   </select>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="validityTime" className="form-label fw-bold">Validity Time</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    id="validityTime"
+                    value={validityTime}
+                    onChange={(e) => setValidityTime(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="text-center">
                   <button type="submit" className="btn btn-primary">Submit</button>

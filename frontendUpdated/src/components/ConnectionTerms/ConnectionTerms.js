@@ -1036,7 +1036,7 @@ export const ConnectionTerms = () => {
       <Navbar content={content}></Navbar>
       <div>
         {/* <Panel /> */}
-        <div className="Panelcontent" style={{ marginTop: "120px" }}>
+        <div className="Panelcontent" style={{ marginTop: "150px" }}>
           <div className="connectionTerms-heroContainer-nonglobal">
             {/* <div className="main-heading">Guest Terms Of Service</div> */}
             <Grid container className="parent-container ">
@@ -1318,12 +1318,12 @@ export const ConnectionTerms = () => {
                     </div>
 
                     <div className="mb-3 row">
-                      <div className="col-md-6 col-xs-12">
-                        <label className="col-md-7 col-xs-12 agreeLabel">
+                      <div className="col-md-5 col-xs-12">
+                        <label className="agreeLabel">
                           Can the guest share more data
                         </label>
                       </div>
-                      <div className="col-6">
+                      <div className="col-md-1 col-xs-2">
                         <input
                           type="checkbox"
                           name="canShareMore"
@@ -1353,14 +1353,14 @@ export const ConnectionTerms = () => {
                     </div>
 
                     <div className="mb-3 row">
-                      <div className="col-md-6 col-xs-12">
-                        <label className="col-md-6 col-xs-12  agreeLabel">
+                      <div className="col-md-5 col-xs-12">
+                        <label className="agreeLabel">
                           {formData.forbidden
                             ? "Guest cannot unilaterally close the connection."
                             : "Guest can unilaterally close the connection."}
                         </label>
                       </div>
-                      <div className="col-6">
+                      <div className="col-md-1 col-xs-2">
                         <input
                           type="checkbox"
                           name="forbidden"
@@ -1382,7 +1382,11 @@ export const ConnectionTerms = () => {
                     <Grid item md={6} sm={6} xs={6}>
                       <button
                         data-tooltip-id={`tooltip-${index}`}
-                        data-tooltip-content={obligation.templateName || "Guest new Obligation"}
+                        data-tooltip-content={
+                          obligation.templateName
+                            ? `Imported from: ${obligation.templateName}`
+                            : connectionData.connectionName
+                        }
                         type="button"
                         className="btn btn-outline-secondary obligation-buttons"
                         onClick={() => handleLoadObligation(index)}

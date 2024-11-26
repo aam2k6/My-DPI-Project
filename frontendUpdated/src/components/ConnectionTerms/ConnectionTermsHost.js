@@ -11,7 +11,8 @@ import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
-import { Grid, Button } from '@mui/material'
+import { Grid } from '@mui/material'
+import { Tooltip } from 'react-tooltip';
 
 export const ConnectionTermsHost = () => {
   const navigate = useNavigate();
@@ -105,22 +106,25 @@ const fetchGlobalTemplates = () => {
     );
   };
 
-  const handleInfo = () => {
+  // const handleInfo = () => {
 
 
-    if (setSelectedTemplateDetails) {
-      navigate('/GlobalTermsView', {
-        state: {
-          connectionTypeName: selectedTemplateDetails.name,
-          connectionTypeDescription: selectedTemplateDetails.description,
-          template_Id: selectedTemplateDetails.id,
-        },
-      });
-    }
+  //   if (setSelectedTemplateDetails) {
+  //     navigate('/GlobalTermsView', {
+  //       state: {
+  //         connectionTypeName: selectedTemplateDetails.name,
+  //         connectionTypeDescription: selectedTemplateDetails.description,
+  //         template_Id: selectedTemplateDetails.id,
+  //       },
+  //     });
+  //   }
 
-    // Navigate with the extracted data
+  // };
 
-  };
+  const templateNameMapping = globalTemplates.reduce((acc, template) => {
+    acc[template.global_connection_type_template_id] = template.global_connection_type_name;
+    return acc;
+  }, {});
 
   const handleFetchObligations = () => {
     const token = Cookies.get("authToken");
@@ -141,11 +145,12 @@ const fetchGlobalTemplates = () => {
         .then((data) => {
           if (data.success) {
             const { obligations, permissions, forbidden } = data.data;
-
+            const templateName = templateNameMapping[templateId] || "Host Obligation";
             const obligationsWithGlobalId = obligations.map((obligation) => ({
               ...obligation,
+              templateName,
               global_conn_type_id: templateId,  // Add global_conn_type_id
-              showInfo: true,
+              // showInfo: true,
             }));
   
   
@@ -212,7 +217,7 @@ const fetchGlobalTemplates = () => {
       // Add the formData along with showInfo: false
       const newObligation = {
         ...formData, // Spread the formData to add its properties
-        showInfo: false, // Set showInfo to false for newly added obligations
+        // showInfo: false, 
       };
   
       // Update the obligations state with the new obligation
@@ -580,7 +585,7 @@ const fetchGlobalTemplates = () => {
                           <option value="file">Upload File</option>
                           <option value="date">Add Date</option>
                       </select>
-                      {!isTemplateModalOpen && <span className="tooltips">
+                      {!isTemplateModalOpen && !isModalOpen && <span className="tooltips">
                       ?
                         <span className="tooltiptext">
                           Choose the action type: Share, Transfer, Confer, or
@@ -602,7 +607,7 @@ const fetchGlobalTemplates = () => {
                           <option value="confer">Confer</option>
                           <option value="collateral">Collateral</option>
                       </select>
-                      {!isTemplateModalOpen && <span className="tooltips">
+                      {!isTemplateModalOpen && !isModalOpen && <span className="tooltips">
                       ?
                       <span className="tooltiptext">
                         <span>
@@ -718,7 +723,7 @@ const fetchGlobalTemplates = () => {
                     </div>
                     </div>
                     <div className="col-md-1">
-                      {!isTemplateModalOpen && <span className="tooltips">
+                      {!isTemplateModalOpen && !isModalOpen && <span className="tooltips">
                       ?
                       <span className="tooltiptext">
                         Select host permissions: Reshare, Download, or Aggregate.
@@ -806,14 +811,20 @@ const fetchGlobalTemplates = () => {
                 {obligations.map((obligation, index) => (
                   <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"}>
                     <Grid item md={6} sm={6} xs={6}>
-                      <button
-                       type="button"
-                       color= "secondary"
+                    <button
+                        data-tooltip-id={`tooltip-${index}`}
+                        data-tooltip-content={
+                          obligation.templateName
+                            ? `Imported from: ${obligation.templateName}`
+                            : connectionData.connectionName
+                        }
+                        type="button"
                         className="btn btn-outline-secondary obligation-buttons"
                         onClick={() => handleLoadObligation(index)}
                       >
                         {obligation.labelName}
                       </button>
+                      <Tooltip id={`tooltip-${index}`} style={{ maxWidth: '200px', whiteSpace: 'normal' }}/>
                     </Grid>
                     <Grid item md={4} sm={4} xs={5}>
                       <button
@@ -825,10 +836,10 @@ const fetchGlobalTemplates = () => {
                         Remove
                       </button>
                     </Grid>
-                    {obligation.showInfo && (<Grid item md={1} sm={1} xs={1}>
+                    {/* {obligation.showInfo && (<Grid item md={1} sm={1} xs={1}>
                       <i className="bi bi-info-circle"
                         style={{ cursor: "pointer" }}></i>
-                    </Grid>)}
+                    </Grid>)} */}
                   </Grid>
                 ))}
               </Grid>

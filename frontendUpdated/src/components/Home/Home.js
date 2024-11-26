@@ -484,7 +484,7 @@ export const Home = () => {
 
           <Grid container>
             <Grid item md={4} xs={12} sx={{ textAlign: "center" }}>
-              <h2>{showOutgoingConnections ? "Consent Dashboard" : "My Lockers"}</h2>
+              <h4>{showOutgoingConnections ? "Consent Dashboard" : "My Lockers"}</h4>
             </Grid>
             <Grid item md={4} xs={6}>
               {!showOutgoingConnections && (

@@ -26,6 +26,7 @@ export const HostTermsReview = () => {
   const [resourcesData, setResourcesData] = useState({
     share: [],
     transfer: [],
+    confer: [],
   });
   const [permissionsData, setPermissionsData] = useState([]);
   const [terms, setTerms] = useState([]);
@@ -468,6 +469,7 @@ export const HostTermsReview = () => {
           // Initialize new arrays for transfer and share
           const newTransfer = [...new Set(prevResourcesData.transfer)];
           const newShare = [...new Set(prevResourcesData.share)];
+          const newConfer = [...new Set(prevResourcesData.confer)];
 
           // const newShare = [];
           // const newTransfer = [];
@@ -492,6 +494,8 @@ export const HostTermsReview = () => {
                 newTransfer.push(currentValue);
               } else if (currentType === "share" && !newShare.includes(currentValue)) {
                 newShare.push(currentValue);
+              } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
+                newConfer.push(currentValue);
               }
             }
           });
@@ -500,6 +504,7 @@ export const HostTermsReview = () => {
           return {
             transfer: [...new Set(newTransfer)],
           share: [...new Set(newShare)],
+          confer: [...new Set(newConfer)],
           };
         });
 
@@ -525,6 +530,7 @@ export const HostTermsReview = () => {
           // Initialize new arrays for transfer and share
           const newTransfer = [...new Set(prevResourcesData.transfer)];
           const newShare = [...new Set(prevResourcesData.share)];
+          const newConfer = [...new Set(prevResourcesData.confer)];
           // const newTransfer = [];
           // const newShare = [];
 
@@ -551,6 +557,8 @@ export const HostTermsReview = () => {
                 newTransfer.push(currentValue);
               } else if (currentType === "share" && !newShare.includes(currentValue)) {
                 newShare.push(currentValue);
+              } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
+                newConfer.push(currentValue);
               }
             }
           });
@@ -559,6 +567,7 @@ export const HostTermsReview = () => {
           return {
             transfer: [...new Set(newTransfer)],
           share: [...new Set(newShare)],
+          confer: [...new Set(newConfer)],
           };
         });
 
@@ -632,6 +641,7 @@ export const HostTermsReview = () => {
 
       const resourcesToTransfer = resourcesData.transfer;
       const resourcesToShare = resourcesData.share;
+      const resourcesToConfer = resourcesData.confer;
 
       const requestBody = {
         connection_name: conndetails.connection_name,
@@ -643,6 +653,7 @@ export const HostTermsReview = () => {
         resources: {
           Transfer: resourcesToTransfer,
           Share: resourcesToShare,
+          Confer: resourcesToConfer,
         },
       };
 
@@ -687,6 +698,10 @@ export const HostTermsReview = () => {
       // Share resources
       if (resourcesToShare.length > 0) {
         await handleShareResource();
+      }
+
+      if (resourcesToConfer.length > 0) {
+        await handleConferResource();
       }
 
       navigate("/home");
@@ -834,6 +849,54 @@ export const HostTermsReview = () => {
     } catch (err) {
       console.error("Error:", err.message);
       throw err; // Rethrow error to be handled by the main try-catch
+    }
+  };
+  const handleConferResource = async () => {
+    try {
+      console.log(JSON.stringify({
+        connection_name: conndetails.connection_name,
+        host_locker_name: conndetails.host_locker.name,
+        guest_locker_name: conndetails.guest_locker.name,
+        host_user_username: conndetails.host_user.username,
+        guest_user_username: conndetails.guest_user.username,
+        validity_until: conndetails.validity_time,
+      }));
+      
+      const token = Cookies.get("authToken");
+      const response = await fetch(
+        `${frontend_host}/confer-resource-reverse/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`,
+          },
+          body: JSON.stringify({
+            connection_name: conndetails.connection_name,
+            host_locker_name: conndetails.host_locker.name,
+            guest_locker_name: conndetails.guest_locker.name,
+            host_user_username: conndetails.host_user.username,
+            guest_user_username: conndetails.guest_user.username,
+            validity_until: conndetails.validity_time,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log(response.error);
+        throw new Error("Failed to confer resource");
+      }
+
+      const data = await response.json();
+      // console.log("transfer", data);
+      if (data.success) {
+        alert("Resource confer successful");
+      } else {
+        setError(data.error || "Failed to confer resource");
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 

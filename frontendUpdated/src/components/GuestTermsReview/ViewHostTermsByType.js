@@ -838,6 +838,7 @@ const appendPagesToTerms = (termValue) => {
       const newResourcesData = {
         Transfer: [],
         Share: [],
+        Confer: [],
       };
 
       // Traverse through permissionsData

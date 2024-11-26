@@ -1334,6 +1334,7 @@ export const ViewTermsByType = () => {
       const newResourcesData = {
         Transfer: [],
         Share: [],
+        Confer:[]
       };
 
       // Traverse through permissionsData

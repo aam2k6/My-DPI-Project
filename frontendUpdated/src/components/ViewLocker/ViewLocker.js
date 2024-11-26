@@ -38,6 +38,8 @@ export const ViewLocker = () => {
   const [SnodeResources, setSnodeResources] = useState([]);
   const [activeTab, setActiveTab] = useState("incoming");
   const [xnodes, setXnodes] = useState([]);
+  const [isResourcesVisible, setResourcesVisible] = useState(false);
+
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
 
@@ -742,6 +744,9 @@ const handleDeleteClick = async (xnode) => {
   const handleCloseModal = () => {
     setModalMessage(null);
   };
+  const toggleResourcesVisibility = () => {
+    setResourcesVisible(!isResourcesVisible);
+  };
 
 
 
@@ -797,143 +802,112 @@ const handleDeleteClick = async (xnode) => {
 
         <Grid container padding={{md:"50px",xs:"20px"}}>
           <Grid item md={5.5} xs={12} className="a">
-            <div className="res">
-              <h3>Resources</h3>
-            </div>
-            <div className="container-3 clearfix">
-              <div className="aa">
-                {/* {resources.length > 0 ? (
-                  resources.map((resource, index) => (
-                    <div key={resource.resource_id} className="resource-item">
-                      <div className="resource-details">
-                        <div
-                          id="documents"
-                          onClick={() =>
-                            handleResourceClick(resource.i_node_pointer)
-                          }
-                        >
-                          {resource.document_name}
-                        </div>
-                        <div className="public-private">
-                          {resource.type === "private" ? (
-                            <>Private</>
-                          ) : (
-                            "Public"
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="not-found">No resources found.</p>
-                )}
+          <div className="res">
+      <h3>Resources</h3>
+      <div className="container-3 clearfix">
+        <div className="aa">
+          {/* "My Resources" folder */}
+          <div
+            className="resource-folder"
+            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+            onClick={toggleResourcesVisibility}
+          >
+            <i
+              className={`fa-solid fa-folder${isResourcesVisible ? "-open" : ""}`}
+              style={{ marginRight: "10px", fontSize: "24px" }}
+            />
+            <span>My Resources</span>
+          </div>
 
-                {VnodeResources.length > 0 ? (
-                  [...VnodeResources].map((resource, index) => (
+          {/* Resource List inside the folder */}
+          {isResourcesVisible && (
+            <>
+              {xnodes.length > 0 ? (
+                <ul style={{ paddingTop: "20px", paddingLeft: "20px" }}>
+                  {xnodes.map((xnode, index) => (
                     <div
-                      key={resource.resource.resource_id}
+                      key={xnode.id}
                       className="resource-item"
+                      style={{ paddingBottom: "0px" }}
                     >
                       <div className="resource-details">
-                        <div
-                          id="documents-byShare"
-                          onClick={() =>
-                            handleResourceClick(
-                              resource.resource.i_node_pointer
-                            )
+                        <Tooltip
+                          title={
+                            <>
+                              <div>
+                                <strong>Created:</strong>{" "}
+                                {new Date(xnode.created_at).toLocaleString()}
+                              </div>
+                              <div>
+                                <strong>Validity:</strong>{" "}
+                                {new Date(xnode.validity_until).toLocaleString()}
+                              </div>
+                              <div>
+                                <strong>Node Type:</strong> {xnode.xnode_Type}
+                              </div>
+                              <div>
+                                <strong>Host User:</strong>{" "}
+                                {xnode.locker?.user || "N/A"}
+                              </div>
+                              <div>
+                                <strong>Guest User:</strong>{" "}
+                                {xnode.connection?.guest_user || "N/A"}
+                              </div>
+                            </>
                           }
+                          arrow
                         >
-                          {resource.resource.document_name}
-                        </div>
-                        <div className="public-private">
-                          {resource.resource.type === "private" ? (
-                            <>Private</>
-                          ) : (
-                            "Public"
-                          )}
-                        </div>
+                          <div
+                            id={
+                              xnode.xnode_Type === "INODE"
+                                ? "documents"
+                                : xnode.xnode_Type === "SNODE"
+                                ? "documents-byConfer"
+                                : "documents-byShare"
+                            }
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <span
+                              onClick={() => handleClick(xnode.id)}
+                              style={{ cursor: "pointer", flexGrow: 1 }}
+                            >
+                              {xnode.resource_name}
+                            </span>
+                            <span
+                              className="resource-icons"
+                              style={{ marginLeft: "auto", display: "flex" }}
+                            >
+                              {xnode.xnode_Type === "INODE" && (
+                                <i
+                                  className="fa-regular fa-pen-to-square"
+                                  style={{
+                                    paddingRight: "10px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => handleEditClick(xnode)}
+                                />
+                              )}
+                              <i
+                                className="fa-regular fa-trash-can"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleDeleteClick(xnode)}
+                              />
+                            </span>
+                          </div>
+                        </Tooltip>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p className="not-found"></p>
-                )} */}
-                {/*                   
-      {xnodes.length > 0 ? (
-        <ul>
-          {xnodes.map((xnode, index) => (
-            <li
-              key={xnode.id}
-              className="resource-item"
-              style={{
-                color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red', // Apply color based on type
-              }}>
-            >
-             {correspondingNames[index]}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No Resources available</p>
-      )} */}
-                {xnodes.length > 0 ? (
-                  <ul style={{paddingTop:"40px"}}>
-                    {xnodes.map((xnode, index) => (
-                      <div
-                        key={xnode.id}
-                        className="resource-item"
-                        // style={{
-                        //   color: xnode.xnode_Type === 'INODE' ? 'blue' : 'red',}}
-                      >
-                        <div className="resource-details">                  <Tooltip
-                    title={
-                      <>
-                        <div><strong>Created:</strong> {new Date(xnode.created_at).toLocaleString()}</div>
-                        <div><strong>Validity:</strong> {new Date(xnode.validity_until).toLocaleString()}</div>
-                        <div><strong>Node Type:</strong> {xnode.xnode_Type}</div>
-                        <div><strong>Host User:</strong> {xnode.locker?.user || "N/A"}</div>
-                        <div><strong>Guest User:</strong> {xnode.connection?.guest_user || "N/A"}</div>
-
-                      </>
-                    }
-                    arrow
-                  >
-                    <div
-                      id={
-                        xnode.xnode_Type === "INODE"
-                          ? "documents"
-                          : xnode.xnode_Type === "SNODE"
-                          ? "documents-byConfer"
-                          : "documents-byShare"
-                      }
-                      style={{ display: 'flex' }}
-                    >
-                      <span onClick={() => handleClick(xnode.id)}>{xnode.resource_name}</span>
-                      
-                      <span className="resource-icons" style={{ marginLeft: "auto" }}>
-                      {xnode.xnode_Type === "INODE" && (
-    <i
-      className="fa-regular fa-pen-to-square"
-      style={{ paddingRight: "20px", cursor: "pointer" }}
-      onClick={() => handleEditClick(xnode)}
-    />
-  )}
-                        <i
-                          className="fa-regular fa-trash-can"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleDeleteClick(xnode)}
-                        />
-                      </span>
-                    </div>
-                  </Tooltip>
-                </div>
-              </div>
-            ))}
-          </ul>
-        ) : (
-          <p className="not-found">No Resources found.</p>
-        )}
-      </div>
+                  ))}
+                </ul>
+              ) : (
+                <p className="not-found" style={{ paddingLeft: "20px" }}>
+                  No Resources found.
+                </p>
+              )}
+            </>
+          )}
+        </div>
+        </div>
     </div>
     <button className="page3button" onClick={handleUploadResource}>
       Upload resource

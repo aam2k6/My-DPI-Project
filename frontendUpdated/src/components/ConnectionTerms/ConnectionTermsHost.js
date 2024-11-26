@@ -758,7 +758,7 @@ const fetchGlobalTemplates = () => {
                       />
                     </div>
                   </div>
-                  <div className="mb-3 row">
+                  {/* <div className="mb-3 row">
                     <div className="col-md-6 col-xs-12">
                       <label className="col-md-6 col-xs-12  agreeLabel">
                         Can they download the data
@@ -772,7 +772,7 @@ const fetchGlobalTemplates = () => {
                         onChange={handleCheckboxChange}
                       />
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="mb-1 row">
                     <h4><b>Forbidden</b></h4>
@@ -782,8 +782,8 @@ const fetchGlobalTemplates = () => {
                     <div className="col-md-6 col-xs-12">
                       <label className="col-md-6 col-xs-12  agreeLabel">
                         {formData.forbidden
-                          ? "You cannot unilaterally close the connection."
-                          : "You can unilaterally close the connection."}
+                          ? "Host cannot unilaterally close the connection."
+                          : "Host can unilaterally close the connection."}
                       </label>
                     </div>
                     <div className="col-6">

@@ -1169,7 +1169,7 @@ export const CreateConnectionTerms = () => {
         <div className="permissions">
           <ul>
             <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
-            <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li>
+            {/* <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li> */}
           </ul>
         </div>
       );

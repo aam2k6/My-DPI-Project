@@ -1957,7 +1957,7 @@ export const ViewHostTermsByType = () => {
                           <p className="or-text">OR</p>
 
                           <label>
-                            Select Complete Pages &nbsp; &nbsp;
+                          Select All Pages &nbsp; &nbsp;
                           </label>
                           <input
                             className="checkboxEntire"

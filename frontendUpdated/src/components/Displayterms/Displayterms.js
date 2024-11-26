@@ -299,11 +299,11 @@ const renderPermissions = (userType) => {
               ? `Guest ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`
               : `Host ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`}
           </li>
-          <li>
+          {/* <li>
             {userType === "guest"
               ? `Guest ${permissionsData.canDownloadData ? "Can" : "Cannot"} download data`
               : `Host ${permissionsData.canDownloadData ? "Can" : "Cannot"} download data`}
-          </li>
+          </li> */}
         </ul>
       </div>
     );

@@ -566,6 +566,8 @@ export const ViewTermsByType = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedResourceId, setSelectedResourceId] = useState(null);
   const [selection, setSelection] = useState({});
+  const [isCompletePages, setIsCompletePages] = useState(false); // Track "Complete Pages" selection
+  const [totalPages, setTotalPages] = useState(0);
 
   const [selectedResourceId2, setSelectedResourceId2] = useState(null);
   const [selection2, setSelection2] = useState({});
@@ -600,6 +602,22 @@ export const ViewTermsByType = () => {
     guestLocker
   } = location.state || {};
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = Cookies.get("authToken"); // Get the token from Cookies
+      if (!token) return setErrorMessage("Authentication token is missing.");
+  
+      try {
+        const pages = await fetchTotalPages(selectedResourceId, token);
+        setTotalPages(pages); // Set the total pages in state
+      } catch (error) {
+        setErrorMessage(error.message || "Failed to fetch total pages.");
+      }
+    };
+  
+    if (selectedResourceId) fetchData();
+  }, [selectedResourceId]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -1259,6 +1277,7 @@ export const ViewTermsByType = () => {
         setShowResources(false)
         setFromPage('');
         setToPage('');
+        setIsCompletePages(false)
       } else {
 
         setErrorMessage(data.error);
@@ -1796,6 +1815,41 @@ export const ViewTermsByType = () => {
   const handleRevokeConsentConfirm = () => {
     setShowRevokeConsentModal(false); // Close the modal
     handleConsentAndInfo(connectionName); // Execute revoke consent action
+  };
+
+  const fetchTotalPages = async (selectedResourceId, token) => {
+    const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId}`;
+    console.log("Fetching data from URL:", url); // Log the URL
+  
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
+        },
+      });
+  
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to fetch total pages.");
+      }
+      return data.total_pages;
+    } catch (error) {
+      console.error("Error details:", error); // Log the error details
+      throw new Error("An error occurred while fetching the total pages.");
+    }
+  };  
+  
+  const handleCompletePagesChange = () => {
+    setIsCompletePages(prevState => !prevState);
+    if (!isCompletePages) {
+      setFromPage('1'); // Set fromPage to 1
+      setToPage(totalPages); // Set toPage to the total number of pages
+    } else {
+      setFromPage('');
+      setToPage('');
+    }
   };
   const content = (
     <>
@@ -2382,6 +2436,7 @@ export const ViewTermsByType = () => {
                               value={fromPage}
                               onChange={(e) => setFromPage(e.target.value)}
                               min="1"
+                              disabled={isCompletePages}
                             />
                           </label>
 
@@ -2392,8 +2447,21 @@ export const ViewTermsByType = () => {
                               value={toPage}
                               onChange={(e) => setToPage(e.target.value)}
                               min="1"
+                              disabled={isCompletePages}
                             />
                           </label>
+
+                          <p className="or-text">OR</p>
+
+                          <label>
+                          Select All Pages &nbsp; &nbsp;
+                          </label>
+                          <input
+                            className="checkboxEntire"
+                            type="checkbox"
+                            checked={isCompletePages}
+                            onChange={handleCompletePagesChange}
+                          />
 
 
                         </div>
@@ -2404,6 +2472,7 @@ export const ViewTermsByType = () => {
                             setErrorMessage(null);
                             setFromPage('');
                             setToPage('');
+                            setIsCompletePages(false)
                           }}>Cancel</button>
                         </div>
                       </div>

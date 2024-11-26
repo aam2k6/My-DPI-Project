@@ -541,7 +541,8 @@ import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
-import { Grid, Button } from "@mui/material"
+import { Grid, Button, Box } from "@mui/material"
+import { Tooltip } from 'react-tooltip';
 
 export const ConnectionTerms = () => {
   const navigate = useNavigate();
@@ -579,6 +580,7 @@ export const ConnectionTerms = () => {
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [selectedTemplateDetails, setSelectedTemplateDetails] = useState(null);
 
+  console.log("globalTemplates", globalTemplates)
   const fetchGlobalTemplates = () => {
     const token = Cookies.get("authToken");
     fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
@@ -641,7 +643,10 @@ export const ConnectionTerms = () => {
 
   };
 
-
+  const templateNameMapping = globalTemplates.reduce((acc, template) => {
+    acc[template.global_connection_type_template_id] = template.global_connection_type_name;
+    return acc;
+  }, {});
 
   const handleFetchObligations = () => {
     const token = Cookies.get("authToken");
@@ -663,11 +668,16 @@ export const ConnectionTerms = () => {
           if (data.success) {
             const { obligations, permissions, forbidden } = data.data;
 
-            const obligationsWithGlobalId = obligations.map((obligation) => ({
-              ...obligation,
-              global_conn_type_id: templateId, // Add global_conn_type_id
-              showInfo: true,
-            }));
+            const obligationsWithGlobalId = obligations.map((obligation) => {
+              const templateName = templateNameMapping[templateId] || "Guest Obligation";
+              return {
+                ...obligation,
+                global_conn_type_id: templateId, // Add global_conn_type_id
+                templateName, // Add templateName to the obligation
+                // showInfo: true,
+              };
+            });
+
 
             // Combine obligations, permissions, and forbidden into a single array or separate arrays
             // setObligations((prev) => [
@@ -734,17 +744,17 @@ export const ConnectionTerms = () => {
       // Add the formData along with showInfo: false
       const newObligation = {
         ...formData, // Spread the formData to add its properties
-        showInfo: false, // Set showInfo to false for newly added obligations
+        // showInfo: false,
       };
-  
+
       // Update the obligations state with the new obligation
       setObligations((prev) => [...prev, newObligation]);
-  
+
       // Optionally reset formData after adding the obligation
       setFormData(initialFormData);
     }
   };
-    const handleLoadObligation = (index) => {
+  const handleLoadObligation = (index) => {
     setFormData(obligations[index]);
   };
 
@@ -1049,7 +1059,7 @@ export const ConnectionTerms = () => {
                     </Grid>
                     <Grid item md={5} xs={12}>
                       <button
-                        className=""
+                        className="mb-4"
                         onClick={() => {
                           fetchGlobalTemplates();
                           setIsTemplateModalOpen(true);
@@ -1112,187 +1122,197 @@ export const ConnectionTerms = () => {
                     onSubmit={handleSubmit}
                   >
 
-                    <div className="mb-3 row">
-                      <label className="col-sm-2 col-md-2 col-form-label">Label</label>
-                      <div className="col-md-10 col-sm-10 col-xs-10">
-                        <input
-                          type="text"
-                          name="labelName"
-                          placeholder="Label of data shared"
-                          value={formData.labelName}
-                          onChange={handleInputChange} className="form-control"
-                        />
-                      </div>
-                    </div>
+                    <Box sx={{
+                      border: '1px solid rgb(107, 120, 231)',
+                      borderRadius: '8px',
+                      marginBottom: "10px",
+                      padding: '10px',
 
-                    <div className="mb-3 row">
-                      <label className="col-sm-2 col-md-2 col-form-label">Type of Action</label>
-                      <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
-                        <select className="form-select form-select-md" aria-label="Small select example"
-                          name="typeOfAction"
-                          value={formData.typeOfAction}
-                          onChange={handleInputChange} >
-                          <option value="text">Add Value</option>
-                          <option value="file">Upload File</option>
-                          <option value="date">Add Date</option>
-                        </select>
-                        {!isTemplateModalOpen && <span className="tooltips">
-                          ?
-                          <span className="tooltiptext">
-                            Choose the action type: Share, Transfer, Confer, or
-                            Collateral.
-                          </span>
-                        </span>}
-
-                      </div>
-                    </div>
-
-                    <div className="mb-3 row">
-                      <label className="col-sm-2 col-md-2 col-form-label">Type of Sharing</label>
-                      <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
-                        <select className="form-select form-select-md" aria-label="Small select example"
-                          name="typeOfSharing"
-                          value={formData.typeOfSharing}
-                          onChange={handleInputChange} >
-                          <option value="share">Share</option>
-                          <option value="transfer">Transfer</option>
-                          <option value="confer">Confer</option>
-                          <option value="collateral">Collateral</option>
-                        </select>
-                        {!isTemplateModalOpen && <span className="tooltips">
-                          ?
-                          <span className="tooltiptext">
-                            <span>
-                              Transfer: You are transferring ownership of this
-                              resource. You will no longer have access to this
-                              resource after this operation.
-                            </span>
-                            <br />
-                            <span>
-                              Confer: You are going to transfer ownership of the
-                              resource, but the recipient cannot modify the
-                              contents of what you have conferred. You still have
-                              rights over this resource.
-                            </span>
-                            <br />
-                            <span>
-                              Share: You are not transferring ownership of this
-                              resource, but the recipient can view your resource.
-                              The recipient cannot do anything else.
-                            </span>
-                            <br />
-                            <span>
-                              Collateral: You are temporarily transferring
-                              ownership to the recipient. After this operation,
-                              you cannot change anything in the resource and can
-                              use this as agreed with the recipient.
-                            </span>
-                            <br />
-                          </span>
-                        </span>}
-                      </div>
-                    </div>
-
-                    <div className="mb-3 row">
-                      <label className="col-sm-2 col-md-2 col-form-label">Purpose</label>
-                      <div className="col-md-10 col-sm-10 col-xs-10">
-                        <input
-                          type="text"
-                          name="purpose"
-                          placeholder="purpose of collecting data"
-                          value={formData.purpose}
-                          onChange={handleInputChange} className="form-control"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mb-3 row">
-                      <label className="col-sm-2 col-md-2 col-form-label">Description</label>
-                      <div className="col-md-10 col-sm-10 col-xs-10">
-                        <input
-                          type="text"
-                          name="labelDescription"
-                          placeholder="Description of the obligation"
-                          value={formData.labelDescription}
-                          onChange={handleInputChange} className="form-control"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mb-3 row">
-                      <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>
-                      <div className="col-md-9 col-sm-12">
-                        <div className="row">
-                          <div className="col-2">
-                            <input
-                              type="checkbox"
-                              value="reshare"
-                              checked={formData.hostPermissions.includes(
-                                "reshare"
-                              )}
-                              onChange={handleHostPermissionsChange}
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <label key="reshare">
-                              Reshare
-                            </label>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-2">
-                            <input
-                              type="checkbox"
-                              value="download"
-                              checked={formData.hostPermissions.includes(
-                                "download"
-                              )}
-                              onChange={handleHostPermissionsChange}
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <label key="download">
-                              Download
-                            </label>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-2">
-                            <input
-                              type="checkbox"
-                              value="aggregate"
-                              checked={formData.hostPermissions.includes(
-                                "aggregate"
-                              )}
-                              onChange={handleHostPermissionsChange} />
-                          </div>
-                          <div className="col-md-6">
-                            <label key="aggregate">
-                              Aggregate
-                            </label>
-                          </div>
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                    }}>
+                      <div className="mb-3 row">
+                        <label className="col-sm-2 col-md-2 col-form-label">Label</label>
+                        <div className="col-md-10 col-sm-10 col-xs-10">
+                          <input
+                            type="text"
+                            name="labelName"
+                            placeholder="Label of data shared"
+                            value={formData.labelName}
+                            onChange={handleInputChange} className="form-control"
+                          />
                         </div>
                       </div>
-                      <div className="col-md-1">
-                        {!isTemplateModalOpen && <span className="tooltips">
-                          ?
-                          <span className="tooltiptext">
-                            Select host permissions: Reshare, Download, or Aggregate.
-                          </span>
-                        </span>}
+
+                      <div className="mb-3 row">
+                        <label className="col-sm-2 col-md-2 col-form-label">Type of Action</label>
+                        <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
+                          <select className="form-select form-select-md" aria-label="Small select example"
+                            name="typeOfAction"
+                            value={formData.typeOfAction}
+                            onChange={handleInputChange} >
+                            <option value="text">Add Value</option>
+                            <option value="file">Upload File</option>
+                            <option value="date">Add Date</option>
+                          </select>
+                          {!isTemplateModalOpen && <span className="tooltips">
+                            ?
+                            <span className="tooltiptext">
+                              Choose the action type: Share, Transfer, Confer, or
+                              Collateral.
+                            </span>
+                          </span>}
+
+                        </div>
                       </div>
-                    </div>
-                    <Grid container marginBottom={2}>
-                      <Grid item md={4} xs={12}>
-                        <button
-                          className=""
-                          type="button"
-                          onClick={handleAddObligation}
-                        >
-                          Add Obligations
-                        </button>
+
+                      <div className="mb-3 row">
+                        <label className="col-sm-2 col-md-2 col-form-label">Type of Sharing</label>
+                        <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
+                          <select className="form-select form-select-md" aria-label="Small select example"
+                            name="typeOfSharing"
+                            value={formData.typeOfSharing}
+                            onChange={handleInputChange} >
+                            <option value="share">Share</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="confer">Confer</option>
+                            <option value="collateral">Collateral</option>
+                          </select>
+                          {!isTemplateModalOpen && <span className="tooltips">
+                            ?
+                            <span className="tooltiptext">
+                              <span>
+                                Transfer: You are transferring ownership of this
+                                resource. You will no longer have access to this
+                                resource after this operation.
+                              </span>
+                              <br />
+                              <span>
+                                Confer: You are going to transfer ownership of the
+                                resource, but the recipient cannot modify the
+                                contents of what you have conferred. You still have
+                                rights over this resource.
+                              </span>
+                              <br />
+                              <span>
+                                Share: You are not transferring ownership of this
+                                resource, but the recipient can view your resource.
+                                The recipient cannot do anything else.
+                              </span>
+                              <br />
+                              <span>
+                                Collateral: You are temporarily transferring
+                                ownership to the recipient. After this operation,
+                                you cannot change anything in the resource and can
+                                use this as agreed with the recipient.
+                              </span>
+                              <br />
+                            </span>
+                          </span>}
+                        </div>
+                      </div>
+
+                      <div className="mb-3 row">
+                        <label className="col-sm-2 col-md-2 col-form-label">Purpose</label>
+                        <div className="col-md-10 col-sm-10 col-xs-10">
+                          <input
+                            type="text"
+                            name="purpose"
+                            placeholder="purpose of collecting data"
+                            value={formData.purpose}
+                            onChange={handleInputChange} className="form-control"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mb-3 row">
+                        <label className="col-sm-2 col-md-2 col-form-label">Description</label>
+                        <div className="col-md-10 col-sm-10 col-xs-10">
+                          <input
+                            type="text"
+                            name="labelDescription"
+                            placeholder="Description of the obligation"
+                            value={formData.labelDescription}
+                            onChange={handleInputChange} className="form-control"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mb-3 row">
+                        <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>
+                        <div className="col-md-9 col-sm-12">
+                          <div className="row">
+                            <div className="col-2">
+                              <input
+                                type="checkbox"
+                                value="reshare"
+                                checked={formData.hostPermissions.includes(
+                                  "reshare"
+                                )}
+                                onChange={handleHostPermissionsChange}
+                              />
+                            </div>
+                            <div className="col-md-6">
+                              <label key="reshare">
+                                Reshare
+                              </label>
+                            </div>
+                          </div>
+                          <div className="row">
+                            <div className="col-2">
+                              <input
+                                type="checkbox"
+                                value="download"
+                                checked={formData.hostPermissions.includes(
+                                  "download"
+                                )}
+                                onChange={handleHostPermissionsChange}
+                              />
+                            </div>
+                            <div className="col-md-6">
+                              <label key="download">
+                                Download
+                              </label>
+                            </div>
+                          </div>
+                          <div className="row">
+                            <div className="col-2">
+                              <input
+                                type="checkbox"
+                                value="aggregate"
+                                checked={formData.hostPermissions.includes(
+                                  "aggregate"
+                                )}
+                                onChange={handleHostPermissionsChange} />
+                            </div>
+                            <div className="col-md-6">
+                              <label key="aggregate">
+                                Aggregate
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-1">
+                          {!isTemplateModalOpen && <span className="tooltips">
+                            ?
+                            <span className="tooltiptext">
+                              Select host permissions: Reshare, Download, or Aggregate.
+                            </span>
+                          </span>}
+                        </div>
+                      </div>
+                      <Grid container marginBottom={2}>
+                        <Grid item md={4} xs={12}>
+                          <button
+                            className=""
+                            type="button"
+                            onClick={handleAddObligation}
+                          >
+                            Add Obligations
+                          </button>
+                        </Grid>
                       </Grid>
-                    </Grid>
+                    </Box>
+
                     <div className="mb-1 row">
                       <h4><b>Permissions</b></h4>
                     </div>
@@ -1312,7 +1332,7 @@ export const ConnectionTerms = () => {
                         />
                       </div>
                     </div>
-                    <div className="mb-3 row">
+                    {/* <div className="mb-3 row">
                       <div className="col-md-6 col-xs-12">
                         <label className="col-md-6 col-xs-12  agreeLabel">
                           Can they download the data
@@ -1326,7 +1346,7 @@ export const ConnectionTerms = () => {
                           onChange={handleCheckboxChange}
                         />
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="mb-1 row">
                       <h4><b>Forbidden</b></h4>
@@ -1336,8 +1356,8 @@ export const ConnectionTerms = () => {
                       <div className="col-md-6 col-xs-12">
                         <label className="col-md-6 col-xs-12  agreeLabel">
                           {formData.forbidden
-                            ? "You cannot unilaterally close the connection."
-                            : "You can unilaterally close the connection."}
+                            ? "Guest cannot unilaterally close the connection."
+                            : "Guest can unilaterally close the connection."}
                         </label>
                       </div>
                       <div className="col-6">
@@ -1357,17 +1377,19 @@ export const ConnectionTerms = () => {
               </Grid>
 
               <Grid item xs={12} sm={12} md={3} className="parent-right-headings" marginTop={{ md: "0px", xs: "30px" }}>
-                {obligations.map((obligation, index, template) => (
-                  <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"}  >
+                {obligations.map((obligation, index) => (
+                  <Grid container mt={1} key={index} spacing={2} alignItems="center" display={"flex"}>
                     <Grid item md={6} sm={6} xs={6}>
                       <button
+                        data-tooltip-id={`tooltip-${index}`}
+                        data-tooltip-content={obligation.templateName || "Guest new Obligation"}
                         type="button"
-                        color="secondary"
                         className="btn btn-outline-secondary obligation-buttons"
                         onClick={() => handleLoadObligation(index)}
                       >
                         {obligation.labelName}
                       </button>
+                      <Tooltip id={`tooltip-${index}`} style={{ maxWidth: '200px', whiteSpace: 'normal' }}/>
                     </Grid>
                     <Grid item md={4} sm={4} xs={5}>
                       <button
@@ -1379,12 +1401,15 @@ export const ConnectionTerms = () => {
                         Remove
                       </button>
                     </Grid>
-                    {obligation.showInfo && (<Grid item md={1} sm={1} xs={1}>
-                      <i className="bi bi-info-circle" style={{ cursor: "pointer" }}></i>
-                    </Grid>)}
+                    {/* {obligation.showInfo && (
+        <Grid item md={1} sm={1} xs={1}>
+          <i className="bi bi-info-circle" style={{ cursor: "pointer" }}></i>
+        </Grid>
+      )} */}
                   </Grid>
                 ))}
               </Grid>
+
 
             </Grid>
           </div>

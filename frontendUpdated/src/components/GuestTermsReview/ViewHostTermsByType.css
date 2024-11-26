@@ -207,7 +207,6 @@
   .page-input-modal input {
     margin: 5px 0;
     padding: 5px;
-    width: 100px;
   }
   
   .page-input-modal .error {
@@ -225,6 +224,16 @@
     padding: 8px 12px;
     
   }
+
+  .checkboxEntire{
+    margin-left: 10px;
+  }
+
+  .or-text {
+    margin: 0 10px;
+    font-weight: bold; /* Optional: make "OR" bold */
+  }
+  
   
   
 

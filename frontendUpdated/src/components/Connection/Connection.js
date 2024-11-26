@@ -101,7 +101,7 @@ export const Connection = () => {
             padding: '50px',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
           }}
-        >al
+        >
           <div className="connection-resourceHeading">Connection</div>
           <form  onSubmit={handleSubmit}>
             <Grid container className=" mb-4">

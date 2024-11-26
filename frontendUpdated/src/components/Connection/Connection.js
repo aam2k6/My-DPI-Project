@@ -101,7 +101,7 @@ export const Connection = () => {
             padding: '50px',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
           }}
-        >
+        >al
           <div className="connection-resourceHeading">Connection</div>
           <form  onSubmit={handleSubmit}>
             <Grid container className=" mb-4">
@@ -120,7 +120,7 @@ export const Connection = () => {
                 </Typography>
                 </Grid>
                 <Grid item md={8} sm={8} xs={12}>
-                <TextField  fullWidth variant="outlined" type="text"
+                <TextField required fullWidth variant="outlined" type="text"
                 name="connectionName"
                 placeholder="Connection Type Name"
                 onChange={(e) => setConnectionName(e.target.value)} />
@@ -133,7 +133,7 @@ export const Connection = () => {
                 </Typography>
                 </Grid>
                 <Grid item md={8} sm={8} xs={12}>
-                <TextField  fullWidth variant="outlined" 
+                <TextField required fullWidth variant="outlined" 
                 type="text"
                 name="connectionDescription"
                 placeholder="Description"
@@ -147,7 +147,7 @@ export const Connection = () => {
                 </Typography>
                 </Grid>
                 <Grid item md={8} sm={8} xs={12}>
-                <TextField  fullWidth variant="outlined"  type="date"
+                <TextField required fullWidth variant="outlined"  type="date"
                 name="validity"
                 placeholder="Calendar Picker"
                 onChange={(e) => setValidity(e.target.value)} />

@@ -39,6 +39,8 @@ export const ViewLocker = () => {
   const [activeTab, setActiveTab] = useState("incoming");
   const [xnodes, setXnodes] = useState([]);
   const [isResourcesVisible, setResourcesVisible] = useState(false);
+  const [isConnectionsVisible, setConnectionsVisible] = useState(false);
+
 
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
@@ -100,7 +102,6 @@ export const ViewLocker = () => {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
 
-      // Fetch connections
       const [connectionsResponse, otherConnectionsResponse] = await Promise.all(
         [
           fetch(
@@ -129,33 +130,27 @@ export const ViewLocker = () => {
         ]
       );
 
-      // Handle connections response
       if (!connectionsResponse.ok)
         throw new Error("Failed to fetch connections");
       const connectionsData = await connectionsResponse.json();
+
       if (connectionsData.success) {
         setConnections(connectionsData.connections);
-        fetchAllTrackerData(connectionsData.connections.outgoing_connections);
 
-        // Count incoming connections for each connection type
         const incomingConnectionCounts = {};
         connectionsData.connections.incoming_connections.forEach(
           (connection) => {
             const typeId = connection.connection_type;
-            if (incomingConnectionCounts[typeId]) {
-              incomingConnectionCounts[typeId]++;
-            } else {
-              incomingConnectionCounts[typeId] = 1;
-            }
+            incomingConnectionCounts[typeId] =
+              (incomingConnectionCounts[typeId] || 0) + 1;
           }
         );
 
-        // Handle other connections response
         if (!otherConnectionsResponse.ok)
           throw new Error("Failed to fetch other connections");
         const otherConnectionsData = await otherConnectionsResponse.json();
+
         if (otherConnectionsData.success) {
-          // Update otherConnections with the count of incoming connections
           setOtherConnections(
             otherConnectionsData.connection_types.map((connection) => ({
               ...connection,
@@ -178,6 +173,10 @@ export const ViewLocker = () => {
       );
     }
   };
+
+  useEffect(() => {
+    fetchConnectionsAndOtherConnections();
+  }, [locker.name]);
 
   const fetchResources = async () => {
     try {
@@ -809,8 +808,13 @@ const handleDeleteClick = async (xnode) => {
           {/* "My Resources" folder */}
           <div
             className="resource-folder"
-            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-            onClick={toggleResourcesVisibility}
+            style={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "10px",
+            }}
+            onClick={() => setResourcesVisible(!isResourcesVisible)}
           >
             <i
               className={`fa-solid fa-folder${isResourcesVisible ? "-open" : ""}`}
@@ -821,93 +825,142 @@ const handleDeleteClick = async (xnode) => {
 
           {/* Resource List inside the folder */}
           {isResourcesVisible && (
-            <>
+            <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
               {xnodes.length > 0 ? (
-                <ul style={{ paddingTop: "20px", paddingLeft: "20px" }}>
-                  {xnodes.map((xnode, index) => (
-                    <div
-                      key={xnode.id}
-                      className="resource-item"
-                      style={{ paddingBottom: "0px" }}
-                    >
-                      <div className="resource-details">
-                        <Tooltip
-                          title={
-                            <>
-                              <div>
-                                <strong>Created:</strong>{" "}
-                                {new Date(xnode.created_at).toLocaleString()}
-                              </div>
-                              <div>
-                                <strong>Validity:</strong>{" "}
-                                {new Date(xnode.validity_until).toLocaleString()}
-                              </div>
-                              <div>
-                                <strong>Node Type:</strong> {xnode.xnode_Type}
-                              </div>
-                              <div>
-                                <strong>Host User:</strong>{" "}
-                                {xnode.locker?.user || "N/A"}
-                              </div>
-                              <div>
-                                <strong>Guest User:</strong>{" "}
-                                {xnode.connection?.guest_user || "N/A"}
-                              </div>
-                            </>
+                xnodes.map((xnode) => (
+                  <div
+                    key={xnode.id}
+                    className="resource-item"
+                    style={{ paddingBottom: "0px" }}
+                  >
+                    <div className="resource-details">
+                      <Tooltip
+                        title={
+                          <>
+                            <div>
+                              <strong>Created:</strong>{" "}
+                              {new Date(xnode.created_at).toLocaleString()}
+                            </div>
+                            <div>
+                              <strong>Validity:</strong>{" "}
+                              {new Date(xnode.validity_until).toLocaleString()}
+                            </div>
+                            <div>
+                              <strong>Node Type:</strong> {xnode.xnode_Type}
+                            </div>
+                            <div>
+                              <strong>Host User:</strong>{" "}
+                              {xnode.locker?.user || "N/A"}
+                            </div>
+                            <div>
+                              <strong>Guest User:</strong>{" "}
+                              {xnode.connection?.guest_user || "N/A"}
+                            </div>
+                          </>
+                        }
+                        arrow
+                      >
+                        <div
+                          id={
+                            xnode.xnode_Type === "INODE"
+                              ? "documents"
+                              : xnode.xnode_Type === "SNODE"
+                              ? "documents-byConfer"
+                              : "documents-byShare"
                           }
-                          arrow
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
                         >
-                          <div
-                            id={
-                              xnode.xnode_Type === "INODE"
-                                ? "documents"
-                                : xnode.xnode_Type === "SNODE"
-                                ? "documents-byConfer"
-                                : "documents-byShare"
-                            }
-                            style={{ display: "flex", alignItems: "center" }}
+                          <span
+                            onClick={() => handleClick(xnode.id)}
+                            style={{ cursor: "pointer", flexGrow: 1 }}
                           >
-                            <span
-                              onClick={() => handleClick(xnode.id)}
-                              style={{ cursor: "pointer", flexGrow: 1 }}
-                            >
-                              {xnode.resource_name}
-                            </span>
-                            <span
-                              className="resource-icons"
-                              style={{ marginLeft: "auto", display: "flex" }}
-                            >
-                              {xnode.xnode_Type === "INODE" && (
-                                <i
-                                  className="fa-regular fa-pen-to-square"
-                                  style={{
-                                    paddingRight: "10px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() => handleEditClick(xnode)}
-                                />
-                              )}
+                            {xnode.resource_name}
+                          </span>
+                          <span
+                            className="resource-icons"
+                            style={{
+                              marginLeft: "auto",
+                              display: "flex",
+                              gap: "10px",
+                            }}
+                          >
+                            {xnode.xnode_Type === "INODE" && (
                               <i
-                                className="fa-regular fa-trash-can"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleDeleteClick(xnode)}
+                                className="fa-regular fa-pen-to-square"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => handleEditClick(xnode)}
                               />
-                            </span>
-                          </div>
-                        </Tooltip>
-                      </div>
+                            )}
+                            <i
+                              className="fa-regular fa-trash-can"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleDeleteClick(xnode)}
+                            />
+                          </span>
+                        </div>
+                      </Tooltip>
                     </div>
-                  ))}
-                </ul>
+                  </div>
+                ))
               ) : (
-                <p className="not-found" style={{ paddingLeft: "20px" }}>
-                  No Resources found.
-                </p>
+                <p className="not-found">No Resources found.</p>
               )}
-            </>
+            </ul>
           )}
-        </div>
-        </div>
+
+{/* "Connections" folder */}
+<div
+  className="resource-folder"
+  style={{
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    marginTop: "20px",
+  }}
+  onClick={() => setConnectionsVisible(!isConnectionsVisible)}
+>
+  <i
+    className={`fa-solid fa-folder${isConnectionsVisible ? "-open" : ""}`}
+    style={{ marginRight: "10px", fontSize: "24px" }}
+  />
+  <span>Connections</span>
+</div>
+
+{/* Connections List inside the folder */}
+{isConnectionsVisible && (
+  <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
+    {otherConnections.length > 0 ? (
+      otherConnections.map((connection) => (
+        <li
+          key={connection.connection_type_id}
+          className="resource-item"
+          style={{ paddingBottom: "5px",fontSize:"20px"}}
+        >
+          <span
+            onClick={() => handleConnectionClick(connection)}
+            style={{
+              cursor: "pointer",
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            {connection.connection_type_name}
+          </span>
+        </li>
+      ))
+    ) : (
+      <p className="not-found">No connections found.</p>
+    )}
+  </ul>
+)}
+      </div>
+      </div>
+      
     </div>
     <button className="page3button" onClick={handleUploadResource}>
       Upload resource

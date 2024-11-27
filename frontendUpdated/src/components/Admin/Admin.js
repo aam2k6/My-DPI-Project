@@ -24,6 +24,7 @@ export const Admin = () => {
     const storedLocker = localStorage.getItem("locker");
     return storedLocker ? JSON.parse(storedLocker) : location.state || null;
   });
+  const [showInfo, setShowInfo] = useState(null);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [modalMessage, setModalMessage] = useState(null); // State for modal message
@@ -431,6 +432,9 @@ export const Admin = () => {
       });
     }
   };
+  const handleToggle = (id) => {
+    setShowInfo(showInfo === id ? null : id); // Toggle visibility
+  };
 
   return (
     <div>
@@ -483,19 +487,39 @@ export const Admin = () => {
               >
                 {connection.connection_type_name}
               </h4>
-              <p>{connection.connection_description}</p>
-              <div>
-                <p>
-                  Created On:{" "}
-                  {new Date(connection.created_time).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p>
-                  Valid Until:{" "}
-                  {new Date(connection.validity_time).toLocaleDateString()}
-                </p>
-              </div>
+              <>
+                <div style={{marginTop:"-12px"}}>
+                  <button onClick={() => handleToggle(connection.connection_type_id)} style={{
+                    textDecoration: "underline",
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    color: "blue",
+                    fontSize: "14px",
+                    
+                  }}>
+                    {showInfo === connection.connection_type_id ? "Info" : "Info"}
+                  </button>
+                </div>
+                {showInfo === connection.connection_type_id &&(
+                  <div>
+                    <p>{connection.connection_description}</p>
+                    <div>
+                      <p>
+                        Created On:{" "}
+                        {new Date(connection.created_time).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p>
+                        Valid Until:{" "}
+                        {new Date(connection.validity_time).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
               <div className="button-group">
                 <button onClick={() => handleEditConnectionClick(connection)}>
                   Edit

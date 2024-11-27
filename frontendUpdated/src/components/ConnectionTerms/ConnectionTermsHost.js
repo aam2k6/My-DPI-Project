@@ -11,7 +11,7 @@ import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
-import { Grid } from '@mui/material'
+import { Grid, Box } from '@mui/material'
 import { Tooltip } from 'react-tooltip';
 
 export const ConnectionTermsHost = () => {
@@ -565,7 +565,15 @@ const fetchGlobalTemplates = () => {
                   onSubmit={handleSubmit}
                 >
 
-                  <div className="mb-3 row">
+                    <Box sx={{
+                      border: '1px solid rgb(107, 120, 231)',
+                      borderRadius: '8px',
+                      marginBottom: "10px",
+                      padding: '10px',
+
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                    }}>
+                                        <div className="mb-3 row">
                     <label className="col-sm-2 col-md-2 col-form-label">Label</label>
                     <div className="col-md-10 col-sm-10 col-xs-10">
                       <input 
@@ -747,6 +755,7 @@ const fetchGlobalTemplates = () => {
                         </button>
                       </Grid>
                     </Grid>
+                    </Box>
 
                   <div className="mb-1 row">
                     <h4><b>Permissions</b></h4>

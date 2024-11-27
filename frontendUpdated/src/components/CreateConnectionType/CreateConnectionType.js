@@ -186,10 +186,10 @@ export const CreateConnectionType = () => {
                             }}
                         >
                            <Grid container>
-                           <Grid item md={6} sm={12} xs={12}>
-                                <span className='createconnectionmylock'><pre><b>Select Your Locker</b></pre></span>
+                           <Grid item md={4} sm={12} xs={12}>
+                                <p className='selectLocker'>Select Your Locker</p>
                            </Grid>
-                           <Grid item md={6} sm={12} xs={12}>
+                           <Grid item md={6.5} sm={12} xs={12}>
                            <select className="page12hostlocker" name="locker" onChange={handleLockerChange} value={selectedLocker ? selectedLocker.name : ''}>
                             {lockers && lockers.map(locker => (
                                 <option key={locker.locker_id} value={locker.name}>{locker.name}</option>

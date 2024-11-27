@@ -33,6 +33,7 @@ export const ViewLocker = () => {
   const [resourceName, setResourceName] = useState("");
   const [resourceFile, setResourceFile] = useState(null);
   const [resourceVisibility, setResourceVisibility] = useState("private");
+  const [resourceValidity, setResourceValidity] = useState("");
   const [modalMessage, setModalMessage] = useState(null)
   const [VnodeResources, setVnodeResources] = useState([]);
   const [SnodeResources, setSnodeResources] = useState([]);
@@ -613,10 +614,11 @@ xnodes.forEach((xnode) => {
 const handleEditClick = (xnode) => {
   setSelectedResource(xnode);
   setResourceName(xnode.resource_name); 
-  setResourceVisibility(xnode.visibility); // Set current visibility from the xnode
+  setResourceVisibility(xnode.visibility);
+  setResourceValidity(xnode.validity_until);
   setShowEditModal(true);
 };
-
+console.log("resourcevalidity",resourceValidity, resourceVisibility);
 const handleSaveResource = async (xnode) => {
   console.log("xnode in handleSaveResource:", xnode);
 
@@ -627,7 +629,7 @@ const handleSaveResource = async (xnode) => {
 
   // Access the res object through the foreign key in xnode
   const res = xnode.res;  
-  const currentVisibility = res ? res.visibility : undefined; // Access current visibility
+  const currentVisibility = res ? res.visibility : undefined;
 
   const payload = {
     locker_name: locker.name,
@@ -635,6 +637,7 @@ const handleSaveResource = async (xnode) => {
     document_name: xnode.resource_name,
     new_document_name: resourceName,
     new_visibility: resourceVisibility || currentVisibility, 
+    new_validity_time: resourceValidity || res.validity_until
   };
 
   console.log("Payload:", payload);
@@ -659,7 +662,7 @@ const handleSaveResource = async (xnode) => {
       setXnodes((prevXnodes) =>
         prevXnodes.map((item) =>
           item.id === xnode.id
-            ? { ...item, resource_name: resourceName, visibility: resourceVisibility || currentVisibility }
+            ? { ...item, resource_name: resourceName, visibility: resourceVisibility || currentVisibility, validity_until: resourceValidity || res.validity_until }
             : item
         )
       );
@@ -763,7 +766,7 @@ const handleDeleteClick = async (xnode) => {
   console.log("xnodes", xnodes);
 
   return (
-    <div>
+    <div id="viewLocker">
       <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
       <div className="containers" style={{marginTop:"150px"}}>
         {/* <div className="locker-description">
@@ -1094,15 +1097,18 @@ const handleDeleteClick = async (xnode) => {
   <div className="edit-modal">
     <div className="modal-content">
       <h3>Edit Resource</h3>
-      <label>Resource Name:</label>
+      <label className="form-label fw-bold">Resource Name:</label>
       <input
+        className="form-control"
         type="text"
         value={resourceName}
         onChange={(e) => setResourceName(e.target.value)}
       />
 
-      <label>Visibility:</label>
+      <label className="form-label fw-bold">Visibility:</label>
       <select
+        className="form-select"
+        id="visibility"
         value={resourceVisibility}
         onChange={(e) => setResourceVisibility(e.target.value)}
       >
@@ -1110,9 +1116,18 @@ const handleDeleteClick = async (xnode) => {
         <option value="public">Public</option>
       </select>
 
-      <div className="modal-buttons">
+      <label htmlFor="validityTime" className="form-label fw-bold">Validity Time</label>
+      <input
+        type="date"
+        className="form-control"
+        value={resourceValidity}
+        onChange={(e) => setResourceValidity(e.target.value)}
+        required
+      />
+
+      <div className="modal-buttons mt-4">
         {/* Use an anonymous function to call handleSaveResource */}
-        <button onClick={() => handleSaveResource(selectedResource)}>Save</button>
+        <button onClick={() => handleSaveResource(selectedResource)} >Save</button>
         <button onClick={() => setShowEditModal(false)}>Cancel</button>
       </div>
     </div>

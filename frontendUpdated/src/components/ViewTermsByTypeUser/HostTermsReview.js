@@ -1548,7 +1548,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                       </table>
 
                       {/* Permissions Table Rendered Here */}
-                      {renderPermissionsTable()}
+                      {/* {renderPermissionsTable()} */}
                     </div>
                     {showResources && (
                       <div className="resource-container">

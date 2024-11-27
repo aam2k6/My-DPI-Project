@@ -749,7 +749,72 @@ const handleDeleteClick = async (xnode) => {
   const toggleResourcesVisibility = () => {
     setResourcesVisible(!isResourcesVisible);
   };
-
+  const [expandedConnection, setExpandedConnection] = useState(null); // Tracks which connection is expanded
+  const [connectionUsers, setConnectionUsers] = useState({}); // Store users for each connection
+  
+  // Toggle connection to expand/collapse user list
+  const toggleConnection = (connectionId) => {
+    if (expandedConnection === connectionId) {
+      setExpandedConnection(null); // Collapse if already expanded
+    } else {
+      setExpandedConnection(connectionId); // Expand new connection
+      if (!connectionUsers[connectionId]) {
+        fetchUsersForConnection(connectionId); // Fetch users if not already fetched
+      }
+    }
+  };
+  const fetchUsersForConnection = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      
+      // Log the connection object to ensure it's being passed correctly
+      console.log("Fetching users for connection:", connection);
+  
+      // Construct query parameters
+      const params = new URLSearchParams({
+        connection_type_name: connection.connection_type_name,  // Add connection type name
+        host_locker_name: connection.locker_name,                // Add host locker name
+        host_user_username: connection.host_user_username,       // Add host user username
+      });
+  
+      // Log the final URL with parameters
+      console.log("Constructed URL with params:", `host/get-guest-user-connection/${connection.connection_type_id}?${params.toString()}`);
+  
+      // Construct the URL with the query parameters
+      const url = `host/get-guest-user-connection/${connection.connection_type_id}?${params.toString()}`.replace(/host/, frontend_host);
+  
+      // Fetch the data
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch users for connection ${connection.connection_type_id}`);
+      }
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        // Log the fetched users for debugging
+        console.log(`Users for connection ${connection.connection_type_name}:`, data.users);
+  
+        // Update the state with the fetched users for this connection
+        setConnectionUsers((prev) => ({
+          ...prev,
+          [connection.connection_type_name]: data.users,  // Store users by connection type
+        }));
+      } else {
+        console.error(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error fetching users for connection:", error);
+    }
+  };
+  
 
 
   const content = (
@@ -942,18 +1007,48 @@ const handleDeleteClick = async (xnode) => {
         <li
           key={connection.connection_type_id}
           className="resource-item"
-          style={{ paddingBottom: "5px",fontSize:"20px"}}
+          style={{ paddingBottom: "10px", fontSize: "20px" }}
         >
+          {/* Connection Name */}
           <span
-            onClick={() => handleConnectionClick(connection)}
+            onClick={() => toggleConnection(connection.connection_type_id)}
             style={{
               cursor: "pointer",
               textDecoration: "none",
               color: "inherit",
+              display: "flex",
+              alignItems: "center",
             }}
           >
+            {expandedConnection === connection.connection_type_id ? (
+              <i className="fa-solid fa-folder-open" style={{ marginRight: "10px" }} />
+            ) : (
+              <i className="fa-solid fa-folder" style={{ marginRight: "10px" }} />
+            )}
             {connection.connection_type_name}
           </span>
+
+          {/* Users associated with the connection */}
+          {expandedConnection === connection.connection_type_id && (
+            <ul style={{ paddingLeft: "20px", marginTop: "5px" }}>
+              {connectionUsers[connection.connection_type_id] ? (
+                connectionUsers[connection.connection_type_id].map((user) => (
+                  <li
+                    key={user.id}
+                    style={{
+                      fontSize: "16px",
+                      color: "#555",
+                      paddingBottom: "5px",
+                    }}
+                  >
+                    {user.username}
+                  </li>
+                ))
+              ) : (
+                <p style={{ fontSize: "16px", color: "#888" }}>Loading users...</p>
+              )}
+            </ul>
+          )}
         </li>
       ))
     ) : (
@@ -961,7 +1056,7 @@ const handleDeleteClick = async (xnode) => {
     )}
   </ul>
 )}
-      </div>
+</div>
       </div>
       
     </div>

@@ -619,6 +619,22 @@ export const ViewTermsByType = () => {
     if (selectedResourceId) fetchData();
   }, [selectedResourceId]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = Cookies.get("authToken"); // Get the token from Cookies
+      if (!token) return setErrorMessage("Authentication token is missing.");
+  
+      try {
+        const pages = await fetchTotalPages2(selectedResourceId2, token);
+        setTotalPages(pages); // Set the total pages in state
+      } catch (error) {
+        setErrorMessage(error.message || "Failed to fetch total pages.");
+      }
+    };
+  
+    if (selectedResourceId2) fetchData();
+  }, [selectedResourceId2]);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
@@ -1839,7 +1855,31 @@ export const ViewTermsByType = () => {
       console.error("Error details:", error); // Log the error details
       throw new Error("An error occurred while fetching the total pages.");
     }
-  };  
+  }; 
+  
+  const fetchTotalPages2 = async (selectedResourceId2, token) => {
+    const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId2}`;
+    console.log("Fetching data from URL:", url); // Log the URL
+  
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
+        },
+      });
+  
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to fetch total pages.");
+      }
+      return data.total_pages;
+    } catch (error) {
+      console.error("Error details:", error); // Log the error details
+      throw new Error("An error occurred while fetching the total pages.");
+    }
+  }; 
   
   const handleCompletePagesChange = () => {
     setIsCompletePages(prevState => !prevState);
@@ -1851,6 +1891,17 @@ export const ViewTermsByType = () => {
       setToPage('');
     }
   };
+  
+  const handleCompletePagesChange2 = () =>{
+    setIsCompletePages(prevState => !prevState);
+    if (!isCompletePages) {
+      setFromPage('1'); // Set fromPage to 1
+      setToPage(totalPages); // Set toPage to the total number of pages
+    } else {
+      setFromPage('');
+      setToPage('');
+    }
+  }
   const content = (
     <>
       {/* <div className="navbarBrand">
@@ -2248,7 +2299,7 @@ export const ViewTermsByType = () => {
                               </li>
                             ))}
                           </ul>
-                          <button onClick={() => setShowResources2(false)}>Select</button>
+                          <button className="btn btn-primary clsoeBtn" style={{backgroundColor:"#007bff"}} onClick={() => setShowResources2(false)}>Cancel</button>
                         </div>
                       )}
 
@@ -2491,6 +2542,7 @@ export const ViewTermsByType = () => {
                               value={fromPage}
                               onChange={(e) => setFromPage(e.target.value)}
                               min="1"
+                              disabled={isCompletePages}
                             />
                           </label>
 
@@ -2501,8 +2553,19 @@ export const ViewTermsByType = () => {
                               value={toPage}
                               onChange={(e) => setToPage(e.target.value)}
                               min="1"
+                              disabled={isCompletePages}
                             />
                           </label>
+
+                          <p className="or-text">OR</p>
+
+                          <label>Select All Pages</label>
+                          <input
+                            className="checkboxEntire"
+                            type="checkbox"
+                            checked={isCompletePages}
+                            onChange={handleCompletePagesChange2}
+                          />
 
 
                         </div>
@@ -2513,6 +2576,7 @@ export const ViewTermsByType = () => {
                             setErrorMessage(null);
                             setFromPage('');
                             setToPage('');
+                            setIsCompletePages(false)
                           }}>Cancel</button>
                         </div>
                       </div>
@@ -2599,7 +2663,7 @@ export const ViewTermsByType = () => {
                   /> */}
                                   <button onClick={() => handleButtonClick2(term.labelName)}>
                                     {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] ||
-                                      "Upload File"}
+                                      "Select Resource"}
                                   </button>
                                 </td>
                                 <td>Pending</td> {/* Example status value */}

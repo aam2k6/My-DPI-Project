@@ -535,6 +535,7 @@ export const Guesttermsreview = () => {
         // Initialize new arrays for transfer and share
         const newTransfer = [...new Set(prevResourcesData.transfer)];
         const newShare = [...new Set(prevResourcesData.share)];
+        const newConfer = [...new Set(prevResourcesData.confer)];
         // const newTransfer = [];
         // const newShare = [];
 
@@ -561,6 +562,8 @@ export const Guesttermsreview = () => {
               newTransfer.push(currentValue);
             } else if (currentType === "share" && !newShare.includes(currentValue)) {
               newShare.push(currentValue);
+            } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
+              newConfer.push(currentValue);
             }
           }
         });
@@ -569,6 +572,7 @@ export const Guesttermsreview = () => {
         return {
           transfer: [...new Set(newTransfer)],
           share: [...new Set(newShare)],
+          confer: [...new Set(newConfer)],
         };
       });
 

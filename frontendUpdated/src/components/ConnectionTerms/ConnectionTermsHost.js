@@ -755,7 +755,7 @@ const fetchGlobalTemplates = () => {
                   <div className="mb-3 row">
                     <div className="col-md-5 col-xs-12">
                       <label className="agreeLabel">
-                        Can the guest share more data
+                        Can the host share more data
                       </label>
                     </div>
                     <div className="col-md-1 col-xs-2">

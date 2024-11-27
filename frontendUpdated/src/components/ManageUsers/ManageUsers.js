@@ -112,6 +112,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
     <div className='content'>
       <Navbar />
 
+      <div style={{marginTop: '120px'}}>
       <h2>Manage {value}s</h2>
       <Sidebar />
       <div className='add'>
@@ -140,6 +141,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
       </div>
       {/* {error && <p className="error">{error}</p>} */}
       {isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
+      </div>
     </div>
   );
 };

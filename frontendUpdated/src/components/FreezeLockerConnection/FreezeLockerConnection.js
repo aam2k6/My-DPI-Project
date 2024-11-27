@@ -299,7 +299,7 @@ export default function FreezeLockerConnection() {
     <>
      
     {((curruser.user_type === 'sys_admin'  || curruser.user_type === 'system_admin') && (curruser.user_type !== 'moderator')) && 
-    <div className="content">{code} <Sidebar /></div> }
+    <div className="content" style={{marginTop:"100px"}}>{code} <Sidebar /></div> }
 
     {curruser.user_type === 'moderator' &&<>{code}</>}
 

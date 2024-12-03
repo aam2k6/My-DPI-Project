@@ -1343,7 +1343,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
             <i className="fa fa-info-circle userIcon"></i>
           </button>
           <br></br>
-          <span>{conndetails?.connection_description}</span>
+          <div className="longconnectionDescription">{conndetails?.connection_description}</div>
           <br></br>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container">

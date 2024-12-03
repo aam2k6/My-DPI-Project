@@ -1395,7 +1395,7 @@ return (
   <div>
     <Navbar content={content} />
     <div style={{marginTop:"120px"}}>
-      <div className="connection-details">
+      <div className="connection-details longconnectionDescription">
         Connection Name: {connectionName} <br />
         <h3>
           {globalTemplateNames.length > 0 && "Connection has been imported from "}

@@ -136,16 +136,24 @@ export const ViewLocker = () => {
       const connectionsData = await connectionsResponse.json();
 
       if (connectionsData.success) {
-        setConnections(connectionsData.connections);
+        const filteredIncoming = connectionsData.connections.incoming_connections.filter(
+            (connection) => connection.closed === false
+        );
+        const filteredOutgoing = connectionsData.connections.outgoing_connections.filter(
+            (connection) => connection.closed === false
+        );
+        setConnections({
+            incoming_connections: filteredIncoming,
+            outgoing_connections: filteredOutgoing,
+        });
+        fetchAllTrackerData(connectionsData.connections.outgoing_connections);
 
         const incomingConnectionCounts = {};
-        connectionsData.connections.incoming_connections.forEach(
-          (connection) => {
+        filteredIncoming.forEach((connection) => {
             const typeId = connection.connection_type;
             incomingConnectionCounts[typeId] =
-              (incomingConnectionCounts[typeId] || 0) + 1;
-          }
-        );
+                (incomingConnectionCounts[typeId] || 0) + 1;
+        });
 
         if (!otherConnectionsResponse.ok)
           throw new Error("Failed to fetch other connections");
@@ -590,7 +598,7 @@ export const ViewLocker = () => {
       const data = await response.json();
       console.log(data);
       const { link_To_File } = data;
-      // console.log("link to file", link_To_File);
+      console.log("link to file", link_To_File);
       if (link_To_File) {
         console.log("link to file", link_To_File);
         window.open(link_To_File, '_blank');
@@ -926,7 +934,6 @@ const handleDeleteClick = async (xnode) => {
                             </div>
                           </>
                         }
-                        arrow
                       >
                         <div
                           id={

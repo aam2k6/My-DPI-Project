@@ -727,6 +727,7 @@ export const CreateConnectionTerms = () => {
   const [activeTab, setActiveTab] = useState("guest");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showRevokeConfirmationModal, setShowRevokeConfirmationModal] = useState(false);
+  const [showCloseConfirmationModal, setShowCloseConfirmationModal] = useState(false);
 
 
   
@@ -1122,6 +1123,50 @@ export const CreateConnectionTerms = () => {
     // navigate(`/target-locker-view`);
     
   };
+
+  const handleClosebutton = async () => {
+    const token = Cookies.get("authToken");
+    const formData = new FormData();
+    formData.append("guest_user_name", curruser.username);
+    formData.append("host_user_name", hostUserUsername);
+    formData.append("guest_locker_name", guestLockerName);
+    formData.append("host_locker_name", hostLockerName);
+    formData.append("connection_name", connectionName);
+    formData.append("connection_type_name", connectionTypeName);
+
+    try {
+        const response = await fetch("host/close-connection/".replace(/host/, frontend_host), {
+            method: "POST",
+            headers: {
+                Authorization: `Basic ${token}`,
+            },
+            body: formData,
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            setModalMessage({
+                message: "Connection closed successfully!"+ data.message,
+                type: "success",
+            });
+            setIagree("0");
+            
+        } else {
+            setModalMessage({
+                message: data.error || "Failed to close the connection.",
+                type: "failure",
+            });
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        setModalMessage({
+            message: "An unexpected error occurred while closing the connection.",
+            type: "failure",
+        });
+    }
+    setIsModalOpen(true);
+};
+
   const renderTermsSection = (terms, title, userType) => (
     <div className="terms-sections">
       <h3>{title}</h3>
@@ -1341,6 +1386,11 @@ const handleRevokeConfirm = () => {
   setShowRevokeConfirmationModal(false); // Close the modal
   handleRevokebutton(); // Execute revoke action
 };
+const handleCloseConfirm = () => {
+  setShowCloseConfirmationModal(false); // Close the modal
+  handleClosebutton(); // Execute revoke action
+};
+
 return (
   <div>
     <Navbar content={content} />
@@ -1467,6 +1517,15 @@ return (
     />
   )}
 
+{showCloseConfirmationModal && (
+    <Modal
+      message="Are you sure you want to Close Connection?"
+      type="confirmation"
+      onClose={() => setShowCloseConfirmationModal(false)} // Close modal on "No"
+      onConfirm={handleCloseConfirm} // Call the confirmation action
+    />
+  )}
+
 <div>
   {showConsent && Iagree === "0" && (
     <Grid container>
@@ -1495,19 +1554,27 @@ return (
 <div>
   {showConsent && Iagree === "1" && (
     <Grid container className="page13parent13state1">
-      <Grid item xs={12} md={2}></Grid>
+      <Grid item xs={12} md={1}></Grid>
       <Grid item xs={12} md={4} className="page13consent" mb={3}>
         Consent Given on : {consentData.consent_given}
         <br />
         Consent valid Until : {consentData.valid_until}
       </Grid>
-      <Grid xs={12} md={2}></Grid>
-      <Grid item xs={12} md={4} className="page13button" mb={3}>
+      <Grid xs={2} md={2}></Grid>
+      <Grid item xs={5} md={2} className="page13button" mb={3}>
       <button
           className="page13iagree1buttons"
           onClick={() => setShowRevokeConfirmationModal(true)} // Trigger confirmation modal
         >
           Revoke
+        </button>
+      </Grid>
+      <Grid item xs={4} md={2} className="page13button" mb={3}>
+      <button
+          className="page13iagree1buttons"
+          onClick={() => setShowCloseConfirmationModal(true)} // Trigger confirmation modal
+        >
+          Close Connection
         </button>
       </Grid>
     </Grid>

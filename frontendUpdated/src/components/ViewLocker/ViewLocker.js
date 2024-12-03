@@ -771,59 +771,64 @@ const handleDeleteClick = async (xnode) => {
       }
     }
   };
+  const [loadingConnections, setLoadingConnections] = useState({});
   const fetchUsersForConnection = async (connection) => {
+    // Extract required values from the connection object
+    const connection_type_name = connection.connection_type_name; // Connection type name
+    const host_user_username = connection.owner_user; // Map this to the user who owns the connection
+    const locker_name = connection.owner_locker; // Map this to the locker associated with the connection
+    const connection_type_id = connection.connection_type_id;
+  
+    // Log the parameters being used to make sure they are correct
+    console.log("Final parameters used for API call:");
+    console.log("connection_type_name:", connection_type_name);
+    console.log("host_user_username:", curruser.username);
+    console.log("locker_name:", locker.name);
+    console.log("connection_type_id:", connection_type_id);
+  
+    // Construct the URL for the API call
+    const url = `${frontend_host}/get-guest-user-connection?connection_type_name=${encodeURIComponent(connection_type_name)}&host_user_username=${encodeURIComponent(curruser.username)}&host_locker_name=${encodeURIComponent(locker.name)}`;
+  
+    // Log the constructed URL for debugging
+    console.log("Constructed URL:", url);
+  
     try {
+      // Get the authentication token (assumed to be stored in cookies)
       const token = Cookies.get("authToken");
-      
-      // Log the connection object to ensure it's being passed correctly
-      console.log("Fetching users for connection:", connection);
   
-      // Construct query parameters
-      const params = new URLSearchParams({
-        connection_type_name: connection.connection_type_name,  // Add connection type name
-        host_locker_name: connection.locker_name,                // Add host locker name
-        host_user_username: connection.host_user_username,       // Add host user username
-      });
+      if (!token) {
+        throw new Error("Authentication token is missing.");
+      }
   
-      // Log the final URL with parameters
-      console.log("Constructed URL with params:", `host/get-guest-user-connection/${connection.connection_type_id}?${params.toString()}`);
-  
-      // Construct the URL with the query parameters
-      const url = `host/get-guest-user-connection/${connection.connection_type_id}?${params.toString()}`.replace(/host/, frontend_host);
-  
-      // Fetch the data
+      // Fetch the data from the backend with the token in the Authorization header
       const response = await fetch(url, {
-        method: "GET",
+        method: 'GET',
         headers: {
           Authorization: `Basic ${token}`,
           "Content-Type": "application/json",
         },
       });
   
+      // Check if the response is successful
       if (!response.ok) {
-        throw new Error(`Failed to fetch users for connection ${connection.connection_type_id}`);
+        throw new Error(`API call failed with status ${response.status}`);
       }
   
-      const data = await response.json();
+      // Parse the response data (users)
+      const users = await response.json();
+      console.log("Fetched users:", users);
   
-      if (data.success) {
-        // Log the fetched users for debugging
-        console.log(`Users for connection ${connection.connection_type_name}:`, data.users);
-  
-        // Update the state with the fetched users for this connection
-        setConnectionUsers((prev) => ({
-          ...prev,
-          [connection.connection_type_name]: data.users,  // Store users by connection type
-        }));
-      } else {
-        console.error(`Error: ${data.message}`);
-      }
+      // Store the users in state for this specific connection type
+      setConnectionUsers((prev) => ({
+        ...prev,
+        [connection_type_id]: users,
+      }));
     } catch (error) {
-      console.error("Error fetching users for connection:", error);
+      // Log any errors encountered during the API call
+      console.error("Error in API call:", error);
     }
   };
   
-
 
   const content = (
     <>
@@ -1018,7 +1023,7 @@ const handleDeleteClick = async (xnode) => {
         >
           {/* Connection Name */}
           <span
-            onClick={() => toggleConnection(connection.connection_type_id)}
+            onClick={() => toggleConnection(connection)}
             style={{
               cursor: "pointer",
               textDecoration: "none",
@@ -1038,7 +1043,9 @@ const handleDeleteClick = async (xnode) => {
           {/* Users associated with the connection */}
           {expandedConnection === connection.connection_type_id && (
             <ul style={{ paddingLeft: "20px", marginTop: "5px" }}>
-              {connectionUsers[connection.connection_type_id] ? (
+              {loadingConnections[connection.connection_type_id] ? (
+                <p style={{ fontSize: "16px", color: "#888" }}>Loading users...</p>
+              ) : connectionUsers[connection.connection_type_id] ? (
                 connectionUsers[connection.connection_type_id].map((user) => (
                   <li
                     key={user.id}
@@ -1052,7 +1059,7 @@ const handleDeleteClick = async (xnode) => {
                   </li>
                 ))
               ) : (
-                <p style={{ fontSize: "16px", color: "#888" }}>Loading users...</p>
+                <p style={{ fontSize: "16px", color: "#888" }}>No users found.</p>
               )}
             </ul>
           )}
@@ -1064,6 +1071,7 @@ const handleDeleteClick = async (xnode) => {
   </ul>
 )}
 </div>
+
       </div>
       
     </div>

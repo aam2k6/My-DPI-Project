@@ -1127,13 +1127,13 @@ export const CreateConnectionTerms = () => {
   const handleClosebutton = async () => {
     const token = Cookies.get("authToken");
     const formData = new FormData();
-    formData.append("guest_user_name", curruser.username);
-    formData.append("host_user_name", hostUserUsername);
-    formData.append("guest_locker_name", guestLockerName);
-    formData.append("host_locker_name", hostLockerName);
+    formData.append("guest_username", curruser.username); 
+    formData.append("host_username", hostUserUsername); 
+    formData.append("guest_lockername", guestLockerName);
+    formData.append("host_lockername", hostLockerName); 
     formData.append("connection_name", connectionName);
     formData.append("connection_type_name", connectionTypeName);
-
+    formData.append("close_guest", "true");
     try {
         const response = await fetch("host/close-connection/".replace(/host/, frontend_host), {
             method: "POST",

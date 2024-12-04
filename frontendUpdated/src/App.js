@@ -35,6 +35,8 @@ import { HostTermsReview } from "./components/ViewTermsByTypeUser/HostTermsRevie
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import GlobalTermsView from './components/GlobalTermsView/GlobalTermsView'; // Import the new component
 import { Scanner } from "./components/Scanner/Scanner";
+import { AllLokers } from "./components/ViewLocker/Lockers";
+import { FreezeLocker } from "./components/Freeze/FreezeLocker";
 
 
 
@@ -319,6 +321,26 @@ function App() {
               </ProtectedRoute>
             }
             />
+
+          <Route
+            path = "/all-lockers"
+            element = {
+              <ProtectedRoute>
+                <AllLokers/>
+                <Scanner />
+              </ProtectedRoute>
+            }
+          />  
+
+          <Route
+            path = "/freeze-locker"
+            element = {
+              <ProtectedRoute>
+                <FreezeLocker/>
+                <Scanner />
+              </ProtectedRoute>
+            }
+          />    
 
 
             <Route path="*" element={<h1>Page Not Found</h1>} />

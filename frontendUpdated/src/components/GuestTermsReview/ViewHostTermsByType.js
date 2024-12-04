@@ -104,21 +104,21 @@ export const ViewHostTermsByType = () => {
     guestLocker,
     hostLocker
   )
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = Cookies.get("authToken"); // Get the token from Cookies
-      if (!token) return setErrorMessage("Authentication token is missing.");
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = Cookies.get("authToken"); // Get the token from Cookies
+  //     if (!token) return setErrorMessage("Authentication token is missing.");
   
-      try {
-        const pages = await fetchTotalPages(selectedResourceId, token);
-        setTotalPages(pages); // Set the total pages in state
-      } catch (error) {
-        setErrorMessage(error.message || "Failed to fetch total pages.");
-      }
-    };
+  //     try {
+  //       const pages = await fetchTotalPages(selectedResourceId, token);
+  //       // setTotalPages(pages); 
+  //     } catch (error) {
+  //       setErrorMessage(error.message || "Failed to fetch total pages.");
+  //     }
+  //   };
   
-    if (selectedResourceId) fetchData();
-  }, [selectedResourceId]);
+  //   if (selectedResourceId) fetchData();
+  // }, [selectedResourceId]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -592,7 +592,7 @@ export const ViewHostTermsByType = () => {
     setCurrentLabelName(labelName);
   };
 
-  const handleResourceSelection = (resource) => {
+  const handleResourceSelection3 = (resource) => {
     // console.log("inside",resource);
     // initialResources[obligation.labelName] = {
     //                 document_name,
@@ -615,6 +615,51 @@ export const ViewHostTermsByType = () => {
     console.log("page input", showPageInput);
   };
   console.log("page input", showPageInput);
+
+  const handleResourceSelection = async (resource) => {
+
+    const url = `${frontend_host}/get-total-pages/?xnode_id=${resource.id}`;
+    // Update selection state
+    
+    setSelection((prev) => ({
+      ...prev,
+      [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
+    }));
+    setSelectedResources((prev) => ({
+      ...prev,
+      [currentLabelName]: resource,
+    }));
+    setShowResources(true);
+    setSelectedResourceId(resource.id);
+    setShowPageInput(true);
+    const token = Cookies.get("authToken");
+
+    // Fetch total pages for the selected resource
+    try {
+        
+        const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
+        },
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setTotalPages(data.total_pages);
+        setError(null); // Clear any previous errors
+      } else {
+        setError(data.error); // Handle error message
+        setTotalPages(null);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred while fetching total pages.");
+      setTotalPages(null);
+    }
+  };
+
+  console.log("TotallPages", totalPages);
 
   //********************************************************** */
   const handleButtonClick2 = (labelName) => {
@@ -789,29 +834,29 @@ export const ViewHostTermsByType = () => {
       setErrorMessage("An error occurred while validating pages.");
     }
   };
-  const fetchTotalPages = async (selectedResourceId, token) => {
-    const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId}`;
-    console.log("Fetching data from URL:", url); // Log the URL
+  // const fetchTotalPages = async (selectedResourceId, token) => {
+  //   const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId}`;
+  //   console.log("Fetching data from URL:", url); // Log the URL
   
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
-        },
-      });
+  //   try {
+  //     const response = await fetch(url, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Basic ${token}`,
+  //       },
+  //     });
   
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || "Failed to fetch total pages.");
-      }
-      return data.total_pages;
-    } catch (error) {
-      console.error("Error details:", error); // Log the error details
-      throw new Error("An error occurred while fetching the total pages.");
-    }
-  };  
+  //     const data = await response.json();
+  //     if (!response.ok || !data.success) {
+  //       throw new Error(data.error || "Failed to fetch total pages.");
+  //     }
+  //     return data.total_pages;
+  //   } catch (error) {
+  //     console.error("Error details:", error); // Log the error details
+  //     throw new Error("An error occurred while fetching the total pages.");
+  //   }
+  // };  
   
   const handleCompletePagesChange = () => {
     setIsCompletePages(prevState => !prevState);

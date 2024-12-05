@@ -135,8 +135,7 @@ export const FreezeConnection = () => {
         // setSelectedUser(null);
     };
 
-
-    return (
+    const code = (
         <>
             <Navbar />
             <div className="container" style={{ marginTop: "120px" }}>
@@ -184,6 +183,17 @@ export const FreezeConnection = () => {
                     </div>
                 </div>
             </div>
+        </>
+    )
+
+    return (
+        <>
+            {((curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin') && (curruser.user_type !== 'moderator')) &&
+                <div >{code} 
+                {/* <Sidebar /> */}
+                </div>}
+
+            {curruser.user_type === 'moderator' && <>{code}</>}
         </>
     )
 }

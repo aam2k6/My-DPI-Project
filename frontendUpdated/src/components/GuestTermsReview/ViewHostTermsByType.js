@@ -1654,14 +1654,14 @@ export const ViewHostTermsByType = () => {
                   },
                 })}
               >
-                Guest Connection Terms
+                Guest Data
               </div>
               <div
                 className={`tab-header ${activeTab === "host" ? "active" : ""
                   }`}
                 onClick={() => setActiveTab("host")}
               >
-                Host Connection Terms
+                Host Data
               </div>
             </div>
             <div className="tab-content">

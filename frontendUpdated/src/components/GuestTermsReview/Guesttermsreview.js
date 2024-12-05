@@ -1377,7 +1377,7 @@ export const Guesttermsreview = () => {
                     }`}
                   onClick={() => setActiveTab("guest")}
                 >
-                  Guest Connection Terms
+                  Guest Data
                 </div>
                 <div
                   className={`tab-header ${activeTab === "host" ? "active" : ""
@@ -1401,7 +1401,7 @@ export const Guesttermsreview = () => {
                     },
                   })}
                 >
-                  Host Connection Terms
+                  Host Data
                 </div>
               </div>
               {/* Added Tabs */}

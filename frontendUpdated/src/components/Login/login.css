@@ -50,7 +50,7 @@
 .containerlogin {
     margin-top: 5rem;
     border-radius: 5rem;
-    border: 2rem solid rgba(23, 22, 75);
+    border: 1.75rem solid rgba(23, 22, 75);
     height: 30rem;
     width: 40rem;
 }
@@ -89,7 +89,7 @@
 }
 
 /* Media Queries for Mobile (412px width) */
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 660px) {
 
     .loginpage {
         width: 100vw;
@@ -122,8 +122,8 @@
         height: auto;
         margin-top: 3rem;
         padding: 1.5rem;
-        border-radius: 1.5rem;
-        border-width: 0.75rem;
+        border-radius: 2rem;
+        border-width: 1.25rem;
         box-sizing: border-box;
     }
 

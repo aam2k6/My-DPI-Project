@@ -1569,14 +1569,14 @@ return (
           Revoke
         </button>
       </Grid>
-      <Grid item xs={4} md={2} className="page13button" mb={3}>
+      {/* <Grid item xs={4} md={2} className="page13button" mb={3}>
       <button
           className="page13iagree1buttons"
           onClick={() => setShowCloseConfirmationModal(true)} // Trigger confirmation modal
         >
           Close Connection
         </button>
-      </Grid>
+      </Grid> */}
     </Grid>
   )}
 </div>

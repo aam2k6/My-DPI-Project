@@ -56,6 +56,12 @@ export const ViewLocker = () => {
     }
   }, [locker]);
 
+  const legendItems = [
+    { color: "blue", label: "INODE" },
+    { color: "rgb(255, 38, 0)", label: "VNODE" },
+    { color: "green", label: "SNODE" },
+  ];
+
   const fetchXnodes = async () => {
     try {
       const token = Cookies.get("authToken");
@@ -880,10 +886,38 @@ const handleDeleteClick = async (xnode) => {
           )}
         </div> */}
 
+
+
         <Grid container padding={{md:"50px",xs:"20px"}}>
           <Grid item md={5.5} xs={12} className="a">
           <div className="res">
+      <div>
       <h3>Resources</h3>
+      <div className="d-flex">
+      {legendItems.map((item, index) => (
+        <div
+          key={index}
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              backgroundColor: item.color,
+              border:  "none",
+              marginRight: "5px",
+              marginLeft: "10px",
+            }}
+          ></div>
+          <span style={{ fontSize: "14px", color: "#333" }}>{item.label}</span>
+        </div>
+      ))}
+    </div>
+      </div>
       <div className="container-3 clearfix">
         <div className="aa">
           {/* "My Resources" folder */}

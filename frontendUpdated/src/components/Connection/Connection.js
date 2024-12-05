@@ -65,7 +65,6 @@ export const Connection = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Hiiiii")
     const connectionData = {
       lockerName: locker_conn?.name,
       connectionName,
@@ -102,7 +101,7 @@ export const Connection = () => {
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
           }}
         >
-          <div className="connection-resourceHeading">Connection</div>
+          <div className="connection-resourceHeading">Connection Type</div>
           <form  onSubmit={handleSubmit}>
             <Grid container className=" mb-4">
                 <Grid item md={2} sm={2} xs={12}>

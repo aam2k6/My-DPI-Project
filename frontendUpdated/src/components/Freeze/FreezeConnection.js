@@ -95,7 +95,7 @@ export const FreezeConnection = () => {
             const response = await fetch("host/freeze-unfreeze-connection/".replace(/host/, frontend_host), {
                 method: "PUT",
                 //curruser is user obj
-                body: JSON.stringify({ connection_id: connectionId, username: curruser.username, connection_name: connectionName, action }),
+                body: JSON.stringify({ connection_id: connectionId, connection_name: connectionName, action }),
                 headers: {
                     'Authorization': `Basic ${token}`,
                     "Content-Type": "application/json",

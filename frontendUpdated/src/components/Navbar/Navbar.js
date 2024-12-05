@@ -241,15 +241,11 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
   };
 
   const handleLockerSettings = () => {
-    if (isSystemAdmin) {
-      toggleLockerSettingDropdown();
-    }
+    toggleLockerSettingDropdown();
   };
 
   const handleConnectionSettings = () => {
-    if (isSystemAdmin) {
-      toggleConnectionSettingDropdown();
-    }
+    toggleConnectionSettingDropdown();
   };
 
   const handleModeratorSettings = () => {
@@ -424,8 +420,24 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
     navigate("/manage-moderators");
   };
 
-  const handleFreezeLockerConnection = () => {
-    navigate("/freeze-locker-connection");
+  // const handleFreezeLockerConnection = () => {
+  //   navigate("/freeze-locker-connection");
+  // };
+
+  const handleFreezeLocker = () => {
+    navigate("/freeze-locker");
+  };
+
+  const handleLockers = () => {
+    navigate("/all-lockers");
+  };
+
+  const handleConnectionTypes = () => {
+    navigate("/all-connection-types");
+  };
+
+  const handleFreezeConnection = () => {
+    navigate("/freeze-connection");
   };
 
   return (
@@ -624,29 +636,55 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
                             </li>
 
                             <li className="dropdown-item dropdown" ref={lockerSettingDropdownRef}>
-                              {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
+                              {/* {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
                                 <div >
                                   <button onClick={handleLockerSettings}>Locker Settings</button>
                                   {isSystemAdmin && isLockerSettingOpen && (
                                     <ul className="dropdown-menu menu2 show">
-                                      <li><a onClick={handleFreezeLockerConnection} className="dropdown-item">Freeze Connection/Locker</a></li>
+                                      <li><a onClick={handleFreezeLockerConnection} className="dropdown-item">Lockers</a></li>
+                                      <li><a onClick={handleFreezeLockerConnection} className="dropdown-item">Freeze Lockers</a></li>
                                     </ul>
                                   )}
                                 </div>
-                              )}
+                              )} */}
+                               <div >
+                                  <button onClick={handleLockerSettings}>Locker Settings</button>
+                                  {isLockerSettingOpen && (
+                                    <ul className="dropdown-menu menu2 show">
+                                      <li><a onClick={handleLockers} className="dropdown-item">Lockers</a></li>
+                                      {isSystemAdmin && (
+                                        <li><a onClick={handleFreezeLocker} className="dropdown-item">Freeze Lockers</a></li>
+
+                                      )}
+                                    </ul>
+                                  )}
+                                </div>
                             </li>
 
                             <li className="dropdown-item dropdown" ref={connectionSettingDropdownRef}>
-                              {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
+                              {/* {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") && (
                                 <div>
                                   <button onClick={handleConnectionSettings}>Connection Settings</button>
-                                  {isSystemAdmin && isConnectionSettingOpen && (
+                                  {isConnectionSettingOpen && (
                                     <ul className="dropdown-menu menu2 show">
                                       <li><a onClick={handleGlobalConnectionDirectory} className="dropdown-item">Create Global Connection</a></li>
                                     </ul>
                                   )}
                                 </div>
-                              )}
+                              )} */}
+                              <div>
+                                  <button onClick={handleConnectionSettings}>Connection Settings</button>
+                                  {isConnectionSettingOpen && (
+                                    <ul className="dropdown-menu menu3 show">
+                                      <li><a onClick={handleConnectionTypes} className="dropdown-item">Connection Types</a></li>
+                                      <li><a className="dropdown-item">Create new Connection Type</a></li>
+                                      <li><a onClick={handleGlobalConnectionDirectory} className="dropdown-item">Global Connection Directory</a></li>
+                                      {isSystemAdmin && (
+                                      <li><a onClick={handleFreezeConnection} className="dropdown-item">Freeze Connection</a></li>
+                                      )}
+                                    </ul>
+                                  )}
+                                </div>
                             </li>
 
 

@@ -367,8 +367,21 @@
 
 .menu2 {
   position: absolute;
-  top: 30px; /* Aligns the top of the dropdown with the button */
-  left: -240px; /* Adjust this value to position the menu on the left side */
+  top: 25px; /* Aligns the top of the dropdown with the button */
+  left: -165px; /* Adjust this value to position the menu on the left side */
+  background-color: #fff; /* Dropdown background color */
+  border: 1px solid #ddd; /* Optional border */
+  padding: 10px;
+  list-style: none;
+  z-index: 10; /* Ensures the dropdown appears above other elements */
+  display: block;
+  min-width: 150px;
+}
+
+.menu3{
+  position: absolute;
+  top: 20px; /* Aligns the top of the dropdown with the button */
+  left: -260px; /* Adjust this value to position the menu on the left side */
   background-color: #fff; /* Dropdown background color */
   border: 1px solid #ddd; /* Optional border */
   padding: 10px;

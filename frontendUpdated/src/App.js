@@ -37,7 +37,8 @@ import GlobalTermsView from './components/GlobalTermsView/GlobalTermsView'; // I
 import { Scanner } from "./components/Scanner/Scanner";
 import { AllLokers } from "./components/ViewLocker/Lockers";
 import { FreezeLocker } from "./components/Freeze/FreezeLocker";
-
+import { ConnectionTypes } from "./components/ConnectionTypes/ConnectionTypes";
+import { FreezeConnection } from "./components/Freeze/FreezeConnection";
 
 
 import { ConnectionProvider } from "./ConnectionContext";
@@ -340,7 +341,25 @@ function App() {
                 <Scanner />
               </ProtectedRoute>
             }
-          />    
+          /> 
+          <Route
+            path = "/all-connection-types"
+            element = {
+              <ProtectedRoute>
+                <ConnectionTypes/>
+                <Scanner />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path = "/freeze-connection"
+            element = {
+              <ProtectedRoute>
+                <FreezeConnection/>
+                <Scanner />
+              </ProtectedRoute>
+            }
+          />   
 
 
             <Route path="*" element={<h1>Page Not Found</h1>} />

@@ -141,13 +141,13 @@ export const FreezeLocker = () => {
         <>
             <Navbar />
             <div className="container" style={{ marginTop: "120px" }}>
-                <div className="row justify-content-center">
-                    <div className="col-md-6 col-sm-12 p-4 border border-primary rounded shadow">
+                <div className="row justify-content-center p-4">
+                    <div className="col-md-6 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">
                     <button onClick={toggleFreezeMode}>
                             {freezeMode ? 'Switch to Unfreeze' : 'Switch to Freeze'}
                         </button>
                         <div className="row justify-content-center mt-4">
-                        <div className="col-md-8 col-sm-12 p-4 border border-primary rounded shadow">
+                        <div className="col-md-8 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">
                         
                         <h2 className="m-4" style={{ textAlign: "center"}}>{freezeMode ? "Freeze Locker" : "Unfreeze Locker"}</h2>
 

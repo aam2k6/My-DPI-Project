@@ -10,10 +10,6 @@ import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal"; 
 import { Grid } from "@mui/material"
 import Tooltip from '@mui/material/Tooltip';
-import ReactModal from "react-modal";
-import { Viewer } from "@react-pdf-viewer/core"; // PDF Viewer
-import "@react-pdf-viewer/core/lib/styles/index.css"; // PDF Viewer styles
-import { Worker } from "@react-pdf-viewer/core"; // Web Worker for PDF Rendering
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
   const location = useLocation();
@@ -28,8 +24,6 @@ export const ViewLocker = () => {
     incoming_connections: [],
     outgoing_connections: [],
   });
-  const [pdfUrl, setPdfUrl] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [otherConnections, setOtherConnections] = useState([]);
   const [trackerData, setTrackerData] = useState({});
   const [scanning, setScanning] = useState(false);
@@ -612,8 +606,9 @@ export const ViewLocker = () => {
       const { link_To_File } = data;
       console.log("link to file", link_To_File);
       if (link_To_File) {
-        setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        console.log("link to file", link_To_File);
+        window.open(link_To_File, '_blank');
+        // setPdfUrl(link_To_File);
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -756,10 +751,7 @@ const handleDeleteClick = async (xnode) => {
   }
 };
 
-const handleClose = () => {
-  setIsModalOpen(false);
-  // setPdfUrl(null);
-};
+
 
   const handleFileChange = (e) => {
     setResourceFile(e.target.files[0]);
@@ -842,8 +834,6 @@ const handleClose = () => {
       console.error("Error in API call:", error);
     }
   };
-
-
   
 
   const content = (
@@ -997,18 +987,12 @@ const handleClose = () => {
                             alignItems: "center",
                           }}
                         >
-                          <div>
-      <span
-        onClick={() => handleClick(xnode.id)}
-        style={{ cursor: "pointer", flexGrow: 1 }}
-      >
-        {xnode.resource_name}
-      </span> 
-
-      
-
-      {error && <div className="error-message">{error}</div>}
-    </div>
+                          <span
+                            onClick={() => handleClick(xnode.id)}
+                            style={{ cursor: "pointer", flexGrow: 1 }}
+                          >
+                            {xnode.resource_name}
+                          </span>
                           <span
                             className="resource-icons"
                             style={{
@@ -1034,48 +1018,6 @@ const handleClose = () => {
                           </span>
                         </div>
                       </Tooltip>
-                      <ReactModal
-  isOpen={isModalOpen}
-  onRequestClose={handleClose}
-  contentLabel="PDF Viewer"
-  style={{
-    content: {
-      top: "55%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      width: "80%",
-      height: "80%",
-      overflowY: "hidden",
-      maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
-      maxHeight: "90%", // Max height for larger screens
-    },
-  }}
->
-  <button
-    onClick={handleClose}
-    style={{
-      marginBottom: "10px",
-      cursor: "pointer",
-      position: "absolute",
-      top: "10px",
-      right: "10px", // Button positioned at the top right
-      zIndex: 100,
-    }}
-  >
-    Close
-  </button>
-  {pdfUrl ? (
-    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-      <Viewer fileUrl={pdfUrl} />
-    </Worker>
-  ) : (
-    <p>Loading PDF...</p>
-  )}
-</ReactModal>
-
                     </div>
                   </div>
                 ))
@@ -1083,12 +1025,7 @@ const handleClose = () => {
                 <p className="not-found">No Resources found.</p>
               )}
             </ul>
-
-            
           )}
-
-
-
 
 {/* "Connections" folder */}
 <div

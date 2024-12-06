@@ -381,7 +381,7 @@
 .menu3{
   position: absolute;
   top: 20px; /* Aligns the top of the dropdown with the button */
-  left: -260px; /* Adjust this value to position the menu on the left side */
+  left: -254px; /* Adjust this value to position the menu on the left side */
   background-color: #fff; /* Dropdown background color */
   border: 1px solid #ddd; /* Optional border */
   padding: 10px;

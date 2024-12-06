@@ -607,21 +607,8 @@ export const ViewLocker = () => {
       console.log("link to file", link_To_File);
       if (link_To_File) {
         console.log("link to file", link_To_File);
-  
-        // Try to open the direct link
-        const fileResponse = await fetch(link_To_File, {
-          headers: { Authorization: `Basic ${token}` },
-        });
-        console.log(fileResponse);
-        if (fileResponse.ok) {
-          // Create a blob URL and open it
-          const blob = await fileResponse.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          window.open(blobUrl, '_blank');
-        } else {
-          console.error("Failed to fetch the file directly, trying fallback.");
-          throw new Error('File access error');
-        }
+        window.open(link_To_File, '_blank');
+        // setPdfUrl(link_To_File);
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);

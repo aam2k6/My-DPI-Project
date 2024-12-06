@@ -677,7 +677,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
                                   {isConnectionSettingOpen && (
                                     <ul className="dropdown-menu menu3 show">
                                       <li><a onClick={handleConnectionTypes} className="dropdown-item">Connection Types</a></li>
-                                      <li><a className="dropdown-item">Create new Connection Type</a></li>
+                                      {/* <li><a className="dropdown-item">Create new Connection Type</a></li> */}
                                       <li><a onClick={handleGlobalConnectionDirectory} className="dropdown-item">Global Connection Directory</a></li>
                                       {isSystemAdmin && (
                                       <li><a onClick={handleFreezeConnection} className="dropdown-item">Freeze Connection</a></li>

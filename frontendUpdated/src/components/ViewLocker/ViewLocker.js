@@ -611,8 +611,13 @@ export const ViewLocker = () => {
       const { link_To_File } = data;
       console.log("link to file", link_To_File);
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        const secureFileUrl =
+  process.env.NODE_ENV === 'production'
+    ? link_To_File.replace('http://', 'https://')
+    : link_To_File; // Use HTTP locally for testing
+
 setPdfUrl(secureFileUrl);
+
         // setPdfUrl(link_To_File);
         setIsModalOpen(true); // Open the modal
       } else {

@@ -629,6 +629,8 @@ xnodes.forEach((xnode) => {
   console.log("Full xnode object:", xnode);
 });
 
+console.log("pdfUrl", pdfUrl)
+
 const handleEditClick = (xnode) => {
   setSelectedResource(xnode);
   setResourceName(xnode.resource_name); 
@@ -1067,7 +1069,7 @@ const handleClose = () => {
     Close
   </button>
   {pdfUrl ? (
-    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+    <Worker workerUrl="http://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
       <Viewer fileUrl={pdfUrl} />
     </Worker>
   ) : (

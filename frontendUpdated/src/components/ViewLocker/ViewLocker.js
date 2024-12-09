@@ -7,7 +7,7 @@ import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
-import Modal from "../Modal/Modal"; 
+import Modal from "../Modal/Modal";
 import { Grid } from "@mui/material"
 import Tooltip from '@mui/material/Tooltip';
 import ReactModal from "react-modal";
@@ -94,7 +94,7 @@ export const ViewLocker = () => {
       console.log(data.message || data.error, "mssg");
       console.log("xnode data", data);
 
-      if (data.xnode_list ) {
+      if (data.xnode_list) {
         setXnodes(data.xnode_list);
         // setCorrespondingNames(data.corresponding_document_name_list);
       } else {
@@ -148,22 +148,22 @@ export const ViewLocker = () => {
 
       if (connectionsData.success) {
         const filteredIncoming = connectionsData.connections.incoming_connections.filter(
-            (connection) => connection.closed === false
+          (connection) => connection.closed === false
         );
         const filteredOutgoing = connectionsData.connections.outgoing_connections.filter(
-            (connection) => connection.closed === false
+          (connection) => connection.closed === false
         );
         setConnections({
-            incoming_connections: filteredIncoming,
-            outgoing_connections: filteredOutgoing,
+          incoming_connections: filteredIncoming,
+          outgoing_connections: filteredOutgoing,
         });
         fetchAllTrackerData(connectionsData.connections.outgoing_connections);
 
         const incomingConnectionCounts = {};
         filteredIncoming.forEach((connection) => {
-            const typeId = connection.connection_type;
-            incomingConnectionCounts[typeId] =
-                (incomingConnectionCounts[typeId] || 0) + 1;
+          const typeId = connection.connection_type;
+          incomingConnectionCounts[typeId] =
+            (incomingConnectionCounts[typeId] || 0) + 1;
         });
 
         if (!otherConnectionsResponse.ok)
@@ -504,7 +504,7 @@ export const ViewLocker = () => {
         connectionDescription: connection.connection_description,
         guestLockerName: connection.guest_locker?.name,
         hostLockerName: connection.host_locker?.name,
-        connectionTypeName, 
+        connectionTypeName,
         guestUserUsername: connection.guest_user?.username,
         // connectionTypeName: connection.connection_type_name,
         hostUserUsername: connection.host_user?.username,
@@ -591,9 +591,9 @@ export const ViewLocker = () => {
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}`.replace(
-                  /host/,
-                  frontend_host
-                ), {
+        /host/,
+        frontend_host
+      ), {
         method: 'GET',
         headers: {
           Authorization: `Basic ${token}`,
@@ -611,13 +611,13 @@ export const ViewLocker = () => {
       const { link_To_File } = data;
       console.log("link to file", link_To_File);
       if (link_To_File) {
-        const secureFileUrl =
-  process.env.NODE_ENV === 'production'
-    ? link_To_File.replace('http://', 'https://')
-    : link_To_File; // Use HTTP locally for testing
+        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        setPdfUrl(secureFileUrl);
 
-setPdfUrl(secureFileUrl);
-
+        // const secureFileUrl =
+        //   process.env.NODE_ENV === 'production'
+        //     ? link_To_File.replace('http://', 'https://')
+        //     : link_To_File;
         // setPdfUrl(link_To_File);
         setIsModalOpen(true); // Open the modal
       } else {
@@ -631,111 +631,48 @@ setPdfUrl(secureFileUrl);
       // setLoading(false);
     }
   };
-  console.log("doc",locker.name,curruser.username,xnodes.resource_name);
-xnodes.forEach((xnode) => {
-  console.log("Full xnode object:", xnode);
-});
+  console.log("doc", locker.name, curruser.username, xnodes.resource_name);
+  xnodes.forEach((xnode) => {
+    console.log("Full xnode object:", xnode);
+  });
 
-console.log("pdfUrl", pdfUrl)
+  console.log("pdfUrl", pdfUrl)
 
-const handleEditClick = (xnode) => {
-  setSelectedResource(xnode);
-  setResourceName(xnode.resource_name); 
-  setResourceVisibility(xnode.visibility);
-  setResourceValidity(xnode.validity_until);
-  setShowEditModal(true);
-};
-console.log("resourcevalidity",resourceValidity, resourceVisibility);
-const handleSaveResource = async (xnode) => {
-  console.log("xnode in handleSaveResource:", xnode);
-
-  if (!xnode || !xnode.resource_name) {
-    console.error("Invalid resource structure or missing resource_name.");
-    return;
-  }
-
-  // Access the res object through the foreign key in xnode
-  const res = xnode.res;  
-  const currentVisibility = res ? res.visibility : undefined;
-
-  const payload = {
-    locker_name: locker.name,
-    owner_name: curruser.username,
-    document_name: xnode.resource_name,
-    new_document_name: resourceName,
-    new_visibility: resourceVisibility || currentVisibility, 
-    new_validity_time: resourceValidity || res.validity_until
+  const handleEditClick = (xnode) => {
+    setSelectedResource(xnode);
+    setResourceName(xnode.resource_name);
+    setResourceVisibility(xnode.visibility);
+    setResourceValidity(xnode.validity_until);
+    setShowEditModal(true);
   };
+  console.log("resourcevalidity", resourceValidity, resourceVisibility);
+  const handleSaveResource = async (xnode) => {
+    console.log("xnode in handleSaveResource:", xnode);
 
-  console.log("Payload:", payload);
-
-  try {
-    const token = Cookies.get("authToken");
-    const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Basic ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    console.log("Response Status:", response.status);
-    const data = await response.json();
-    console.log("Response Data:", data);
-
-    if (response.ok) {
-      
-      setXnodes((prevXnodes) =>
-        prevXnodes.map((item) =>
-          item.id === xnode.id
-            ? { ...item, resource_name: resourceName, visibility: resourceVisibility || currentVisibility, validity_until: resourceValidity || res.validity_until }
-            : item
-        )
-      );
-
-      setModalMessage({ message: "Resource updated successfully!", type: "success" });
-      setShowEditModal(false);
-    } else {
-      setModalMessage({ message: data.message || "Failed to update resource.", type: "failure" });
+    if (!xnode || !xnode.resource_name) {
+      console.error("Invalid resource structure or missing resource_name.");
+      return;
     }
-  } catch (error) {
-    console.error("Error updating resource:", error);
-    setModalMessage({ message: "An error occurred while updating the resource.", type: "failure" });
-  }
-};
 
-
-  
-// console.log("doc",locker.name,curruser.username,xnodes.resource_name);
-// xnodes.forEach((xnode) => {
-//   console.log("Resource Name:", xnode.resource_name); // Log each resource_name
-// });
-const handleDeleteClick = async (xnode) => {
-  console.log("Xnode to be deleted:", xnode);  // Log the entire xnode object
-
-  if (!xnode.resource_name) {
-    console.error("Document name is missing in xnode!");
-    return;  // Exit the function if resource_name is missing
-  }
-
-  if (window.confirm("Do you want to delete this resource?")) {
-    const lockerName = locker.name; 
-    const documentName = xnode.resource_name;  
-    const ownerName = curruser.username; 
+    // Access the res object through the foreign key in xnode
+    const res = xnode.res;
+    const currentVisibility = res ? res.visibility : undefined;
 
     const payload = {
-      locker_name: lockerName,
-      owner_name: ownerName,
-      document_name: documentName,  
+      locker_name: locker.name,
+      owner_name: curruser.username,
+      document_name: xnode.resource_name,
+      new_document_name: resourceName,
+      new_visibility: resourceVisibility || currentVisibility,
+      new_validity_time: resourceValidity || res.validity_until
     };
 
-    console.log("Payload to be sent:", payload);  
+    console.log("Payload:", payload);
 
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
-        method: "DELETE",
+        method: "PUT",
         headers: {
           Authorization: `Basic ${token}`,
           "Content-Type": "application/json",
@@ -743,31 +680,94 @@ const handleDeleteClick = async (xnode) => {
         body: JSON.stringify(payload),
       });
 
-      console.log("Response from backend:", response);
+      console.log("Response Status:", response.status);
       const data = await response.json();
-      console.log("Response data:", data);
+      console.log("Response Data:", data);
 
       if (response.ok) {
-        
+
         setXnodes((prevXnodes) =>
-          prevXnodes.filter((item) => item.id !== xnode.id)
+          prevXnodes.map((item) =>
+            item.id === xnode.id
+              ? { ...item, resource_name: resourceName, visibility: resourceVisibility || currentVisibility, validity_until: resourceValidity || res.validity_until }
+              : item
+          )
         );
-        
-        setModalMessage({ message: "Resource deleted successfully!", type: "success" });
+
+        setModalMessage({ message: "Resource updated successfully!", type: "success" });
+        setShowEditModal(false);
       } else {
-        setModalMessage({ message: data.message || "Failed to delete resource.", type: "failure" });
+        setModalMessage({ message: data.message || "Failed to update resource.", type: "failure" });
       }
     } catch (error) {
-      setModalMessage({ message: "An error occurred while deleting the resource.", type: "failure" });
-      console.error("Error during delete:", error);
+      console.error("Error updating resource:", error);
+      setModalMessage({ message: "An error occurred while updating the resource.", type: "failure" });
     }
-  }
-};
+  };
 
-const handleClose = () => {
-  setIsModalOpen(false);
-  // setPdfUrl(null);
-};
+
+
+  // console.log("doc",locker.name,curruser.username,xnodes.resource_name);
+  // xnodes.forEach((xnode) => {
+  //   console.log("Resource Name:", xnode.resource_name); // Log each resource_name
+  // });
+  const handleDeleteClick = async (xnode) => {
+    console.log("Xnode to be deleted:", xnode);  // Log the entire xnode object
+
+    if (!xnode.resource_name) {
+      console.error("Document name is missing in xnode!");
+      return;  // Exit the function if resource_name is missing
+    }
+
+    if (window.confirm("Do you want to delete this resource?")) {
+      const lockerName = locker.name;
+      const documentName = xnode.resource_name;
+      const ownerName = curruser.username;
+
+      const payload = {
+        locker_name: lockerName,
+        owner_name: ownerName,
+        document_name: documentName,
+      };
+
+      console.log("Payload to be sent:", payload);
+
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        console.log("Response from backend:", response);
+        const data = await response.json();
+        console.log("Response data:", data);
+
+        if (response.ok) {
+
+          setXnodes((prevXnodes) =>
+            prevXnodes.filter((item) => item.id !== xnode.id)
+          );
+
+          setModalMessage({ message: "Resource deleted successfully!", type: "success" });
+        } else {
+          setModalMessage({ message: data.message || "Failed to delete resource.", type: "failure" });
+        }
+      } catch (error) {
+        setModalMessage({ message: "An error occurred while deleting the resource.", type: "failure" });
+        console.error("Error during delete:", error);
+      }
+    }
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+    // setPdfUrl(null);
+  };
 
   const handleFileChange = (e) => {
     setResourceFile(e.target.files[0]);
@@ -781,7 +781,7 @@ const handleClose = () => {
   };
   const [expandedConnection, setExpandedConnection] = useState(null); // Tracks which connection is expanded
   const [connectionUsers, setConnectionUsers] = useState({}); // Store users for each connection
-  
+
   // Toggle connection to expand/collapse user list
   const toggleConnection = (connectionId) => {
     if (expandedConnection === connectionId) {
@@ -800,28 +800,28 @@ const handleClose = () => {
     const host_user_username = connection.owner_user; // Map this to the user who owns the connection
     const locker_name = connection.owner_locker; // Map this to the locker associated with the connection
     const connection_type_id = connection.connection_type_id;
-  
+
     // Log the parameters being used to make sure they are correct
     console.log("Final parameters used for API call:");
     console.log("connection_type_name:", connection_type_name);
     console.log("host_user_username:", curruser.username);
     console.log("locker_name:", locker.name);
     console.log("connection_type_id:", connection_type_id);
-  
+
     // Construct the URL for the API call
     const url = `${frontend_host}/get-guest-user-connection?connection_type_name=${encodeURIComponent(connection_type_name)}&host_user_username=${encodeURIComponent(curruser.username)}&host_locker_name=${encodeURIComponent(locker.name)}`;
-  
+
     // Log the constructed URL for debugging
     console.log("Constructed URL:", url);
-  
+
     try {
       // Get the authentication token (assumed to be stored in cookies)
       const token = Cookies.get("authToken");
-  
+
       if (!token) {
         throw new Error("Authentication token is missing.");
       }
-  
+
       // Fetch the data from the backend with the token in the Authorization header
       const response = await fetch(url, {
         method: 'GET',
@@ -830,16 +830,16 @@ const handleClose = () => {
           "Content-Type": "application/json",
         },
       });
-  
+
       // Check if the response is successful
       if (!response.ok) {
         throw new Error(`API call failed with status ${response.status}`);
       }
-  
+
       // Parse the response data (users)
       const users = await response.json();
       console.log("Fetched users:", users);
-  
+
       // Store the users in state for this specific connection type
       setConnectionUsers((prev) => ({
         ...prev,
@@ -852,7 +852,7 @@ const handleClose = () => {
   };
 
 
-  
+
 
   const content = (
     <>
@@ -860,8 +860,8 @@ const handleClose = () => {
         {locker ? `Locker: ${locker.name}` : "Locker"}
       </div>
       <div>
-          {locker ? ` ${locker.description}` : "Description"}
-        </div>
+        {locker ? ` ${locker.description}` : "Description"}
+      </div>
     </>
   );
   // console.log("res vnode", VnodeResources);
@@ -870,7 +870,7 @@ const handleClose = () => {
   return (
     <div id="viewLocker">
       <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
-      <div className="containers" style={{marginTop:"150px"}}>
+      <div className="containers" style={{ marginTop: "150px" }}>
         {/* <div className="locker-description">
           {locker ? ` ${locker.description}` : "Description"}
         </div> */}
@@ -906,301 +906,298 @@ const handleClose = () => {
 
 
 
-        <Grid container padding={{md:"50px",xs:"20px"}}>
+        <Grid container padding={{ md: "50px", xs: "20px" }}>
           <Grid item md={5.5} xs={12} className="a">
-          <div className="res">
-      <div>
-      <h3>Resources</h3>
-      <div className="d-flex">
-      {legendItems.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              width: "10px",
-              height: "10px",
-              borderRadius: "50%",
-              backgroundColor: item.color,
-              border:  "none",
-              marginRight: "5px",
-              marginLeft: "10px",
-            }}
-          ></div>
-          <span style={{ fontSize: "14px", color: "#333" }}>{item.label}</span>
-        </div>
-      ))}
-    </div>
-      </div>
-      <div className="container-3 clearfix">
-        <div className="aa">
-          {/* "My Resources" folder */}
-          <div
-            className="resource-folder"
-            style={{
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "10px",
-            }}
-            onClick={() => setResourcesVisible(!isResourcesVisible)}
-          >
-            <i
-              className={`fa-solid fa-folder${isResourcesVisible ? "-open" : ""}`}
-              style={{ marginRight: "10px", fontSize: "24px" }}
-            />
-            <span>My Resources</span>
-          </div>
-
-          {/* Resource List inside the folder */}
-          {isResourcesVisible && (
-            <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
-              {xnodes.length > 0 ? (
-                xnodes.map((xnode) => (
-                  <div
-                    key={xnode.id}
-                    className="resource-item"
-                    style={{ paddingBottom: "0px" }}
-                  >
-                    <div className="resource-details">
-                      <Tooltip
-                        title={
-                          <>
-                            <div>
-                              <strong>Created:</strong>{" "}
-                              {new Date(xnode.created_at).toLocaleString()}
-                            </div>
-                            <div>
-                              <strong>Validity:</strong>{" "}
-                              {new Date(xnode.validity_until).toLocaleString()}
-                            </div>
-                            <div>
-                              <strong>Node Type:</strong> {xnode.xnode_Type}
-                            </div>
-                            <div>
-                              <strong>Host User:</strong>{" "}
-                              {xnode.locker?.user || "N/A"}
-                            </div>
-                            <div>
-                              <strong>Guest User:</strong>{" "}
-                              {xnode.connection?.guest_user || "N/A"}
-                            </div>
-                          </>
-                        }
-                      >
-                        <div
-                          id={
-                            xnode.xnode_Type === "INODE"
-                              ? "documents"
-                              : xnode.xnode_Type === "SNODE"
-                              ? "documents-byConfer"
-                              : "documents-byShare"
-                          }
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <div>
-      <span
-        onClick={() => handleClick(xnode.id)}
-        style={{ cursor: "pointer", flexGrow: 1 }}
-      >
-        {xnode.resource_name}
-      </span> 
-
-      
-
-      {error && <div className="error-message">{error}</div>}
-    </div>
-                          <span
-                            className="resource-icons"
-                            style={{
-                              marginLeft: "auto",
-                              display: "flex",
-                              gap: "10px",
-                            }}
-                          >
-                            {xnode.xnode_Type === "INODE" && (
-                              <i
-                                className="fa-regular fa-pen-to-square"
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => handleEditClick(xnode)}
-                              />
-                            )}
-                            <i
-                              className="fa-regular fa-trash-can"
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleDeleteClick(xnode)}
-                            />
-                          </span>
-                        </div>
-                      </Tooltip>
-                      <ReactModal
-  isOpen={isModalOpen}
-  onRequestClose={handleClose}
-  contentLabel="PDF Viewer"
-  appElement={document.getElementById('root')}
-  style={{
-    content: {
-      top: "55%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      width: "95%",
-      height: "80%",
-      overflowY: "hidden",
-      maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
-      maxHeight: "90%", // Max height for larger screens
-    },
-  }}
->
-  <button
-    onClick={handleClose}
-    style={{
-      marginBottom: "10px",
-      cursor: "pointer",
-      position: "absolute",
-      top: "10px",
-      right: "10px", // Button positioned at the top right
-      zIndex: 100,
-    }}
-  >
-    Close
-  </button>
-  {pdfUrl ? (
-    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-      <Viewer fileUrl={pdfUrl} />
-    </Worker>
-  ) : (
-    <p>Loading PDF...</p>
-  )}
-</ReactModal>
-
+            <div className="res">
+              <div>
+                <h3>Resources</h3>
+                <div className="d-flex">
+                  {legendItems.map((item, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          borderRadius: "50%",
+                          backgroundColor: item.color,
+                          border: "none",
+                          marginRight: "5px",
+                          marginLeft: "10px",
+                        }}
+                      ></div>
+                      <span style={{ fontSize: "14px", color: "#333" }}>{item.label}</span>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p className="not-found">No Resources found.</p>
-              )}
-            </ul>
-
-            
-          )}
-
-
-
-
-{/* "Connections" folder */}
-<div
-  className="resource-folder"
-  style={{
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    marginTop: "20px",
-  }}
-  onClick={() => setConnectionsVisible(!isConnectionsVisible)}
->
-  <i
-    className={`fa-solid fa-folder${isConnectionsVisible ? "-open" : ""}`}
-    style={{ marginRight: "10px", fontSize: "24px" }}
-  />
-  <span>Connections</span>
-</div>
-
-{/* Connections List inside the folder */}
-{isConnectionsVisible && (
-  <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
-    {otherConnections.length > 0 ? (
-      otherConnections.map((connection) => (
-        <li
-          key={connection.connection_type_id}
-          className="resource-item"
-          style={{ paddingBottom: "10px", fontSize: "20px" }}
-        >
-          {/* Connection Name */}
-          <span
-            onClick={() => toggleConnection(connection)}
-            style={{
-              cursor: "pointer",
-              textDecoration: "none",
-              color: "inherit",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {expandedConnection === connection.connection_type_id ? (
-              <i className="fa-solid fa-folder-open" style={{ marginRight: "10px" }} />
-            ) : (
-              <i className="fa-solid fa-folder" style={{ marginRight: "10px" }} />
-            )}
-            {connection.connection_type_name}
-          </span>
-
-          {/* Users associated with the connection */}
-          {expandedConnection === connection.connection_type_id && (
-            <ul style={{ paddingLeft: "20px", marginTop: "5px" }}>
-              {loadingConnections[connection.connection_type_id] ? (
-                <p style={{ fontSize: "16px", color: "#888" }}>Loading users...</p>
-              ) : connectionUsers[connection.connection_type_id] ? (
-                connectionUsers[connection.connection_type_id].map((user) => (
-                  <li
-                    key={user.id}
+                  ))}
+                </div>
+              </div>
+              <div className="container-3 clearfix">
+                <div className="aa">
+                  {/* "My Resources" folder */}
+                  <div
+                    className="resource-folder"
                     style={{
-                      fontSize: "16px",
-                      color: "#555",
-                      paddingBottom: "5px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "10px",
                     }}
+                    onClick={() => setResourcesVisible(!isResourcesVisible)}
                   >
-                    {user.username}
-                  </li>
-                ))
-              ) : (
-                <p style={{ fontSize: "16px", color: "#888" }}>No users found.</p>
-              )}
-            </ul>
-          )}
-        </li>
-      ))
-    ) : (
-      <p className="not-found">No connections found.</p>
-    )}
-  </ul>
-)}
-</div>
+                    <i
+                      className={`fa-solid fa-folder${isResourcesVisible ? "-open" : ""}`}
+                      style={{ marginRight: "10px", fontSize: "24px" }}
+                    />
+                    <span>My Resources</span>
+                  </div>
 
-      </div>
-      
-    </div>
-    <button className="page3button" onClick={handleUploadResource}>
-      Upload resource
-    </button>
+                  {/* Resource List inside the folder */}
+                  {isResourcesVisible && (
+                    <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
+                      {xnodes.length > 0 ? (
+                        xnodes.map((xnode) => (
+                          <div
+                            key={xnode.id}
+                            className="resource-item"
+                            style={{ paddingBottom: "0px" }}
+                          >
+                            <div className="resource-details">
+                              <Tooltip
+                                title={
+                                  <>
+                                    <div>
+                                      <strong>Created:</strong>{" "}
+                                      {new Date(xnode.created_at).toLocaleString()}
+                                    </div>
+                                    <div>
+                                      <strong>Validity:</strong>{" "}
+                                      {new Date(xnode.validity_until).toLocaleString()}
+                                    </div>
+                                    <div>
+                                      <strong>Node Type:</strong> {xnode.xnode_Type}
+                                    </div>
+                                    <div>
+                                      <strong>Host User:</strong>{" "}
+                                      {xnode.locker?.user || "N/A"}
+                                    </div>
+                                    <div>
+                                      <strong>Guest User:</strong>{" "}
+                                      {xnode.connection?.guest_user || "N/A"}
+                                    </div>
+                                  </>
+                                }
+                              >
+                                <div
+                                  id={
+                                    xnode.xnode_Type === "INODE"
+                                      ? "documents"
+                                      : xnode.xnode_Type === "SNODE"
+                                        ? "documents-byConfer"
+                                        : "documents-byShare"
+                                  }
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <div>
+                                    <span
+                                      onClick={() => handleClick(xnode.id)}
+                                      style={{ cursor: "pointer", flexGrow: 1 }}
+                                    >
+                                      {xnode.resource_name}
+                                    </span>
+
+
+
+                                    {error && <div className="error-message">{error}</div>}
+                                  </div>
+                                  <span
+                                    className="resource-icons"
+                                    style={{
+                                      marginLeft: "auto",
+                                      display: "flex",
+                                      gap: "10px",
+                                    }}
+                                  >
+                                    {xnode.xnode_Type === "INODE" && (
+                                      <i
+                                        className="fa-regular fa-pen-to-square"
+                                        style={{
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() => handleEditClick(xnode)}
+                                      />
+                                    )}
+                                    <i
+                                      className="fa-regular fa-trash-can"
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() => handleDeleteClick(xnode)}
+                                    />
+                                  </span>
+                                </div>
+                              </Tooltip>
+                              <ReactModal
+                                isOpen={isModalOpen}
+                                onRequestClose={handleClose}
+                                contentLabel="PDF Viewer"
+                                style={{
+                                  content: {
+                                    top: "55%",
+                                    left: "50%",
+                                    right: "auto",
+                                    bottom: "auto",
+                                    marginRight: "-50%",
+                                    transform: "translate(-50%, -50%)",
+                                    width: "95%",
+                                    height: "80%",
+                                    overflowY: "hidden",
+                                    maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                                    maxHeight: "90%", // Max height for larger screens
+                                  },
+                                }}
+                              >
+                                <button
+                                  onClick={handleClose}
+                                  style={{
+                                    marginBottom: "10px",
+                                    cursor: "pointer",
+                                    position: "absolute",
+                                    top: "10px",
+                                    right: "10px", // Button positioned at the top right
+                                    zIndex: 100,
+                                  }}
+                                >
+                                  Close
+                                </button>
+                                {pdfUrl ? (
+                                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                    <Viewer fileUrl={pdfUrl} />
+                                  </Worker>
+                                ) : (
+                                  <p>Loading PDF...</p>
+                                )}
+                              </ReactModal>
+
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="not-found">No Resources found.</p>
+                      )}
+                    </ul>
+
+
+                  )}
+
+
+
+
+                  {/* "Connections" folder */}
+                  <div
+                    className="resource-folder"
+                    style={{
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      marginTop: "20px",
+                    }}
+                    onClick={() => setConnectionsVisible(!isConnectionsVisible)}
+                  >
+                    <i
+                      className={`fa-solid fa-folder${isConnectionsVisible ? "-open" : ""}`}
+                      style={{ marginRight: "10px", fontSize: "24px" }}
+                    />
+                    <span>Connections</span>
+                  </div>
+
+                  {/* Connections List inside the folder */}
+                  {isConnectionsVisible && (
+                    <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
+                      {otherConnections.length > 0 ? (
+                        otherConnections.map((connection) => (
+                          <li
+                            key={connection.connection_type_id}
+                            className="resource-item"
+                            style={{ paddingBottom: "10px", fontSize: "20px" }}
+                          >
+                            {/* Connection Name */}
+                            <span
+                              onClick={() => toggleConnection(connection)}
+                              style={{
+                                cursor: "pointer",
+                                textDecoration: "none",
+                                color: "inherit",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              {expandedConnection === connection.connection_type_id ? (
+                                <i className="fa-solid fa-folder-open" style={{ marginRight: "10px" }} />
+                              ) : (
+                                <i className="fa-solid fa-folder" style={{ marginRight: "10px" }} />
+                              )}
+                              {connection.connection_type_name}
+                            </span>
+
+                            {/* Users associated with the connection */}
+                            {expandedConnection === connection.connection_type_id && (
+                              <ul style={{ paddingLeft: "20px", marginTop: "5px" }}>
+                                {loadingConnections[connection.connection_type_id] ? (
+                                  <p style={{ fontSize: "16px", color: "#888" }}>Loading users...</p>
+                                ) : connectionUsers[connection.connection_type_id] ? (
+                                  connectionUsers[connection.connection_type_id].map((user) => (
+                                    <li
+                                      key={user.id}
+                                      style={{
+                                        fontSize: "16px",
+                                        color: "#555",
+                                        paddingBottom: "5px",
+                                      }}
+                                    >
+                                      {user.username}
+                                    </li>
+                                  ))
+                                ) : (
+                                  <p style={{ fontSize: "16px", color: "#888" }}>No users found.</p>
+                                )}
+                              </ul>
+                            )}
+                          </li>
+                        ))
+                      ) : (
+                        <p className="not-found">No connections found.</p>
+                      )}
+                    </ul>
+                  )}
+                </div>
+
+              </div>
+
+            </div>
+            <button className="page3button" onClick={handleUploadResource}>
+              Upload resource
+            </button>
           </Grid>
-          <Grid item md={1} xs={12} marginBottom={{md:"", xs:"50px"}}></Grid>
+          <Grid item md={1} xs={12} marginBottom={{ md: "", xs: "50px" }}></Grid>
           <Grid item md={5.5} xs={12} className="b">
             <h3 id="mycon">My Connections:</h3>
             <div className="tabs">
               <div
-                className={`tab-header ${
-                  activeTab === "incoming" ? "active" : ""
-                }`}
+                className={`tab-header ${activeTab === "incoming" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("incoming")}
               >
                 Incoming Connections
               </div>
               <div
-                className={`tab-header ${
-                  activeTab === "outgoing" ? "active" : ""
-                }`}
+                className={`tab-header ${activeTab === "outgoing" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("outgoing")}
               >
                 Outgoing Connections
@@ -1290,7 +1287,7 @@ const handleClose = () => {
                           </Grid>
 
                           <Grid item md={1} xs={1}>
-                            <i class="bi bi-info-circle " style={{fontSize:"20px", fontWeight:"bold"}} onClick={() => handleIncomingInfo(connection)}></i>
+                            <i class="bi bi-info-circle " style={{ fontSize: "20px", fontWeight: "bold" }} onClick={() => handleIncomingInfo(connection)}></i>
 
                             {/* <button
                               className="info-button2"
@@ -1307,59 +1304,59 @@ const handleClose = () => {
                   </div>
                 </div>
               )}
-              
+
               {/* Edit Resource Modal */}
               {showEditModal && (
-  <div className="edit-modal">
-    <div className="modal-content">
-      <h3>Edit Resource</h3>
-      <label className="form-label fw-bold">Resource Name:</label>
-      <input
-        className="form-control"
-        type="text"
-        value={resourceName}
-        onChange={(e) => setResourceName(e.target.value)}
-      />
+                <div className="edit-modal">
+                  <div className="modal-content">
+                    <h3>Edit Resource</h3>
+                    <label className="form-label fw-bold">Resource Name:</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      value={resourceName}
+                      onChange={(e) => setResourceName(e.target.value)}
+                    />
 
-      <label className="form-label fw-bold">Visibility:</label>
-      <select
-        className="form-select"
-        id="visibility"
-        value={resourceVisibility}
-        onChange={(e) => setResourceVisibility(e.target.value)}
-      >
-        <option value="private">Private</option>
-        <option value="public">Public</option>
-      </select>
+                    <label className="form-label fw-bold">Visibility:</label>
+                    <select
+                      className="form-select"
+                      id="visibility"
+                      value={resourceVisibility}
+                      onChange={(e) => setResourceVisibility(e.target.value)}
+                    >
+                      <option value="private">Private</option>
+                      <option value="public">Public</option>
+                    </select>
 
-      <label htmlFor="validityTime" className="form-label fw-bold">Validity Time</label>
-      <input
-        type="date"
-        className="form-control"
-        value={resourceValidity}
-        onChange={(e) => setResourceValidity(e.target.value)}
-        required
-      />
+                    <label htmlFor="validityTime" className="form-label fw-bold">Validity Time</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={resourceValidity}
+                      onChange={(e) => setResourceValidity(e.target.value)}
+                      required
+                    />
 
-      <div className="modal-buttons mt-4">
-        {/* Use an anonymous function to call handleSaveResource */}
-        <button onClick={() => handleSaveResource(selectedResource)} >Save</button>
-        <button onClick={() => setShowEditModal(false)}>Cancel</button>
-      </div>
-    </div>
-  </div>
-)}
+                    <div className="modal-buttons mt-4">
+                      {/* Use an anonymous function to call handleSaveResource */}
+                      <button onClick={() => handleSaveResource(selectedResource)} >Save</button>
+                      <button onClick={() => setShowEditModal(false)}>Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
 
-        {/* Success/Failure Modal */}
-        {modalMessage && (
-          <Modal
-            message={modalMessage.message}
-            type={modalMessage.type}
-            onClose={handleCloseModal}
-          />
-        )}
-      
+              {/* Success/Failure Modal */}
+              {modalMessage && (
+                <Modal
+                  message={modalMessage.message}
+                  type={modalMessage.type}
+                  onClose={handleCloseModal}
+                />
+              )}
+
 
               {activeTab === "outgoing" && (
                 <div className="tab-panel">
@@ -1377,12 +1374,12 @@ const handleClose = () => {
                             : "Loading...";
 
                           return (
-                            <Grid container 
+                            <Grid container
                               key={connection.connection_id}
                               className="viewlockerconnections"
                             >
-                             
-                             <Grid item md={7.9} xs={12}>
+
+                              <Grid item md={7.9} xs={12}>
                                 <div id="conntent">
                                   <button
                                     className="connection-name-button"
@@ -1415,8 +1412,8 @@ const handleClose = () => {
                                     connection.validity_time
                                   ).toLocaleString()}
                                 </div>
-                             </Grid>
-                              <Grid item  paddingTop={{md:"50px",xs:""}} md={4.1} xs={12}>
+                              </Grid>
+                              <Grid item paddingTop={{ md: "50px", xs: "" }} md={4.1} xs={12}>
                                 <button
                                   className="info-button"
                                   onClick={() =>
@@ -1451,11 +1448,11 @@ const handleClose = () => {
             </div>
           </Grid>
         </Grid>
-        
+
       </div>
       {/* {pdfUrl && <PDFViewer pdfUrl={pdfUrl} />} */}
-      
+
     </div>
-    
+
   );
 };

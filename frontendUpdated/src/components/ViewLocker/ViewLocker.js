@@ -1046,6 +1046,7 @@ const handleClose = () => {
   isOpen={isModalOpen}
   onRequestClose={handleClose}
   contentLabel="PDF Viewer"
+  appElement={document.getElementById('root')}
   style={{
     content: {
       top: "55%",
@@ -1054,7 +1055,7 @@ const handleClose = () => {
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      width: "80%",
+      width: "95%",
       height: "80%",
       overflowY: "hidden",
       maxWidth: "100%", // Ensure it doesn't overflow on smaller screens

@@ -936,6 +936,7 @@ export const ViewHostTermsByType = () => {
         Transfer: [],
         Share: [],
         Confer: [],
+        Collateral: [],
       };
 
       // Traverse through permissionsData

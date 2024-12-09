@@ -27,6 +27,7 @@ export const HostTermsReview = () => {
     share: [],
     transfer: [],
     confer: [],
+    collateral: [],
   });
   const [permissionsData, setPermissionsData] = useState([]);
   const [terms, setTerms] = useState([]);
@@ -470,6 +471,7 @@ export const HostTermsReview = () => {
           const newTransfer = [...new Set(prevResourcesData.transfer)];
           const newShare = [...new Set(prevResourcesData.share)];
           const newConfer = [...new Set(prevResourcesData.confer)];
+          const newCollateral = [...new Set(prevResourcesData.collateral)];
 
           // const newShare = [];
           // const newTransfer = [];
@@ -496,6 +498,8 @@ export const HostTermsReview = () => {
                 newShare.push(currentValue);
               } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
                 newConfer.push(currentValue);
+              } else if (currentType === "collateral" && !newCollateral.includes(currentValue)) {
+                newCollateral.push(currentValue);
               }
             }
           });
@@ -505,6 +509,7 @@ export const HostTermsReview = () => {
             transfer: [...new Set(newTransfer)],
           share: [...new Set(newShare)],
           confer: [...new Set(newConfer)],
+          collateral: [...new Set(newCollateral)],
           };
         });
 
@@ -531,6 +536,7 @@ export const HostTermsReview = () => {
           const newTransfer = [...new Set(prevResourcesData.transfer)];
           const newShare = [...new Set(prevResourcesData.share)];
           const newConfer = [...new Set(prevResourcesData.confer)];
+          const newCollateral = [...new Set(prevResourcesData.collateral)];
           // const newTransfer = [];
           // const newShare = [];
 
@@ -559,6 +565,8 @@ export const HostTermsReview = () => {
                 newShare.push(currentValue);
               } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
                 newConfer.push(currentValue);
+              } else if (currentType === "collateral" && !newCollateral.includes(currentValue)) {
+                newCollateral.push(currentValue);
               }
             }
           });
@@ -568,6 +576,7 @@ export const HostTermsReview = () => {
             transfer: [...new Set(newTransfer)],
           share: [...new Set(newShare)],
           confer: [...new Set(newConfer)],
+          collateral: [...new Set(newCollateral)],
           };
         });
 
@@ -642,6 +651,7 @@ export const HostTermsReview = () => {
       const resourcesToTransfer = resourcesData.transfer;
       const resourcesToShare = resourcesData.share;
       const resourcesToConfer = resourcesData.confer;
+      const resourcesToCollateral = resourcesData.collateral;
 
       const requestBody = {
         connection_name: conndetails.connection_name,
@@ -654,6 +664,7 @@ export const HostTermsReview = () => {
           Transfer: resourcesToTransfer,
           Share: resourcesToShare,
           Confer: resourcesToConfer,
+          Collateral: resourcesToCollateral,
         },
       };
 
@@ -702,6 +713,10 @@ export const HostTermsReview = () => {
 
       if (resourcesToConfer.length > 0) {
         await handleConferResource();
+      }
+
+      if (resourcesToCollateral.length > 0) {
+        await handleCollateralResource();
       }
 
       navigate("/home");
@@ -894,6 +909,55 @@ export const HostTermsReview = () => {
         alert("Resource confer successful");
       } else {
         setError(data.error || "Failed to confer resource");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleCollateralResource = async () => {
+    try {
+      console.log(JSON.stringify({
+        connection_name: conndetails.connection_name,
+        host_locker_name: conndetails.host_locker.name,
+        guest_locker_name: conndetails.guest_locker.name,
+        host_user_username: conndetails.host_user.username,
+        guest_user_username: conndetails.guest_user.username,
+        validity_until: conndetails.validity_time,
+      }));
+      
+      const token = Cookies.get("authToken");
+      const response = await fetch(
+        `${frontend_host}/collateral-resource-reverse/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`,
+          },
+          body: JSON.stringify({
+            connection_name: conndetails.connection_name,
+            host_locker_name: conndetails.host_locker.name,
+            guest_locker_name: conndetails.guest_locker.name,
+            host_user_username: conndetails.host_user.username,
+            guest_user_username: conndetails.guest_user.username,
+            validity_until: conndetails.validity_time,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log(response.error);
+        throw new Error("Failed to collateral resource");
+      }
+
+      const data = await response.json();
+      console.log("transfer", data);
+      if (data.success) {
+        alert("Resource collateral successful");
+      } else {
+        setError(data.error || "Failed to collateral resource");
       }
     } catch (err) {
       setError(err.message);

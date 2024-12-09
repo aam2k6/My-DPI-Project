@@ -1369,7 +1369,8 @@ export const ViewTermsByType = () => {
       const newResourcesData = {
         Transfer: [],
         Share: [],
-        Confer:[]
+        Confer:[],
+        Collateral:[]
       };
 
       // Traverse through permissionsData

@@ -1984,6 +1984,31 @@ export const ViewTermsByType = () => {
     </>
   );
 
+  const handleTrackerHost = (connection) => {
+    console.log("navigate view-terms-by-type", {
+      connection,
+      guest_locker_id: connection.guest_locker?.locker_id,
+      host_locker_id: connection.host_locker?.locker_id,
+    });
+    navigate("/host-terms-review", {
+      state: {
+        connection: connection,
+        connection_id: connection.connection_id,
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: locker,
+        guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
+      },
+    });
+  };
+
   const tooltips = {
     share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
     transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
@@ -2148,12 +2173,13 @@ export const ViewTermsByType = () => {
               <div
                 className={`tab-header ${activeTab === "host" ? "active" : ""
                   }`}
-                onClick={() => navigate("/host-terms-review", {
-                  state: {
-                    connection: connection,
-                    // connectionType: connectionType,
-                  },
-                })}
+                // onClick={() => navigate("/host-terms-review", {
+                //   state: {
+                //     connection: connection,
+                //     // connectionType: connectionType,
+                //   },
+                // })}
+                onClick={() => handleTrackerHost(connection)}
               >
                 Host Data
               </div>

@@ -1366,6 +1366,8 @@ export const TargetLockerView = () => {
 
     navigate("/view-terms-by-type", {
       state: {
+        connection: connection,
+        connection_id: connection.connection_id,
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
         hostLockerName: connection.host_locker?.name,
@@ -1373,6 +1375,10 @@ export const TargetLockerView = () => {
         hostUserUsername: connection.host_user?.username,
         guestUserUsername: connection.guest_user?.username,
         locker: locker,
+        guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
       },
     });
   };

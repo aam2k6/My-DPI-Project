@@ -31,6 +31,7 @@ export const ViewLocker = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [otherConnections, setOtherConnections] = useState([]);
   const [trackerData, setTrackerData] = useState({});
+  const [trackerDataReverse, setTrackerDataReverse] = useState({});
   const [scanning, setScanning] = useState(false);
   const [qrResult, setQrResult] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -304,6 +305,7 @@ export const ViewLocker = () => {
   const fetchAllTrackerData = (outgoingConnections) => {
     outgoingConnections.forEach((connection) => {
       fetchTrackerData(connection);
+      fetchTrackerDataReverse(connection);
     });
   };
 
@@ -352,6 +354,51 @@ export const ViewLocker = () => {
     }
   };
 
+  const fetchTrackerDataReverse = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerDataReverse((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+
   const getStatusColor = (tracker) => {
     const totalObligations =
       tracker.count_T + tracker.count_F + tracker.count_R;
@@ -364,11 +411,34 @@ export const ViewLocker = () => {
     }
   };
 
+  console.log("trackerData", trackerData)
+  console.log("trackerDataReverse", trackerDataReverse)
+
+  const getStatusColorReverse = (trackerReverse) => {
+    const totalObligations =
+    trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
+      return "green";
+    } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
   const calculateRatio = (tracker) => {
     const totalObligations =
       tracker.count_T + tracker.count_F + tracker.count_R;
     return totalObligations > 0
       ? `${tracker.filled}/${totalObligations}`
+      : "0/0";
+  };
+
+  const calculateRatioReverse = (trackerReverse) => {
+    const totalObligations =
+    trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    return totalObligations > 0
+      ? `${trackerReverse.filled}/${totalObligations}`
       : "0/0";
   };
 
@@ -392,6 +462,31 @@ export const ViewLocker = () => {
       host_locker_id: connection.host_locker?.locker_id,
     });
     navigate("/view-terms-by-type", {
+      state: {
+        connection: connection,
+        connection_id: connection.connection_id,
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: locker,
+        guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
+      },
+    });
+  };
+
+  const handleTrackerHost = (connection) => {
+    console.log("navigate view-terms-by-type", {
+      connection,
+      guest_locker_id: connection.guest_locker?.locker_id,
+      host_locker_id: connection.host_locker?.locker_id,
+    });
+    navigate("/host-terms-review", {
       state: {
         connection: connection,
         connection_id: connection.connection_id,
@@ -1372,14 +1467,20 @@ export const ViewLocker = () => {
                           const ratio = tracker
                             ? calculateRatio(tracker)
                             : "Loading...";
-
+                          const trackerReverse = trackerDataReverse[connection.connection_id]
+                          const colorReverse = trackerReverse
+                            ? getStatusColorReverse(trackerReverse)
+                            : "gray";
+                          const ratioReverse = trackerReverse
+                            ? calculateRatioReverse(trackerReverse)
+                            : "Loading...";
                           return (
                             <Grid container
                               key={connection.connection_id}
                               className="viewlockerconnections"
                             >
 
-                              <Grid item md={7.9} xs={12}>
+                              <Grid item md={9} xs={12}>
                                 <div id="conntent">
                                   <button
                                     className="connection-name-button"
@@ -1413,9 +1514,9 @@ export const ViewLocker = () => {
                                   ).toLocaleString()}
                                 </div>
                               </Grid>
-                              <Grid item paddingTop={{ md: "50px", xs: "" }} md={4.1} xs={12}>
+                              <Grid item paddingTop={{ md: "10px", xs: "" }} md={3} xs={12}>
                                 <button
-                                  className="info-button"
+                                  className="info-button" style={{marginRight:'26px',marginLeft:"-6px"}}
                                   onClick={() =>
                                     handleConsentAndInfo(connection)
                                   }
@@ -1428,12 +1529,41 @@ export const ViewLocker = () => {
                                 >
                                   i{" "}
                                 </button>
-                                <button
-                                  onClick={() => handleTracker(connection)}
-                                  style={{ backgroundColor: color }}
+                                <div className="d-flex align-items-center mt-2">
+
+                                 <h6 className="mt-2 me-2"><b>G</b></h6>
+                                 <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+  <button
+    onClick={() => handleTracker(connection)}
+    style={{
+      backgroundColor: color,
+      border: 'none',
+      padding: '5px 10px',
+      borderRadius: '5px',
+      color: '#fff',
+      cursor: 'pointer',
+    }}
+  >
+    {ratio}
+  </button>
+</div>
+
+<div className="d-flex align-items-center mt-1">
+<h6 className="mt-2 me-2"><b>H</b></h6>
+<i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+<button
+                                  onClick={() => handleTrackerHost(connection)}
+                                  style={{ backgroundColor: colorReverse, 
+                                    border: 'none',
+                                    padding: '5px 10px',
+                                    borderRadius: '5px',
+                                    color: '#fff',
+                                    cursor: 'pointer',}}
                                 >
-                                  {ratio}
+                                  {ratioReverse}
                                 </button>
+
+</div>
                               </Grid>
                             </Grid>
                           );

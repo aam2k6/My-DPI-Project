@@ -416,7 +416,7 @@ export const ViewLocker = () => {
 
   const getStatusColorReverse = (trackerReverse) => {
     const totalObligations =
-    trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
     if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
       return "green";
     } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
@@ -436,7 +436,7 @@ export const ViewLocker = () => {
 
   const calculateRatioReverse = (trackerReverse) => {
     const totalObligations =
-    trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
     return totalObligations > 0
       ? `${trackerReverse.filled}/${totalObligations}`
       : "0/0";
@@ -1516,7 +1516,7 @@ export const ViewLocker = () => {
                               </Grid>
                               <Grid item paddingTop={{ md: "10px", xs: "" }} md={3} xs={12}>
                                 <button
-                                  className="info-button" style={{marginRight:'26px',marginLeft:"-6px"}}
+                                  className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
                                   onClick={() =>
                                     handleConsentAndInfo(connection)
                                   }
@@ -1531,39 +1531,41 @@ export const ViewLocker = () => {
                                 </button>
                                 <div className="d-flex align-items-center mt-2">
 
-                                 <h6 className="mt-2 me-2"><b>G</b></h6>
-                                 <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
-  <button
-    onClick={() => handleTracker(connection)}
-    style={{
-      backgroundColor: color,
-      border: 'none',
-      padding: '5px 10px',
-      borderRadius: '5px',
-      color: '#fff',
-      cursor: 'pointer',
-    }}
-  >
-    {ratio}
-  </button>
-</div>
+                                  <h6 className="mt-2 me-2"><b>G</b></h6>
+                                  <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                                  <button
+                                    onClick={() => handleTracker(connection)}
+                                    style={{
+                                      backgroundColor: color,
+                                      border: 'none',
+                                      padding: '5px 10px',
+                                      borderRadius: '5px',
+                                      color: '#fff',
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    {ratio}
+                                  </button>
+                                </div>
 
-<div className="d-flex align-items-center mt-1">
-<h6 className="mt-2 me-2"><b>H</b></h6>
-<i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
-<button
-                                  onClick={() => handleTrackerHost(connection)}
-                                  style={{ backgroundColor: colorReverse, 
-                                    border: 'none',
-                                    padding: '5px 10px',
-                                    borderRadius: '5px',
-                                    color: '#fff',
-                                    cursor: 'pointer',}}
-                                >
-                                  {ratioReverse}
-                                </button>
+                                <div className="d-flex align-items-center mt-1">
+                                  <h6 className="mt-2 me-2"><b>H</b></h6>
+                                  <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                                  <button
+                                    onClick={() => handleTrackerHost(connection)}
+                                    style={{
+                                      backgroundColor: colorReverse,
+                                      border: 'none',
+                                      padding: '5px 10px',
+                                      borderRadius: '5px',
+                                      color: '#fff',
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    {ratioReverse}
+                                  </button>
 
-</div>
+                                </div>
                               </Grid>
                             </Grid>
                           );

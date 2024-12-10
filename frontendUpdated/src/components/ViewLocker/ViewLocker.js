@@ -1480,7 +1480,7 @@ export const ViewLocker = () => {
                               className="viewlockerconnections"
                             >
 
-                              <Grid item md={9} xs={12}>
+                              <Grid item md={8.8} xs={12}>
                                 <div id="conntent">
                                   <button
                                     className="connection-name-button"
@@ -1514,7 +1514,7 @@ export const ViewLocker = () => {
                                   ).toLocaleString()}
                                 </div>
                               </Grid>
-                              <Grid item paddingTop={{ md: "10px", xs: "" }} md={3} xs={12}>
+                              <Grid item paddingTop={{ md: "10px", xs: "" }} md={3.2} xs={12}>
                                 <button
                                   className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
                                   onClick={() =>

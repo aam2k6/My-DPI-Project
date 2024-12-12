@@ -13,7 +13,7 @@ import './Modal.css';
 //         </div>
 //     );
 // }
-export default function Modal({ message, onClose, type, revoke, onRevoke, viewTerms,onConfirm,
+export default function Modal({ message, onClose, type, revoke, onRevoke, closeConnection, viewTerms,onConfirm,onCloseConnection,
   children }) {
     const modalClass = type === 'success' ? 'modal-success' : type === 'failure' ? 'modal-failure' : type === 'confirmation'
     ? 'modal-confirmation': '';
@@ -40,6 +40,9 @@ export default function Modal({ message, onClose, type, revoke, onRevoke, viewTe
           {/* <button onClick={onClose}>Close</button> */}
           {revoke && <button onClick={onRevoke}>Revoke</button>}
           {revoke && <button onClick={ viewTerms}>View Terms</button>}
+
+          {closeConnection && <button onClick={onCloseConnection}>Close connection</button>}
+          {closeConnection && <button onClick={ viewTerms}>View Terms</button>}
           
         </div>
       </div>

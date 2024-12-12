@@ -1260,6 +1260,7 @@ export const TargetLockerView = () => {
     }
   };
   console.log(locker)
+  console.log("setOtherConnections",otherConnections)
 
   const fetchConnections = async () => {
     try {
@@ -1285,7 +1286,10 @@ export const TargetLockerView = () => {
 
       const data = await response.json();
       if (data.success) {
-        setOutgoingConnections(data.connections);
+        const filteredOutgoing = data.connections.filter(
+          (connection) => connection.closed === false
+        );
+        setOutgoingConnections(filteredOutgoing);
 
         data.connections.forEach((connection) => fetchTrackerData(connection)); // Fetch tracker data for each connection
 
@@ -1297,6 +1301,7 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching connections");
     }
   };
+  console.log("outgoingConnections",outgoingConnections)
 
   const fetchTrackerData = async (connection) => {
     try {

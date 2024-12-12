@@ -1127,15 +1127,17 @@ export const CreateConnectionTerms = () => {
   const handleClosebutton = async () => {
     const token = Cookies.get("authToken");
     const formData = new FormData();
-    formData.append("guest_username", curruser.username); 
-    formData.append("host_username", hostUserUsername); 
-    formData.append("guest_lockername", guestLockerName);
-    formData.append("host_lockername", hostLockerName); 
-    formData.append("connection_name", connectionName);
-    formData.append("connection_type_name", connectionTypeName);
-    formData.append("close_guest", "true");
+    // formData.append("guest_username", curruser.username); 
+    // formData.append("host_username", hostUserUsername); 
+    // formData.append("guest_lockername", guestLockerName);
+    // formData.append("host_lockername", hostLockerName); 
+    // formData.append("connection_name", connectionName);
+    // formData.append("connection_type_name", connectionTypeName);
+    // formData.append("close_guest", "true");
+    formData.append("connection_id", connection_id);
+    console.log("formData", formData);
     try {
-        const response = await fetch("host/close-connection/".replace(/host/, frontend_host), {
+        const response = await fetch("host/close_connection_guest/".replace(/host/, frontend_host), {
             method: "POST",
             headers: {
                 Authorization: `Basic ${token}`,
@@ -1569,14 +1571,14 @@ return (
           Revoke
         </button>
       </Grid>
-      {/* <Grid item xs={4} md={2} className="page13button" mb={3}>
+      <Grid item xs={4} md={2} className="page13button" mb={3}>
       <button
           className="page13iagree1buttons"
           onClick={() => setShowCloseConfirmationModal(true)} // Trigger confirmation modal
         >
           Close Connection
         </button>
-      </Grid> */}
+      </Grid>
     </Grid>
   )}
 </div>

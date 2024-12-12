@@ -26,17 +26,19 @@ export const Guesttermsreview = () => {
   const [resourcesData, setResourcesData] = useState({
     share: [],
     transfer: [],
-    confer:[],
-    collateral:[]
+    confer: [],
+    collateral: []
   });
   const [permissionsData, setPermissionsData] = useState([]);
   const [terms, setTerms] = useState([]);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenClose, setIsModalOpenClose] = useState(false);
   const [connectionDetails, setConnectionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [revokeState, setRevokeState] = useState(true);
+  const [closeState, setCloseState] = useState(true);
 
   const [statuses2, setStatuses2] = useState({});
   const [activeTab, setActiveTab] = useState("guest");
@@ -69,6 +71,14 @@ export const Guesttermsreview = () => {
     setIsModalOpen(false);
     setModalMessage({ message: message, type: "info" });
     setIsModalOpen(true);
+  };
+
+  const onCloseButtonClick = async (connection_id) => {
+    setCloseState(false);
+    const message = await handleCloseConnection(connection_id);
+    setIsModalOpenClose(false);
+    setModalMessage({ message: message, type: "info" });
+    setIsModalOpenClose(true);
   };
 
   useEffect(() => {
@@ -309,6 +319,21 @@ export const Guesttermsreview = () => {
     }
   }, [connectionDetails]);
 
+  useEffect(() => {
+    if (connectionDetails) {
+      const { close_guest, close_host } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (close_guest === true || close_host === true) {
+        setModalMessage({
+          message:
+            "The guest has closed the connection, click Close connection to close the connection",
+          type: "info",
+        });
+        setIsModalOpenClose(true);
+      }
+    }
+  }, [connectionDetails]);
+
   // const handleStatusChange = (index, status, value, type, isFile) => {
   //     if (value !== "") {
   //         setStatuses(prevStatuses => {
@@ -358,6 +383,15 @@ export const Guesttermsreview = () => {
       state: { locker: conndetails.host_locker },
     });
   };
+
+  const handleCloseModalClose = () => {
+    setIsModalOpenClose(false);
+    setModalMessage({ message: "", type: "" });
+    navigate(`/view-locker?param=${Date.now()}`, {
+      state: { locker: conndetails.host_locker },
+    });
+  };
+  
 
   const handleClick = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
@@ -461,6 +495,64 @@ export const Guesttermsreview = () => {
     }
   };
 
+  const handleCloseConnection = async (connection_id) => {
+    const formData = new FormData();
+    formData.append("connection_id", connection_id);
+    formData.append("close_host_bool", "True");
+
+    // console.log(connection_id ,"id");
+    const token = Cookies.get("authToken");
+    try {
+      // Step 1: Call close_connection_host API using fetch
+      const revokeHostResponse = await fetch(
+        "host/close_connection_host/".replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+
+          body: formData,
+        }
+      );
+
+      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+
+      if (revokeHostResponse.ok) {
+        // console.log("Revoke host successful: ", revokeHostData.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    // Step 2: Call close API using fetch
+    try {
+      const response = await fetch(
+        "host/close_connection_guest/".replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            // 'Content-Type': 'application/json',
+            Authorization: `Basic ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      // console.log("revoke consent", data);
+      if (response.status === 200) {
+        return "Successfully Connection closed ";
+      } else {
+        return data.message || "An error occurred while Closing connection.";
+      }
+    } catch (error) {
+      console.error("Error:", error);
+
+      return "An error occurred while Closing connection.";
+    }
+  };
+
   const handleStatusChange = (index, status, value, type, isFile) => {
     if (value !== "") {
       setStatuses((prevStatuses) => {
@@ -501,7 +593,7 @@ export const Guesttermsreview = () => {
                 newTransfer.push(currentValue);
               } else if (currentType === "share" && !newShare.includes(currentValue)) {
                 newShare.push(currentValue);
-              }  else if (currentType === "confer" && !newConfer.includes(currentValue)) {
+              } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
                 newConfer.push(currentValue);
               } else if (currentType === "collateral" && !newCollateral.includes(currentValue)) {
                 newCollateral.push(currentValue);
@@ -716,12 +808,12 @@ export const Guesttermsreview = () => {
         await handleShareResource();
       }
 
-       // Confer resources
-      if(resourcesToConfer.length > 0) {
+      // Confer resources
+      if (resourcesToConfer.length > 0) {
         await handleConferResource();
       }
 
-      if(resourcesToCollateral.length > 0) {
+      if (resourcesToCollateral.length > 0) {
         await handleCollateralResource();
       }
 
@@ -990,29 +1082,29 @@ export const Guesttermsreview = () => {
   const handleDownload = async (obligation) => {
     try {
       const token = Cookies.get("authToken");
-  
+
       // Extract connection details from `conndetails`
       const connectionName = conndetails.connection_name;
       const hostLockerName = conndetails.host_locker.name;
       const guestLockerName = conndetails.guest_locker.name;
       const hostUserUsername = conndetails.host_user.username;
       const guestUserUsername = conndetails.guest_user.username;
-  
+
       // Extract termsValue for document ID and namePart
       const termsValue = conndetails.terms_value;
       console.log("termsValue:", termsValue);
-  
+
       let documentId = null;
       let documentName = obligation.labelName;  // Default to labelName in case of no match
-  
+
       // Check if termsValue contains the document name in a recognizable format
       if (termsValue[documentName]) {
         const termEntry = termsValue[documentName];
-  
+
         // Check if the entry contains "|" indicating a format like "DocumentName|ID;AdditionalInfo"
         if (termEntry.includes("|")) {
           const [namePart, idPart] = termEntry.split("|");
-  
+
           // Use namePart from termsValue as document name
           documentName = namePart.trim();
           documentId = idPart ? idPart.split(",")[0].split(";")[0].trim() : null;
@@ -1020,12 +1112,12 @@ export const Guesttermsreview = () => {
       } else {
         console.log("Document entry not found in termsValue for:", documentName);
       }
-  
+
       // Log the sharing type, extracted document name, and document ID
       console.log("Extracted Document name:", documentName);
       console.log("Sharing type:", obligation.typeOfSharing);
       console.log("Extracted Document ID:", documentId);
-  
+
       // Prepare payload for the API request with document ID and namePart as document name
       const payload = {
         connection_name: connectionName,
@@ -1037,10 +1129,10 @@ export const Guesttermsreview = () => {
         sharing_type: obligation.typeOfSharing,
         xnode_id: documentId,  // Document ID from parsed termsValue
       };
-  
+
       // Log the payload to verify the data before making the request
       console.log("Payload:", payload);
-  
+
       // Make API call to download resource
       const response = await fetch(`${frontend_host}/download-resource/`, {
         method: "POST",
@@ -1050,18 +1142,18 @@ export const Guesttermsreview = () => {
         },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.success) {
         alert("Download successful!");
-  
+
         // Optionally, change the color of the downloaded resource to green
         const downloadedResource = document.getElementById(`resource-${obligation.labelName}`);
         if (downloadedResource) {
           downloadedResource.style.color = "green";
         }
-  
+
         console.log("Download successful:", data.message);
       } else {
         setError(data.error || "Failed to download resource");
@@ -1233,7 +1325,7 @@ export const Guesttermsreview = () => {
   };
 
   const handleGuestClick = () => {
-    
+
     navigate('/target-locker-view', {
       state: {
         user: { username: conndetails.guest_user.username },
@@ -1244,11 +1336,11 @@ export const Guesttermsreview = () => {
   console.log(conndetails.guest_locker)
 
   const handleHostClick = () => {
-    
+
     navigate('/view-locker', {
       state: {
-        user:{username: conndetails.host_user.username},
-        locker:  conndetails.host_locker,
+        user: { username: conndetails.host_user.username },
+        locker: conndetails.host_locker,
       },
     });
   };
@@ -1593,14 +1685,14 @@ export const Guesttermsreview = () => {
                                   </select>
                                 </td>
                                 <td>
-  {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
-    <button onClick={() => handleDownload(obligation)} className="download-button">
-      <i className="fa fa-download" aria-hidden="true"></i>
-    </button>
-  ) : (
-    " "
-  )}
-</td>
+                                  {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
+                                    <button onClick={() => handleDownload(obligation)} className="download-button">
+                                      <i className="fa fa-download" aria-hidden="true"></i>
+                                    </button>
+                                  ) : (
+                                    " "
+                                  )}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -1649,6 +1741,17 @@ export const Guesttermsreview = () => {
                         type={modalMessage.type}
                         revoke={revokeState}
                         onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
+                        viewTerms={() => navigateToConnectionDetails(connectionType)}
+                      />
+                    )}
+
+                    {isModalOpenClose && (
+                      <Modal
+                        message={modalMessage.message}
+                        onClose={handleCloseModalClose}
+                        type={modalMessage.type}
+                        closeConnection={closeState}
+                        onCloseConnection={() => onCloseButtonClick(conndetails.connection_id)}
                         viewTerms={() => navigateToConnectionDetails(connectionType)}
                       />
                     )}

@@ -1079,10 +1079,23 @@ export const ViewTermsByType = () => {
         // console.log("name 2", selectedResources);
         // console.log("selection name", selection);
         return (
+          <div>
+          {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
+            <a
+              href={termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "block", marginBottom: "8px" }}
+            >
+              {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+            </a>
+          )}
           <button onClick={() => handleButtonClick(obligation.labelName)}>
-            {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
-              "Select Resource"}
+            
+              Select Resource
           </button>
+        </div>
+        
         );
       case "date":
         return (

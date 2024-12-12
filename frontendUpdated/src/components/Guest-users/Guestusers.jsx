@@ -230,6 +230,27 @@ export const Guestusers = () => {
     navigate("/guest-terms-review", { state: { connection, connectionType } });
   };
 
+  const handleConnectionHost = (connection) => {
+    console.log("navigate", connection, connectionType);
+    navigate("/view-host-terms-by-type", {
+      state: {
+        connection: connection,
+        connection_id: connection.connection_id,
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: locker,
+        guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
+      },
+    });
+  };
+
 
   const navigateToConnDetails = (connection) => {
     console.log("print", connection); // Log the connection object
@@ -388,7 +409,7 @@ export const Guestusers = () => {
                         <h6 className="mt-2 me-2"><b>H</b></h6>
                         <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
                         <button
-                          onClick={() => handleConnectionClick(connection)}
+                          onClick={() => handleConnectionHost(connection)}
                           style={{
                             backgroundColor: colorReverse,
                             border: 'none',

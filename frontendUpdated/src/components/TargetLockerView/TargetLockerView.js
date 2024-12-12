@@ -1146,6 +1146,7 @@ export const TargetLockerView = () => {
   const [xnodes, setXnodes] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showInfo, setShowInfo] = useState(null);
+  const [trackerDataReverse, setTrackerDataReverse] = useState({});
 
   useEffect(() => {
     if (!curruser) {
@@ -1170,7 +1171,7 @@ export const TargetLockerView = () => {
     try {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_id: locker.locker_id });
-  
+
       const response = await fetch(
         `host/get-all-xnodes-for-locker/?${params}`.replace(/host/, frontend_host),
         {
@@ -1181,14 +1182,14 @@ export const TargetLockerView = () => {
           },
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch Xnodes");
       }
-  
+
       const data = await response.json();
       console.log("xnode data", data);
-  
+
       if (data.xnode_list) {
         // Filter to include only `inode` nodetype
         const inodes = data.xnode_list.filter(node => node.xnode_Type === "INODE");
@@ -1201,7 +1202,7 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching Xnodes");
     }
   };
-  
+
 
 
   const fetchResources = async () => {
@@ -1260,7 +1261,7 @@ export const TargetLockerView = () => {
     }
   };
   console.log(locker)
-  console.log("setOtherConnections",otherConnections)
+  console.log("setOtherConnections", otherConnections)
 
   const fetchConnections = async () => {
     try {
@@ -1291,7 +1292,9 @@ export const TargetLockerView = () => {
         );
         setOutgoingConnections(filteredOutgoing);
 
-        data.connections.forEach((connection) => fetchTrackerData(connection)); // Fetch tracker data for each connection
+        data.connections.forEach((connection) => fetchTrackerData(connection));
+        data.connections.forEach((connection) => fetchTrackerDataReverse(connection));
+
 
       } else {
         setError(data.message || "Failed to fetch connections");
@@ -1301,7 +1304,7 @@ export const TargetLockerView = () => {
       setError("An error occurred while fetching connections");
     }
   };
-  console.log("outgoingConnections",outgoingConnections)
+  console.log("outgoingConnections", outgoingConnections)
 
   const fetchTrackerData = async (connection) => {
     try {
@@ -1349,7 +1352,50 @@ export const TargetLockerView = () => {
 
     }
   };
-
+  const fetchTrackerDataReverse = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerDataReverse((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
   const handleClick = () => {
     if (otherConnections.length > 0) {
       navigate("/make-connection", {
@@ -1388,6 +1434,27 @@ export const TargetLockerView = () => {
     });
   };
 
+  const handleTrackerHost = (connection) => {
+
+    navigate("/host-terms-review", {
+      state: {
+        connection: connection,
+        connection_id: connection.connection_id,
+        connectionName: connection.connection_name,
+        connectionDescription: connection.connection_description,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
+        locker: locker,
+        guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
+      },
+    });
+  };
+
   const getStatusColor = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
     if (tracker.count_T === totalObligations && tracker.count_R === 0) {
@@ -1400,10 +1467,30 @@ export const TargetLockerView = () => {
     }
   };
 
+  const getStatusColorReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
+      return "green";
+    } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
   const calculateRatio = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
     return totalObligations > 0
       ? `${tracker.filled}/${totalObligations}`
+      : "0/0";
+  };
+
+  const calculateRatioReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    return totalObligations > 0
+      ? `${trackerReverse.filled}/${totalObligations}`
       : "0/0";
   };
 
@@ -1656,7 +1743,7 @@ export const TargetLockerView = () => {
                         <h4 className="clickable-tag"><u>{connection.connection_type_name}</u></h4>
                       </div>
                       <>
-                        <div style={{marginTop:"-12px"}}>
+                        <div style={{ marginTop: "-12px" }}>
                           <button onClick={() => handleToggle(connection.connection_type_id)} style={{
                             textDecoration: "underline",
                             background: "none",
@@ -1665,7 +1752,7 @@ export const TargetLockerView = () => {
                             cursor: "pointer",
                             color: "blue",
                             fontSize: "14px",
-                            
+
                           }}>
                             {showInfo === connection.connection_type_id ? "Info" : "Info"}
                           </button>
@@ -1707,10 +1794,17 @@ export const TargetLockerView = () => {
                 const tracker = trackerData[connection.connection_id];
                 const color = tracker ? getStatusColor(tracker) : "gray";
                 const ratio = tracker ? calculateRatio(tracker) : "Loading...";
+                const trackerReverse = trackerDataReverse[connection.connection_id]
+                const colorReverse = trackerReverse
+                  ? getStatusColorReverse(trackerReverse)
+                  : "gray";
+                const ratioReverse = trackerReverse
+                  ? calculateRatioReverse(trackerReverse)
+                  : "Loading...";
 
                 return (
                   <Grid container className="page7myconnection" key={index}>
-                    <Grid item id="conntent" md={7.9} xs={12}>
+                    <Grid item id="conntent" md={8.5} xs={12}>
                       <h5 onClick={() => handleTracker(connection)} style={{ textDecoration: "underline", cursor: "pointer" }}>
                         {connection.connection_name}
                       </h5>
@@ -1718,11 +1812,53 @@ export const TargetLockerView = () => {
                       <div>Created On: {new Date(connection.created_time).toLocaleDateString()}</div>
                       <div>Valid Until: {new Date(connection.validity_time).toLocaleDateString()}</div>
                     </Grid>
-                    <Grid item paddingTop={{ md: "50px", xs: "" }} md={4.1} xs={12}>
+                    <Grid item paddingTop={{ md: "20px", xs: "" }} md={3.5} xs={12}>
                       <button className="info-button" onClick={() => handleInfo(connection)}> i </button>
-                      <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color, padding: "0px", fontSize: "22px" }}>
+                      {/* <button onClick={() => handleTracker(connection)} style={{ backgroundColor: color, padding: "0px", fontSize: "22px" }}>
                         {ratio}
-                      </button>
+                      </button> */}
+                      <div className="d-flex align-items-center mt-2">
+
+                          <h6 className="mt-2 me-2"><b>G</b></h6>
+                          <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                          <button
+                            onClick={() => handleTracker(connection)}
+                            style={{
+                              backgroundColor: color,
+                              border: 'none',
+                              fontSize: '16px',
+                              padding: '5px 10px',
+                              borderRadius: '5px',
+                              color: '#fff',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {ratio}
+                          </button>
+                        </div>
+                      <div>
+                        
+
+                        <div className="d-flex align-items-center mt-1">
+                          <h6 className="mt-2 me-2"><b>H</b></h6>
+                          <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                          <button
+                            onClick={() => handleTrackerHost(connection)}
+                            style={{
+                              backgroundColor: colorReverse,
+                              border: 'none',
+                              fontSize: '16px',
+                              padding: '5px 10px',
+                              borderRadius: '5px',
+                              color: '#fff',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {ratioReverse}
+                          </button>
+
+                        </div>
+                      </div>
                     </Grid>
                   </Grid>
                 );

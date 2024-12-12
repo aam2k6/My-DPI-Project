@@ -26,6 +26,8 @@ export const Guestusers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredConnections, setFilteredConnections] = useState([]);
   const [trackerData, setTrackerData] = useState({});
+  const [trackerDataReverse, setTrackerDataReverse] = useState({});
+
 
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
@@ -68,7 +70,7 @@ export const Guestusers = () => {
           const filteredConnections = data.connections.filter(connection => !connection.closed);
           setFilteredConnections(filteredConnections);
           fetchAllTrackerData(data.connections);
-        } else {  
+        } else {
           setError("No connections found.");
         }
       })
@@ -82,6 +84,7 @@ export const Guestusers = () => {
   const fetchAllTrackerData = (outgoingConnections) => {
     outgoingConnections.forEach((connection) => {
       fetchTrackerData(connection);
+      fetchTrackerDataReverse(connection);
     });
   };
 
@@ -130,11 +133,68 @@ export const Guestusers = () => {
     }
   };
 
+  const fetchTrackerDataReverse = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerDataReverse((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+
   const getStatusColor = (tracker) => {
     const totalObligations = tracker.count_T + tracker.count_F + tracker.count_R;
     if (tracker.count_T === totalObligations && tracker.count_R === 0) {
       return "green";
     } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  const getStatusColorReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
+      return "green";
+    } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
       return "red";
     } else {
       return "orange";
@@ -147,6 +207,15 @@ export const Guestusers = () => {
       ? `${tracker.filled}/${totalObligations}`
       : "0/0";
   };
+
+  const calculateRatioReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    return totalObligations > 0
+      ? `${trackerReverse.filled}/${totalObligations}`
+      : "0/0";
+  };
+
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -161,26 +230,26 @@ export const Guestusers = () => {
     navigate("/guest-terms-review", { state: { connection, connectionType } });
   };
 
-  
+
   const navigateToConnDetails = (connection) => {
     console.log("print", connection); // Log the connection object
-  
-    const connectionName = connection.connection_type_name; 
+
+    const connectionName = connection.connection_type_name;
     const connectionDescription = connection.connection_description;
-    
+
     console.log("Navigating with:", {
       connectionName,
       connectionDescription,
     });
-  
+
     navigate("/display-terms", {
       state: {
         connectionTypeName: connectionName, // Extracted from connection object
         hostLockerName: connection.host_locker?.name,
         connectionTypeName: connection.connection_type_name,
-        connectionDescription:connection.connection_description,
-        createdtime:connection.created_time,
-        validitytime:connection.validity_time,
+        connectionDescription: connection.connection_description,
+        createdtime: connection.created_time,
+        validitytime: connection.validity_time,
         hostUserUsername: connection.host_user?.username,
         locker: locker,
       },
@@ -191,9 +260,9 @@ export const Guestusers = () => {
     <>
       {connectionType && (
         <>
-          <div className="navbarBrands">{connectionType.connection_type_name} 
-          <i className="fa fa-info-circle"  onClick={() => navigateToConnDetails(connectionType)}
-            title="Show Connection Terms" style={{ fontSize: '16px', marginLeft:"10px" }}></i>
+          <div className="navbarBrands">{connectionType.connection_type_name}
+            <i className="fa fa-info-circle" onClick={() => navigateToConnDetails(connectionType)}
+              title="Show Connection Terms" style={{ fontSize: '16px', marginLeft: "10px" }}></i>
 
             {/* <button
             className="info-button"
@@ -213,7 +282,7 @@ export const Guestusers = () => {
   <div id='conntentguest'>Created On: {new Date(connectionType.created_time).toLocaleDateString()}</div>
           <div id='conntentguest'>Valid Until: {new Date(connectionType.validity_time).toLocaleDateString()}</div>
 </details> */}
-          
+
         </>
       )}
     </>
@@ -222,11 +291,11 @@ export const Guestusers = () => {
   return (
     <div>
       <Navbar content={content} />
-      <Box className="page5heroContainer" marginTop={{md:"150px", xs:"100px"}}>
-        <h4 className='guestusers' style={{textAlign:"center",marginBottom:"25px", fontWeight:"bold"}}>Guest Users</h4>
+      <Box className="page5heroContainer" marginTop={{ md: "150px", xs: "100px" }}>
+        <h4 className='guestusers' style={{ textAlign: "center", marginBottom: "25px", fontWeight: "bold" }}>Guest Users</h4>
         <div className="search">
           <form onSubmit={handleSearch}>
-            <div className="inputContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginLeft:"20px", marginRight:"20px"}}>
+            <div className="inputContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginLeft: "20px", marginRight: "20px" }}>
               <TextField
                 type="text"
                 size='small'
@@ -242,7 +311,7 @@ export const Guestusers = () => {
                   borderRadius: "10px"
                 }}
               />
-              
+
               <Button
                 className="find"
                 variant="contained"
@@ -259,7 +328,7 @@ export const Guestusers = () => {
             </div>
           </form>
         </div>
-        <Grid container spacing={{md:20, xs:4, sm:4}} className="page5container" padding={{md:10, sm:2, xs:2}}>
+        <Grid container spacing={{ md:5 , xs: 4, sm: 4 }} className="page5container" padding={{ md: 10, sm: 2, xs: 2 }}>
           {/* {error && <div className="error">{error}</div>} */}
           {filteredConnections.length > 0 ? (
             filteredConnections.map((connection, index) => {
@@ -268,36 +337,92 @@ export const Guestusers = () => {
               const ratio = tracker
                 ? calculateRatio(tracker)
                 : "Loading...";
+              const trackerReverse = trackerDataReverse[connection.connection_id]
+              const colorReverse = trackerReverse
+                ? getStatusColorReverse(trackerReverse)
+                : "gray";
+              const ratioReverse = trackerReverse
+                ? calculateRatioReverse(trackerReverse)
+                : "Loading...";
               return (
-                <Grid item xs={12} sm={6} md={4} >
-                  <div key={index} className="card">
-                  <h4>{connection.guest_user.username}</h4>
-                  <p>{connection.guest_user.description}</p>
-                  <p> Locker: {connection.guest_locker.name}</p>
-                  <CardActions sx={{ justifyContent: 'center' }}>
-                  <Button
-                    className='cardButton'
-                    size='small'
-                    variant='contained'
-                    fontWeight="bold"
-                    onClick={() => handleConnectionClick(connection)}
-                  >
-                    View Details
-                  </Button>
-                  </CardActions>
-                  <Button id = "track"
-                    onClick={() => handleConnectionClick(connection)}
-                    style={{ backgroundColor: color }}
-                  >
-                    {ratio}
-                  </Button >
-                </div>
-                </Grid>
-                
+                <Grid item xs={12} sm={6} md={4} paddingRight={{ md: 0, xs: "30px" }}>
+                  <Grid container className="card">
+                    <Grid item md={9} xs={8.5} key={index} >
+                      <h4>{connection.guest_user.username}</h4>
+                      <p>{connection.guest_user.description}</p>
+                      <p> Locker: {connection.guest_locker.name}</p>
+                      {/* <CardActions sx={{ justifyContent: 'center' }}>
+                        <Button
+                          className='cardButton'
+                          size='small'
+                          variant='contained'
+                          fontWeight="bold"
+                          onClick={() => handleConnectionClick(connection)}
+                        >
+                          View Details
+                        </Button>
+                      </CardActions> */}
+
+                    </Grid>
+                    <Grid item md={3} xs={3.5}>
+                      <div className="d-flex align-items-center mt-2">
+
+                        <h6 className="mt-2 me-2"><b>G</b></h6>
+                        <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                        <button
+                          onClick={() => handleConnectionClick(connection)}
+                          style={{
+                            backgroundColor: color,
+                            border: 'none',
+                            padding: '5px 10px',
+                            borderRadius: '5px',
+                            color: '#fff',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {ratio}
+                        </button>
+                      </div>
+
+                      <div className="d-flex align-items-center mt-1">
+                        <h6 className="mt-2 me-2"><b>H</b></h6>
+                        <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                        <button
+                          onClick={() => handleConnectionClick(connection)}
+                          style={{
+                            backgroundColor: colorReverse,
+                            border: 'none',
+                            padding: '5px 10px',
+                            borderRadius: '5px',
+                            color: '#fff',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {ratioReverse}
+                        </button>
+
+                      </div>
+                    </Grid>
+                    <Grid md={12} xs={12} sm={12}>
+                    <CardActions sx={{ justifyContent: 'center' }}>
+                        <Button
+                          className='cardButton'
+                          size='small'
+                          variant='contained'
+                          fontWeight="bold"
+                          onClick={() => handleConnectionClick(connection)}
+                        >
+                          View Details
+                        </Button>
+                      </CardActions>
+                    </Grid>
+                  </Grid>
+                </Grid> 
+
               );
             })
           ) : (
-            <Typography variant="body1" padding={{xs:"60px", md:"120px"}}>No guest users found.</Typography>
+            <Typography variant="body1" padding={{xs:"60px", md:"0px"}}>No guest users found.</Typography>
 
           )}
         </Grid>

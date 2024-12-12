@@ -297,7 +297,8 @@ export const Guestusers = () => {
               );
             })
           ) : (
-            <p>No guest users found.</p>
+            <Typography variant="body1" padding={{xs:"60px", md:"120px"}}>No guest users found.</Typography>
+
           )}
         </Grid>
       </Box>

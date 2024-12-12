@@ -2701,10 +2701,10 @@ export const ViewTermsByType = () => {
                         <div style={{ margin: "20px 0" }}>
                           <div>
                             <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
-                              Add New Term
+                              Add New Data
                             </button>
                             <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-                              Remove Last Term {/* This removes the last term added */}
+                              Remove Last Data {/* This removes the last term added */}
                             </button>
                             <button onClick={handleMoreSubmit}>Submit</button>
                           </div>

@@ -1123,6 +1123,7 @@ import { frontend_host } from "../../config";
 import Modal from '../Modal/Modal.jsx';
 import QRCode from "react-qr-code";
 import { Grid, Box } from '@mui/material'
+import { Tooltip } from 'react-tooltip';
 
 export const TargetLockerView = () => {
   const navigate = useNavigate();
@@ -1734,7 +1735,7 @@ export const TargetLockerView = () => {
                   ))}
                 </ul>
               ) : (
-                <p className="not-found">No Resources found.</p>
+                <p className="not-found">No resources visible to you.</p>
               )}
             </Grid>
 
@@ -1743,23 +1744,44 @@ export const TargetLockerView = () => {
               {otherConnections.length > 0 ? (
                 otherConnections.map((connection) => (
                   <div className="page7connection" key={connection.connection_type_id} style={{ paddingBottom: "20px", cursor: "pointer" }}>
-                    <div id="connectionpage7">
-                      <div onClick={() => handleConnectionClick(connection)}>
-                        <h4 className="clickable-tag"><u>{connection.connection_type_name}</u></h4>
-                      </div>
+                    <Box id="connectionpage7" sx={{
+                      padding: '5px 10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      boxShadow: 3,
+                      borderRadius: 2,
+                      backgroundColor: "#f9f9f9;",
+                      border: "2px solid rgb(107, 120, 231)",
+                      paddingTop: "18px",
+                    }}>
+                      <Grid container>
+                        <Grid item md={8} xs={10} onClick={() => handleConnectionClick(connection)}>
+                          <h4 className="clickable-tag"><u>{connection.connection_type_name}</u></h4>
+
+                        </Grid>
+                        <Grid item md={4} xs={2} id="">
+                          {/* <button onClick={() => handleShowQrCode(connection)}>Scan QR</button> */}
+                          <i data-tooltip-id="tooltip" data-tooltip-content="Click for QR code" className="bi bi-qr-code" style={{ color: "#0000FF", fontSize: "24px" }} onClick={() => handleShowQrCode(connection)}></i>
+                          {!isModalOpen &&
+                            <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+
+                          }
+                        </Grid>
+                      </Grid>
                       <>
                         <div style={{ marginTop: "-12px" }}>
                           <button onClick={() => handleToggle(connection.connection_type_id)} style={{
-                            textDecoration: "underline",
+                            // textDecoration: "underline",
                             background: "none",
                             border: "none",
                             padding: 0,
                             cursor: "pointer",
                             color: "blue",
-                            fontSize: "14px",
+                            fontSize: "13px",
 
                           }}>
-                            {showInfo === connection.connection_type_id ? "Info" : "Info"}
+                            {showInfo === connection.connection_type_id ? "Info..." : "Info..."}
                           </button>
                         </div>
 
@@ -1779,11 +1801,8 @@ export const TargetLockerView = () => {
                         )}
                       </>
                       {/* "Scan QR" link to show QR code */}
-                      <div id="availconntype">
-                        <button onClick={() => handleShowQrCode(connection)}>Scan QR</button>
 
-                      </div>
-                    </div>
+                    </Box>
                   </div>
                 ))
               ) : (
@@ -1824,28 +1843,28 @@ export const TargetLockerView = () => {
                       </button> */}
                       <div className="d-flex align-items-center mt-2">
 
-                          <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.guest_user.username)}</b></h6>
-                          <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
-                          <button
-                            onClick={() => handleTracker(connection)}
-                            style={{
-                              backgroundColor: color,
-                              border: 'none',
-                              fontSize: '16px',
-                              padding: '5px 10px',
-                              borderRadius: '5px',
-                              color: '#fff',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            {ratio}
-                          </button>
-                        </div>
+                        <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.guest_user.username)}</b></h6>
+                        <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                        <button
+                          onClick={() => handleTracker(connection)}
+                          style={{
+                            backgroundColor: color,
+                            border: 'none',
+                            fontSize: '16px',
+                            padding: '5px 10px',
+                            borderRadius: '5px',
+                            color: '#fff',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {ratio}
+                        </button>
+                      </div>
                       <div>
-                        
+
 
                         <div className="d-flex align-items-center mt-1">
-                        <button className="me-2"
+                          <button className="me-2"
                             onClick={() => handleTrackerHost(connection)}
                             style={{
                               backgroundColor: colorReverse,
@@ -1862,7 +1881,7 @@ export const TargetLockerView = () => {
                           <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
 
                           <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.host_user.username)}</b></h6>
-                          
+
 
                         </div>
                       </div>

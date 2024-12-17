@@ -52,6 +52,11 @@ export const ViewLocker = () => {
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (locker) {
       fetchConnectionsAndOtherConnections(); // Combine the two fetches
@@ -962,6 +967,10 @@ export const ViewLocker = () => {
   // console.log("res vnode", VnodeResources);
   console.log("xnodes", xnodes);
 
+  console.log("connections", connections.outgoing_connections
+  );
+  
+
   return (
     <div id="viewLocker">
       <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
@@ -1480,7 +1489,7 @@ export const ViewLocker = () => {
                               className="viewlockerconnections"
                             >
 
-                              <Grid item md={8.8} xs={12}>
+                              <Grid item md={8} xs={12}>
                                 <div id="conntent">
                                   <button
                                     className="connection-name-button"
@@ -1514,7 +1523,7 @@ export const ViewLocker = () => {
                                   ).toLocaleString()}
                                 </div>
                               </Grid>
-                              <Grid item paddingTop={{ md: "10px", xs: "" }} md={3.2} xs={12}>
+                              <Grid item paddingTop={{ md: "10px", xs: "" }} md={4} xs={12}>
                                 <button
                                   className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
                                   onClick={() =>
@@ -1531,7 +1540,7 @@ export const ViewLocker = () => {
                                 </button>
                                 <div className="d-flex align-items-center mt-2">
 
-                                  <h6 className="mt-2 me-2"><b>G</b></h6>
+                                  <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.guest_user.username)}</b></h6>
                                   <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
                                   <button
                                     onClick={() => handleTracker(connection)}
@@ -1549,9 +1558,7 @@ export const ViewLocker = () => {
                                 </div>
 
                                 <div className="d-flex align-items-center mt-1">
-                                  <h6 className="mt-2 me-2"><b>H</b></h6>
-                                  <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
-                                  <button
+                                <button className="me-2"
                                     onClick={() => handleTrackerHost(connection)}
                                     style={{
                                       backgroundColor: colorReverse,
@@ -1562,8 +1569,12 @@ export const ViewLocker = () => {
                                       cursor: 'pointer',
                                     }}
                                   >
-                                    {ratioReverse}
+                                     {ratioReverse} 
                                   </button>
+                                  <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
+
+                                  <h6 className="mt-2"><b>{capitalizeFirstLetter(connection.host_user.username)}</b></h6>
+                                  
 
                                 </div>
                               </Grid>

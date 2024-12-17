@@ -1148,6 +1148,11 @@ export const TargetLockerView = () => {
   const [showInfo, setShowInfo] = useState(null);
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (!curruser) {
       navigate("/");
@@ -1819,7 +1824,7 @@ export const TargetLockerView = () => {
                       </button> */}
                       <div className="d-flex align-items-center mt-2">
 
-                          <h6 className="mt-2 me-2"><b>G</b></h6>
+                          <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.guest_user.username)}</b></h6>
                           <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
                           <button
                             onClick={() => handleTracker(connection)}
@@ -1840,9 +1845,7 @@ export const TargetLockerView = () => {
                         
 
                         <div className="d-flex align-items-center mt-1">
-                          <h6 className="mt-2 me-2"><b>H</b></h6>
-                          <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
-                          <button
+                        <button className="me-2"
                             onClick={() => handleTrackerHost(connection)}
                             style={{
                               backgroundColor: colorReverse,
@@ -1856,6 +1859,10 @@ export const TargetLockerView = () => {
                           >
                             {ratioReverse}
                           </button>
+                          <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
+
+                          <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.host_user.username)}</b></h6>
+                          
 
                         </div>
                       </div>

@@ -32,6 +32,11 @@ export const Guestusers = () => {
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   console.log(connectionType, locker);
   useEffect(() => {
     if (!curruser) {
@@ -368,7 +373,7 @@ export const Guestusers = () => {
               return (
                 <Grid item xs={12} sm={6} md={4} paddingRight={{ md: 0, xs: "30px" }}>
                   <Grid container className="card">
-                    <Grid item md={9} xs={8.5} key={index} >
+                    <Grid item md={7} xs={12} key={index} >
                       <h4>{connection.guest_user.username}</h4>
                       <p>{connection.guest_user.description}</p>
                       <p> Locker: {connection.guest_locker.name}</p>
@@ -385,10 +390,10 @@ export const Guestusers = () => {
                       </CardActions> */}
 
                     </Grid>
-                    <Grid item md={3} xs={3.5}>
+                    <Grid item md={5} xs={12}>
                       <div className="d-flex align-items-center mt-2">
 
-                        <h6 className="mt-2 me-2"><b>G</b></h6>
+                        <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.guest_user.username)}</b></h6>
                         <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
                         <button
                           onClick={() => handleConnectionClick(connection)}
@@ -406,9 +411,7 @@ export const Guestusers = () => {
                       </div>
 
                       <div className="d-flex align-items-center mt-1">
-                        <h6 className="mt-2 me-2"><b>H</b></h6>
-                        <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
-                        <button
+                      <button className='me-2'
                           onClick={() => handleConnectionHost(connection)}
                           style={{
                             backgroundColor: colorReverse,
@@ -421,7 +424,8 @@ export const Guestusers = () => {
                         >
                           {ratioReverse}
                         </button>
-
+                        <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
+                        <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.host_user.username)}</b></h6>
                       </div>
                     </Grid>
                     <Grid md={12} xs={12} sm={12}>

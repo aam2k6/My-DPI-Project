@@ -728,9 +728,14 @@ export const CreateConnectionTerms = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showRevokeConfirmationModal, setShowRevokeConfirmationModal] = useState(false);
   const [showCloseConfirmationModal, setShowCloseConfirmationModal] = useState(false);
+  // const [forbiddenContent, setForbiddenContent] = useState("null")
 
+  const forbiddenContent =
+  res?.forbidden?.host_to_guest?.[0]?.labelDescription ??
+  res?.forbidden?.guest_to_host?.[0]?.labelDescription ??
+  "You can unilaterally close the connection";
 
-  
+console.log("forbiddenContent",forbiddenContent);
 
   const {
     connectionName,
@@ -1148,7 +1153,7 @@ export const CreateConnectionTerms = () => {
         const data = await response.json();
         if (response.ok) {
             setModalMessage({
-                message: "Connection closed successfully!"+ data.message,
+                message: "You have closed the connection!,"+ data.message,
                 type: "success",
             });
             setIagree("0");
@@ -1521,7 +1526,13 @@ return (
 
 {showCloseConfirmationModal && (
     <Modal
-      message="Are you sure you want to Close Connection?"
+     message={
+    <>
+      You will no longer be allowed to share data <br/>
+      {forbiddenContent} <br />
+      Are you sure you want to Close Connection? <br />
+    </>
+  }
       type="confirmation"
       onClose={() => setShowCloseConfirmationModal(false)} // Close modal on "No"
       onConfirm={handleCloseConfirm} // Call the confirmation action

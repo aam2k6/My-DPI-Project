@@ -1036,7 +1036,21 @@ export const ViewTermsByType = () => {
       // console.log(revoke_host, revoke_guest);
       if (revoke_guest === true && revoke_host === false) {
         setModalMessage({
-          message: 'You have closed the connection, but the host is yet to approve your revoke.',
+          message: 'You have revoked the connection, but the host is yet to approve your revoke.',
+          type: 'info',
+        });
+        setIsModalOpen(true);
+      }
+    }
+  }, [connectionDetails]);
+
+   useEffect(() => {
+    if (connectionDetails) {
+      const { close_guest, close_host } = connectionDetails;
+      // console.log(revoke_host, revoke_guest);
+      if (close_guest === true && close_host === false) {
+        setModalMessage({
+          message: 'You have closed the connection, but the host is yet to approve your close.',
           type: 'info',
         });
         setIsModalOpen(true);

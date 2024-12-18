@@ -68,9 +68,9 @@ export const ViewLocker = () => {
   }, [locker]);
 
   const legendItems = [
-    { color: "blue", label: "INODE" },
-    { color: "rgb(255, 38, 0)", label: "VNODE" },
-    { color: "green", label: "SNODE" },
+    { color: "blue", label: "Your resource" },
+    { color: "rgb(255, 38, 0)", label: "Shared resource" },
+    { color: "green", label: "Conferred/Pledged resource" },
   ];
 
   const fetchXnodes = async () => {

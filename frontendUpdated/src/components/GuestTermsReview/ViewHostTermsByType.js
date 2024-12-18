@@ -1635,12 +1635,12 @@ export const ViewHostTermsByType = () => {
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
               <FaUserCircle className="userIcon" /> &nbsp;
-              <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
+              <span className="userName">{renderUserTooltip('guest')} : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
               <FaRegUserCircle className="userIcon" />&nbsp;
-              <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
+              <span className="userName">{renderUserTooltip('host')} : {capitalizeFirstLetter(hostUserUsername)}</span>
             </div>
           </div>
           <div className="tooltip-container user-container">

@@ -1041,7 +1041,7 @@ export const ViewLocker = () => {
                 </div>
               </div>
               <div className="container-3 clearfix">
-                <div className="aa">
+                <div>
                   {/* "My Resources" folder */}
                   <div
                     className="resource-folder"
@@ -1058,6 +1058,9 @@ export const ViewLocker = () => {
                       style={{ marginRight: "10px", fontSize: "24px" }}
                     />
                     <span>My Resources</span>
+                    <button  style={{marginLeft:"12px", fontSize:"12px"}} onClick={handleUploadResource}>
+              Upload resource
+            </button>
                   </div>
 
                   {/* Resource List inside the folder */}
@@ -1284,9 +1287,9 @@ export const ViewLocker = () => {
               </div>
 
             </div>
-            <button className="page3button" onClick={handleUploadResource}>
+            {/* <button className="page3button" onClick={handleUploadResource}>
               Upload resource
-            </button>
+            </button> */}
           </Grid>
           <Grid item md={1} xs={12} marginBottom={{ md: "", xs: "50px" }}></Grid>
           <Grid item md={5.5} xs={12} className="b">
@@ -1490,7 +1493,7 @@ export const ViewLocker = () => {
                             >
 
                               <Grid item md={8} xs={12}>
-                                <div id="conntent">
+                                <div className="mb-2">
                                   <button
                                     className="connection-name-button"
                                     onClick={() => handleTracker(connection)}
@@ -1507,7 +1510,7 @@ export const ViewLocker = () => {
                                   </button>
                                 </div>
                                 <div id="conntent">
-                                  {connection.guest_locker.name} &lt;&gt;{" "}
+                                  {connection.guest_locker.name} <i class="bi bi-arrows me-1" style={{fontSize:"16px"}}></i>
                                   {connection.host_locker.name}
                                 </div>
                                 <div id="conntent">
@@ -1540,7 +1543,7 @@ export const ViewLocker = () => {
                                 </button>
                                 <div className="d-flex align-items-center mt-2">
 
-                                  <h6 className="mt-2 me-2"><b>{capitalizeFirstLetter(connection.guest_user.username)}</b></h6>
+                                  <h6 className="mt-2 me-2">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
                                   <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
                                   <button
                                     onClick={() => handleTracker(connection)}
@@ -1573,7 +1576,7 @@ export const ViewLocker = () => {
                                   </button>
                                   <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
 
-                                  <h6 className="mt-2"><b>{capitalizeFirstLetter(connection.host_user.username)}</b></h6>
+                                  <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
                                   
 
                                 </div>

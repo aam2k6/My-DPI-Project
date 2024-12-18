@@ -23,7 +23,10 @@ export const UploadResource = () => {
  const [errorModalMessage, setErrorModalMessage] = useState('');
 
 
-
+ const capitalizeFirstLetter = (string) => {
+  if (!string) return "";
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 
   useEffect(() => {
     if (!curruser) {
@@ -86,7 +89,7 @@ export const UploadResource = () => {
   const content = (
     <>
     <div className="navbarBrands">Locker: {locker.name}</div>
-          <div className="navbarBrands">Owner: {curruser.username}</div>
+          <div className="navbarBrands">Owner: {capitalizeFirstLetter(curruser.username)  }</div>
           {/* <span className='uploadDescription'><p>{locker.description}</p></span> */}
     </>
   );

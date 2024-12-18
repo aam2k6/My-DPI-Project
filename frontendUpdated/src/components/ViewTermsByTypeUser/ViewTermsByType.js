@@ -1094,7 +1094,7 @@ export const ViewTermsByType = () => {
         // console.log("selection name", selection);
         return (
           <div>
-          {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
+          {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
             <a
               href={termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
               target="_blank"
@@ -1103,10 +1103,10 @@ export const ViewTermsByType = () => {
             >
               {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
             </a>
-          )}
-          <button onClick={() => handleButtonClick(obligation.labelName)}>
-            
-              Select Resource
+          )} */}
+           <button onClick={() => handleButtonClick(obligation.labelName)}>
+            {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
+              "Select Resource"}
           </button>
         </div>
         
@@ -1855,6 +1855,19 @@ export const ViewTermsByType = () => {
     });
   };
 
+  const handleGuestNameClick = () => {
+    navigate('/home', {
+    });
+  };
+
+  const handleHostNameClick = () => {
+    navigate('/target-user-view', {
+      state: {
+        user:{username: hostUserUsername},
+      },
+    });
+  };
+
   console.log("selection", selection);
   const handleRevokeConsentConfirm = () => {
     setShowRevokeConsentModal(false); // Close the modal
@@ -2138,12 +2151,12 @@ export const ViewTermsByType = () => {
           {connectionDescription}
           </div></>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container">
+            <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
               <FaUserCircle className="userIcon" /> &nbsp;
               <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container">
+            <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
               <FaRegUserCircle className="userIcon" />&nbsp;
               <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
             </div>

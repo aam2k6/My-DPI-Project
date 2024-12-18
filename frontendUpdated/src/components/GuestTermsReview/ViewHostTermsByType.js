@@ -1410,6 +1410,19 @@ export const ViewHostTermsByType = () => {
     });
   };
 
+  const handleGuestNameClick = () => {
+    navigate('/target-user-view', {
+      state: {
+        user:{username: guestUserUsername},
+      },
+    }); 
+  };
+
+  const handleHostNameClick = () => {
+    navigate('/home', {
+    });
+    
+  };
 
   console.log("selection", selection);
   const content = (
@@ -1620,12 +1633,12 @@ export const ViewHostTermsByType = () => {
           {connectionDescription}
           <br></br>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container">
+            <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
               <FaUserCircle className="userIcon" /> &nbsp;
               <span className="userName">{renderUserTooltip('guest')} : {guestUserUsername} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container">
+            <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
               <FaRegUserCircle className="userIcon" />&nbsp;
               <span className="userName">{renderUserTooltip('host')} : {hostUserUsername}</span>
             </div>

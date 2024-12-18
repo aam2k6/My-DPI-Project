@@ -1345,6 +1345,20 @@ export const Guesttermsreview = () => {
     });
   };
 
+  const handleGuestNameClick = () => {
+    navigate('/target-user-view', {
+      state: {
+        user:{username: conndetails.host_user.username},
+      },
+    }); 
+  };
+
+  const handleHostNameClick = () => {
+    navigate('/home', {
+    });
+    
+  };
+
   const content = (
     <>
       <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
@@ -1500,12 +1514,12 @@ export const Guesttermsreview = () => {
           <span>{conndetails?.connection_description}</span>
           <br></br>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container">
+            <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
               <FaUserCircle className="userIcon" /> &nbsp;
               <span className="userName">{renderUserTooltip('guest', conndetails.guest_user?.username)} : {conndetails.guest_user?.username || "Loading..."} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container">
+            <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
               <FaRegUserCircle className="userIcon" />&nbsp;
               <span className="userName">{renderUserTooltip('host', conndetails.host_user?.username)} : {conndetails?.host_user?.username || "Loading..."}</span>
             </div>

@@ -1752,7 +1752,7 @@ export const TargetLockerView = () => {
                       boxShadow: 3,
                       borderRadius: 2,
                       backgroundColor: "#f9f9f9;",
-                      border: "2px solid rgb(107, 120, 231)",
+                      border: "1px solid #ccc;",
                       paddingTop: "18px",
                     }}>
                       <Grid container>

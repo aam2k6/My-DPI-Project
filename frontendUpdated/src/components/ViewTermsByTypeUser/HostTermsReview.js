@@ -8,6 +8,9 @@ import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 import { Grid } from '@mui/material'
+import ReactModal from "react-modal";
+import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
+
 
 
 export const HostTermsReview = () => {
@@ -40,7 +43,7 @@ export const HostTermsReview = () => {
 
   const [statuses2, setStatuses2] = useState({});
   const [activeTab, setActiveTab] = useState("host");
-
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -59,7 +62,7 @@ export const HostTermsReview = () => {
   //         </div>
   //     </div>
   // );
-  console.log("start",connection, connectionType);
+  console.log("start", connection, connectionType);
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
     const message = await handleRevoke(connection_id);
@@ -197,8 +200,8 @@ export const HostTermsReview = () => {
               labelName: key,
               dataElement: value.enter_value,
               purpose: value.purpose,
-              share:value.typeOfShare,
-              status:value.status,
+              share: value.typeOfShare,
+              status: value.status,
             })
           );
           setPermissionsData(sharedData);
@@ -208,9 +211,9 @@ export const HostTermsReview = () => {
           for (const [key, value] of Object.entries(
             data.shared_more_data_terms
           )) {
-              initialStatuses2[key] = value.enter_value.endsWith("T")
-                ? "approved"
-                : value.enter_value.endsWith("R")
+            initialStatuses2[key] = value.enter_value.endsWith("T")
+              ? "approved"
+              : value.enter_value.endsWith("R")
                 ? "rejected"
                 : "";
           }
@@ -226,8 +229,8 @@ export const HostTermsReview = () => {
 
     const fetchConnectionDetails = async () => {
       console.log("error chck", connection);
-      const connectionTypeName =  connection?.connection_name?.split("-").shift().trim();
-      
+      const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+
       try {
         const token = Cookies.get("authToken");
         const response = await fetch(
@@ -256,7 +259,7 @@ export const HostTermsReview = () => {
           console.log("terms_value_reverse:", data.connections.terms_value_reverse); // Check if `terms_value` exists
           if (data.connections.terms_value_reverse) {
             const initialStatuses = {};
-            
+
             for (const [key, value] of Object.entries(
               data.connections.terms_value_reverse
             )) {
@@ -264,13 +267,13 @@ export const HostTermsReview = () => {
                 initialStatuses[key] = value.endsWith("T")
                   ? "approved"
                   : value.endsWith("R")
-                  ? "rejected"
-                  : "";
+                    ? "rejected"
+                    : "";
               }
             }
             console.log("inside here");
             console.log("initial statuses", initialStatuses);
-        
+
             setStatuses(initialStatuses);
           } else {
             console.log("No terms_value found");
@@ -363,9 +366,9 @@ export const HostTermsReview = () => {
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
-                  /host/,
-                  frontend_host
-                ), {
+        /host/,
+        frontend_host
+      ), {
         method: 'GET',
         headers: {
           Authorization: `Basic ${token}`,
@@ -383,9 +386,15 @@ export const HostTermsReview = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
-        // console.log("link to file", link_To_File);
-        window.open(link_To_File, '_blank');
+        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        setPdfUrl(secureFileUrl);
+
+        // const secureFileUrl =
+        //   process.env.NODE_ENV === 'production'
+        //     ? link_To_File.replace('http://', 'https://')
+        //     : link_To_File;
         // setPdfUrl(link_To_File);
+        setIsModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -396,6 +405,10 @@ export const HostTermsReview = () => {
     } finally {
       // setLoading(false);
     }
+  };
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setPdfUrl(null);
   };
 
   const handleRevoke = async (connection_id) => {
@@ -489,7 +502,7 @@ export const HostTermsReview = () => {
             if (
               newStatuses[key] === "approved" &&
               currentValue &&
-              currentIsFile && 
+              currentIsFile &&
               (!prevStatuses[key] || prevStatuses[key] !== "approved")
             ) {
               if (currentType === "transfer" && !newTransfer.includes(currentValue)) {
@@ -507,9 +520,9 @@ export const HostTermsReview = () => {
           // Return the updated resourcesData
           return {
             transfer: [...new Set(newTransfer)],
-          share: [...new Set(newShare)],
-          confer: [...new Set(newConfer)],
-          collateral: [...new Set(newCollateral)],
+            share: [...new Set(newShare)],
+            confer: [...new Set(newConfer)],
+            collateral: [...new Set(newCollateral)],
           };
         });
 
@@ -522,73 +535,73 @@ export const HostTermsReview = () => {
 
   //permissions
   const handleStatusChange2 = (index, status, value, type, isFile) => {
-   
-      setStatuses2((prevStatuses) => {
-        // Update the statuses for the specific index
-        const newStatuses = {
-          ...prevStatuses,
-          [index]: status,
-        };
 
-        // Recalculate the resourcesData based on all statuses
-        setResourcesData((prevResourcesData) => {
-          // Initialize new arrays for transfer and share
-          const newTransfer = [...new Set(prevResourcesData.transfer)];
-          const newShare = [...new Set(prevResourcesData.share)];
-          const newConfer = [...new Set(prevResourcesData.confer)];
-          const newCollateral = [...new Set(prevResourcesData.collateral)];
-          // const newTransfer = [];
-          // const newShare = [];
+    setStatuses2((prevStatuses) => {
+      // Update the statuses for the specific index
+      const newStatuses = {
+        ...prevStatuses,
+        [index]: status,
+      };
+
+      // Recalculate the resourcesData based on all statuses
+      setResourcesData((prevResourcesData) => {
+        // Initialize new arrays for transfer and share
+        const newTransfer = [...new Set(prevResourcesData.transfer)];
+        const newShare = [...new Set(prevResourcesData.share)];
+        const newConfer = [...new Set(prevResourcesData.confer)];
+        const newCollateral = [...new Set(prevResourcesData.collateral)];
+        // const newTransfer = [];
+        // const newShare = [];
 
 
-          // Iterate through all statuses to populate new arrays
-          Object.keys(newStatuses).forEach((key) => {
-            const currentValue = permissionsData.find(
-              (permission) => permission.labelName === key
-            )?.dataElement.split(";")[0];
-            console.log(permissionsData, currentValue, "hello") // Extract current value for the term
-            const currentType = permissionsData.find(
-              (permission) => permission.labelName === key
-            )?.share;
-            // const currentIsFile =
-            //   res.obligations.find((obligation) => obligation.labelName === key)
-            //     ?.typeOfAction === "file";
+        // Iterate through all statuses to populate new arrays
+        Object.keys(newStatuses).forEach((key) => {
+          const currentValue = permissionsData.find(
+            (permission) => permission.labelName === key
+          )?.dataElement.split(";")[0];
+          console.log(permissionsData, currentValue, "hello") // Extract current value for the term
+          const currentType = permissionsData.find(
+            (permission) => permission.labelName === key
+          )?.share;
+          // const currentIsFile =
+          //   res.obligations.find((obligation) => obligation.labelName === key)
+          //     ?.typeOfAction === "file";
 
-            if (
-              newStatuses[key] === "approved" &&
-              currentValue && 
-              (!prevStatuses[key] || prevStatuses[key] !== "approved")
-            ) {
-              if (currentType === "transfer" && !newTransfer.includes(currentValue)) {
-                newTransfer.push(currentValue);
-              } else if (currentType === "share" && !newShare.includes(currentValue)) {
-                newShare.push(currentValue);
-              } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
-                newConfer.push(currentValue);
-              } else if (currentType === "collateral" && !newCollateral.includes(currentValue)) {
-                newCollateral.push(currentValue);
-              }
+          if (
+            newStatuses[key] === "approved" &&
+            currentValue &&
+            (!prevStatuses[key] || prevStatuses[key] !== "approved")
+          ) {
+            if (currentType === "transfer" && !newTransfer.includes(currentValue)) {
+              newTransfer.push(currentValue);
+            } else if (currentType === "share" && !newShare.includes(currentValue)) {
+              newShare.push(currentValue);
+            } else if (currentType === "confer" && !newConfer.includes(currentValue)) {
+              newConfer.push(currentValue);
+            } else if (currentType === "collateral" && !newCollateral.includes(currentValue)) {
+              newCollateral.push(currentValue);
             }
-          });
+          }
+        });
 
-          // Return the updated resourcesData
-          return {
-            transfer: [...new Set(newTransfer)],
+        // Return the updated resourcesData
+        return {
+          transfer: [...new Set(newTransfer)],
           share: [...new Set(newShare)],
           confer: [...new Set(newConfer)],
           collateral: [...new Set(newCollateral)],
-          };
-        });
-
-        return newStatuses;
+        };
       });
-    
+
+      return newStatuses;
+    });
+
   };
   console.log("res data", res);
   const handleSave = async () => {
     try {
       const token = Cookies.get("authToken");
-      
+
 
       // Create the terms_value object from the obligations
       const terms_value_reverse = res?.obligations.reduce((acc, obligation) => {
@@ -598,8 +611,8 @@ export const HostTermsReview = () => {
           statuses[obligation.labelName] === "approved"
             ? "T"
             : statuses[obligation.labelName] === "rejected"
-            ? "R"
-            : "F";
+              ? "R"
+              : "F";
         const resourceName =
           termsValue[obligation.labelName]?.split(";")[0] || "";
         // Add to terms_value with the status
@@ -617,14 +630,14 @@ export const HostTermsReview = () => {
           termsValue.canShareMoreData
         )) {
           const status =
-              statuses2[key] === "approved"
-                ? "T"
-                : statuses2[key] === "rejected"
+            statuses2[key] === "approved"
+              ? "T"
+              : statuses2[key] === "rejected"
                 ? "R"
                 : "F";
-                const  val = value.enter_value?.split(";")[0] || "";
-                value.enter_value = `${val};${status}`;
-                
+          const val = value.enter_value?.split(";")[0] || "";
+          value.enter_value = `${val};${status}`;
+
         }
 
         // const extra_terms_value = termsValue?.canShareMoreData.map((acc, obligation) => {
@@ -695,10 +708,10 @@ export const HostTermsReview = () => {
         setError(updateData.error || "Failed to save statuses");
       }
 
-      for(const resource of resourcesToShare){
+      for (const resource of resourcesToShare) {
         await updateXnode(resource);
       }
-      for(const resource of resourcesToShare){
+      for (const resource of resourcesToShare) {
         await updateXnode(resource);
       }
       // Transfer resources
@@ -775,7 +788,7 @@ export const HostTermsReview = () => {
         guest_user_username: conndetails.guest_user.username,
         validity_until: conndetails.validity_time,
       }));
-      
+
       const token = Cookies.get("authToken");
       const response = await fetch(
         `${frontend_host}/transfer-resource-reverse/`,
@@ -824,7 +837,7 @@ export const HostTermsReview = () => {
       //   guest_user_username: conndetails.guest_user.username,
       //   validity_until: conndetails.validity_time,
       // }));
-      
+
       const token = Cookies.get("authToken");
       const response = await fetch(
         `host/share-resource-reverse/`.replace(/host/, frontend_host),
@@ -845,7 +858,7 @@ export const HostTermsReview = () => {
         }
       );
 
-      
+
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -857,7 +870,7 @@ export const HostTermsReview = () => {
       if (!data.success) {
         throw new Error(data.error || "Failed to share resource");
       }
-      else{
+      else {
         console.log(data.message);
         alert(data.message);
       }
@@ -876,7 +889,7 @@ export const HostTermsReview = () => {
         guest_user_username: conndetails.guest_user.username,
         validity_until: conndetails.validity_time,
       }));
-      
+
       const token = Cookies.get("authToken");
       const response = await fetch(
         `${frontend_host}/confer-resource-reverse/`,
@@ -925,7 +938,7 @@ export const HostTermsReview = () => {
         guest_user_username: conndetails.guest_user.username,
         validity_until: conndetails.validity_time,
       }));
-      
+
       const token = Cookies.get("authToken");
       const response = await fetch(
         `${frontend_host}/collateral-resource-reverse/`,
@@ -993,7 +1006,7 @@ export const HostTermsReview = () => {
                 {obligation.typeOfSharing} - {obligation.labelName} (Host
                 Privilege:{" "}
                 {obligation.hostPermissions &&
-                obligation.hostPermissions.length > 0
+                  obligation.hostPermissions.length > 0
                   ? obligation.hostPermissions.join(", ")
                   : "None"}
                 )
@@ -1092,54 +1105,54 @@ export const HostTermsReview = () => {
     }
   };
 
- 
-const navigateToConnectionDetails = (connection) => {
-  // Log the connection object to verify its structure
-  console.log("Connection Object:", connection);
 
-  // Safely access properties with optional chaining
-  const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
-  const connectionDescription = connection?.connection_description;
-  const hostLockerName = connection?.host_locker?.name;
-  const hostLockerDescription = connection?.host_locker?.description;  // Add specific properties
-  const hostUserUsername = connection?.host_user?.username;
-  const guestUserUsername = connection?.guest_user?.username;
-  const connectionName = connection?.connection_name;
-  const createdTime = connection?.created_time;
-  const validityTime = connection?.validity_time;
-  const guestLockerName = connection?.guest_locker?.name 
-  const guestLockerId = connection?.guest_locker?.locker_id
-  const guestLocker = connection?.guest_locker
-  const hostLocker = connection?.host_locker
-  // Check if created_time is undefined and log a message if so
-  if (!createdTime) {
-    console.warn("created_time is undefined for this connection.");
-  } else {
-    console.log("Date:", createdTime);
-  }
+  const navigateToConnectionDetails = (connection) => {
+    // Log the connection object to verify its structure
+    console.log("Connection Object:", connection);
 
-  console.log("guest",guestUserUsername)
+    // Safely access properties with optional chaining
+    const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+    const connectionDescription = connection?.connection_description;
+    const hostLockerName = connection?.host_locker?.name;
+    const hostLockerDescription = connection?.host_locker?.description;  // Add specific properties
+    const hostUserUsername = connection?.host_user?.username;
+    const guestUserUsername = connection?.guest_user?.username;
+    const connectionName = connection?.connection_name;
+    const createdTime = connection?.created_time;
+    const validityTime = connection?.validity_time;
+    const guestLockerName = connection?.guest_locker?.name
+    const guestLockerId = connection?.guest_locker?.locker_id
+    const guestLocker = connection?.guest_locker
+    const hostLocker = connection?.host_locker
+    // Check if created_time is undefined and log a message if so
+    if (!createdTime) {
+      console.warn("created_time is undefined for this connection.");
+    } else {
+      console.log("Date:", createdTime);
+    }
 
-  // Navigate with safe properties
-  navigate("/show-connection-terms", {
-    state: {
-      connectionTypeName: connectionTypeName,
-      hostLockerName: hostLockerName,
-      hostLockerDescription: hostLockerDescription,  // Pass specific properties instead of the whole object
-      connectionName: connectionName,
-      guestUserUsername: guestUserUsername,
-      connectionDescription: connectionDescription,
-      createdtime: createdTime,
-      validitytime: validityTime,
-      hostUserUsername: hostUserUsername,
-      locker: guestLockerName,
-      guestLockerName: guestLockerName,
-      guestLocker:guestLocker,
-      hostLocker: hostLocker,
+    console.log("guest", guestUserUsername)
 
-    },
-  });
-};
+    // Navigate with safe properties
+    navigate("/show-connection-terms", {
+      state: {
+        connectionTypeName: connectionTypeName,
+        hostLockerName: hostLockerName,
+        hostLockerDescription: hostLockerDescription,  // Pass specific properties instead of the whole object
+        connectionName: connectionName,
+        guestUserUsername: guestUserUsername,
+        connectionDescription: connectionDescription,
+        createdtime: createdTime,
+        validitytime: validityTime,
+        hostUserUsername: hostUserUsername,
+        locker: guestLockerName,
+        guestLockerName: guestLockerName,
+        guestLocker: guestLocker,
+        hostLocker: hostLocker,
+
+      },
+    });
+  };
 
   const userTooltips = {
     guest: "Guest",
@@ -1156,7 +1169,7 @@ const navigateToConnectionDetails = (connection) => {
   };
 
   const handleGuestClick = () => {
-    
+
     navigate('/view-locker', {
       state: {
         user: { username: conndetails.guest_user.username },
@@ -1166,11 +1179,11 @@ const navigateToConnectionDetails = (connection) => {
   };
 
   const handleHostClick = () => {
-    
+
     navigate('/target-locker-view', {
       state: {
-        user:{username: conndetails.host_user.username},
-        locker:  conndetails.host_locker,
+        user: { username: conndetails.host_user.username },
+        locker: conndetails.host_locker,
       },
     });
   };
@@ -1179,8 +1192,8 @@ const navigateToConnectionDetails = (connection) => {
     <>
       <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
       <div>
-          {curruser ? curruser.description : "None"}
-        </div>
+        {curruser ? curruser.description : "None"}
+      </div>
       {/* <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -1240,19 +1253,19 @@ const navigateToConnectionDetails = (connection) => {
 
 
   const termsArray = [...(terms.guest_to_host || []), ...(terms.host_to_guest || [])];
- // Access guest_to_host array, fallback to empty array
+  // Access guest_to_host array, fallback to empty array
 
-// Log the termsArray for debugging
-console.log("Terms Array:", termsArray);
+  // Log the termsArray for debugging
+  console.log("Terms Array:", termsArray);
 
-// Ensure you filter and map properly over the array
-const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
-  ...new Set(
-    termsArray
-      .filter(term => term.global_conn_type_id !== null && term.global_conn_type_id !== undefined)
-      .map(term => term.global_conn_type_id)
-  )
-] : [];
+  // Ensure you filter and map properly over the array
+  const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
+    ...new Set(
+      termsArray
+        .filter(term => term.global_conn_type_id !== null && term.global_conn_type_id !== undefined)
+        .map(term => term.global_conn_type_id)
+    )
+  ] : [];
 
 
   const globalTemplateNames = uniqueGlobalConnTypeIds.map((id) => {
@@ -1264,12 +1277,12 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
   const [isReceiptChecked, setIsReceiptChecked] = useState(false); // State for the checkbox
 
   const handleCheckboxChange = () => {
-      setIsReceiptChecked(!isReceiptChecked); // Toggle checkbox state
+    setIsReceiptChecked(!isReceiptChecked); // Toggle checkbox state
   };
   const handleNavigation = (template) => {
     if (template) {
-      console.log("temp",template);
-      console.log("id",template.global_connection_type_template_id);
+      console.log("temp", template);
+      console.log("id", template.global_connection_type_template_id);
       navigate('/GlobalTermsView', {
         state: {
           connectionTypeName: template.global_connection_type_name,
@@ -1286,7 +1299,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
     confer: "You are going to transfer ownership of the resource, but the recipient cannot modify the contents. You still have rights over this resource.",
     collateral: "You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource."
   };
-  
+
   const renderTooltip = (typeOfShare) => {
     return (
       <span className="tooltiptext">
@@ -1297,29 +1310,29 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
   const handleDownload = async (obligation) => {
     try {
       const token = Cookies.get("authToken");
-  
+
       // Extract connection details from `conndetails`
       const connectionName = conndetails.connection_name;
       const hostLockerName = conndetails.host_locker.name;
       const guestLockerName = conndetails.guest_locker.name;
       const hostUserUsername = conndetails.host_user.username;
       const guestUserUsername = conndetails.guest_user.username;
-  
+
       // Extract termsValue for document ID and namePart
       const termsValue = conndetails.terms_value;
       console.log("termsValue:", termsValue);
-  
+
       let documentId = null;
       let documentName = obligation.labelName;  // Default to labelName in case of no match
-  
+
       // Check if termsValue contains the document name in a recognizable format
       if (termsValue[documentName]) {
         const termEntry = termsValue[documentName];
-  
+
         // Check if the entry contains "|" indicating a format like "DocumentName|ID;AdditionalInfo"
         if (termEntry.includes("|")) {
           const [namePart, idPart] = termEntry.split("|");
-  
+
           // Use namePart from termsValue as document name
           documentName = namePart.trim();
           documentId = idPart ? idPart.split(",")[0].split(";")[0].trim() : null;
@@ -1327,12 +1340,12 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
       } else {
         console.log("Document entry not found in termsValue for:", documentName);
       }
-  
+
       // Log the sharing type, extracted document name, and document ID
       console.log("Extracted Document name:", documentName);
       console.log("Sharing type:", obligation.typeOfSharing);
       console.log("Extracted Document ID:", documentId);
-  
+
       // Prepare payload for the API request with document ID and namePart as document name
       const payload = {
         connection_name: connectionName,
@@ -1344,10 +1357,10 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
         sharing_type: obligation.typeOfSharing,
         xnode_id: documentId,  // Document ID from parsed termsValue
       };
-  
+
       // Log the payload to verify the data before making the request
       console.log("Payload:", payload);
-  
+
       // Make API call to download resource
       const response = await fetch(`${frontend_host}/download-resource/`, {
         method: "POST",
@@ -1357,18 +1370,18 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
         },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.success) {
         alert("Download successful!");
-  
+
         // Optionally, change the color of the downloaded resource to green
         const downloadedResource = document.getElementById(`resource-${obligation.labelName}`);
         if (downloadedResource) {
           downloadedResource.style.color = "green";
         }
-  
+
         console.log("Download successful:", data.message);
       } else {
         setError(data.error || "Failed to download resource");
@@ -1378,7 +1391,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
       setError(err.message);
     }
   };
-  
+
 
 
   console.log("conn details", conndetails);
@@ -1389,7 +1402,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
     <div>
       <Navbar content={content} />
 
-      <div style={{marginTop:"120px"}}>
+      <div style={{ marginTop: "120px" }}>
         <div className="connection-details">
           Connection Name: {conndetails?.connection_name || "Loading..."}
           <button
@@ -1401,7 +1414,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
               cursor: "pointer",
               background: "transparent",
               border: "none",
-              marginBottom:"6px"
+              marginBottom: "6px"
             }}
           >
             <i className="fa fa-info-circle userIcon"></i>
@@ -1411,35 +1424,34 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
           <br></br>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container">
-              <FaUserCircle className="userIcon"/> &nbsp;
-              <span className="userName">{renderUserTooltip('guest',conndetails.guest_user?.username)} : {conndetails.guest_user?.username||"Loading..."} &nbsp;</span>
+              <FaUserCircle className="userIcon" /> &nbsp;
+              <span className="userName">{renderUserTooltip('guest', conndetails.guest_user?.username)} : {conndetails.guest_user?.username || "Loading..."} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
             <div className="tooltips user-container">
-              <FaRegUserCircle className="userIcon"/>&nbsp;
-              <span className="userName">{renderUserTooltip('host',conndetails.host_user?.username)} : {conndetails?.host_user?.username||"Loading..."}</span>
+              <FaRegUserCircle className="userIcon" />&nbsp;
+              <span className="userName">{renderUserTooltip('host', conndetails.host_user?.username)} : {conndetails?.host_user?.username || "Loading..."}</span>
             </div>
           </div>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
               <i class="bi bi-person-fill-lock"></i> &nbsp;
-              <span className="userName">{renderUserTooltip('guest',conndetails.guest_locker?.name)} : {conndetails.guest_locker?.name||"Loading..."} &nbsp;</span>
+              <span className="userName">{renderUserTooltip('guest', conndetails.guest_locker?.name)} : {conndetails.guest_locker?.name || "Loading..."} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostClick()}>
               <i class="bi bi-person-lock"></i>&nbsp;
-              <span className="userName">{renderUserTooltip('host',conndetails.host_locker?.name)} : {conndetails.host_locker?.name||"Loading..."}</span>
+              <span className="userName">{renderUserTooltip('host', conndetails.host_locker?.name)} : {conndetails.host_locker?.name || "Loading..."}</span>
             </div>
           </div>
         </div>
 
-        <div className="view-container" style={{marginLeft:"120px"}}>
+        <div className="view-container" style={{ marginLeft: "120px" }}>
           <div className="b">
             <div className="tabs">
               <div
-                className={`tab-header ${
-                  activeTab === "guest" ? "active" : ""
-                }`}
+                className={`tab-header ${activeTab === "guest" ? "active" : ""
+                  }`}
                 onClick={() => navigate("/view-terms-by-type", {
                   state: {
                     connection_id: conndetails.connection_id,
@@ -1460,38 +1472,37 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                 Guest Data
               </div>
               <div
-                className={`tab-header ${
-                  activeTab === "host" ? "active" : ""
-                }`}
+                className={`tab-header ${activeTab === "host" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("host")}
               >
                 Host Data
               </div>
             </div>
             {/* Added Tabs */}
-              {/* Added Tabs */}
+            {/* Added Tabs */}
             <div className="tab-content">
-              {activeTab=="host" && (
+              {activeTab == "host" && (
                 <>
-                            <div className={showResources ? "split-view" : ""}>
+                  <div className={showResources ? "split-view" : ""}>
                     <div className="table-container">
                       <div className="center2">
-                      {globalTemplateNames.length > 0 && "Regulations used: "}
-                  <span style={{ fontWeight: "bold" }}>
-                  {uniqueGlobalConnTypeIds.map((id, index) => {
-                  const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
-                  return template ? (
-                  <span
-                    key={index}
-                    onClick={() => handleNavigation(template)}  // Pass the entire template object
-                    style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
-                  >
-                    {template.global_connection_type_name}  
-                    {index < uniqueGlobalConnTypeIds.length - 1 && ", "}  
-                  </span>
-                  ) : null;
-                  })}
-                  </span>
+                        {globalTemplateNames.length > 0 && "Regulations used: "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {uniqueGlobalConnTypeIds.map((id, index) => {
+                            const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+                            return template ? (
+                              <span
+                                key={index}
+                                onClick={() => handleNavigation(template)}  // Pass the entire template object
+                                style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
+                              >
+                                {template.global_connection_type_name}
+                                {index < uniqueGlobalConnTypeIds.length - 1 && ", "}
+                              </span>
+                            ) : null;
+                          })}
+                        </span>
                       </div>
 
                       <Grid container>
@@ -1527,7 +1538,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                             <div className="permissions">
                               <h3>Host Obligations</h3>
                               You will receive a receipt when all the obligations are met.
-                            
+
 
                             </div>
                           </div>
@@ -1553,7 +1564,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                               <td>
                                 {termsValue[obligation.labelName]?.split(";")[0] ? (
                                   <a
-                                    href="#"
+                                    style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
                                     onClick={() =>
                                       handleClick(
                                         termsValue[obligation.labelName]?.split(";")[0]?.split("|")[1]
@@ -1562,9 +1573,51 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                                   >
                                     {termsValue[obligation.labelName]?.split(";")[0]?.split("|")[0]}
                                   </a>
+
                                 ) : (
                                   "None"
                                 )}
+                                <ReactModal
+                                  isOpen={isModalOpen}
+                                  onRequestClose={handleClose}
+                                  contentLabel="PDF Viewer"
+                                  style={{
+                                    content: {
+                                      top: "55%",
+                                      left: "50%",
+                                      right: "auto",
+                                      bottom: "auto",
+                                      marginRight: "-50%",
+                                      transform: "translate(-50%, -50%)",
+                                      width: "95%",
+                                      height: "80%",
+                                      overflowY: "hidden",
+                                      maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                                      maxHeight: "90%", // Max height for larger screens
+                                    },
+                                  }}
+                                >
+                                  <button
+                                    onClick={handleClose}
+                                    style={{
+                                      marginBottom: "10px",
+                                      cursor: "pointer",
+                                      position: "absolute",
+                                      top: "10px",
+                                      right: "10px", // Button positioned at the top right
+                                      zIndex: 100,
+                                    }}
+                                  >
+                                    Close
+                                  </button>
+                                  {pdfUrl ? (
+                                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                      <Viewer fileUrl={pdfUrl} />
+                                    </Worker>
+                                  ) : (
+                                    <p>Loading PDF...</p>
+                                  )}
+                                </ReactModal>
                               </td>
                               <td>{obligation.purpose}</td>
                               <td>
@@ -1572,7 +1625,7 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                                   {obligation.typeOfSharing}
                                   {renderTooltip(obligation.typeOfSharing)}
                                 </div>
-                              </td>  
+                              </td>
                               <td>
                                 {obligation.hostPermissions
                                   ? obligation.hostPermissions.join(", ")
@@ -1598,14 +1651,14 @@ const uniqueGlobalConnTypeIds = Array.isArray(termsArray) ? [
                                 </select>
                               </td>
                               <td>
-  {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
-    <button onClick={() => handleDownload(obligation)} className="download-button">
-      <i className="fa fa-download" aria-hidden="true"></i>
-    </button>
-  ) : (
-    " "
-  )}
-</td>
+                                {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
+                                  <button onClick={() => handleDownload(obligation)} className="download-button">
+                                    <i className="fa fa-download" aria-hidden="true"></i>
+                                  </button>
+                                ) : (
+                                  " "
+                                )}
+                              </td>
                             </tr>
                           ))}
                         </tbody>

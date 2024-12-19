@@ -523,7 +523,8 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
-
+import ReactModal from "react-modal";
+import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
 export const ViewTermsByType = () => {
 
@@ -585,6 +586,7 @@ export const ViewTermsByType = () => {
   const [guestToHostObligations, setGuestToHostObligations] = useState([]);
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
   const [showRevokeConsentModal, setShowRevokeConsentModal] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   const {
     connectionName,
@@ -607,7 +609,7 @@ export const ViewTermsByType = () => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
       if (!token) return setErrorMessage("Authentication token is missing.");
-  
+
       try {
         const pages = await fetchTotalPages(selectedResourceId, token);
         setTotalPages(pages); // Set the total pages in state
@@ -615,7 +617,7 @@ export const ViewTermsByType = () => {
         setErrorMessage(error.message || "Failed to fetch total pages.");
       }
     };
-  
+
     if (selectedResourceId) fetchData();
   }, [selectedResourceId]);
 
@@ -623,7 +625,7 @@ export const ViewTermsByType = () => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
       if (!token) return setErrorMessage("Authentication token is missing.");
-  
+
       try {
         const pages = await fetchTotalPages2(selectedResourceId2, token);
         setTotalPages(pages); // Set the total pages in state
@@ -631,7 +633,7 @@ export const ViewTermsByType = () => {
         setErrorMessage(error.message || "Failed to fetch total pages.");
       }
     };
-  
+
     if (selectedResourceId2) fetchData();
   }, [selectedResourceId2]);
 
@@ -639,6 +641,11 @@ export const ViewTermsByType = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
     navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setPdfUrl(null);
   };
 
   // console.log("start", guest_locker_id, host_locker_id, locker);
@@ -1044,7 +1051,61 @@ export const ViewTermsByType = () => {
     }
   }, [connectionDetails]);
 
-   useEffect(() => {
+  const fetchAndOpenResource = async (termValues, obligationLabelName) => {
+    const rawXnodeId = termValues[obligationLabelName]?.split(";")[0]?.split("|")[1]; // Assuming xnode_id is the second part
+    const xnode_id = rawXnodeId?.match(/^\d+/)?.[0];
+
+    if (!xnode_id) {
+      console.error("xnode_id is missing or invalid:", rawXnodeId);
+      // alert("Unable to proceed: xnode_id is required.");
+      return;
+    }
+
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(
+        `host/access-resource/?xnode_id=${xnode_id}`.replace(/host/, frontend_host),
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("API Error:", errorData);
+        throw new Error(errorData.message || 'Failed to access the resource');
+      }
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      const { link_To_File } = data;
+      if (link_To_File) {
+        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        setPdfUrl(secureFileUrl);
+
+        // const secureFileUrl =
+        //   process.env.NODE_ENV === 'production'
+        //     ? link_To_File.replace('http://', 'https://')
+        //     : link_To_File;
+        // setPdfUrl(link_To_File);
+        setIsModalOpen(true); // Open the modal
+      } else {
+        console.error("Link to file not found in response:", data);
+        console.log(error);
+      }
+    } catch (err) {
+      console.error("Error fetching resource:", err.message);
+      // alert(`Error: ${err.message}`);
+    }
+  };
+
+
+  useEffect(() => {
     if (connectionDetails) {
       const { close_guest, close_host } = connectionDetails;
       // console.log(revoke_host, revoke_guest);
@@ -1093,23 +1154,67 @@ export const ViewTermsByType = () => {
         // console.log("name 2", selectedResources);
         // console.log("selection name", selection);
         return (
-          <div>
-          {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
-            <a
-              href={termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: "block", marginBottom: "8px" }}
+          <>
+            {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
+              <a
+                style={{ display: "block", marginBottom: "8px", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                onClick={() =>
+                  fetchAndOpenResource(termValues, obligation.labelName)
+                }
+              >
+                {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+              </a>
+            )}
+
+
+
+            <button onClick={() => handleButtonClick(obligation.labelName)}>
+              {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
+              Select Resource
+            </button>
+            <ReactModal
+              isOpen={isModalOpen}
+              onRequestClose={handleClose}
+              contentLabel="PDF Viewer"
+              style={{
+                content: {
+                  top: "55%",
+                  left: "50%",
+                  right: "auto",
+                  bottom: "auto",
+                  marginRight: "-50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "95%",
+                  height: "80%",
+                  overflowY: "hidden",
+                  maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                  maxHeight: "90%", // Max height for larger screens
+                },
+              }}
             >
-              {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
-            </a>
-          )} */}
-           <button onClick={() => handleButtonClick(obligation.labelName)}>
-            {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
-              "Select Resource"}
-          </button>
-        </div>
-        
+              <button
+                onClick={handleClose}
+                style={{
+                  marginBottom: "10px",
+                  cursor: "pointer",
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px", // Button positioned at the top right
+                  zIndex: 100,
+                }}
+              >
+                Close
+              </button>
+              {pdfUrl ? (
+                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                  <Viewer fileUrl={pdfUrl} />
+                </Worker>
+              ) : (
+                <p>Loading PDF...</p>
+              )}
+            </ReactModal>
+          </>
+
         );
       case "date":
         return (
@@ -1396,8 +1501,8 @@ export const ViewTermsByType = () => {
       const newResourcesData = {
         Transfer: [],
         Share: [],
-        Confer:[],
-        Collateral:[]
+        Confer: [],
+        Collateral: []
       };
 
       // Traverse through permissionsData
@@ -1657,7 +1762,7 @@ export const ViewTermsByType = () => {
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
           connectionTypeName,
-          guestLockerName:guestLockerName,
+          guestLockerName: guestLockerName,
           hostUserUsername: hostUserUsername,
           guestUserUsername: guestUserUsername,
           locker: locker.name,
@@ -1694,7 +1799,7 @@ export const ViewTermsByType = () => {
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
           connectionTypeName,
-          guestLockerName:guestLockerName,
+          guestLockerName: guestLockerName,
           hostUserUsername: hostUserUsername,
           guestUserUsername: guestUserUsername,
           locker: locker.name,
@@ -1784,7 +1889,7 @@ export const ViewTermsByType = () => {
 
 
   const handleClick = async (xnode_id) => {
-
+    console.log("xnode_id", xnode_id)
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}`.replace(
@@ -1808,9 +1913,15 @@ export const ViewTermsByType = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
-        // console.log("link to file", link_To_File);
-        window.open(link_To_File, '_blank');
+        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        setPdfUrl(secureFileUrl);
+
+        // const secureFileUrl =
+        //   process.env.NODE_ENV === 'production'
+        //     ? link_To_File.replace('http://', 'https://')
+        //     : link_To_File;
         // setPdfUrl(link_To_File);
+        setIsModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1845,12 +1956,12 @@ export const ViewTermsByType = () => {
       }
     });
   };
-  
+
   const handleHostClick = () => {
     navigate('/target-locker-view', {
       state: {
-        user:{username: hostUserUsername},
-        locker:  hostLocker ,
+        user: { username: hostUserUsername },
+        locker: hostLocker,
       },
     });
   };
@@ -1863,7 +1974,7 @@ export const ViewTermsByType = () => {
   const handleHostNameClick = () => {
     navigate('/target-user-view', {
       state: {
-        user:{username: hostUserUsername},
+        user: { username: hostUserUsername },
       },
     });
   };
@@ -1877,7 +1988,7 @@ export const ViewTermsByType = () => {
   const fetchTotalPages = async (selectedResourceId, token) => {
     const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId}`;
     console.log("Fetching data from URL:", url); // Log the URL
-  
+
     try {
       const response = await fetch(url, {
         method: 'GET',
@@ -1886,7 +1997,7 @@ export const ViewTermsByType = () => {
           Authorization: `Basic ${token}`,
         },
       });
-  
+
       const data = await response.json();
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Failed to fetch total pages.");
@@ -1896,12 +2007,12 @@ export const ViewTermsByType = () => {
       console.error("Error details:", error); // Log the error details
       throw new Error("An error occurred while fetching the total pages.");
     }
-  }; 
-  
+  };
+
   const fetchTotalPages2 = async (selectedResourceId2, token) => {
     const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId2}`;
     console.log("Fetching data from URL:", url); // Log the URL
-  
+
     try {
       const response = await fetch(url, {
         method: 'GET',
@@ -1910,7 +2021,7 @@ export const ViewTermsByType = () => {
           Authorization: `Basic ${token}`,
         },
       });
-  
+
       const data = await response.json();
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Failed to fetch total pages.");
@@ -1920,8 +2031,8 @@ export const ViewTermsByType = () => {
       console.error("Error details:", error); // Log the error details
       throw new Error("An error occurred while fetching the total pages.");
     }
-  }; 
-  
+  };
+
   const handleCompletePagesChange = () => {
     setIsCompletePages(prevState => !prevState);
     if (!isCompletePages) {
@@ -1932,8 +2043,8 @@ export const ViewTermsByType = () => {
       setToPage('');
     }
   };
-  
-  const handleCompletePagesChange2 = () =>{
+
+  const handleCompletePagesChange2 = () => {
     setIsCompletePages(prevState => !prevState);
     if (!isCompletePages) {
       setFromPage('1'); // Set fromPage to 1
@@ -2126,13 +2237,13 @@ export const ViewTermsByType = () => {
             <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
           </button>
           <button
-    onClick={() => setShowRevokeConsentModal(true)} // Trigger confirmation modal
-  >
-    Revoke Consent
-  </button>
+            onClick={() => setShowRevokeConsentModal(true)} // Trigger confirmation modal
+          >
+            Revoke Consent
+          </button>
           <br></br>
           <>
-            <div className="longconnectionDescription" style={{ paddingBottom: "4px"}}>
+            <div className="longconnectionDescription" style={{ paddingBottom: "4px" }}>
               {globalTemplateNames.length > 0 && "Connection has been imported from "}
               <span style={{ fontWeight: "bold" }}>
                 {globalTemplateNames.filter(Boolean).map((template, index) => (
@@ -2148,8 +2259,8 @@ export const ViewTermsByType = () => {
 
                 ))}
               </span>
-          {connectionDescription}
-          </div></>
+              {connectionDescription}
+            </div></>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
               <FaUserCircle className="userIcon" /> &nbsp;
@@ -2162,7 +2273,7 @@ export const ViewTermsByType = () => {
             </div>
           </div>
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container"  onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
+            <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
               <i class="bi bi-person-fill-lock"></i> &nbsp;
               <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
             </div>
@@ -2271,7 +2382,7 @@ export const ViewTermsByType = () => {
                               <td>{obligation.purpose}</td>
                               <td>
                                 <div className="tooltips">
-                                <span>{obligation.typeOfSharing}</span>
+                                  <span>{obligation.typeOfSharing}</span>
                                   {renderTooltip(obligation.typeOfSharing)}
                                 </div>
                               </td>
@@ -2326,22 +2437,22 @@ export const ViewTermsByType = () => {
                               </li>
                             ))}
                           </ul>
-                          <button className="btn btn-primary clsoeBtn" style={{backgroundColor:"#007bff"}} onClick={() => setShowResources(false)}>Cancel</button>
+                          <button className="btn btn-primary clsoeBtn" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources(false)}>Cancel</button>
                         </div>
                       )}
                       {showRevokeConsentModal && (
-  <Modal
-    message="Are you sure you want to revoke consent?"
-    type="confirmation"
-    onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
-    onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
-  />
-)}
+                        <Modal
+                          message="Are you sure you want to revoke consent?"
+                          type="confirmation"
+                          onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
+                          onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
+                        />
+                      )}
 
 
                       {showResources2 && (
                         <div className="resource-container">
-                          <h3 style={{fontWeight:"bold"}}>Select Resource for {currentLabelName}</h3>
+                          <h3 style={{ fontWeight: "bold" }}>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
 
                           <ul>
@@ -2366,7 +2477,7 @@ export const ViewTermsByType = () => {
                               </li>
                             ))}
                           </ul>
-                          <button className="btn btn-primary clsoeBtn" style={{backgroundColor:"#007bff"}} onClick={() => setShowResources2(false)}>Cancel</button>
+                          <button className="btn btn-primary clsoeBtn" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources2(false)}>Cancel</button>
                         </div>
                       )}
 
@@ -2572,7 +2683,7 @@ export const ViewTermsByType = () => {
                           <p className="or-text">OR</p>
 
                           <label>
-                          Select All Pages &nbsp; &nbsp;
+                            Select All Pages &nbsp; &nbsp;
                           </label>
                           <input
                             className="checkboxEntire"

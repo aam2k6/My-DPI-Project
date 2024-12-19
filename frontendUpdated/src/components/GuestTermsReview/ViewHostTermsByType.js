@@ -9,7 +9,8 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
-
+import ReactModal from "react-modal";
+import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
 export const ViewHostTermsByType = () => {
 
@@ -70,6 +71,7 @@ export const ViewHostTermsByType = () => {
   const [hostToGuestTerms, setHostToGuestTerms] = useState([]);
   const [guestToHostObligations, setGuestToHostObligations] = useState([]);
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
+  const [pdfUrl, setPdfUrl] = useState(null);
 
   const {
     connectionName,
@@ -108,7 +110,7 @@ export const ViewHostTermsByType = () => {
   //   const fetchData = async () => {
   //     const token = Cookies.get("authToken"); // Get the token from Cookies
   //     if (!token) return setErrorMessage("Authentication token is missing.");
-  
+
   //     try {
   //       const pages = await fetchTotalPages(selectedResourceId, token);
   //       // setTotalPages(pages); 
@@ -116,7 +118,7 @@ export const ViewHostTermsByType = () => {
   //       setErrorMessage(error.message || "Failed to fetch total pages.");
   //     }
   //   };
-  
+
   //   if (selectedResourceId) fetchData();
   // }, [selectedResourceId]);
 
@@ -124,6 +126,11 @@ export const ViewHostTermsByType = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
     navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setPdfUrl(null);
   };
 
   // console.log("start", guest_locker_id, host_locker_id, locker);
@@ -531,6 +538,59 @@ export const ViewHostTermsByType = () => {
     }
   }, [connectionDetails]);
 
+   const fetchAndOpenResource = async (termValues, obligationLabelName) => {
+      const rawXnodeId = termValues[obligationLabelName]?.split(";")[0]?.split("|")[1]; // Assuming xnode_id is the second part
+      const xnode_id = rawXnodeId?.match(/^\d+/)?.[0];
+  
+      if (!xnode_id) {
+        console.error("xnode_id is missing or invalid:", rawXnodeId);
+        // alert("Unable to proceed: xnode_id is required.");
+        return;
+      }
+  
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(
+          `host/access-resource/?xnode_id=${xnode_id}`.replace(/host/, frontend_host),
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Basic ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("API Error:", errorData);
+          throw new Error(errorData.message || 'Failed to access the resource');
+        }
+  
+        const data = await response.json();
+        console.log("API Response:", data);
+  
+        const { link_To_File } = data;
+        if (link_To_File) {
+          const secureFileUrl = link_To_File.replace('http://', 'https://');
+          setPdfUrl(secureFileUrl);
+  
+          // const secureFileUrl =
+          //   process.env.NODE_ENV === 'production'
+          //     ? link_To_File.replace('http://', 'https://')
+          //     : link_To_File;
+          // setPdfUrl(link_To_File);
+          setIsModalOpen(true); // Open the modal
+        } else {
+          console.error("Link to file not found in response:", data);
+          console.log(error);
+        }
+      } catch (err) {
+        console.error("Error fetching resource:", err.message);
+        // alert(`Error: ${err.message}`);
+      }
+    };
+
   // Show loading while fetching connection details
   if (loading) {
     return <div>Loading...</div>; // Replace with a proper loading component if needed
@@ -566,10 +626,66 @@ export const ViewHostTermsByType = () => {
         // console.log("name 2", selectedResources);
         // console.log("selection name", selection);
         return (
-          <button onClick={() => handleButtonClick(obligation.labelName)}>
-            {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
-              "Select Resource"}
-          </button>
+          <>
+            {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
+              <a
+                style={{ display: "block", marginBottom: "8px", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                onClick={() =>
+                  fetchAndOpenResource(termValues, obligation.labelName)
+                }
+              >
+                {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+              </a>
+            )}
+
+
+
+            <button onClick={() => handleButtonClick(obligation.labelName)}>
+              {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
+              Select Resource
+            </button>
+            <ReactModal
+              isOpen={isModalOpen}
+              onRequestClose={handleClose}
+              contentLabel="PDF Viewer"
+              style={{
+                content: {
+                  top: "55%",
+                  left: "50%",
+                  right: "auto",
+                  bottom: "auto",
+                  marginRight: "-50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "95%",
+                  height: "80%",
+                  overflowY: "hidden",
+                  maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                  maxHeight: "90%", // Max height for larger screens
+                },
+              }}
+            >
+              <button
+                onClick={handleClose}
+                style={{
+                  marginBottom: "10px",
+                  cursor: "pointer",
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px", // Button positioned at the top right
+                  zIndex: 100,
+                }}
+              >
+                Close
+              </button>
+              {pdfUrl ? (
+                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                  <Viewer fileUrl={pdfUrl} />
+                </Worker>
+              ) : (
+                <p>Loading PDF...</p>
+              )}
+            </ReactModal>
+          </>
         );
       case "date":
         return (
@@ -620,7 +736,7 @@ export const ViewHostTermsByType = () => {
 
     const url = `${frontend_host}/get-total-pages/?xnode_id=${resource.id}`;
     // Update selection state
-    
+
     setSelection((prev) => ({
       ...prev,
       [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
@@ -636,8 +752,8 @@ export const ViewHostTermsByType = () => {
 
     // Fetch total pages for the selected resource
     try {
-        
-        const response = await fetch(url, {
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -837,7 +953,7 @@ export const ViewHostTermsByType = () => {
   // const fetchTotalPages = async (selectedResourceId, token) => {
   //   const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId}`;
   //   console.log("Fetching data from URL:", url); // Log the URL
-  
+
   //   try {
   //     const response = await fetch(url, {
   //       method: 'GET',
@@ -846,7 +962,7 @@ export const ViewHostTermsByType = () => {
   //         Authorization: `Basic ${token}`,
   //       },
   //     });
-  
+
   //     const data = await response.json();
   //     if (!response.ok || !data.success) {
   //       throw new Error(data.error || "Failed to fetch total pages.");
@@ -857,7 +973,7 @@ export const ViewHostTermsByType = () => {
   //     throw new Error("An error occurred while fetching the total pages.");
   //   }
   // };  
-  
+
   const handleCompletePagesChange = () => {
     setIsCompletePages(prevState => !prevState);
     if (!isCompletePages) {
@@ -1359,9 +1475,15 @@ export const ViewHostTermsByType = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
-        // console.log("link to file", link_To_File);
-        window.open(link_To_File, '_blank');
+        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        setPdfUrl(secureFileUrl);
+
+        // const secureFileUrl =
+        //   process.env.NODE_ENV === 'production'
+        //     ? link_To_File.replace('http://', 'https://')
+        //     : link_To_File;
         // setPdfUrl(link_To_File);
+        setIsModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1413,15 +1535,15 @@ export const ViewHostTermsByType = () => {
   const handleGuestNameClick = () => {
     navigate('/target-user-view', {
       state: {
-        user:{username: guestUserUsername},
+        user: { username: guestUserUsername },
       },
-    }); 
+    });
   };
 
   const handleHostNameClick = () => {
     navigate('/home', {
     });
-    
+
   };
 
   console.log("selection", selection);
@@ -2016,7 +2138,7 @@ export const ViewHostTermsByType = () => {
                           <p className="or-text">OR</p>
 
                           <label>
-                          Select All Pages &nbsp; &nbsp;
+                            Select All Pages &nbsp; &nbsp;
                           </label>
                           <input
                             className="checkboxEntire"

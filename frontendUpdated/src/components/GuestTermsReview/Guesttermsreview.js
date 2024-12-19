@@ -8,6 +8,8 @@ import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 import { Grid } from '@mui/material'
+import ReactModal from "react-modal";
+import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
 
 export const Guesttermsreview = () => {
@@ -43,7 +45,7 @@ export const Guesttermsreview = () => {
   const [statuses2, setStatuses2] = useState({});
   const [activeTab, setActiveTab] = useState("guest");
   const [downloadedResources, setDownloadedResources] = useState({}); // Keeps track of downloaded resources by ID
-
+  const [pdfUrl, setPdfUrl] = useState(null);
 
 
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
@@ -391,7 +393,7 @@ export const Guesttermsreview = () => {
       state: { locker: conndetails.host_locker },
     });
   };
-  
+
 
   const handleClick = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
@@ -422,9 +424,15 @@ export const Guesttermsreview = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
-        // console.log("link to file", link_To_File);
-        window.open(link_To_File, '_blank');
+        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        setPdfUrl(secureFileUrl);
+
+        // const secureFileUrl =
+        //   process.env.NODE_ENV === 'production'
+        //     ? link_To_File.replace('http://', 'https://')
+        //     : link_To_File;
         // setPdfUrl(link_To_File);
+        setIsModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1348,15 +1356,15 @@ export const Guesttermsreview = () => {
   const handleGuestNameClick = () => {
     navigate('/target-user-view', {
       state: {
-        user:{username: conndetails.host_user.username},
+        user: { username: conndetails.host_user.username },
       },
-    }); 
+    });
   };
 
   const handleHostNameClick = () => {
     navigate('/home', {
     });
-    
+
   };
 
   const content = (
@@ -1478,7 +1486,11 @@ export const Guesttermsreview = () => {
       </span>
     );
   };
-
+  
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setPdfUrl(null);
+  };
 
   console.log("conn details", conndetails);
   console.log("connection", connection);
@@ -1654,7 +1666,7 @@ export const Guesttermsreview = () => {
                                 <td>
                                   {termsValue[obligation.labelName]?.split(";")[0] ? (
                                     <a
-                                      href="#"
+                                      style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
                                       onClick={() =>
                                         handleClick(
                                           termsValue[obligation.labelName]?.split(";")[0]?.split("|")[1]
@@ -1666,6 +1678,47 @@ export const Guesttermsreview = () => {
                                   ) : (
                                     "None"
                                   )}
+                                  <ReactModal
+                                    isOpen={isModalOpen}
+                                    onRequestClose={handleClose}
+                                    contentLabel="PDF Viewer"
+                                    style={{
+                                      content: {
+                                        top: "55%",
+                                        left: "50%",
+                                        right: "auto",
+                                        bottom: "auto",
+                                        marginRight: "-50%",
+                                        transform: "translate(-50%, -50%)",
+                                        width: "95%",
+                                        height: "80%",
+                                        overflowY: "hidden",
+                                        maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                                        maxHeight: "90%", // Max height for larger screens
+                                      },
+                                    }}
+                                  >
+                                    <button
+                                      onClick={handleClose}
+                                      style={{
+                                        marginBottom: "10px",
+                                        cursor: "pointer",
+                                        position: "absolute",
+                                        top: "10px",
+                                        right: "10px", // Button positioned at the top right
+                                        zIndex: 100,
+                                      }}
+                                    >
+                                      Close
+                                    </button>
+                                    {pdfUrl ? (
+                                      <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                        <Viewer fileUrl={pdfUrl} />
+                                      </Worker>
+                                    ) : (
+                                      <p>Loading PDF...</p>
+                                    )}
+                                  </ReactModal>
                                 </td>
                                 <td>{obligation.purpose}</td>
                                 <td>

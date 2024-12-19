@@ -721,7 +721,7 @@ export const ViewLocker = () => {
         // setPdfUrl(link_To_File);
         setIsModalOpen(true); // Open the modal
       } else {
-        setError('Unable to retrieve the file link.');
+        // setError('Unable to retrieve the file link.');
         console.log(error);
       }
     } catch (err) {
@@ -866,7 +866,7 @@ export const ViewLocker = () => {
 
   const handleClose = () => {
     setIsModalOpen(false);
-    // setPdfUrl(null);
+    setPdfUrl(null);
   };
 
   const handleFileChange = (e) => {

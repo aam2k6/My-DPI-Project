@@ -1425,12 +1425,12 @@ export const HostTermsReview = () => {
           <div className="tooltip-container user-container">
             <div className="tooltips user-container">
               <FaUserCircle className="userIcon" /> &nbsp;
-              <span className="userName">{renderUserTooltip('guest', conndetails.guest_user?.username)} : {conndetails.guest_user?.username || "Loading..."} &nbsp;</span>
+              <span className="userName">{renderUserTooltip('guest', conndetails.guest_user?.username)} : {capitalizeFirstLetter(conndetails.guest_user?.username) || "Loading..."} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
             <div className="tooltips user-container">
               <FaRegUserCircle className="userIcon" />&nbsp;
-              <span className="userName">{renderUserTooltip('host', conndetails.host_user?.username)} : {conndetails?.host_user?.username || "Loading..."}</span>
+              <span className="userName">{renderUserTooltip('host', conndetails.host_user?.username)} : {capitalizeFirstLetter(conndetails?.host_user?.username) || "Loading..."}</span>
             </div>
           </div>
           <div className="tooltip-container user-container">

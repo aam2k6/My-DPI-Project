@@ -1238,7 +1238,7 @@ export const Guesttermsreview = () => {
   const renderPermissionsTable = () => {
     if (permissionsData.length > 0) {
       return (
-        <div className="permissions-table">
+        <div className="permissions-table mt-4">
           <h3>User Permissions</h3>
           <table>
             <thead>
@@ -1256,7 +1256,15 @@ export const Guesttermsreview = () => {
                 <tr key={index}>
                   <td>{permission.sno}</td>
                   <td>{permission.labelName}</td>
-                  <td>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</td>{" "}
+                  <td> <a className="mb-1"
+                                      style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                      onClick={() =>
+                                        handleClick(
+                                          permission.dataElement?.split(";")[0]?.split("|")[1]
+                                        )
+                                      }>
+                                    {permission.dataElement?.split(";")[0]?.split("|")[0]}
+                                  </a></td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
                   <td>

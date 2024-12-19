@@ -1152,8 +1152,8 @@ export const ViewTermsByType = () => {
         return (
           <>
             {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
-              <a
-                style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
+              <a className="mb-1"
+                style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
                 onClick={() =>
                   fetchAndOpenResource(
                     termValues[obligation.labelName]?.split(";")[0]?.split("|")[1]
@@ -1163,7 +1163,6 @@ export const ViewTermsByType = () => {
                 {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
               </a>
             )}
-
 
 
             <button onClick={() => handleButtonClick(obligation.labelName)}>
@@ -2783,10 +2782,20 @@ export const ViewTermsByType = () => {
                                 {/* Display "None" if empty */}
                                 <td>{permission.share}</td>
                                 <td>
-                                  <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button>
+                                
+                                  <a className="mb-1"
+                                      style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                      onClick={() =>
+                                        fetchAndOpenResource(
+                                          permission.dataElement?.split(";")[0]?.split("|")[1]
+                                        )
+                                      }>
+                                    {permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}
+                                  </a>
+                                  {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
                                   {/* Display "None" if empty */}
                                 </td>
-                                <td>{statuses2[permission.labelName]}</td> {/* Example status value */}
+                                <td>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
                             {moreDataTerms.map((term, index) => (
@@ -2837,9 +2846,21 @@ export const ViewTermsByType = () => {
                   
                     required
                   /> */}
+                                  {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] && (
+                                    <a className="mb-1"
+                                      style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                      onClick={() =>
+                                        fetchAndOpenResource(
+                                          moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[1]
+                                        )
+                                      }
+                                    >
+                                      {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
+                                    </a>
+                                  )}
                                   <button onClick={() => handleButtonClick2(term.labelName)}>
-                                    {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] ||
-                                      "Select Resource"}
+
+                                    Select Resource
                                   </button>
                                 </td>
                                 <td>Pending</td> {/* Example status value */}

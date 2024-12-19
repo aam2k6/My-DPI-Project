@@ -625,8 +625,8 @@ export const ViewHostTermsByType = () => {
         return (
           <>
             {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
-              <a
-                style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
+              <a className="mb-1"
+                style={{display:"block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
                 onClick={() =>
                   fetchAndOpenResource(
                     termValues[obligation.labelName]?.split(";")[0]?.split("|")[1]
@@ -1442,13 +1442,6 @@ export const ViewHostTermsByType = () => {
   // };
 
 
-  /*************  ✨ Codeium Command 🌟  *************/
-  /**
-   * Handles the click event to access a resource based on the xnode_id.
-   * Fetches the resource link and opens it in a new tab if available.
-   *
-   * @param {string} xnode_id - The ID of the xnode to access.
-   */
   const handleClick = async (xnode_id) => {
 
     try {

@@ -1015,16 +1015,16 @@ export const ViewLocker = () => {
             <div className="res">
               <div>
                 <h3>Resources</h3>
-                <div className="d-flex">
+                <Grid container>
                   {legendItems.map((item, index) => (
-                    <div
+                    <Grid item xs={12} md={12}
                       key={index}
                       style={{
                         display: "flex",
                         alignItems: "center",
                       }}
                     >
-                      <div
+                      <span
                         style={{
                           width: "10px",
                           height: "10px",
@@ -1034,11 +1034,11 @@ export const ViewLocker = () => {
                           marginRight: "5px",
                           marginLeft: "10px",
                         }}
-                      ></div>
+                      ></span>
                       <span style={{ fontSize: "14px", color: "#333" }}>{item.label}</span>
-                    </div>
+                    </Grid>
                   ))}
-                </div>
+                </Grid>
               </div>
               <div className="container-3 clearfix">
                 <div>

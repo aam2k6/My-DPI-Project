@@ -241,6 +241,7 @@
   height: 14rem;
   overflow-y: auto;
   padding: 1rem;
+  padding-top: 20px;
 }
 #conntent {
   margin-bottom: 0.25rem;

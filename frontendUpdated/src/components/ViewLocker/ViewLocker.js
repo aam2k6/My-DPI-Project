@@ -9,7 +9,8 @@ import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal";
 import { Grid } from "@mui/material"
-import Tooltip from '@mui/material/Tooltip';
+import Tooltips from '@mui/material/Tooltip';
+import { Tooltip } from 'react-tooltip';
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import "@react-pdf-viewer/core/lib/styles/index.css";
@@ -969,7 +970,7 @@ export const ViewLocker = () => {
 
   console.log("connections", connections.outgoing_connections
   );
-  
+
 
   return (
     <div id="viewLocker">
@@ -1014,7 +1015,7 @@ export const ViewLocker = () => {
           <Grid item md={5.5} xs={12} className="a">
             <div className="res">
               <div>
-                <h3>Resources</h3>
+                <h3 className="mt-1">Resources</h3>
                 <Grid container>
                   {legendItems.map((item, index) => (
                     <Grid item xs={12} md={12}
@@ -1058,9 +1059,9 @@ export const ViewLocker = () => {
                       style={{ marginRight: "10px", fontSize: "24px" }}
                     />
                     <span>My Resources</span>
-                    <button  style={{marginLeft:"12px", fontSize:"12px"}} onClick={handleUploadResource}>
-              Upload resource
-            </button>
+                    <button style={{ marginLeft: "12px", fontSize: "12px" }} onClick={handleUploadResource}>
+                      Upload resource
+                    </button>
                   </div>
 
                   {/* Resource List inside the folder */}
@@ -1074,7 +1075,7 @@ export const ViewLocker = () => {
                             style={{ paddingBottom: "0px" }}
                           >
                             <div className="resource-details">
-                              <Tooltip
+                              <Tooltips
                                 title={
                                   <>
                                     <div>
@@ -1148,7 +1149,7 @@ export const ViewLocker = () => {
                                     />
                                   </span>
                                 </div>
-                              </Tooltip>
+                              </Tooltips>
                               <ReactModal
                                 isOpen={isModalOpen}
                                 onRequestClose={handleClose}
@@ -1394,7 +1395,7 @@ export const ViewLocker = () => {
                           </Grid>
 
                           <Grid item md={1} xs={1}>
-                            <i class="bi bi-info-circle " style={{ fontSize: "20px", fontWeight: "bold" }} onClick={() => handleIncomingInfo(connection)}></i>
+                            <i class="bi bi-info-circle " style={{ fontSize: "20px", fontWeight: "bold", cursor:"pointer" }} onClick={() => handleIncomingInfo(connection)}></i>
 
                             {/* <button
                               className="info-button2"
@@ -1510,7 +1511,7 @@ export const ViewLocker = () => {
                                   </button>
                                 </div>
                                 <div id="conntent">
-                                  {connection.guest_locker.name} <i class="bi bi-arrows me-1" style={{fontSize:"16px"}}></i>
+                                  {connection.guest_locker.name} <i class="bi bi-arrows me-1" style={{ fontSize: "16px" }}></i>
                                   {connection.host_locker.name}
                                 </div>
                                 <div id="conntent">
@@ -1527,20 +1528,25 @@ export const ViewLocker = () => {
                                 </div>
                               </Grid>
                               <Grid item paddingTop={{ md: "10px", xs: "" }} md={4} xs={12}>
-                                <button
-                                  className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
-                                  onClick={() =>
-                                    handleConsentAndInfo(connection)
-                                  }
-                                >
-                                  c
-                                </button>
-                                <button
+                                <div>
+                                  <button data-tooltip-id="tooltip" data-tooltip-content="Terms of connection"
+                                    className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
+                                    onClick={() =>
+                                      handleConsentAndInfo(connection)
+                                    }
+                                  >
+                                    c
+                                  </button>
+                                  <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+
+                                </div>
+
+                                {/* <button
                                   className="info-button"
                                   onClick={() => handleInfo(connection)}
                                 >
                                   i{" "}
-                                </button>
+                                </button> */}
                                 <div className="d-flex align-items-center mt-2">
 
                                   <h6 className="mt-2 me-2">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
@@ -1561,7 +1567,7 @@ export const ViewLocker = () => {
                                 </div>
 
                                 <div className="d-flex align-items-center mt-1">
-                                <button className="me-2"
+                                  <button className="me-2"
                                     onClick={() => handleTrackerHost(connection)}
                                     style={{
                                       backgroundColor: colorReverse,
@@ -1572,12 +1578,12 @@ export const ViewLocker = () => {
                                       cursor: 'pointer',
                                     }}
                                   >
-                                     {ratioReverse} 
+                                    {ratioReverse}
                                   </button>
                                   <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
 
                                   <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
-                                  
+
 
                                 </div>
                               </Grid>

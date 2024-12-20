@@ -1465,7 +1465,9 @@ export const HostTermsReview = () => {
                     guest_locker_id: conndetails.guest_locker?.locker_id,
                     host_locker_id: conndetails.host_locker?.locker_id,
                     connection: connection,
-                    connectionType: connectionType,
+                    // connectionType: connectionType,
+                    guestLocker: conndetails.guest_locker,
+                    hostLocker: conndetails.host_locker
                   },
                 })}
               >

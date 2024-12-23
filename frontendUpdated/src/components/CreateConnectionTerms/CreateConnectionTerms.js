@@ -1329,7 +1329,7 @@ const handleHostClick = () => {
 const handleGuestNameClick = () => {
   navigate('/target-user-view', {
     state: {
-      user:{username: guestUserUsername},
+      user: connectionDetails.guest_user,
     },
   });
 };
@@ -1337,7 +1337,7 @@ const handleGuestNameClick = () => {
 const handleHostNameClick = () => {
   navigate('/target-user-view', {
     state: {
-      user:{username: hostUserUsername},
+      user: connectionDetails.host_user,
     },
   });
 };

@@ -121,7 +121,8 @@ export const CreateConnectionType = () => {
                 connectionName: `${selectedConnectionType.connection_type_name}-${curruser.username}:${parentUser.username}`,
                 showConsent: true,
                 lockerComplete: selectedLocker,
-                hostLocker:locker
+                hostLocker:locker,
+                agrees:true
             }
         });
     };

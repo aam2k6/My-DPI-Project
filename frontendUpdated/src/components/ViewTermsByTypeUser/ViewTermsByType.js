@@ -558,6 +558,7 @@ export const ViewTermsByType = () => {
   const [loading, setLoading] = useState(true);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReactModalOpen, setIsReactModalOpen] = useState(false);
   const [moreDataTerms, setMoreDataTerms] = useState([]);
   const [xnodes, setXnodes] = useState([]);
   // const [correspondingNames, setCorrespondingNames] = useState([]);
@@ -587,6 +588,8 @@ export const ViewTermsByType = () => {
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
   const [showRevokeConsentModal, setShowRevokeConsentModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [isModalOpenClose, setIsModalOpenClose] = useState(false);
+  const [closeState, setCloseState] = useState(true);
 
   const {
     connectionName,
@@ -637,6 +640,21 @@ export const ViewTermsByType = () => {
     if (selectedResourceId2) fetchData();
   }, [selectedResourceId2]);
 
+   useEffect(() => {
+      if (connectionDetails) {
+        const { close_guest, close_host } = connectionDetails;
+        //   console.log(revoke_host, revoke_guest);
+        if (close_host === true && close_guest === false) {
+          setModalMessage({
+            message:
+              "The host has closed the connection, click Close connection to close the connection",
+            type: "info",
+          });
+          setIsModalOpenClose(true);
+        }
+      }
+    }, [connectionDetails]);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
@@ -644,7 +662,7 @@ export const ViewTermsByType = () => {
   };
 
   const handleClose = () => {
-    setIsModalOpen(false);
+    setIsReactModalOpen(false);
     setPdfUrl(null);
   };
 
@@ -1102,7 +1120,7 @@ export const ViewTermsByType = () => {
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1170,7 +1188,7 @@ export const ViewTermsByType = () => {
               Select Resource
             </button>
             <ReactModal
-              isOpen={isModalOpen}
+              isOpen={isReactModalOpen}
               onRequestClose={handleClose}
               contentLabel="PDF Viewer"
               style={{
@@ -1190,7 +1208,7 @@ export const ViewTermsByType = () => {
               }}
             >
               <button
-                onClick={handleClose}
+                onClick={isReactModalOpen}
                 style={{
                   marginBottom: "10px",
                   cursor: "pointer",
@@ -1884,6 +1902,21 @@ export const ViewTermsByType = () => {
   //   }
   // };
 
+  const onCloseButtonClick = async (connection_id) => {
+    setCloseState(false);
+    const message = await handleCloseConnection(connection_id);
+    setIsModalOpenClose(false);
+    setModalMessage({ message: message, type: "info" });
+    setIsModalOpenClose(true);
+  };
+  
+  const handleCloseModalClose = () => {
+    setIsModalOpenClose(false);
+    setModalMessage({ message: "", type: "" });
+    navigate(`/view-locker?param=${Date.now()}`, {
+      state: { locker: connection.guest_locker },
+    });
+  };
 
   const handleClick = async (xnode_id) => {
     console.log("xnode_id", xnode_id)
@@ -2005,6 +2038,64 @@ export const ViewTermsByType = () => {
       throw new Error("An error occurred while fetching the total pages.");
     }
   };
+
+  const handleCloseConnection = async (connection_id) => {
+      const formData = new FormData();
+      formData.append("connection_id", connection_id);
+      // formData.append("close_host_bool", "True");
+  
+      // console.log(connection_id ,"id");
+      const token = Cookies.get("authToken");
+      try {
+        // Step 1: Call close_connection_host API using fetch
+        const revokeHostResponse = await fetch(
+          "host/close_connection_guest/".replace(/host/, frontend_host),
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+  
+            body: formData,
+          }
+        );
+  
+        const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+  
+        if (revokeHostResponse.ok) {
+          // console.log("Revoke host successful: ", revokeHostData.message);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+  
+      // Step 2: Call close API using fetch
+      try {
+        const response = await fetch(
+          "host/close_connection_guest/".replace(/host/, frontend_host),
+          {
+            method: "POST",
+            headers: {
+              // 'Content-Type': 'application/json',
+              Authorization: `Basic ${token}`,
+            },
+            body: formData,
+          }
+        );
+  
+        const data = await response.json();
+        // console.log("revoke consent", data);
+        if (response.status === 200) {
+          return "Successfully Connection closed ";
+        } else {
+          return data.message || "An error occurred while Closing connection.";
+        }
+      } catch (error) {
+        console.error("Error:", error);
+  
+        return "An error occurred while Closing connection.";
+      }
+    };
 
   const fetchTotalPages2 = async (selectedResourceId2, token) => {
     const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId2}`;
@@ -2901,6 +2992,17 @@ export const ViewTermsByType = () => {
                               type={modalMessage.type}
                             />
                           )}
+
+                           {isModalOpenClose && (
+                                                <Modal
+                                                  message={modalMessage.message}
+                                                  onClose={handleCloseModalClose}
+                                                  type={modalMessage.type}
+                                                  closeConnection={closeState}
+                                                  onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
+                                                  viewTerms={() => navigateToConnectionTerms(connectionName)}
+                                                />
+                                              )}
 
                           {/* {showPageInput && (
       <div className="page-input-modal">

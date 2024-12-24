@@ -31,11 +31,13 @@ export const Guesttermsreview = () => {
     confer: [],
     collateral: []
   });
+  const [isReactModalOpen, setIsReactModalOpen] = useState(false);
   const [permissionsData, setPermissionsData] = useState([]);
   const [terms, setTerms] = useState([]);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpens, setIsModalOpens] = useState(false);
   const [isModalOpenClose, setIsModalOpenClose] = useState(false);
   const [connectionDetails, setConnectionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -325,16 +327,48 @@ export const Guesttermsreview = () => {
     if (connectionDetails) {
       const { close_guest, close_host } = connectionDetails;
       //   console.log(revoke_host, revoke_guest);
-      if (close_guest === true || close_host === true) {
+      if (close_guest === false && close_host === true) {
         setModalMessage({
           message:
-            "The guest has closed the connection, click Close connection to close the connection",
+            "You have closed the connection, but the guest is yet to approve your close connection.",
           type: "info",
         });
         setIsModalOpenClose(true);
       }
     }
   }, [connectionDetails]);
+  
+
+  useEffect(() => {
+    if (connectionDetails) {
+      const { close_host } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (close_host === true) {
+        setModalMessage({
+          message:
+            "You closed  the connection waiting for guest to close",
+          type: "info",
+        });
+        setIsModalOpens(true);
+      }
+    }
+  }, [connectionDetails]);
+
+  useEffect(() => {
+        if (connectionDetails) {
+          const { close_guest, close_host } = connectionDetails;
+          //   console.log(revoke_host, revoke_guest);
+          if (close_host === false && close_guest === true) {
+            setModalMessage({
+              message:
+                "The guest has closed the connection, click Close connection to close the connection",
+              type: "info",
+            });
+            setIsModalOpenClose(true);
+          }
+        }
+      }, [connectionDetails]);
+  
 
   // const handleStatusChange = (index, status, value, type, isFile) => {
   //     if (value !== "") {
@@ -380,6 +414,7 @@ export const Guesttermsreview = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsModalOpens(false);
     setModalMessage({ message: "", type: "" });
     navigate(`/view-locker?param=${Date.now()}`, {
       state: { locker: conndetails.host_locker },
@@ -506,7 +541,7 @@ export const Guesttermsreview = () => {
   const handleCloseConnection = async (connection_id) => {
     const formData = new FormData();
     formData.append("connection_id", connection_id);
-    formData.append("close_host_bool", "True");
+    // formData.append("close_host_bool", "True");
 
     // console.log(connection_id ,"id");
     const token = Cookies.get("authToken");
@@ -1496,7 +1531,7 @@ export const Guesttermsreview = () => {
   };
   
   const handleClose = () => {
-    setIsModalOpen(false);
+    setIsReactModalOpen(false);
     setPdfUrl(null);
   };
 
@@ -1687,7 +1722,7 @@ export const Guesttermsreview = () => {
                                     "None"
                                   )}
                                   <ReactModal
-                                    isOpen={isModalOpen}
+                                    isOpen={isReactModalOpen}
                                     onRequestClose={handleClose}
                                     contentLabel="PDF Viewer"
                                     style={{
@@ -1830,6 +1865,14 @@ export const Guesttermsreview = () => {
                         viewTerms={() => navigateToConnectionDetails(connectionType)}
                       />
                     )}
+
+                    {isModalOpens && (
+                                                <Modal
+                                                  message={modalMessage.message}
+                                                  onClose={handleCloseModal}
+                                                  type={modalMessage.type}
+                                                />
+                                              )}
 
                     {/* {isRevokeModalOpen && (
                     <RevokeMessageModal 

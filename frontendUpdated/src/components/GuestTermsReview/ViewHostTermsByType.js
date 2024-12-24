@@ -72,6 +72,8 @@ export const ViewHostTermsByType = () => {
   const [guestToHostObligations, setGuestToHostObligations] = useState([]);
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [showRevokeConsentModal, setShowRevokeConsentModal] = useState(false);
+  
 
   const {
     connectionName,
@@ -854,6 +856,11 @@ export const ViewHostTermsByType = () => {
     } catch (error) {
       setErrorMessage("An error occurred while validating pages.");
     }
+  };
+
+  const handleRevokeConsentConfirm = () => {
+    setShowRevokeConsentModal(false); // Close the modal
+    handleConsentAndInfo(connectionName); // Execute revoke consent action
   };
 
   // const appendPagesToTerms2 = (termValue) => {
@@ -1722,7 +1729,7 @@ export const ViewHostTermsByType = () => {
           </button>
           <button
             //   className="info-button"
-            onClick={() => handleConsentAndInfo(connectionName)}
+            onClick={() => setShowRevokeConsentModal(true)}
           >
             Revoke Consent
           </button>
@@ -2198,6 +2205,14 @@ export const ViewHostTermsByType = () => {
                   </div>
                 </div>
               )}
+              {showRevokeConsentModal && (
+                                      <Modal
+                                        message="Are you sure you want to revoke consent?"
+                                        type="confirmation"
+                                        onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
+                                        onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
+                                      />
+                                    )}
             </div>
           </div>
         </div>

@@ -735,7 +735,7 @@ export const CreateConnectionTerms = () => {
   res?.forbidden?.guest_to_host?.[0]?.labelDescription ??
   "You can unilaterally close the connection";
 
-console.log("forbiddenContent",forbiddenContent);
+console.log("forbiddenContent",curruser);
 
   const {
     connectionName,
@@ -752,7 +752,8 @@ console.log("forbiddenContent",forbiddenContent);
     connection_id,
     lockerComplete,
     hostLocker,
-    guestLocker
+    guestLocker,
+    agrees
     
   } = location.state || {};
   console.log("data",
@@ -769,7 +770,8 @@ console.log("forbiddenContent",forbiddenContent);
     connection_id,
     lockerComplete,
     hostLocker,
-    guestLocker
+    guestLocker,
+    agrees
   );
 
   console.log("guest name",guestLocker,);
@@ -795,8 +797,8 @@ console.log("forbiddenContent",forbiddenContent);
       const queryParams = new URLSearchParams({
         connection_name: connectionName,
         connection_type_name: connectionTypeName,
-        guest_username: curruser.username,
-        guest_lockername: locker,
+        guest_username: guestUserUsername,
+        guest_lockername: guestLockerName,
         host_username: hostUserUsername,
         host_lockername: hostLockerName,
       });
@@ -859,9 +861,9 @@ console.log("forbiddenContent",forbiddenContent);
     
       const connection_type_name = connectionTypeName;
       const host_locker_name = hostLockerName; 
-      const guest_locker_name =  locker;
+      const guest_locker_name =  guestLockerName;
       const host_user_username = hostUserUsername; 
-      const guest_user_username = curruser.username;
+      const guest_user_username = guestUserUsername;
   
       const token = Cookies.get("authToken"); 
   
@@ -1065,7 +1067,8 @@ console.log("forbiddenContent",forbiddenContent);
     }
     setIsModalOpen(true);
 };
-
+console.log("showConsent", agrees)
+console.log("showConsent", Iagree)
   const handleRevokebutton = async () => {
     const token = Cookies.get("authToken");
     const revoke_guest = false;
@@ -1128,7 +1131,8 @@ console.log("forbiddenContent",forbiddenContent);
     // navigate(`/target-locker-view`);
     
   };
-
+  const userRole = curruser.username === guestUserUsername;
+  console.log("userRole",userRole)
   const handleClosebutton = async () => {
     const token = Cookies.get("authToken");
     const formData = new FormData();
@@ -1141,15 +1145,17 @@ console.log("forbiddenContent",forbiddenContent);
     // formData.append("close_guest", "true");
     formData.append("connection_id", connection_id);
     console.log("formData", formData);
+    const endpoint = userRole
+        ? "host/close_connection_guest/"
+        : "host/close_connection_host/";
     try {
-        const response = await fetch("host/close_connection_guest/".replace(/host/, frontend_host), {
-            method: "POST",
-            headers: {
-                Authorization: `Basic ${token}`,
-            },
-            body: formData,
-        });
-
+      const response = await fetch(endpoint.replace(/host/, frontend_host), {
+        method: "POST",
+        headers: {
+            Authorization: `Basic ${token}`,
+        },
+        body: formData,
+    });
         const data = await response.json();
         if (response.ok) {
             setModalMessage({
@@ -1555,7 +1561,7 @@ return (
   )}
 
 <div>
-  {showConsent && Iagree === "0" && (
+  {showConsent && agrees && (
     <Grid container>
       <Grid item md={4} xs={1}></Grid>
       <Grid item xs={5.5} md={2} className="page13button">
@@ -1580,7 +1586,7 @@ return (
 </div>
 
 <div>
-  {showConsent && Iagree === "1" && (
+  {showConsent && Iagree === "1" && !agrees && (
     <Grid container className="page13parent13state1">
       <Grid item xs={12} md={1}></Grid>
       <Grid item xs={12} md={4} className="page13consent" mb={3}>

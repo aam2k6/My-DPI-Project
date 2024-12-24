@@ -640,20 +640,20 @@ export const ViewTermsByType = () => {
     if (selectedResourceId2) fetchData();
   }, [selectedResourceId2]);
 
-   useEffect(() => {
-      if (connectionDetails) {
-        const { close_guest, close_host } = connectionDetails;
-        //   console.log(revoke_host, revoke_guest);
-        if (close_host === true && close_guest === false) {
-          setModalMessage({
-            message:
-              "The host has closed the connection, click Close connection to close the connection",
-            type: "info",
-          });
-          setIsModalOpenClose(true);
-        }
+  useEffect(() => {
+    if (connectionDetails) {
+      const { close_guest, close_host } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (close_host === true && close_guest === false) {
+        setModalMessage({
+          message:
+            "The host has closed the connection, click Close connection to close the connection",
+          type: "info",
+        });
+        setIsModalOpenClose(true);
       }
-    }, [connectionDetails]);
+    }
+  }, [connectionDetails]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -1909,7 +1909,7 @@ export const ViewTermsByType = () => {
     setModalMessage({ message: message, type: "info" });
     setIsModalOpenClose(true);
   };
-  
+
   const handleCloseModalClose = () => {
     setIsModalOpenClose(false);
     setModalMessage({ message: "", type: "" });
@@ -2040,62 +2040,62 @@ export const ViewTermsByType = () => {
   };
 
   const handleCloseConnection = async (connection_id) => {
-      const formData = new FormData();
-      formData.append("connection_id", connection_id);
-      // formData.append("close_host_bool", "True");
-  
-      // console.log(connection_id ,"id");
-      const token = Cookies.get("authToken");
-      try {
-        // Step 1: Call close_connection_host API using fetch
-        const revokeHostResponse = await fetch(
-          "host/close_connection_guest/".replace(/host/, frontend_host),
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Basic ${token}`,
-            },
-  
-            body: formData,
-          }
-        );
-  
-        const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
-  
-        if (revokeHostResponse.ok) {
-          // console.log("Revoke host successful: ", revokeHostData.message);
+    const formData = new FormData();
+    formData.append("connection_id", connection_id);
+    // formData.append("close_host_bool", "True");
+
+    // console.log(connection_id ,"id");
+    const token = Cookies.get("authToken");
+    try {
+      // Step 1: Call close_connection_host API using fetch
+      const revokeHostResponse = await fetch(
+        "host/close_connection_guest/".replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+
+          body: formData,
         }
-      } catch (error) {
-        console.error("Error:", error);
+      );
+
+      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+
+      if (revokeHostResponse.ok) {
+        // console.log("Revoke host successful: ", revokeHostData.message);
       }
-  
-      // Step 2: Call close API using fetch
-      try {
-        const response = await fetch(
-          "host/close_connection_guest/".replace(/host/, frontend_host),
-          {
-            method: "POST",
-            headers: {
-              // 'Content-Type': 'application/json',
-              Authorization: `Basic ${token}`,
-            },
-            body: formData,
-          }
-        );
-  
-        const data = await response.json();
-        // console.log("revoke consent", data);
-        if (response.status === 200) {
-          return "Successfully Connection closed ";
-        } else {
-          return data.message || "An error occurred while Closing connection.";
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    // Step 2: Call close API using fetch
+    try {
+      const response = await fetch(
+        "host/close_connection_guest/".replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            // 'Content-Type': 'application/json',
+            Authorization: `Basic ${token}`,
+          },
+          body: formData,
         }
-      } catch (error) {
-        console.error("Error:", error);
-  
-        return "An error occurred while Closing connection.";
+      );
+
+      const data = await response.json();
+      // console.log("revoke consent", data);
+      if (response.status === 200) {
+        return "Successfully Connection closed ";
+      } else {
+        return data.message || "An error occurred while Closing connection.";
       }
-    };
+    } catch (error) {
+      console.error("Error:", error);
+
+      return "An error occurred while Closing connection.";
+    }
+  };
 
   const fetchTotalPages2 = async (selectedResourceId2, token) => {
     const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId2}`;
@@ -2528,14 +2528,14 @@ export const ViewTermsByType = () => {
                           <button className="btn btn-primary clsoeBtn" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources(false)}>Cancel</button>
                         </div>
                       )}
-                      {showRevokeConsentModal && (
+                      {/* {showRevokeConsentModal && (
                         <Modal
                           message="Are you sure you want to revoke consent?"
                           type="confirmation"
                           onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
                           onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
                         />
-                      )}
+                      )} */}
 
 
                       {showResources2 && (
@@ -2848,7 +2848,7 @@ export const ViewTermsByType = () => {
                       </div>
                     )}
 
-                    {true && (
+                    {permissions?.canShareMoreData && (
                       <div className="table-container">
                         {/* Add this div for styling */}
                         <h3>Share more data</h3>
@@ -2873,14 +2873,14 @@ export const ViewTermsByType = () => {
                                 {/* Display "None" if empty */}
                                 <td>{permission.share}</td>
                                 <td>
-                                
+
                                   <a className="mb-1"
-                                      style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
-                                      onClick={() =>
-                                        fetchAndOpenResource(
-                                          permission.dataElement?.split(";")[0]?.split("|")[1]
-                                        )
-                                      }>
+                                    style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                    onClick={() =>
+                                      fetchAndOpenResource(
+                                        permission.dataElement?.split(";")[0]?.split("|")[1]
+                                      )
+                                    }>
                                     {permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}
                                   </a>
                                   {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
@@ -2993,16 +2993,25 @@ export const ViewTermsByType = () => {
                             />
                           )}
 
-                           {isModalOpenClose && (
-                                                <Modal
-                                                  message={modalMessage.message}
-                                                  onClose={handleCloseModalClose}
-                                                  type={modalMessage.type}
-                                                  closeConnection={closeState}
-                                                  onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
-                                                  viewTerms={() => navigateToConnectionTerms(connectionName)}
-                                                />
-                                              )}
+                          {showRevokeConsentModal && (
+                            <Modal
+                              message="Are you sure you want to revoke consent?"
+                              type="confirmation"
+                              onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
+                              onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
+                            />
+                          )}
+
+                          {isModalOpenClose && (
+                            <Modal
+                              message={modalMessage.message}
+                              onClose={handleCloseModalClose}
+                              type={modalMessage.type}
+                              closeConnection={closeState}
+                              onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
+                              viewTerms={() => navigateToConnectionTerms(connectionName)}
+                            />
+                          )}
 
                           {/* {showPageInput && (
       <div className="page-input-modal">

@@ -2835,6 +2835,7 @@ export const ViewTermsByType = () => {
 
 
                         </div>
+                        
                         <div className="button-group">
                           <button onClick={handlePageSubmit2}>Submit</button>
                           <button onClick={() => {

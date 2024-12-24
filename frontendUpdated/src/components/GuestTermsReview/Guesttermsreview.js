@@ -1399,7 +1399,7 @@ export const Guesttermsreview = () => {
   const handleGuestNameClick = () => {
     navigate('/target-user-view', {
       state: {
-        user: { username: conndetails.host_user.username },
+        user: conndetails.guest_user
       },
     });
   };

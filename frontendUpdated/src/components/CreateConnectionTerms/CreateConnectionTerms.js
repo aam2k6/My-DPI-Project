@@ -382,10 +382,10 @@
 //       console.log("Inside fetch terms");
 //       try {
 //         const token = Cookies.get("authToken");
-    
+
 //         let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
 //         console.log("Final API URL:", apiUrl);
-    
+
 //         const response = await fetch(apiUrl, {
 //           method: "GET",
 //           headers: {
@@ -393,13 +393,13 @@
 //             Authorization: `Basic ${token}`,
 //           },
 //         });
-    
+
 //         if (!response.ok) {
 //           throw new Error("Failed to fetch terms");
 //         }
-    
+
 //         const data = await response.json();
-    
+
 //         if (data.success) {
 //           setRes(data.data); // Update to set data.data instead of data
 //           console.log("Terms Response Data:", data.data);
@@ -410,7 +410,7 @@
 //         setError(err.message);
 //       }
 //     };
-    
+
 
 //     fetchTerms();
 //     checkConsentStatus();
@@ -578,7 +578,7 @@
 //     }
 //     return <p>No obligations available.</p>;
 //   };
-  
+
 //   const renderPermissions = () => {
 //     if (res && res.permissions) {
 //       const { canShareMoreData, canDownloadData } = res.permissions;
@@ -594,7 +594,7 @@
 //     }
 //     return <p>No permissions available.</p>;
 //   };
-  
+
 
 
 
@@ -704,7 +704,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
-import { frontend_host } from "../../config";import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
+import { frontend_host } from "../../config"; import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 import { Grid } from '@mui/material'
 
 // import res from "./object";
@@ -728,16 +728,20 @@ export const CreateConnectionTerms = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showRevokeConfirmationModal, setShowRevokeConfirmationModal] = useState(false);
   const [showCloseConfirmationModal, setShowCloseConfirmationModal] = useState(false);
+  const [isModalOpenClose, setIsModalOpenClose] = useState(false);
+  const [closeState, setCloseState] = useState(true);
+  
   // const [forbiddenContent, setForbiddenContent] = useState("null")
 
   const forbiddenContent =
-  res?.forbidden?.host_to_guest?.[0]?.labelDescription ??
-  res?.forbidden?.guest_to_host?.[0]?.labelDescription ??
-  "You can unilaterally close the connection";
+    res?.forbidden?.host_to_guest?.[0]?.labelDescription ??
+    res?.forbidden?.guest_to_host?.[0]?.labelDescription ??
+    "You can unilaterally close the connection";
 
-console.log("forbiddenContent",curruser);
+  console.log("forbiddenContent", curruser);
 
   const {
+    connection,
     connectionName,
     hostLockerName,
     guestLockerName,
@@ -754,9 +758,10 @@ console.log("forbiddenContent",curruser);
     hostLocker,
     guestLocker,
     agrees
-    
+
   } = location.state || {};
   console.log("data",
+    connection,
     connectionName,
     hostLockerName,
     guestLockerName,
@@ -774,14 +779,14 @@ console.log("forbiddenContent",curruser);
     agrees
   );
 
-  console.log("guest name",guestLocker,);
+  console.log("guest name", guestLocker,);
 
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-  
+
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -790,8 +795,8 @@ console.log("forbiddenContent",curruser);
   };
 
   const checkConsentStatus = async () => {
-    console.log("guestlocker",locker)
-    console.log("host",hostLockerName)
+    console.log("guestlocker", locker)
+    console.log("host", hostLockerName)
     try {
       const token = Cookies.get("authToken");
       const queryParams = new URLSearchParams({
@@ -858,15 +863,15 @@ console.log("forbiddenContent",curruser);
 
 
     const fetchConnectionDetails = async () => {
-    
+
       const connection_type_name = connectionTypeName;
-      const host_locker_name = hostLockerName; 
-      const guest_locker_name =  guestLockerName;
-      const host_user_username = hostUserUsername; 
+      const host_locker_name = hostLockerName;
+      const guest_locker_name = guestLockerName;
+      const host_user_username = hostUserUsername;
       const guest_user_username = guestUserUsername;
-  
-      const token = Cookies.get("authToken"); 
-  
+
+      const token = Cookies.get("authToken");
+
       try {
         const response = await fetch(
           `host/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
@@ -878,14 +883,14 @@ console.log("forbiddenContent",curruser);
             },
           }
         );
-  
+
         const data = await response.json();
         console.log("data conn", data.connections);
         if (response.ok) {
           setConnectionDetails(data.connections);
         } else {
           setError(data.error || "Failed to fetch connection details.");
-          console.log("fecth connection details",data.error)
+          console.log("fecth connection details", data.error)
         }
       } catch (err) {
         setError(`Error: ${err.message}`);
@@ -893,17 +898,17 @@ console.log("forbiddenContent",curruser);
         setLoading(false);
       }
     };
-    console.log("datas",guestLockerName,hostLockerName)
+    console.log("datas", guestLockerName, hostLockerName)
 
     //fetch terms from the api
     const fetchTerms = async () => {
       console.log("Inside fetch terms");
       try {
         const token = Cookies.get("authToken");
-    
+
         let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
         console.log("Final API URL:", apiUrl);
-    
+
         const response = await fetch(apiUrl, {
           method: "GET",
           headers: {
@@ -911,15 +916,15 @@ console.log("forbiddenContent",curruser);
             Authorization: `Basic ${token}`,
           },
         });
-    
+
         if (!response.ok) {
           throw new Error("Failed to fetch terms");
         }
-    
+
         const data = await response.json();
-    
+
         if (data.success) {
-          setRes(data.data); 
+          setRes(data.data);
           setTerms(data.data.obligations);
           console.log("Terms Response Data:", data.data);
         } else {
@@ -929,7 +934,7 @@ console.log("forbiddenContent",curruser);
         setError(err.message);
       }
     };
-    
+
 
     fetchTerms();
     checkConsentStatus();
@@ -938,9 +943,50 @@ console.log("forbiddenContent",curruser);
 
     console.log("details", connectionDetails);
 
- 
+
 
   }, []);
+
+
+  const handleCloseConnection = async (connection_id) => {
+      const formData = new FormData();
+      formData.append("connection_id", connection_id);
+      // formData.append("close_host_bool", "True");
+  
+      // console.log(connection_id ,"id");
+      const token = Cookies.get("authToken");
+      try {
+        // Step 1: Call close_connection_host API using fetch
+        const revokeHostResponse = await fetch(
+          "host/close_connection_guest/".replace(/host/, frontend_host),
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+  
+            body: formData,
+          }
+        );
+  
+        const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+  
+        if (revokeHostResponse.ok) {
+          setModalMessage({
+            message: 'Successfully Connection closed',
+            type: 'success',
+          });
+        }  else {
+           setModalMessage({
+          message: revokeHostData.message || "Failed to close the connection.",
+          type: "failure",
+        });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      setIsModalOpen(true)
+    };
 
   useEffect(() => {
     if (connectionDetails) {
@@ -956,6 +1002,50 @@ console.log("forbiddenContent",curruser);
     }
   }, [connectionDetails]);
 
+  useEffect(() => {
+    if (connectionDetails) {
+      const { close_guest, close_host } = connectionDetails;
+
+      if (close_guest === true && close_host === false) {
+        setModalMessage({
+          message: 'You have closed the connection, but the host is yet to approve your close.',
+          type: 'info',
+        });
+        setIsModalOpen(true);
+      }
+    }
+  }, [connectionDetails]);
+
+  useEffect(() => {
+    if (connectionDetails) {
+      const { close_guest, close_host } = connectionDetails;
+
+      if (close_guest === false && close_host === true) {
+        setModalMessage({
+          message: 'The host has closed the connection, click Close connection to close the connection',
+          type: 'info',
+        });
+        setIsModalOpenClose(true);
+      }
+    }
+  }, [connectionDetails]);
+
+  const onCloseButtonClick = async (connection_id) => {
+    setCloseState(false);
+    handleCloseConnection(connection_id);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpenClose(true);
+  };
+
+  const handleCloseModalClose = () => {
+    setIsModalOpenClose(false);
+    setModalMessage({ message: "", type: "" });
+    navigate(`/view-locker?param=${Date.now()}`, {
+      state: { locker: guestLocker  },
+    });
+  };
+// console.log("connection.guest_locker", connection.guest_locker)
+console.log("connectionDetailss", connectionDetails)
   // Show loading while fetching connection details
   if (loading) {
     return <div>Loading...</div>; // Replace with a proper loading component if needed
@@ -965,17 +1055,17 @@ console.log("forbiddenContent",curruser);
   //   return <div>Error: {error}</div>;
   // }
 
-  
+
   // useEffect(() => {
-    // Check the values of revoke_guest and revoke_host
-    // if (connectionDetails && connectionDetails.revoke_guest === true && !connectionDetails.revoke_host === false) {
-    //   setModalMessage({
-    //     message: 'You have closed the connection, but the host is yet to approve your revoke.',
-    //     type: 'info',
-    //   });
-    //   console.log("success");
-    //   setIsModalOpen(true);
-    // }
+  // Check the values of revoke_guest and revoke_host
+  // if (connectionDetails && connectionDetails.revoke_guest === true && !connectionDetails.revoke_host === false) {
+  //   setModalMessage({
+  //     message: 'You have closed the connection, but the host is yet to approve your revoke.',
+  //     type: 'info',
+  //   });
+  //   console.log("success");
+  //   setIsModalOpen(true);
+  // }
   // }, [connectionDetails]);
 
 
@@ -983,7 +1073,7 @@ console.log("forbiddenContent",curruser);
     const token = Cookies.get('authToken');
     const consent = true;
     console.log("Locker Name:", locker); // Verify locker details
-    if (!locker ) {
+    if (!locker) {
       console.error("Locker is undefined or doesn't have a name.");
       setModalMessage({
         message: 'Locker information is missing.',
@@ -993,45 +1083,35 @@ console.log("forbiddenContent",curruser);
       return;
     }
     try {
-        // First, create the connection
-        const createResponse = await fetch('host/create-new-connection/'.replace(/host/, frontend_host), {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${token}`,
-            },
-            body: new URLSearchParams({
-                connection_type_name: connectionTypeName,
-                connection_name: connectionName,
-                connection_description: connectionDescription, 
-                host_locker_name: hostLockerName,
-                guest_locker_name: locker,
-                host_user_username: hostUserUsername,
-                guest_user_username: curruser.username
-            })
-        });
+      // First, create the connection
+      const createResponse = await fetch('host/create-new-connection/'.replace(/host/, frontend_host), {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${token}`,
+        },
+        body: new URLSearchParams({
+          connection_type_name: connectionTypeName,
+          connection_name: connectionName,
+          connection_description: connectionDescription,
+          host_locker_name: hostLockerName,
+          guest_locker_name: locker,
+          host_user_username: hostUserUsername,
+          guest_user_username: curruser.username
+        })
+      });
 
-        const createData = await createResponse.json();
-        if (!createData.success) {
-            throw new Error(createData.error || 'Failed to create connection.');
-        }
+      const createData = await createResponse.json();
+      if (!createData.success) {
+        throw new Error(createData.error || 'Failed to create connection.');
+      }
 
-        // Now give consent
-        const consentResponse = await fetch('host/give-consent/'.replace(/host/, frontend_host), {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${token}`,
-            },
-            body: new URLSearchParams({
-                connection_name: connectionName,
-                connection_type_name: connectionTypeName,
-                guest_username: curruser.username,
-                guest_lockername: locker,
-                host_username: hostUserUsername,
-                host_lockername: hostLockerName,
-                consent: consent.toString()
-            })
-        });
-        console.log("give-consent body", {
+      // Now give consent
+      const consentResponse = await fetch('host/give-consent/'.replace(/host/, frontend_host), {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${token}`,
+        },
+        body: new URLSearchParams({
           connection_name: connectionName,
           connection_type_name: connectionTypeName,
           guest_username: curruser.username,
@@ -1039,36 +1119,46 @@ console.log("forbiddenContent",curruser);
           host_username: hostUserUsername,
           host_lockername: hostLockerName,
           consent: consent.toString()
+        })
+      });
+      console.log("give-consent body", {
+        connection_name: connectionName,
+        connection_type_name: connectionTypeName,
+        guest_username: curruser.username,
+        guest_lockername: locker,
+        host_username: hostUserUsername,
+        host_lockername: hostLockerName,
+        consent: consent.toString()
       });
 
-        const consentData = await consentResponse.json();
-        if (consentData.success) {
-            setModalMessage({
-                message: 'Consent given and connection created successfully.',
-                type: 'success',
-            });
-            setIagree("1");
-            setConsentData({
-                consent_given: consentData.consent_given_date,
-                valid_until: consentData.valid_until,
-            });
-        } else {
-            setModalMessage({
-                message: consentData.error || 'An error occurred while giving consent.',
-                type: 'failure',
-            });
-        }
-    } catch (error) {
-        console.error('Error:', error);
+      const consentData = await consentResponse.json();
+      if (consentData.success) {
         setModalMessage({
-            message: 'An error occurred while giving consent.',
-            type: 'failure',
+          message: 'Consent given and connection created successfully.',
+          type: 'success',
         });
+        setIagree("1");
+        setConsentData({
+          consent_given: consentData.consent_given_date,
+          valid_until: consentData.valid_until,
+        });
+      } else {
+        setModalMessage({
+          message: consentData.error || 'An error occurred while giving consent.',
+          type: 'failure',
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setModalMessage({
+        message: 'An error occurred while giving consent.',
+        type: 'failure',
+      });
     }
     setIsModalOpen(true);
-};
-console.log("showConsent", agrees)
-console.log("showConsent", Iagree)
+  };
+  console.log("showConsent", agrees)
+  console.log("showConsent", Iagree)
   const handleRevokebutton = async () => {
     const token = Cookies.get("authToken");
     const revoke_guest = false;
@@ -1129,10 +1219,10 @@ console.log("showConsent", Iagree)
     }
     setIsModalOpen(true);
     // navigate(`/target-locker-view`);
-    
+
   };
   const userRole = curruser.username === guestUserUsername;
-  console.log("userRole",userRole)
+  console.log("userRole", userRole)
   const handleClosebutton = async () => {
     const token = Cookies.get("authToken");
     const formData = new FormData();
@@ -1146,39 +1236,39 @@ console.log("showConsent", Iagree)
     formData.append("connection_id", connection_id);
     console.log("formData", formData);
     const endpoint = userRole
-        ? "host/close_connection_guest/"
-        : "host/close_connection_host/";
+      ? "host/close_connection_guest/"
+      : "host/close_connection_host/";
     try {
       const response = await fetch(endpoint.replace(/host/, frontend_host), {
         method: "POST",
         headers: {
-            Authorization: `Basic ${token}`,
+          Authorization: `Basic ${token}`,
         },
         body: formData,
-    });
-        const data = await response.json();
-        if (response.ok) {
-            setModalMessage({
-                message: "You have closed the connection!,"+ data.message,
-                type: "success",
-            });
-            setIagree("0");
-            
-        } else {
-            setModalMessage({
-                message: data.error || "Failed to close the connection.",
-                type: "failure",
-            });
-        }
-    } catch (error) {
-        console.error("Error:", error);
+      });
+      const data = await response.json();
+      if (response.ok) {
         setModalMessage({
-            message: "An unexpected error occurred while closing the connection.",
-            type: "failure",
+          message: "You have closed the connection!," + data.message,
+          type: "success",
         });
+        setIagree("0");
+
+      } else {
+        setModalMessage({
+          message: data.error || "Failed to close the connection.",
+          type: "failure",
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setModalMessage({
+        message: "An unexpected error occurred while closing the connection.",
+        type: "failure",
+      });
     }
     setIsModalOpen(true);
-};
+  };
 
   const renderTermsSection = (terms, title, userType) => (
     <div className="terms-sections">
@@ -1193,12 +1283,12 @@ console.log("showConsent", Iagree)
                     ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
                     : `Guest shall ${term.typeOfSharing} ${term.labelName}`
                   : term.typeOfSharing === "collateral"
-                  ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-                  : `Host will ${term.typeOfSharing} ${term.labelName} `}
-              </strong> 
-              - {term.labelDescription} 
-              (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 
-                ? term.hostPermissions.join(", ") 
+                    ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
+                    : `Host will ${term.typeOfSharing} ${term.labelName} `}
+              </strong>
+              - {term.labelDescription}
+              (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
+                ? term.hostPermissions.join(", ")
                 : "None"})
             </li>
           ))}
@@ -1208,7 +1298,7 @@ console.log("showConsent", Iagree)
       )}
     </div>
   );
-  
+
   const renderObligations = (userType) => {
     if (res && res.obligations) {
       return userType === "guest"
@@ -1217,7 +1307,7 @@ console.log("showConsent", Iagree)
     }
     return <p>No obligations available.</p>;
   };
-  
+
   const renderPermissions = (userType) => {
     if (res && res.permissions) {
       const permissionsData = userType === "guest"
@@ -1234,13 +1324,13 @@ console.log("showConsent", Iagree)
     }
     return <p>No permissions available.</p>;
   };
-  
+
   const renderForbidden = (userType) => {
     if (res && res.forbidden) {
       return (
         <div className="terms-sections">
           {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"] &&
-          res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].length > 0 ? (
+            res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].length > 0 ? (
             <ul>
               {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].map(
                 (term, index) => (
@@ -1266,11 +1356,11 @@ console.log("showConsent", Iagree)
     }
     return <p>No forbidden terms available.</p>;
   };
-  
-console.log(res);
+
+  console.log(res);
 
 
-const uniqueGlobalConnTypeIds = Array.isArray(terms)
+  const uniqueGlobalConnTypeIds = Array.isArray(terms)
     ? [...new Set(terms
       .filter(term => term.global_conn_type_id !== null)
       .map(term => term.global_conn_type_id)
@@ -1278,80 +1368,80 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
     : [];
 
 
-const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
-  const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
-  return template ? template : null;
-});
+  const globalTemplateNames = uniqueGlobalConnTypeIds.map(id => {
+    const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+    return template ? template : null;
+  });
 
-const handleNavigation = (template) => {
-  if (template) {
-    console.log(template);
-    navigate('/GlobalTermsView', {
+  const handleNavigation = (template) => {
+    if (template) {
+      console.log(template);
+      navigate('/GlobalTermsView', {
+        state: {
+          connectionTypeName: template.global_connection_type_name,
+          connectionTypeDescription: template.global_connection_type_description,
+          template_Id: template.global_connection_type_template_id,
+          hide: true,
+        },
+      });
+    }
+  };
+
+
+  console.log("names", globalTemplateNames);
+
+
+  const userTooltips = {
+    guest: "Guest",
+    host: "Host",
+  };
+
+  const renderUserTooltip = (userType) => {
+    return (
+      <span className="tooltiptext small-tooltip">
+        {userTooltips[userType] || "Hover over an icon to see user details."}
+      </span>
+    );
+  };
+
+  const handleGuestClick = () => {
+    navigate('/view-locker', {
       state: {
-        connectionTypeName: template.global_connection_type_name,
-        connectionTypeDescription: template.global_connection_type_description,
-        template_Id: template.global_connection_type_template_id,
-        hide: true,
+        user: { username: curruser.username },
+        locker: guestLocker,
+      }
+    });
+  };
+
+  const handleHostClick = () => {
+    navigate('/target-locker-view', {
+      state: {
+        user: { username: hostUserUsername },
+        locker: hostLocker,
       },
     });
-  }
-};
+  };
 
+  const handleGuestNameClick = () => {
+    navigate('/target-user-view', {
+      state: {
+        user: connectionDetails.guest_user,
+      },
+    });
+  };
 
-console.log("names", globalTemplateNames);
+  const handleHostNameClick = () => {
+    navigate('/target-user-view', {
+      state: {
+        user: connectionDetails.host_user,
+      },
+    });
+  };
 
-
-const userTooltips = {
-  guest: "Guest",
-  host: "Host",
-};
-
-const renderUserTooltip = (userType) => {
-  return (
-    <span className="tooltiptext small-tooltip">
-      {userTooltips[userType] || "Hover over an icon to see user details."}
-    </span>
-  );
-};
-
-const handleGuestClick = () => {
-  navigate('/view-locker', {
-    state: {
-      user: { username: curruser.username },
-      locker: guestLocker,
-    }
-  });
-};
-
-const handleHostClick = () => {
-  navigate('/target-locker-view', {
-    state: {
-      user:{username: hostUserUsername},
-      locker:  hostLocker ,
-    },
-  });
-};
-
-const handleGuestNameClick = () => {
-  navigate('/target-user-view', {
-    state: {
-      user: connectionDetails.guest_user,
-    },
-  });
-};
-
-const handleHostNameClick = () => {
-  navigate('/target-user-view', {
-    state: {
-      user: connectionDetails.host_user,
-    },
-  });
-};
-
-const content = (
-  <>
-    <div className="navbarBrands">{connectionName}</div>
-    {/* <br />
+  const content = (
+    <>
+      <div className="navbarBrands">{connectionName}</div>
+      {/* <br />
     <div className="connection-details">
       Connection Name: {connectionName} <br />
       <h3>
@@ -1396,228 +1486,276 @@ const content = (
         </div>
       </div>
     </div> */}
-  </>
-);
-
-console.log("I agree", Iagree);
-console.log(res, "res");
-
-const handledisagreebutton = () => {
-  navigate('/target-locker-view', {
-    state: {
-      user:{username: hostUserUsername},
-      locker:  hostLocker ,
-    },
-  });
-}
-const handleRevokeConfirm = () => {
-  setShowRevokeConfirmationModal(false); // Close the modal
-  handleRevokebutton(); // Execute revoke action
-};
-const handleCloseConfirm = () => {
-  setShowCloseConfirmationModal(false); // Close the modal
-  handleClosebutton(); // Execute revoke action
-};
-
-return (
-  <div>
-    <Navbar content={content} />
-    <div style={{marginTop:"120px"}}>
-      <div className="connection-details longconnectionDescription">
-        Connection Name: {connectionName} <br />
-        <h3>
-          {globalTemplateNames.length > 0 && "Connection has been imported from "}
-          <span style={{ fontWeight: "bold" }}>
-            {globalTemplateNames.filter(Boolean).map((template, index) => (
-              <span key={index}>
-                <span 
-                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                  onClick={() => handleNavigation(template)}
-                >
-                  {template.global_connection_type_name}
-                </span>
-                {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
-              </span>
-            ))}
-          </span>
-        </h3>
-        {connectionDescription}<br />
-        
-        <div className="tooltip-container user-container">
-          <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
-            <FaUserCircle className="userIcon" /> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
-          </div>
-          <i className="fa-solid fa-right-long"></i> &nbsp;
-          <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
-            <FaRegUserCircle className="userIcon" /> &nbsp;
-            <span className="userName">{renderUserTooltip('host')} : {capitalizeFirstLetter(hostUserUsername)}</span>
-          </div>
-        </div>
-
-        <div className="tooltip-container user-container">
-          <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
-            <i className="bi bi-person-fill-lock"></i> &nbsp;
-            <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
-          </div>
-          <i className="fa-solid fa-right-long"></i> &nbsp;
-          <div className="tooltips user-container" onClick={() => handleHostClick()}>
-            <i className="bi bi-person-lock"></i> &nbsp;
-            <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-   <div>
-   <div className="view-container">
-      <div className="b">
-        <div className="tabs">
-          <div
-            className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
-            onClick={() => setActiveTab("guest")}
-          >
-            Guest Data
-          </div>
-          <div
-            className={`tab-header ${activeTab === "host" ? "active" : ""}`}
-            onClick={() => setActiveTab("host")}
-          >
-            Host Data
-          </div>
-        </div>
-        <div className="tab-content">
-          <div className="table-container">
-            {activeTab === "guest" && (
-              <div>
-                <div className="page13headterms">Your Obligations</div>
-                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderObligations("guest")}</div>
-                <div className="page13headterms">Your Permissions</div>
-                <div className="page13lowerterms">{renderPermissions("guest")}</div>
-                <div className="page13headterms">Your Forbidden Terms</div>
-                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderForbidden("guest")}</div>
-                <div className="page13headterms">Default Host Privileges</div>
-                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-              </div>
-            )}
-            {activeTab === "host" && (
-              <div>
-                <div className="page13headterms">Host Obligations</div>
-                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderObligations("host")}</div>
-                <div className="page13headterms">Host Permissions</div>
-                <div className="page13lowerterms">{renderPermissions("host")}</div>
-                <div className="page13headterms" >Host Forbidden Terms</div>
-                <div className="page13lowerterms" style={{marginLeft:"-40px"}}>{renderForbidden("host")}</div>
-                <div className="page13headterms">Default Host Privileges</div>
-                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {
-  isModalOpen && (
-    <Modal
-      message={modalMessage.message}
-      onClose={handleCloseModal}
-      type={modalMessage.type}
-    />
-  )
-}
-{showConfirmationModal && (
-  <Modal
-    message="Are you sure you want to agree?"
-    type="confirmation"
-    onClose={() => setShowConfirmationModal(false)} // Close on "No"
-    onConfirm={() => {
-      setShowConfirmationModal(false); // Close modal
-      handleIagreebutton(); // Execute agree action
-    }}
-  />
-)}
-{showRevokeConfirmationModal && (
-    <Modal
-      message="Are you sure you want to revoke?"
-      type="confirmation"
-      onClose={() => setShowRevokeConfirmationModal(false)} // Close modal on "No"
-      onConfirm={handleRevokeConfirm} // Call the confirmation action
-    />
-  )}
-
-{showCloseConfirmationModal && (
-    <Modal
-     message={
-    <>
-      You will no longer be allowed to share data <br/>
-      {forbiddenContent} <br />
-      Are you sure you want to Close Connection? <br />
     </>
+  );
+
+  console.log("I agree", connection);
+  console.log(res, "res");
+
+  const handledisagreebutton = () => {
+    navigate('/target-locker-view', {
+      state: {
+        user: { username: hostUserUsername },
+        locker: hostLocker,
+      },
+    });
   }
-      type="confirmation"
-      onClose={() => setShowCloseConfirmationModal(false)} // Close modal on "No"
-      onConfirm={handleCloseConfirm} // Call the confirmation action
-    />
-  )}
+  const handleRevokeConfirm = () => {
+    setShowRevokeConfirmationModal(false); // Close the modal
+    handleRevokebutton(); // Execute revoke action
+  };
+  const handleCloseConfirm = () => {
+    setShowCloseConfirmationModal(false); // Close the modal
+    handleClosebutton(); // Execute revoke action
+  };
+  const navigateToConnectionDetails = (connection) => {
+    console.log("print", connectionDetails); // Log the connection object
+    // console.log("print 2", conndetails);
+    // Access connection_type_name safely
+    const connectionTypeName = connectionDetails?.connection_name.split("-").shift().trim();
 
-<div>
-  {showConsent && agrees && (
-    <Grid container>
-      <Grid item md={4} xs={1}></Grid>
-      <Grid item xs={5.5} md={2} className="page13button">
-        <button
-          className="page13iagree0buttons"
-          onClick={() => setShowConfirmationModal(true)} // Trigger confirmation modal
-        >
-          Agree
-        </button>
-      </Grid>
-      <Grid item xs={5.5} md={2} className="page13button">
-        <button
-          className="page13iagree0buttons"
-          onClick={() => handledisagreebutton()}
-        >
-          Disagree
-        </button>
-      </Grid>
-      <Grid item md={4} xs={0}></Grid>
-    </Grid>
-  )}
-</div>
 
-<div>
-  {showConsent && Iagree === "1" && !agrees && (
-    <Grid container className="page13parent13state1">
-      <Grid item xs={12} md={1}></Grid>
-      <Grid item xs={12} md={4} className="page13consent" mb={3}>
-        Consent Given on : {consentData.consent_given}
-        <br />
-        Consent valid Until : {consentData.valid_until}
-      </Grid>
-      <Grid xs={2} md={2}></Grid>
-      <Grid item xs={5} md={2} className="page13button" mb={3}>
-      <button
-          className="page13iagree1buttons"
-          onClick={() => setShowRevokeConfirmationModal(true)} // Trigger confirmation modal
-        >
-          Revoke
-        </button>
-      </Grid>
-      <Grid item xs={4} md={2} className="page13button" mb={3}>
-      <button
-          className="page13iagree1buttons"
-          onClick={() => setShowCloseConfirmationModal(true)} // Trigger confirmation modal
-        >
-          Close Connection
-        </button>
-      </Grid>
-    </Grid>
-  )}
-</div>
+    const connectionDescription = connectionDetails?.connection_description;
 
-   </div>
+    // Use the owner_locker and owner_user from the connection object
+    const hostLockerName = connectionDetails?.host_locker?.name; // Assuming lockerData has a 'name' property
+    const hostUserUsername = connectionDetails?.host_user?.username;
 
-    
-  </div>
-);
+    const connectionName = connectionDetails.connection_name;
+
+    // Log the names to verify they're being retrieved correctly
+    // console.log("Host Locker Name:", connectionDetails.host_locker.name);
+    // console.log("Host User Username:", hostUserUsername);
+    // console.log("Connection Type:", connectionTypeName);
+    // console.log("Description:", connectionDescription);
+    // console.log("Connection Name:", connectionName);
+    // console.log("hostUserUsername:", hostUserUsername);
+    // console.log("locker", connectionDetails.guest_locker)
+
+    navigate("/display-terms", {
+      state: {
+        connectionTypeName: connectionTypeName,
+        hostLockerName: connectionDetails.host_locker.name,
+        connectionName: connectionName,
+        connectionDescription: connectionDescription,
+        createdtime: connectionDetails.created_time,
+        validitytime: connectionDetails.validity_time,
+        hostUserUsername: hostUserUsername,
+        locker: connectionDetails.guest_locker,
+      },
+    });
+  };
+  return (
+    <div>
+      <Navbar content={content} />
+      <div style={{ marginTop: "120px" }}>
+        <div className="connection-details longconnectionDescription">
+          Connection Name: {connectionName} <br />
+          <h3>
+            {globalTemplateNames.length > 0 && "Connection has been imported from "}
+            <span style={{ fontWeight: "bold" }}>
+              {globalTemplateNames.filter(Boolean).map((template, index) => (
+                <span key={index}>
+                  <span
+                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => handleNavigation(template)}
+                  >
+                    {template.global_connection_type_name}
+                  </span>
+                  {index < globalTemplateNames.filter(Boolean).length - 1 && ", "}
+                </span>
+              ))}
+            </span>
+          </h3>
+          {connectionDescription}<br />
+
+          <div className="tooltip-container user-container">
+            <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
+              <FaUserCircle className="userIcon" /> &nbsp;
+              <span className="userName">{renderUserTooltip('guest')} : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
+            </div>
+            <i className="fa-solid fa-right-long"></i> &nbsp;
+            <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
+              <FaRegUserCircle className="userIcon" /> &nbsp;
+              <span className="userName">{renderUserTooltip('host')} : {capitalizeFirstLetter(hostUserUsername)}</span>
+            </div>
+          </div>
+
+          <div className="tooltip-container user-container">
+            <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
+              <i className="bi bi-person-fill-lock"></i> &nbsp;
+              <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
+            </div>
+            <i className="fa-solid fa-right-long"></i> &nbsp;
+            <div className="tooltips user-container" onClick={() => handleHostClick()}>
+              <i className="bi bi-person-lock"></i> &nbsp;
+              <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="view-container">
+          <div className="b">
+            <div className="tabs">
+              <div
+                className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
+                onClick={() => setActiveTab("guest")}
+              >
+                Guest Data
+              </div>
+              <div
+                className={`tab-header ${activeTab === "host" ? "active" : ""}`}
+                onClick={() => setActiveTab("host")}
+              >
+                Host Data
+              </div>
+            </div>
+            <div className="tab-content">
+              <div className="table-container">
+                {activeTab === "guest" && (
+                  <div>
+                    <div className="page13headterms">Your Obligations</div>
+                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderObligations("guest")}</div>
+                    <div className="page13headterms">Your Permissions</div>
+                    <div className="page13lowerterms">{renderPermissions("guest")}</div>
+                    <div className="page13headterms">Your Forbidden Terms</div>
+                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
+                    <div className="page13headterms">Default Host Privileges</div>
+                    By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+                  </div>
+                )}
+                {activeTab === "host" && (
+                  <div>
+                    <div className="page13headterms">Host Obligations</div>
+                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderObligations("host")}</div>
+                    <div className="page13headterms">Host Permissions</div>
+                    <div className="page13lowerterms">{renderPermissions("host")}</div>
+                    <div className="page13headterms" >Host Forbidden Terms</div>
+                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
+                    <div className="page13headterms">Default Host Privileges</div>
+                    By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {
+          isModalOpen && (
+            <Modal
+              message={modalMessage.message}
+              onClose={handleCloseModal}
+              type={modalMessage.type}
+            />
+          )
+        }
+        {showConfirmationModal && (
+          <Modal
+            message="Are you sure you want to agree?"
+            type="confirmation"
+            onClose={() => setShowConfirmationModal(false)} // Close on "No"
+            onConfirm={() => {
+              setShowConfirmationModal(false); // Close modal
+              handleIagreebutton(); // Execute agree action
+            }}
+          />
+        )}
+        {showRevokeConfirmationModal && (
+          <Modal
+            message="Are you sure you want to revoke?"
+            type="confirmation"
+            onClose={() => setShowRevokeConfirmationModal(false)} // Close modal on "No"
+            onConfirm={handleRevokeConfirm} // Call the confirmation action
+          />
+        )}
+
+        {showCloseConfirmationModal && (
+          <Modal
+            message={
+              <>
+                You will no longer be allowed to share data <br />
+                {forbiddenContent} <br />
+                Are you sure you want to Close Connection? <br />
+              </>
+            }
+            type="confirmation"
+            onClose={() => setShowCloseConfirmationModal(false)} // Close modal on "No"
+            onConfirm={handleCloseConfirm} // Call the confirmation action
+          />
+        )}
+
+        {isModalOpenClose && (
+          <Modal
+            message={modalMessage.message}
+            onClose={handleCloseModalClose}
+            type={modalMessage.type}
+            closeConnection={closeState}
+            onCloseConnection={() => onCloseButtonClick(connection_id)}
+            viewTerms={() => navigateToConnectionDetails(connection.
+              connection_name
+              )}
+          />
+        )}
+        <div>
+          {showConsent && agrees && (
+            <Grid container>
+              <Grid item md={4} xs={1}></Grid>
+              <Grid item xs={5.5} md={2} className="page13button">
+                <button
+                  className="page13iagree0buttons"
+                  onClick={() => setShowConfirmationModal(true)} // Trigger confirmation modal
+                >
+                  Agree
+                </button>
+              </Grid>
+              <Grid item xs={5.5} md={2} className="page13button">
+                <button
+                  className="page13iagree0buttons"
+                  onClick={() => handledisagreebutton()}
+                >
+                  Disagree
+                </button>
+              </Grid>
+              <Grid item md={4} xs={0}></Grid>
+            </Grid>
+          )}
+        </div>
+
+        <div>
+          {showConsent && Iagree === "1" && !agrees && (
+            <Grid container className="page13parent13state1">
+              <Grid item xs={12} md={1}></Grid>
+              <Grid item xs={12} md={4} className="page13consent" mb={3}>
+                Consent Given on : {consentData.consent_given}
+                <br />
+                Consent valid Until : {consentData.valid_until}
+              </Grid>
+              <Grid xs={2} md={2}></Grid>
+              <Grid item xs={5} md={2} className="page13button" mb={3}>
+                <button
+                  className="page13iagree1buttons"
+                  onClick={() => setShowRevokeConfirmationModal(true)} // Trigger confirmation modal
+                >
+                  Revoke
+                </button>
+              </Grid>
+              <Grid item xs={4} md={2} className="page13button" mb={3}>
+                <button
+                  className="page13iagree1buttons"
+                  onClick={() => setShowCloseConfirmationModal(true)} // Trigger confirmation modal
+                >
+                  Close Connection
+                </button>
+              </Grid>
+            </Grid>
+          )}
+        </div>
+
+      </div>
+
+
+    </div>
+  );
 }

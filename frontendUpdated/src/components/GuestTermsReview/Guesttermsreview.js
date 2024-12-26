@@ -1357,6 +1357,9 @@ export const Guesttermsreview = () => {
         validitytime: connection.validity_time,
         hostUserUsername: hostUserUsername,
         locker: conndetails.host_locker,
+        createdtime: connectionDetails.created_time,
+        validitytime: connectionDetails.validity_time,
+        
       },
     });
   };

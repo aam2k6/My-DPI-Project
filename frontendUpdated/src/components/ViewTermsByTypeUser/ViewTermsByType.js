@@ -1771,7 +1771,7 @@ export const ViewTermsByType = () => {
 
       // console.log("conntype", connectionTypeName);
 
-      navigate("/show-connection-terms", {
+      navigate("/display-terms", {
         state: {
           connectionName: connectionName, // Pass the string as connectionName
           connectionDescription: connectionDescription,
@@ -1781,10 +1781,12 @@ export const ViewTermsByType = () => {
           hostUserUsername: hostUserUsername,
           guestUserUsername: guestUserUsername,
           locker: locker.name,
-          showConsent: false,
+          // showConsent: false,
           lockerComplete: locker,
           hostLocker: hostLocker,
           guestLocker: guestLocker,
+          createdtime: connectionDetails.created_time,
+          validitytime: connectionDetails.validity_time,
         },
       });
     } else {
@@ -1904,10 +1906,9 @@ export const ViewTermsByType = () => {
 
   const onCloseButtonClick = async (connection_id) => {
     setCloseState(false);
-    const message = await handleCloseConnection(connection_id);
-    setIsModalOpenClose(false);
-    setModalMessage({ message: message, type: "info" });
-    setIsModalOpenClose(true);
+    handleCloseConnection(connection_id);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpenClose(true);
   };
 
   const handleCloseModalClose = () => {
@@ -2086,15 +2087,23 @@ export const ViewTermsByType = () => {
       const data = await response.json();
       // console.log("revoke consent", data);
       if (response.status === 200) {
-        return "Successfully Connection closed ";
+    setIsModalOpenClose(false);
+        setModalMessage({
+            message: 'Successfully Connection closed',
+            type: 'success',
+          });
       } else {
-        return data.message || "An error occurred while Closing connection.";
+        setModalMessage({
+          message: data.message || "Failed to close the connection.",
+          type: "failure",
+        });
       }
     } catch (error) {
       console.error("Error:", error);
 
       return "An error occurred while Closing connection.";
     }
+    setIsModalOpen(true)
   };
 
   const fetchTotalPages2 = async (selectedResourceId2, token) => {

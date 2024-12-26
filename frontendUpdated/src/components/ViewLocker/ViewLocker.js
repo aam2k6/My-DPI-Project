@@ -601,6 +601,7 @@ export const ViewLocker = () => {
 
     navigate("/show-connection-terms", {
       state: {
+        connection:connection,
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
         guestLockerName: connection.guest_locker?.name,

@@ -215,7 +215,7 @@ export const Displayterms = () => {
       try {
         const token = Cookies.get("authToken");
 
-        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${curruser.username}&host_locker_name=${locker.name}`;
+        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
         console.log("Final API URL:", apiUrl);
 
         const response = await fetch(apiUrl, {

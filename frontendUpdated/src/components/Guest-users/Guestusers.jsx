@@ -271,12 +271,12 @@ export const Guestusers = () => {
     navigate("/display-terms", {
       state: {
         connectionTypeName: connectionName, // Extracted from connection object
-        hostLockerName: connection.host_locker?.name,
+        hostLockerName: connections[0].host_locker.name,
         connectionTypeName: connection.connection_type_name,
         connectionDescription: connection.connection_description,
         createdtime: connection.created_time,
         validitytime: connection.validity_time,
-        hostUserUsername: connection.host_user?.username,
+        hostUserUsername: connections[0].host_user.username,
         locker: locker,
       },
     });

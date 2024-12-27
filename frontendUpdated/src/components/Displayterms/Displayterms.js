@@ -181,7 +181,7 @@ export const Displayterms = () => {
     hostUserUsername,
     locker,
   } = location.state || {};
-  console.log("Location State:", location.state);
+  console.log("Location State:",     hostUserUsername);
 
   useEffect(() => {
     if (!curruser) {
@@ -215,8 +215,24 @@ export const Displayterms = () => {
       try {
         const token = Cookies.get("authToken");
 
-        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
-        console.log("Final API URL:", apiUrl);
+        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}`;
+        // console.log("Final API URL:", apiUrl);
+console.log(curruser.username,"curr", hostUserUsername)
+        // Determine which username to use
+    if (curruser && curruser.username === hostUserUsername) {
+      apiUrl += `&host_user_username=${curruser.username}`;
+    } else {
+      apiUrl += `&host_user_username=${hostUserUsername}`;
+    }
+
+    // Determine which locker name to use
+    if (locker.name === hostLockerName) {
+      apiUrl += `&host_locker_name=${locker.name}`;
+    } else {
+      apiUrl += `&host_locker_name=${hostLockerName}`;
+    }
+
+    console.log("Final API URL:", apiUrl);
 
         const response = await fetch(apiUrl, {
           method: "GET",

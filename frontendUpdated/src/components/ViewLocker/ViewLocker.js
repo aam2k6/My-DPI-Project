@@ -528,14 +528,17 @@ export const ViewLocker = () => {
     navigate("/show-guest-users", { state: { connection, locker } });
   };
   const handleIncomingInfo = (connection) => {
+
+    console.log("navigates", connections.incoming_connections[0].host_user.username)
+    console.log("navigatess", connections.incoming_connections[0].host_locker.name)
     navigate("/display-terms", {
       state: {
-        hostLockerName: connection.host_locker?.name,
+        hostLockerName: connections.incoming_connections[0].host_locker.name,
         connectionTypeName: connection.connection_type_name,
         connectionDescription: connection.connection_description,
         createdtime: connection.created_time,
         validitytime: connection.validity_time,
-        hostUserUsername: connection.host_user?.username,
+        hostUserUsername: connections.incoming_connections[0].host_user.username,
         locker: locker,
       },
     });

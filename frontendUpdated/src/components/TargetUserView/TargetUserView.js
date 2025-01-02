@@ -1,7 +1,7 @@
-import React, {useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./page6.css";
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
@@ -13,16 +13,17 @@ export const TargetUserView = () => {
   const user = location.state ? location.state.user : null;
   const [allLockers, setLockers] = useState([]);
   const [error, setError] = useState(null);
-   const [isOpen, setIsOpen] = useState(false);
-   const { curruser,setUser } = useContext(usercontext);
+  const [isOpen, setIsOpen] = useState(false);
+  const { curruser, setUser } = useContext(usercontext);
 
 
 
   useEffect(() => {
     if (!curruser) {
-        navigate('/');
-        return;
-    }},[]);
+      navigate('/');
+      return;
+    }
+  }, []);
 
   const handleNewLockerClick = () => {
     navigate('/create-locker');
@@ -30,9 +31,9 @@ export const TargetUserView = () => {
 
 
   const handleLockersClick = (lockers) => {
-    navigate('/target-locker-view', { state: { locker:lockers, user:user } });
+    navigate('/target-locker-view', { state: { locker: lockers, user: user } });
   }
-   
+
   useEffect(() => {
     const fetchLockers = async () => {
       try {
@@ -86,39 +87,51 @@ export const TargetUserView = () => {
     </>
   );
 
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <a className="breadcrumb-item" href="/dpi-directory">DPI Directory</a>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">TargetUserView</span>
+    </div>
+  )
+
   return (
     <div>
-      <Navbar content = {content}/>
-      
-     <div style={{marginTop:"120px"}}>
-     <div className="heroContainers">
-        <div className="newLocker">
-          <h3></h3>
-          {/* <button id="newLockerBtn" onClick={handleNewLockerClick}>
+      <Navbar content={content} breadcrumbs={breadcrumbs}/>
+
+      <div style={{ marginTop: "120px" }}>
+        <div className="heroContainers">
+          <div className="newLocker">
+            <h3></h3>
+            {/* <button id="newLockerBtn" onClick={handleNewLockerClick}>
             Create New Locker
           </button> */}
-        </div>  
-        <div className="page6-allLockers">
-          {error && <div className="error">{error}</div>}
-          {Array.isArray(allLockers) && allLockers.length > 0 ? (
-            allLockers.map(lockers => (
-              <div key={lockers.locker_id} className="page6-locker">
-                <h4>{lockers.name}</h4>
-                
-                {lockers.is_frozen === false && <Button id="docsBtn" variant="contained" onClick={() => handleLockersClick(lockers)}>
-                  Open
-                </Button>} 
-                {lockers.is_frozen === true && <Button id="docsBtn" variant="contained">Frozen</Button> }
-                
-                <p className="description2">{lockers.description}</p>
-              </div>
-            ))
-          ) : (
-            <div>No lockers found.</div>
-          )}
+          </div>
+          <div className="page6-allLockers">
+            {error && <div className="error">{error}</div>}
+            {Array.isArray(allLockers) && allLockers.length > 0 ? (
+              allLockers.map(lockers => (
+                <div key={lockers.locker_id} className="page6-locker">
+                  <h4>{lockers.name}</h4>
+
+                  {lockers.is_frozen === false && <Button id="docsBtn" variant="contained" onClick={() => handleLockersClick(lockers)}>
+                    Open
+                  </Button>}
+                  {lockers.is_frozen === true && <Button id="docsBtn" variant="contained">Frozen</Button>}
+
+                  <p className="description2">{lockers.description}</p>
+                </div>
+              ))
+            ) : (
+              <div>No lockers found.</div>
+            )}
+          </div>
         </div>
       </div>
-     </div>
     </div>
   );
 }

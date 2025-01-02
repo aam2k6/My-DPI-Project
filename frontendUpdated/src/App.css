@@ -7,3 +7,72 @@ body{
     overflow-y: auto;
     max-height: 100vh;
 }
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  
+  .breadcrumb-item {
+    color: #0056b3;
+    text-decoration: none;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .breadcrumb-item:hover {
+    text-decoration: underline;
+  }
+  
+  .breadcrumb-separator {
+    font-size: 12px;
+    color: #aaa;
+    padding: 0 4px; /* Add spacing for small screens */
+  }
+  
+  .home-icon {
+    margin-right: 5px;
+  }
+  
+  .breadcrumb-item.current {
+    color: #787878;
+    font-weight: bold;
+    cursor: default;
+    text-decoration: none;
+  }
+  
+  /* Responsive styles for smaller screens */
+  @media (max-width: 600px) {
+    .breadcrumbs {
+      flex-wrap: wrap; /* Allow breadcrumbs to wrap to a new line if needed */
+      font-size: 12px; /* Reduce font size */
+      padding: 8px; /* Slightly reduce padding */
+    }
+  
+    .breadcrumb-item {
+      padding: 2px 4px; /* Adjust padding for smaller spacing */
+    }
+  
+    .breadcrumb-separator {
+      display: inline-block; /* Keep separators visible */
+      font-size: 10px; /* Reduce size for better fit */
+      padding: 0 2px; /* Compact the space around the separator */
+    }
+  
+    .breadcrumbs > .breadcrumb-item,
+    .breadcrumbs > .breadcrumb-separator {
+      white-space: nowrap; /* Prevent wrapping within individual items */
+    }
+  }
+  @media (min-width: 992px) {
+    .breadcrumbs {
+      margin-top: -30px; /* Add margin-top for larger screens */
+    }
+  }

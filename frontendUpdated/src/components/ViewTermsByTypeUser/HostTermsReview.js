@@ -1405,7 +1405,49 @@ export const HostTermsReview = () => {
       setError(err.message);
     }
   };
+  const handleLockerClick = (locker) => {
+    navigate('/view-locker', {
+      state: {
+        user: { username: conndetails.guest_user.username },
+        locker: conndetails.guest_locker,
+      }
+    });
+  }
 
+  const handleHostTermsClick = () =>{
+    navigate("/view-terms-by-type", {
+      state: {
+        connection_id: conndetails.connection_id,
+        connectionName: conndetails.connection_name,
+        connectionDescription: conndetails.connection_description,
+        hostLockerName: conndetails?.host_locker?.name,
+        guestLockerName: conndetails?.guest_locker?.name,
+        hostUserUsername: conndetails?.host_user?.username,
+        guestUserUsername: conndetails?.guest_user?.username,
+        locker: conndetails?.guest_locker,
+        guest_locker_id: conndetails.guest_locker?.locker_id,
+        host_locker_id: conndetails.host_locker?.locker_id,
+        connection: connection,
+        // connectionType: connectionType,
+        guestLocker: conndetails.guest_locker,
+        hostLocker: conndetails.host_locker
+      },
+    })
+  }
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleLockerClick()} className="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleHostTermsClick()} className="breadcrumb-item">ViewGuestTermsByType</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">HostTermsReview</span>
+    </div>
+  )
 
 
   console.log("conn details", conndetails);
@@ -1414,9 +1456,9 @@ export const HostTermsReview = () => {
   console.log("navigate back 2", connectionType);
   return (
     <div>
-      <Navbar content={content} />
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
 
-      <div style={{ marginTop: "120px" }}>
+      <div style={{ marginTop: "140px" }}>
         <div className="connection-details">
           Connection Name: {conndetails?.connection_name || "Loading..."}
           <button

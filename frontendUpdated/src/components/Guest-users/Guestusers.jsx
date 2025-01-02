@@ -282,6 +282,10 @@ export const Guestusers = () => {
     });
   };
   console.log("connectionType", connectionType);
+  const handleClick = (locker) => {
+    navigate('/view-locker', { state: { locker } });
+  };
+
   const content = (
     <>
       {connectionType && (
@@ -314,9 +318,20 @@ export const Guestusers = () => {
     </>
   );
   // console.log(filteredConnections);
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleClick(locker)} className="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">ShowGuestUsers</span>
+    </div>
+  )
   return (
     <div>
-      <Navbar content={content} />
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
       <Box className="page5heroContainer" marginTop={{ md: "150px", xs: "100px" }}>
         <h4 className='guestusers' style={{ textAlign: "center", marginBottom: "25px", fontWeight: "bold" }}>Guest Users</h4>
         <div className="search">

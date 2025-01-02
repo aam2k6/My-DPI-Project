@@ -255,12 +255,29 @@ export const Admin = () => {
     setModalMessage(null); // Close the modal
   };
 
+  const handleClick = (locker) => {
+    console.log("lockers", locker)
+    navigate('/view-locker', { state: { locker } });
+  };
+
   const content = (
     <div className="navbarBrands">
       {/* ADD THIS */}
       <p>Locker Admin: {locker.name}</p>
     </div>
   );
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleClick(locker)} className="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">Locker Admin</span>
+    </div>
+  )
 
   const handleDeleteConnection = async (connection_type_id) => {
     const connectionToDelete = otherConnections.find(
@@ -438,276 +455,276 @@ export const Admin = () => {
 
   return (
     <div>
-      <Navbar content={content} />
-      <button onClick={gotopage12createconnection} className="admin-btn" style={{marginTop:"120px"}}>
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <button onClick={gotopage12createconnection} className="admin-btn" style={{ marginTop: "120px" }}>
         Create New Connection Type
       </button>
       <Grid container padding={"30px"}>
-      <Grid item md={9} xs={12} className="page8parent">
-        <div className="descriptionadmin">Existing Connections Type</div>
-        {filteredConnections.length > 0 ? (
-          filteredConnections.map((connection) => (
-            <div
-              key={connection.connection_type_id}
-              className="page8connections"
-            >
-              <h4
-                className="clickable-connection-name"
-                onClick={() => {
-                  console.log("Navigating with the following data:");
-                  console.log(
-                    "Connection Type Name:",
-                    connection.connection_type_name,
-                    connection.connectionDescription,
-                    connection.created_time,
-                    connection.validity_time
-                  );
-                  console.log("Host Locker Name:", locker.name);
-                  console.log("Host User Username:", curruser?.username);
-                  console.log("Locker:", locker);
-                  navigate("/display-terms", {
-                    state: {
-                      connectionTypeName: connection.connection_type_name,
-                      hostLockerName: locker.name,
-                      hostUserUsername: curruser?.username,
-                      locker: locker,
-                      connectionDescription: connection.connection_description,
-                      createdtime: connection.created_time,
-                      validitytime: connection.validity_time,
-                    },
-                  });
-                }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  cursor: "pointer",
-                  color: "inherit",
-                }}
+        <Grid item md={9} xs={12} className="page8parent">
+          <div className="descriptionadmin">Existing Connections Type</div>
+          {filteredConnections.length > 0 ? (
+            filteredConnections.map((connection) => (
+              <div
+                key={connection.connection_type_id}
+                className="page8connections"
               >
-                {connection.connection_type_name}
-              </h4>
-              <>
-                <div style={{marginTop:"-12px"}}>
-                  <button onClick={() => handleToggle(connection.connection_type_id)} style={{
-                    textDecoration: "underline",
+                <h4
+                  className="clickable-connection-name"
+                  onClick={() => {
+                    console.log("Navigating with the following data:");
+                    console.log(
+                      "Connection Type Name:",
+                      connection.connection_type_name,
+                      connection.connectionDescription,
+                      connection.created_time,
+                      connection.validity_time
+                    );
+                    console.log("Host Locker Name:", locker.name);
+                    console.log("Host User Username:", curruser?.username);
+                    console.log("Locker:", locker);
+                    navigate("/display-terms", {
+                      state: {
+                        connectionTypeName: connection.connection_type_name,
+                        hostLockerName: locker.name,
+                        hostUserUsername: curruser?.username,
+                        locker: locker,
+                        connectionDescription: connection.connection_description,
+                        createdtime: connection.created_time,
+                        validitytime: connection.validity_time,
+                      },
+                    });
+                  }}
+                  style={{
                     background: "none",
                     border: "none",
                     padding: 0,
                     cursor: "pointer",
-                    color: "blue",
-                    fontSize: "14px",
-                    
-                  }}>
-                    {showInfo === connection.connection_type_id ? "Info" : "Info"}
+                    color: "inherit",
+                  }}
+                >
+                  {connection.connection_type_name}
+                </h4>
+                <>
+                  <div style={{ marginTop: "-12px" }}>
+                    <button onClick={() => handleToggle(connection.connection_type_id)} style={{
+                      textDecoration: "underline",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      color: "blue",
+                      fontSize: "14px",
+
+                    }}>
+                      {showInfo === connection.connection_type_id ? "Info" : "Info"}
+                    </button>
+                  </div>
+                  {showInfo === connection.connection_type_id && (
+                    <div>
+                      <p>{connection.connection_description}</p>
+                      <div>
+                        <p>
+                          Created On:{" "}
+                          {new Date(connection.created_time).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div>
+                        <p>
+                          Valid Until:{" "}
+                          {new Date(connection.validity_time).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
+                <div className="button-group">
+                  <button onClick={() => handleEditConnectionClick(connection)}>
+                    Edit
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleDeleteConnection(connection.connection_type_id)
+                    }
+                  >
+                    Delete
                   </button>
                 </div>
-                {showInfo === connection.connection_type_id &&(
-                  <div>
-                    <p>{connection.connection_description}</p>
-                    <div>
-                      <p>
-                        Created On:{" "}
-                        {new Date(connection.created_time).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p>
-                        Valid Until:{" "}
-                        {new Date(connection.validity_time).toLocaleDateString()}
-                      </p>
+
+                {showEditConnectionModal && (
+                  <div className="edit-modal">
+                    <div className="modal-content">
+                      <h3>Edit Connection Type</h3>
+
+                      {/* Connection Type Name Input */}
+                      <div className="form-group">
+                        <label>Connection Type Name:</label>
+                        <input
+                          type="text"
+                          value={newConnectionTypeName}
+                          onChange={(e) =>
+                            setNewConnectionTypeName(e.target.value)
+                          }
+                        />
+                      </div>
+
+                      {/* Description Input */}
+                      <div className="form-group">
+                        <label>Description:</label>
+                        <input
+                          type="text"
+                          value={newConnectionDescription}
+                          onChange={(e) =>
+                            setNewConnectionDescription(e.target.value)
+                          }
+                        />
+                      </div>
+
+                      {terms.length > 0 && (
+                        <div>
+                          <label htmlFor="termsDropdown">Select Term:</label>
+                          <select
+                            id="termsDropdown"
+                            onChange={(e) =>
+                              handleTermSelect(Number(e.target.value))
+                            }
+                          >
+                            <option value="">None</option>
+                            {terms.map((term) => (
+                              <option key={term.terms_id} value={term.terms_id}>
+                                {term.labelName} (ID: {term.terms_id})
+                              </option>
+                            ))}
+                          </select>
+
+                          {selectedTerm && selectedTerm.terms_id && (
+                            <>
+                              {/* Label Name */}
+                              <div className="form-group">
+                                <label>Label Name:</label>
+                                <input
+                                  type="text"
+                                  value={labelName}
+                                  onChange={(e) => setLabelName(e.target.value)}
+                                />
+                              </div>
+
+                              {/* Description */}
+                              <div className="form-group">
+                                <label>Description:</label>
+                                <input
+                                  type="text"
+                                  value={newDescription || ""} // Ensure the value is never undefined
+                                  onChange={(e) =>
+                                    setNewDescription(e.target.value)
+                                  }
+                                />
+                              </div>
+
+                              {/* Purpose */}
+                              <div className="form-group">
+                                <label>Purpose:</label>
+                                <input
+                                  type="text"
+                                  value={newPurpose}
+                                  onChange={(e) => setNewPurpose(e.target.value)}
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Modal Buttons */}
+                      <div className="modal-buttons">
+                        <button
+                          className="cancel-btn"
+                          onClick={() => setShowEditConnectionModal(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="save-btn"
+                          onClick={handleSaveConnectionChanges}
+                        >
+                          Save Changes
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
-              </>
-              <div className="button-group">
-                <button onClick={() => handleEditConnectionClick(connection)}>
-                  Edit
-                </button>
-                <button
-                  onClick={() =>
-                    handleDeleteConnection(connection.connection_type_id)
-                  }
-                >
-                  Delete
-                </button>
               </div>
-
-              {showEditConnectionModal && (
-                <div className="edit-modal">
-                  <div className="modal-content">
-                    <h3>Edit Connection Type</h3>
-
-                    {/* Connection Type Name Input */}
-                    <div className="form-group">
-                      <label>Connection Type Name:</label>
-                      <input
-                        type="text"
-                        value={newConnectionTypeName}
-                        onChange={(e) =>
-                          setNewConnectionTypeName(e.target.value)
-                        }
-                      />
-                    </div>
-
-                    {/* Description Input */}
-                    <div className="form-group">
-                      <label>Description:</label>
-                      <input
-                        type="text"
-                        value={newConnectionDescription}
-                        onChange={(e) =>
-                          setNewConnectionDescription(e.target.value)
-                        }
-                      />
-                    </div>
-
-                    {terms.length > 0 && (
-                      <div>
-                        <label htmlFor="termsDropdown">Select Term:</label>
-                        <select
-                          id="termsDropdown"
-                          onChange={(e) =>
-                            handleTermSelect(Number(e.target.value))
-                          }
-                        >
-                          <option value="">None</option>
-                          {terms.map((term) => (
-                            <option key={term.terms_id} value={term.terms_id}>
-                              {term.labelName} (ID: {term.terms_id})
-                            </option>
-                          ))}
-                        </select>
-
-                        {selectedTerm && selectedTerm.terms_id && (
-                          <>
-                            {/* Label Name */}
-                            <div className="form-group">
-                              <label>Label Name:</label>
-                              <input
-                                type="text"
-                                value={labelName}
-                                onChange={(e) => setLabelName(e.target.value)}
-                              />
-                            </div>
-
-                            {/* Description */}
-                            <div className="form-group">
-                              <label>Description:</label>
-                              <input
-                                type="text"
-                                value={newDescription || ""} // Ensure the value is never undefined
-                                onChange={(e) =>
-                                  setNewDescription(e.target.value)
-                                }
-                              />
-                            </div>
-
-                            {/* Purpose */}
-                            <div className="form-group">
-                              <label>Purpose:</label>
-                              <input
-                                type="text"
-                                value={newPurpose}
-                                onChange={(e) => setNewPurpose(e.target.value)}
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Modal Buttons */}
-                    <div className="modal-buttons">
-                      <button
-                        className="cancel-btn"
-                        onClick={() => setShowEditConnectionModal(false)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="save-btn"
-                        onClick={handleSaveConnectionChanges}
-                      >
-                        Save Changes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <p>No connections found.</p>
-        )}
+            ))
+          ) : (
+            <p>No connections found.</p>
+          )}
+        </Grid>
       </Grid>
-      </Grid>
-     
+
 
       <Grid container padding={"30px"}>
-      <Grid item className="page8parent" md={9} xs={12}>
-        <div className="descriptionadmin">Locker</div>
-        {filteredLockers.length > 0 ? (
-          filteredLockers.map((locker) => (
-            <div key={locker.locker_id} className="page8connections">
-              <h4>{locker.name}</h4>
-              <p>{locker.description}</p>
-              <div className="button-group">
-                <button onClick={() => handleEditClick(locker)}>Edit</button>
-                <button onClick={() => handleDeleteClick(locker.locker_id)}>
-                  Delete
+        <Grid item className="page8parent" md={9} xs={12}>
+          <div className="descriptionadmin">Locker</div>
+          {filteredLockers.length > 0 ? (
+            filteredLockers.map((locker) => (
+              <div key={locker.locker_id} className="page8connections">
+                <h4>{locker.name}</h4>
+                <p>{locker.description}</p>
+                <div className="button-group">
+                  <button onClick={() => handleEditClick(locker)}>Edit</button>
+                  <button onClick={() => handleDeleteClick(locker.locker_id)}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No lockers found.</p>
+          )}
+        </Grid>
+        {/* Edit Locker Modal */}
+        {showEditModal && (
+          <div className="edit-modal">
+            <div className="modal-content">
+              <h3>Edit Locker</h3>
+              <div className="form-group">
+                <label>Locker Name:</label>
+                <input
+                  type="text"
+                  value={newLockerName}
+                  onChange={(e) => setNewLockerName(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label>Description:</label>
+                <input
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <div className="modal-buttons">
+                <button
+                  className="cancel-btn"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancel
+                </button>
+                <button className="save-btn" onClick={handleSaveClick}>
+                  Save Changes
                 </button>
               </div>
             </div>
-          ))
-        ) : (
-          <p>No lockers found.</p>
-        )}
-      </Grid>
-      {/* Edit Locker Modal */}
-      {showEditModal && (
-        <div className="edit-modal">
-          <div className="modal-content">
-            <h3>Edit Locker</h3>
-            <div className="form-group">
-              <label>Locker Name:</label>
-              <input
-                type="text"
-                value={newLockerName}
-                onChange={(e) => setNewLockerName(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>Description:</label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-            <div className="modal-buttons">
-              <button
-                className="cancel-btn"
-                onClick={() => setShowEditModal(false)}
-              >
-                Cancel
-              </button>
-              <button className="save-btn" onClick={handleSaveClick}>
-                Save Changes
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Message Modal */}
-      {modalMessage && (
-        <Modal
-          message={modalMessage.message}
-          type={modalMessage.type}
-          onClose={handleCloseModal} // Close the message modal
-        />
-      )}
+        {/* Message Modal */}
+        {modalMessage && (
+          <Modal
+            message={modalMessage.message}
+            type={modalMessage.type}
+            onClose={handleCloseModal} // Close the message modal
+          />
+        )}
       </Grid>
     </div>
   );

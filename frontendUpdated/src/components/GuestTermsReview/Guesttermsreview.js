@@ -12,7 +12,7 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
 
-export const Guesttermsreview = () => {
+export const  Guesttermsreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -467,7 +467,7 @@ export const Guesttermsreview = () => {
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1387,7 +1387,6 @@ export const Guesttermsreview = () => {
       }
     });
   };
-  console.log(conndetails.guest_locker)
 
   const handleHostClick = () => {
 
@@ -1411,6 +1410,16 @@ export const Guesttermsreview = () => {
     navigate('/home', {
     });
 
+  };
+  
+  const handleConnectionClick = () => {
+    const lockers = conndetails.host_locker
+  const connectionTypes = connectionType
+    console.log("navigate show-guest-users", {
+      connectionTypes,
+      lockers
+    });
+    navigate("/show-guest-users", { state: {connection: connectionTypes,locker:lockers } });
   };
 
   const content = (
@@ -1467,6 +1476,20 @@ export const Guesttermsreview = () => {
       </div> */}
     </>
   );
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleHostClick()} className="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleConnectionClick()} className="breadcrumb-item">ShowGuestUsers</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">GuestTermsReview</span>
+    </div>
+  )
 
   // const uniqueGlobalConnTypeIds = [
   //   ...new Set(
@@ -1544,9 +1567,9 @@ export const Guesttermsreview = () => {
   console.log("navigate back 2", connectionType);
   return (
     <div>
-      <Navbar content={content} />
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
 
-      <div style={{ marginTop: '120px' }}>
+      <div style={{ marginTop: '140px' }}>
 
         {/* <div className="description">
           {curruser ? curruser.description : "None"}

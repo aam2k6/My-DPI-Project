@@ -1611,6 +1611,16 @@ export const TargetLockerView = () => {
     }
   };
 
+
+  const handleTargetUserView = () => {
+    console.log("parentUser",parentUser)
+    navigate('/target-user-view', {
+      state: {
+        user: { username: parentUser.username , description: parentUser.description },
+        // locker:{description:parentUser.description}
+      },
+    });
+  }
   const firstTwoWords = locker?.description?.split(' ').slice(0, 2).join(' ') || '';
 
 
@@ -1621,7 +1631,7 @@ export const TargetLockerView = () => {
 
 
 
-      <div>
+      {/* <div>
         <div>
           {isExpanded ? (
             // Show full content when expanded
@@ -1663,8 +1673,22 @@ export const TargetLockerView = () => {
             Read less
           </button>
         )}
-      </div>
+      </div> */}
     </>
+  )
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+    <a href="/home" className="breadcrumb-item">
+      Home
+    </a>
+    <span className="breadcrumb-separator">▶</span>
+    <a className="breadcrumb-item" href="/dpi-directory">DPI Directory</a>
+    <span className="breadcrumb-separator">▶</span>
+    <span onClick={()=>handleTargetUserView(locker)} className="breadcrumb-item">TargetUserView</span>
+    <span className="breadcrumb-separator">▶</span>
+    <span className="breadcrumb-item current">TargetLockerView</span>
+  </div>
   )
 
   const handleToggle = (id) => {
@@ -1677,7 +1701,7 @@ export const TargetLockerView = () => {
       {isModalOpen && (
         <Modal message={modalMessage.message || <QRCode value={qrData} />} onClose={handleCloseModal} type={modalMessage.type || "info"} />
       )}
-      <Navbar content={content} />
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
       <div style={{ marginTop: "140px" }}>
         <Grid container className="page7description" justifyContent="center" alignItems="center">
           <Grid item md={10} sm={12} >
@@ -1692,7 +1716,7 @@ export const TargetLockerView = () => {
 
         <Grid container className="page7containers" padding={{ md: "4rem" }}>
           <Grid container md={5} className="notvisible">
-            <Grid item md={12} className="page7publicresource">
+            <Grid item md={12} xs={12} className="page7publicresource">
               <p>Resources</p>
               {/* {resources.length > 0 ? (
                 resources.map((resource) => (
@@ -1739,7 +1763,7 @@ export const TargetLockerView = () => {
               )}
             </Grid>
 
-            <Grid item md={12} className="page7publicresource" marginTop={"3rem"}>
+            <Grid item md={12} xs={12} className="page7publicresource" marginTop={"3rem"}>
               <p>Available Connection Types</p>
               {otherConnections.length > 0 ? (
                 otherConnections.map((connection) => (

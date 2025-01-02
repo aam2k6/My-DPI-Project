@@ -76,6 +76,17 @@ export const Connection = () => {
     console.log("in connection 2", connectionData, locker_conn);
     navigate("/connectionTerms");
   };
+
+const locker = locker_conn
+
+  const handleClick = (locker) => {
+    console.log("lockers",locker)
+    navigate('/view-locker', { state: { locker } });
+  };
+
+  const handleLockerAdmin = () =>{
+    navigate("/admin", { state: locker_conn });
+  }
   
 
   const content = (
@@ -85,9 +96,23 @@ export const Connection = () => {
     </>
   );
 
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleClick(locker)} className="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleLockerAdmin(locker)} className="breadcrumb-item">Locker Admin</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">CreateConnectionType</span>
+    </div>
+  )
+
   return (
     <>
-      <Navbar content={content}></Navbar>
+      <Navbar content={content} breadcrumbs={breadcrumbs}></Navbar>
       {/* <Panel /> */}
       <Container maxWidth="md" style={{marginTop:"120px"}}>
         <div>

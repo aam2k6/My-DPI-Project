@@ -73,7 +73,7 @@ export const ViewHostTermsByType = () => {
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
   const [pdfUrl, setPdfUrl] = useState(null);
   const [showRevokeConsentModal, setShowRevokeConsentModal] = useState(false);
-  
+
 
   const {
     connectionName,
@@ -628,7 +628,7 @@ export const ViewHostTermsByType = () => {
           <>
             {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] && (
               <a className="mb-1"
-                style={{display:"block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
                 onClick={() =>
                   fetchAndOpenResource(
                     termValues[obligation.labelName]?.split(";")[0]?.split("|")[1]
@@ -1545,6 +1545,26 @@ export const ViewHostTermsByType = () => {
 
   };
 
+
+  const handleConnectionClick = () => {
+    const lockers = hostLocker
+    const connectionTypes = connectionType
+    console.log("navigate show-guest-users", {
+      connectionTypes,
+      lockers
+    });
+    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers } });
+  };
+
+  const handleGuestTermsClick = () => {
+    navigate("/guest-terms-review", {
+      state: {
+        connection: connection,
+        connectionType: connectionType,
+      },
+    })
+  }
+
   console.log("selection", selection);
   const content = (
     <>
@@ -1627,6 +1647,23 @@ export const ViewHostTermsByType = () => {
     </>
   );
 
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleHostClick()} className="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleConnectionClick()} className="breadcrumb-item">ShowGuestUsers</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={()=>handleGuestTermsClick()} className="breadcrumb-item">GuestTermsReview</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">ViewHostTermsByType</span>
+
+    </div>
+  )
+
   const tooltips = {
     share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
     transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
@@ -1685,7 +1722,7 @@ export const ViewHostTermsByType = () => {
 
     <div>
 
-      <Navbar content={content} />
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
 
       {/* <div className={showResources || showResources2 ? "split-view" : ""}>
         <div className="table-container">
@@ -1711,7 +1748,7 @@ export const ViewHostTermsByType = () => {
           <h3>Your Obligations</h3> */}
 
 
-      <div style={{ marginTop: "120px" }}>
+      <div style={{ marginTop: "140px" }}>
         <div className="connection-details">
           Connection Name: {connectionName}
           <button
@@ -2206,13 +2243,13 @@ export const ViewHostTermsByType = () => {
                 </div>
               )}
               {showRevokeConsentModal && (
-                                      <Modal
-                                        message="Are you sure you want to revoke consent?"
-                                        type="confirmation"
-                                        onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
-                                        onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
-                                      />
-                                    )}
+                <Modal
+                  message="Are you sure you want to revoke consent?"
+                  type="confirmation"
+                  onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
+                  onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
+                />
+              )}
             </div>
           </div>
         </div>

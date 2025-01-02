@@ -68,9 +68,20 @@ export const DPIdirectory = () => {
     }
   };
 
+  const breadcrumbs = (
+    <div className="breadcrumbs" >
+    <a href="/home" className="breadcrumb-item">
+      Home
+    </a>
+    <span className="breadcrumb-separator">▶</span>
+    <span className="breadcrumb-item current">DPI Directory</span>
+  </div>
+      
+  )
+
   return (
     <div id="dpi-directory">
-      <Navbar />
+      <Navbar breadcrumbs={breadcrumbs} />
       <div className="page5heroContainer" style={{marginTop:"120px"}}>
         <div className="search">
           <form onSubmit={handleSearch}>

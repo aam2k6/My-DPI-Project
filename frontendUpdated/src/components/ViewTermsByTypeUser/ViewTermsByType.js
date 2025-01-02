@@ -1208,7 +1208,7 @@ export const ViewTermsByType = () => {
               }}
             >
               <button
-                onClick={isReactModalOpen}
+                onClick={handleClose}
                 style={{
                   marginBottom: "10px",
                   cursor: "pointer",
@@ -1952,13 +1952,13 @@ export const ViewTermsByType = () => {
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
       }
     } catch (err) {
-      // setError(`Error: ${err.message}`);
+      // setError(`Error: ${err.message} `);
       console.log(err);
     } finally {
       // setLoading(false);
@@ -2308,6 +2308,21 @@ export const ViewTermsByType = () => {
     navigate(`/target-user-view`, { state: { user: { username: hostUserUsername } } });
   }
 
+  const handleLockerClick = (locker) =>{
+    navigate('/view-locker', { state: { locker } });
+  }
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleLockerClick(locker)} className="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">ViewGuestTermsByType</span>
+    </div>
+  )
 
 
 
@@ -2315,7 +2330,7 @@ export const ViewTermsByType = () => {
 
     <div>
 
-      <Navbar content={content} />
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
 
       <div style={{ marginTop: "120px" }}>
         <div className="connection-details">

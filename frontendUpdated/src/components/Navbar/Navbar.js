@@ -11,7 +11,7 @@ import { MdOutlineQrCodeScanner } from "react-icons/md";
 import { QrReader } from 'react-qr-reader';
 import { Grid } from '@mui/material'
 
-export default function Navbar({ content, lockerAdmin, lockerObj }) {
+export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) {
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -467,7 +467,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
                 aria-labelledby="offcanvasNavbarLabel"
               >
                 <div className="offcanvas-header">
-                  <h5 className="offcanvas-title" id="offcanvasNavbarLabel">{content}</h5>
+                  {/* <h5 className="offcanvas-title" id="offcanvasNavbarLabel">{content}</h5> */}
                   <button
                     type="button"
                     className="btn-close"
@@ -711,6 +711,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj }) {
                 </div>
               </div>
             </Grid>
+            <div>{breadcrumbs}</div>
           </Grid>
         </div>
       </nav>

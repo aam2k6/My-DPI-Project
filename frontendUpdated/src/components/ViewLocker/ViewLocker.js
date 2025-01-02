@@ -604,7 +604,7 @@ export const ViewLocker = () => {
 
     navigate("/show-connection-terms", {
       state: {
-        connection:connection,
+        connection: connection,
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
         guestLockerName: connection.guest_locker?.name,
@@ -969,6 +969,16 @@ export const ViewLocker = () => {
       </div>
     </>
   );
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">View Locker</span>
+    </div>
+  )
   // console.log("res vnode", VnodeResources);
   console.log("xnodes", xnodes);
 
@@ -978,7 +988,7 @@ export const ViewLocker = () => {
 
   return (
     <div id="viewLocker">
-      <Navbar content={content} lockerAdmin={true} lockerObj={locker} />
+      <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} />
       <div className="containers" style={{ marginTop: "150px" }}>
         {/* <div className="locker-description">
           {locker ? ` ${locker.description}` : "Description"}
@@ -1399,7 +1409,7 @@ export const ViewLocker = () => {
                           </Grid>
 
                           <Grid item md={1} xs={1}>
-                            <i class="bi bi-info-circle " style={{ fontSize: "20px", fontWeight: "bold", cursor:"pointer" }} onClick={() => handleIncomingInfo(connection)}></i>
+                            <i class="bi bi-info-circle " style={{ fontSize: "20px", fontWeight: "bold", cursor: "pointer" }} onClick={() => handleIncomingInfo(connection)}></i>
 
                             {/* <button
                               className="info-button2"

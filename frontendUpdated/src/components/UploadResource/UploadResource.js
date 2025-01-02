@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import "./page4.css";
 import Navbar from '../Navbar/Navbar';
-import Modal from '../Modal/Modal'; 
+import Modal from '../Modal/Modal';
 import { frontend_host } from '../../config';
 import { Grid, TextField, Button, Select, MenuItem, InputLabel, Typography, Box, Container } from '@mui/material';
 import { Padding } from '@mui/icons-material';
@@ -17,16 +17,16 @@ export const UploadResource = () => {
   const [resourceName, setResourceName] = useState("");
   const [document, setDocument] = useState(null);
   const [visibility, setVisibility] = useState("public");
-  const [validityTime, setValidityTime] = useState(null); 
+  const [validityTime, setValidityTime] = useState(null);
   const navigate = useNavigate();
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
- const [errorModalMessage, setErrorModalMessage] = useState('');
+  const [errorModalMessage, setErrorModalMessage] = useState('');
 
 
- const capitalizeFirstLetter = (string) => {
-  if (!string) return "";
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   useEffect(() => {
     if (!curruser) {
@@ -44,7 +44,7 @@ export const UploadResource = () => {
       setIsErrorModalOpen(true);
       return;
     }
-  
+
 
     const data = new FormData();
     data.append('locker_name', locker.name);
@@ -63,24 +63,24 @@ export const UploadResource = () => {
       },
       body: data,
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        console.log("Resource uploaded:", data);
-        navigate("/view-locker",{state: {locker}});
-      } else {
-        console.error("Error:", data.error);
-        alert(data.error);
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      alert("An error occurred while uploading the resource");
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log("Resource uploaded:", data);
+          navigate("/view-locker", { state: { locker } });
+        } else {
+          console.error("Error:", data.error);
+          alert(data.error);
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred while uploading the resource");
+      });
   };
 
 
-  
+
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   };
@@ -88,26 +88,38 @@ export const UploadResource = () => {
 
   const content = (
     <>
-    <div className="navbarBrands">Locker: {locker.name}</div>
-          <div className="navbarBrands">Owner: {capitalizeFirstLetter(curruser.username)  }</div>
-          {/* <span className='uploadDescription'><p>{locker.description}</p></span> */}
+      <div className="navbarBrands">Locker: {locker.name}</div>
+      <div className="navbarBrands">Owner: {capitalizeFirstLetter(curruser.username)}</div>
+      {/* <span className='uploadDescription'><p>{locker.description}</p></span> */}
     </>
   );
 
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleClick(locker)} class="breadcrumb-item">View Locker</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">Upload Resource</span>
+    </div>
+  )
+
   return (
     <div>
-     <Navbar content={content} />
-     {isErrorModalOpen && (
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      {isErrorModalOpen && (
         <Modal
           message={errorModalMessage}
           onClose={() => setIsErrorModalOpen(false)}
         />
       )}
 
-      <div style={{ marginTop: "120px" }}>
-        <div className='uploadDescriptions'>
+      <div style={{ marginTop: "140px" }}>
+        {/* <div className='uploadDescriptions'>
           <p>{locker.description}</p>
-        </div>
+        </div> */}
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-md-8 col-sm-12 p-4 border border-primary rounded shadow">
@@ -167,6 +179,6 @@ export const UploadResource = () => {
           </div>
         </div>
       </div>
-      </div>
+    </div>
   );
 };

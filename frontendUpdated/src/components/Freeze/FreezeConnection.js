@@ -135,9 +135,19 @@ export const FreezeConnection = () => {
         // setSelectedUser(null);
     };
 
+    const breadcrumbs = (
+        <div className="breadcrumbs">
+          <a href="/home" className="breadcrumb-item">
+            Home
+          </a>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">Freeze Connection</span>
+        </div>
+      )
+
     const code = (
         <>
-            <Navbar />
+            <Navbar breadcrumbs={breadcrumbs} />
             <div className="container" style={{ marginTop: "120px" }}>
                 <div className="row justify-content-center p-4">
                     <div className="col-md-6 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">

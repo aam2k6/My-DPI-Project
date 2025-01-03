@@ -4,7 +4,7 @@ import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
-import { Container, Grid, TextField, Button, Typography,Box} from "@mui/material";
+import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material";
 import "./page2.css";
 
 export const CreateLocker = () => {
@@ -55,16 +55,26 @@ export const CreateLocker = () => {
 
   useEffect(() => {
     if (!curruser) {
-        navigate('/');
-        return;
+      navigate('/');
+      return;
     }
   }, []);
 
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">Create Locker</span>
+    </div>
+  )
+
   return (
     <div>
-      <Navbar />
+      <Navbar breadcrumbs={breadcrumbs} />
 
-      <Container maxWidth="sm" style={{ marginTop: "120px"}}>
+      <Container maxWidth="sm" style={{ marginTop: "150px" }}>
         <Box
           sx={{
             border: '1px solid blue',
@@ -73,46 +83,46 @@ export const CreateLocker = () => {
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
           }}
         >
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom fontWeight="bold" >
-                Locker Name
-              </Typography>
-              <TextField
-                fullWidth
-                variant="outlined"
-                value={lockerName}
-                onChange={(e) => setLockerName(e.target.value)}
-                placeholder="Enter Locker Name"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom fontWeight="bold">
-                Description
-              </Typography>
-              <TextField
-                fullWidth
-                variant="outlined"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter description"
-              />
-            </Grid>
-            <Grid item xs={12} container justifyContent="center">
-              <Grid item>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom fontWeight="bold" >
+                  Locker Name
+                </Typography>
+                <TextField
                   fullWidth
-                >
-                  Submit
-                </Button>
+                  variant="outlined"
+                  value={lockerName}
+                  onChange={(e) => setLockerName(e.target.value)}
+                  placeholder="Enter Locker Name"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom fontWeight="bold">
+                  Description
+                </Typography>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter description"
+                />
+              </Grid>
+              <Grid item xs={12} container justifyContent="center">
+                <Grid item>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                  >
+                    Submit
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </form>
+          </form>
         </Box>
       </Container>
     </div>

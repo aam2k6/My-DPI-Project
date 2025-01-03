@@ -276,10 +276,19 @@ export const ConnectionTypes = () => {
 
         </>
     );
+    const breadcrumbs = (
+        <div className="breadcrumbs">
+          <a href="/home" className="breadcrumb-item">
+            Home
+          </a>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">Connections Types</span>
+        </div>
+    );
     return (
         <div id="all-connection-terms">
-            <Navbar content={content} />
-            <div style={{ marginTop: "150px" }}>
+            <Navbar content={content} breadcrumbs={breadcrumbs}/>
+            <div style={{ marginTop: "160px" }}>
                 <Grid container>
                     <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>
                         <h3>Connections Type</h3>

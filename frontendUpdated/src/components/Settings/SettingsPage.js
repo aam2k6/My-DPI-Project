@@ -194,10 +194,20 @@ export default function SettingsPage() {
         });
     };
 
+    const breadcrumbs = (
+        <div className="breadcrumbs">
+          <a href="/home" className="breadcrumb-item">
+            Home
+          </a>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">Settings</span>
+        </div>
+      )
+
     return (
         <>
-            <Navbar />
-            <div className="settings-page" style={{marginTop:"120px"}}>
+            <Navbar breadcrumbs={breadcrumbs} />
+            <div className="settings-page" style={{marginTop:"150px", border:"2px solid rgb(107, 120, 231)"}}>
                 <h1>User Profile</h1>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <div className="profile-info">

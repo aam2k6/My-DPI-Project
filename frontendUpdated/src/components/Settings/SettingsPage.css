@@ -1,10 +1,19 @@
 .settings-page {
-    width: 60%;
+    width: 50%;
     margin: 0 auto;
     padding: 20px;
     background-color: #f4f4f4;
     border-radius: 8px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 700px) {
+    .settings-page {
+        width: 90%;
+        padding: 15px;
+        font-size: 14px; /* Optional: adjust font size if needed */
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1); /* Optional: reduce shadow intensity */
+    }
 }
 
 .settings-page h1 {

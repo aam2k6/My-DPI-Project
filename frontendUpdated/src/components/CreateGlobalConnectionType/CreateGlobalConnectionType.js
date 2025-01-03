@@ -88,22 +88,30 @@ export default function CreateGlobalConnectionType() {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">GlobalConnectionTypes</span>
+    </div>
+  )
   return (
     <div className="manage-connection-page">
-      <Navbar />
-      <div style={{marginTop:"120px"}}>
+      <Navbar breadcrumbs={breadcrumbs} />
+      <div style={{marginTop:"140px"}}>
       {/* {isSystemAdmin && <Sidebar />} */}
       <Grid container className="" paddingLeft={{md:"30%", xs:"10%"}}>
         <Grid md={12}>
-        <h1>GLOBAL CONNECTIONS</h1>
+        <h2>GLOBAL CONNECTIONS</h2>
         {error && <p className="error">{error}</p>}
 
         {allDomains.length > 0 ? (
           <>
-            <h2>TEMPLATES AND POLICIES</h2>
+            <h4>TEMPLATES AND POLICIES</h4>
             <div className="section">
-              <h3>Templates</h3>
+              <h4>Templates</h4>
               {allDomains.map((domain) => {
                 const filteredTemplates = connectionTypes.filter(
                   (type) => type.domain === domain && type.globaltype === "template"
@@ -112,7 +120,7 @@ export default function CreateGlobalConnectionType() {
                 return (
                   <div key={domain}>
                     <div className="domain-header" onClick={() => handleDomainToggle(domain, 'templates')}>
-                      <span className="domain-title">
+                      <span className="domain-title" style={{cursor:"pointer"}}>
                       {expandedStates[domain]?.templates ? '▼' : '►'} {capitalizeFirstLetter(domain)}
                       </span>
                     </div>
@@ -137,7 +145,7 @@ export default function CreateGlobalConnectionType() {
 
             {/* Policies Section */}
             <div className="section">
-              <h3>Policies</h3>
+              <h4>Policies</h4>
               {allDomains.map((domain) => {
                 const filteredPolicies = connectionTypes.filter(
                   (type) => type.domain === domain && type.globaltype === "policy"

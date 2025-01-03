@@ -251,9 +251,25 @@ export const ConnectionTermsGlobal = () => {
 
   const token = Cookies.get("authToken");
 
+  const handleGlobalConnection = () => {
+     navigate('/create-global-connection-type');
+  }
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleGlobalConnection()} className="breadcrumb-item">GlobalConnectionTypes</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">AddNewGlobalConnectionType</span>
+    </div>
+  )
+
   return (
     <div id="connectionTerms">
-      <Navbar />
+      <Navbar breadcrumbs={breadcrumbs} />
 
       <div className="connectionTermsContainer">
 

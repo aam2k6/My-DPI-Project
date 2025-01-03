@@ -260,9 +260,20 @@ export const AllLokers = () => {
 
     </>
   );
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">Lockers</span>
+    </div>
+  )
+
   return (
     <div id="alllockers">
-       <Navbar content={content}  />
+       <Navbar content={content} breadcrumbs={breadcrumbs} />
       <div style={{marginTop: "150px"}}>
       <Grid container>
             <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>

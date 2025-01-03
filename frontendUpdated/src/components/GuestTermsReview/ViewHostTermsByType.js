@@ -1766,9 +1766,9 @@ export const ViewHostTermsByType = () => {
           </button>
           <button
             //   className="info-button"
-            onClick={() => setShowRevokeConsentModal(true)}
+            onClick={() => handleConsentAndInfo(connectionName)}
           >
-            Revoke Consent
+            Manage Consent
           </button>
           <br></br>
           <>

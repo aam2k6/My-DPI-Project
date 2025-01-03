@@ -730,13 +730,15 @@ export const CreateConnectionTerms = () => {
   const [showCloseConfirmationModal, setShowCloseConfirmationModal] = useState(false);
   const [isModalOpenClose, setIsModalOpenClose] = useState(false);
   const [closeState, setCloseState] = useState(true);
-  
-  // const [forbiddenContent, setForbiddenContent] = useState("null")
+  const [termsValue, setTermsValue] = useState({});
+  const [termsValueReverse, setTermsValueReverse] = useState({});
 
+  // const [forbiddenContent, setForbiddenContent] = useState("null")
+  console.log("resss", res)
   const forbiddenContent =
     res?.forbidden?.host_to_guest?.[0]?.labelDescription ??
     res?.forbidden?.guest_to_host?.[0]?.labelDescription ??
-    "You can unilaterally close the connection";
+    "";
 
   console.log("forbiddenContent", curruser);
 
@@ -885,9 +887,11 @@ export const CreateConnectionTerms = () => {
         );
 
         const data = await response.json();
-        console.log("data conn", data.connections);
+        console.log("data conn", data);
         if (response.ok) {
           setConnectionDetails(data.connections);
+          setTermsValue(data.connections.terms_value || {})
+          setTermsValueReverse(data.connections.terms_value_reverse || {})
         } else {
           setError(data.error || "Failed to fetch connection details.");
           console.log("fecth connection details", data.error)
@@ -949,44 +953,44 @@ export const CreateConnectionTerms = () => {
 
 
   const handleCloseConnection = async (connection_id) => {
-      const formData = new FormData();
-      formData.append("connection_id", connection_id);
-      // formData.append("close_host_bool", "True");
-  
-      // console.log(connection_id ,"id");
-      const token = Cookies.get("authToken");
-      try {
-        // Step 1: Call close_connection_host API using fetch
-        const revokeHostResponse = await fetch(
-          "host/close_connection_guest/".replace(/host/, frontend_host),
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Basic ${token}`,
-            },
-  
-            body: formData,
-          }
-        );
-  
-        const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
-  
-        if (revokeHostResponse.ok) {
-          setModalMessage({
-            message: 'Successfully Connection closed',
-            type: 'success',
-          });
-        }  else {
-           setModalMessage({
+    const formData = new FormData();
+    formData.append("connection_id", connection_id);
+    // formData.append("close_host_bool", "True");
+
+    // console.log(connection_id ,"id");
+    const token = Cookies.get("authToken");
+    try {
+      // Step 1: Call close_connection_host API using fetch
+      const revokeHostResponse = await fetch(
+        "host/close_connection_guest/".replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+
+          body: formData,
+        }
+      );
+
+      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+
+      if (revokeHostResponse.ok) {
+        setModalMessage({
+          message: 'Successfully Connection closed',
+          type: 'success',
+        });
+      } else {
+        setModalMessage({
           message: revokeHostData.message || "Failed to close the connection.",
           type: "failure",
         });
-        }
-      } catch (error) {
-        console.error("Error:", error);
       }
-      setIsModalOpen(true)
-    };
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    setIsModalOpen(true)
+  };
 
   useEffect(() => {
     if (connectionDetails) {
@@ -1041,11 +1045,11 @@ export const CreateConnectionTerms = () => {
     setIsModalOpenClose(false);
     setModalMessage({ message: "", type: "" });
     navigate(`/view-locker?param=${Date.now()}`, {
-      state: { locker: guestLocker  },
+      state: { locker: guestLocker },
     });
   };
-// console.log("connection.guest_locker", connection.guest_locker)
-console.log("connectionDetailss", connectionDetails)
+  // console.log("connection.guest_locker", connection.guest_locker)
+  console.log("connectionDetailss", connectionDetails)
   // Show loading while fetching connection details
   if (loading) {
     return <div>Loading...</div>; // Replace with a proper loading component if needed
@@ -1269,6 +1273,7 @@ console.log("connectionDetailss", connectionDetails)
     }
     setIsModalOpen(true);
   };
+  console.log("termss", res)
 
   const renderTermsSection = (terms, title, userType) => (
     <div className="terms-sections">
@@ -1299,6 +1304,104 @@ console.log("connectionDetailss", connectionDetails)
     </div>
   );
 
+  const renderGuestTerms = (terms, title) => {
+    const canShareMoreData = connectionDetails.terms_value.canShareMoreData
+    return (
+      <div style={{ textAlign: "start", fontSize:"17px" }}>
+        {terms && terms.length > 0 && (
+          <ul>
+            {terms.map((term, index) => {
+              const isConditionMet = termsValue[term.labelName]?.split(";")[0];
+              if (isConditionMet) {
+                return (
+                  <li key={index}>
+
+                    {term.labelName}
+                    {term.typeOfSharing === "share"
+                      ? ` ${term.typeOfSharing}d `
+                      : term.typeOfSharing === "collateral"
+                        ? " Pledged "
+                      : term.typeOfSharing === "confer"
+                      ? `${term.typeOfSharing}red `
+                        : ` ${term.typeOfSharing}ed `}
+                    by {guestUserUsername} will not be accessible to {hostUserUsername}
+
+
+                  </li>
+                );
+              }
+              return null; 
+            })}
+
+            {canShareMoreData &&
+              Object.entries(canShareMoreData).map(([key, value], index) => (
+                <li key={`extra-${index}`}>
+                  {key}
+                  {value.typeOfSharing === "share"
+                      ? ` ${value.typeOfSharing}d `
+                      : value.typeOfSharing === "collateral"
+                        ? " Pledged "
+                      : value.typeOfSharing === "confer"
+                      ? `${value.typeOfSharing}red `
+                        : ` ${value.typeOfSharing}ed `}
+                    by {guestUserUsername} will not be accessible to {hostUserUsername}
+
+                </li>
+              ))}
+          </ul>
+        )}
+      </div>
+    );
+  };
+
+  console.log("Terms Value for Host Terms:", termsValue);
+
+
+  const renderHostTerms = (terms, title) => {
+    return (
+      <div style={{ textAlign: "start" , fontSize:"17px"}}>
+        {terms && terms.length > 0 && (
+          <ul>
+            {terms.map((term, index) => {
+              const isConditionMet = termsValueReverse[term.labelName]?.split(";")[0];
+              if (isConditionMet) {
+                return (
+                  <li key={index}>
+                    {term.labelName} {term.typeOfSharing === "share"
+                      ? ` ${term.typeOfSharing}d `
+                      : term.typeOfSharing === "collateral"
+                        ? " Pledged "
+                      : term.typeOfSharing === "confer"
+                      ? `${term.typeOfSharing}red `
+                        : ` ${term.typeOfSharing}ed `} by {hostUserUsername} will no longer be accessible to {guestUserUsername}
+                  </li>
+                );
+              }
+              return null;
+            })}
+          </ul>
+        )}
+      </div>
+    );
+  };
+
+  const renderGuest = () => {
+    if (res && res.obligations) {
+      return (
+        <div style={{ textAlign: "start", fontSize:"17px" }}>
+          {renderGuestTerms(res.obligations.guest_to_host)}
+          {renderHostTerms(res.obligations.host_to_guest)}
+          <ul>
+            <li>
+              Are you sure you want to revoke
+            </li>
+          </ul>
+        </div>
+      );
+    }
+    return <div>Are you sure you want to revoke</div>;
+  };
+
   const renderObligations = (userType) => {
     if (res && res.obligations) {
       return userType === "guest"
@@ -1316,7 +1419,7 @@ console.log("connectionDetailss", connectionDetails)
       return (
         <div className="permissions">
           <ul>
-            <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
+            <li style={{fontSize:"18px"}}>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
             {/* <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li> */}
           </ul>
         </div>
@@ -1545,6 +1648,8 @@ console.log("connectionDetailss", connectionDetails)
       },
     });
   };
+
+  console.log("connectionDetails", connectionDetails)
   return (
     <div>
       <Navbar content={content} />
@@ -1593,167 +1698,169 @@ console.log("connectionDetailss", connectionDetails)
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <div className="view-container">
-          <div className="b">
-            <div className="tabs">
-              <div
-                className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
-                onClick={() => setActiveTab("guest")}
-              >
-                Guest Data
+        <div>
+          <div className="view-container">
+            <div className="b">
+              <div className="tabs">
+                <div
+                  className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
+                  onClick={() => setActiveTab("guest")}
+                >
+                  Guest Data
+                </div>
+                <div
+                  className={`tab-header ${activeTab === "host" ? "active" : ""}`}
+                  onClick={() => setActiveTab("host")}
+                >
+                  Host Data
+                </div>
               </div>
-              <div
-                className={`tab-header ${activeTab === "host" ? "active" : ""}`}
-                onClick={() => setActiveTab("host")}
-              >
-                Host Data
-              </div>
-            </div>
-            <div className="tab-content">
-              <div className="table-container">
-                {activeTab === "guest" && (
-                  <div>
-                    <div className="page13headterms">Your Obligations</div>
-                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderObligations("guest")}</div>
-                    <div className="page13headterms">Your Permissions</div>
-                    <div className="page13lowerterms">{renderPermissions("guest")}</div>
-                    <div className="page13headterms">Your Forbidden Terms</div>
-                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
-                    <div className="page13headterms">Default Host Privileges</div>
-                    By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-                  </div>
-                )}
-                {activeTab === "host" && (
-                  <div>
-                    <div className="page13headterms">Host Obligations</div>
-                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderObligations("host")}</div>
-                    <div className="page13headterms">Host Permissions</div>
-                    <div className="page13lowerterms">{renderPermissions("host")}</div>
-                    <div className="page13headterms" >Host Forbidden Terms</div>
-                    <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
-                    <div className="page13headterms">Default Host Privileges</div>
-                    By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
-                  </div>
-                )}
+              <div className="tab-content">
+                <div className="table-container">
+                  {activeTab === "guest" && (
+                    <div>
+                      <div className="page13headterms">Your Obligation</div>
+                      <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderObligations("guest")}</div>
+                      <div className="page13headterms">Your Permissions</div>
+                      <div className="page13lowerterms">{renderPermissions("guest")}</div>
+                      <div className="page13headterms">Your Forbidden Terms</div>
+                      <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
+                      <div className="page13headterms">Default Host Privileges</div>
+                      <span style={{fontSize:"18px"}}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</span>
+                    </div>
+                  )}
+                  {activeTab === "host" && (
+                    <div>
+                      <div className="page13headterms">Host Obligations</div>
+                      <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderObligations("host")}</div>
+                      <div className="page13headterms">Host Permissions</div>
+                      <div className="page13lowerterms">{renderPermissions("host")}</div>
+                      <div className="page13headterms" >Host Forbidden Terms</div>
+                      <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
+                      <div className="page13headterms">Default Host Privileges</div>
+                       <span style={{fontSize:"18px"}}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {
-          isModalOpen && (
+          {
+            isModalOpen && (
+              <Modal
+                message={modalMessage.message}
+                onClose={handleCloseModal}
+                type={modalMessage.type}
+              />
+            )
+          }
+          {showConfirmationModal && (
+            <Modal
+              message="Are you sure you want to agree?"
+              type="confirmation"
+              onClose={() => setShowConfirmationModal(false)} // Close on "No"
+              onConfirm={() => {
+                setShowConfirmationModal(false); // Close modal
+                handleIagreebutton(); // Execute agree action
+              }}
+            />
+          )}
+          {showRevokeConfirmationModal && (
+            <Modal
+              message={<>{renderGuest()}</>} // Wrap in JSX fragment
+              type="confirmation"
+              onClose={() => setShowRevokeConfirmationModal(false)} // Close modal on "No"
+              onConfirm={handleRevokeConfirm} // Call the confirmation action
+            />
+          )}
+
+
+          {showCloseConfirmationModal && (
+            <Modal
+              message={
+                <div style={{textAlign:"start", fontSize:"17px"}}>
+                  <div>You will no longer be allowed to share data</div>
+                  <div>{forbiddenContent}</div>
+                  <div>Are you sure you want to Close Connection?</div>
+                </div>
+              }
+              type="confirmation"
+              onClose={() => setShowCloseConfirmationModal(false)} // Close modal on "No"
+              onConfirm={handleCloseConfirm} // Call the confirmation action
+            />
+          )}
+
+          {isModalOpenClose && (
             <Modal
               message={modalMessage.message}
-              onClose={handleCloseModal}
+              onClose={handleCloseModalClose}
               type={modalMessage.type}
-            />
-          )
-        }
-        {showConfirmationModal && (
-          <Modal
-            message="Are you sure you want to agree?"
-            type="confirmation"
-            onClose={() => setShowConfirmationModal(false)} // Close on "No"
-            onConfirm={() => {
-              setShowConfirmationModal(false); // Close modal
-              handleIagreebutton(); // Execute agree action
-            }}
-          />
-        )}
-        {showRevokeConfirmationModal && (
-          <Modal
-            message="Are you sure you want to revoke?"
-            type="confirmation"
-            onClose={() => setShowRevokeConfirmationModal(false)} // Close modal on "No"
-            onConfirm={handleRevokeConfirm} // Call the confirmation action
-          />
-        )}
-
-        {showCloseConfirmationModal && (
-          <Modal
-            message={
-              <>
-                You will no longer be allowed to share data <br />
-                {forbiddenContent} <br />
-                Are you sure you want to Close Connection? <br />
-              </>
-            }
-            type="confirmation"
-            onClose={() => setShowCloseConfirmationModal(false)} // Close modal on "No"
-            onConfirm={handleCloseConfirm} // Call the confirmation action
-          />
-        )}
-
-        {isModalOpenClose && (
-          <Modal
-            message={modalMessage.message}
-            onClose={handleCloseModalClose}
-            type={modalMessage.type}
-            closeConnection={closeState}
-            onCloseConnection={() => onCloseButtonClick(connection_id)}
-            viewTerms={() => navigateToConnectionDetails(connection.
-              connection_name
+              closeConnection={closeState}
+              onCloseConnection={() => onCloseButtonClick(connection_id)}
+              viewTerms={() => navigateToConnectionDetails(connection.
+                connection_name
               )}
-          />
-        )}
-        <div>
-          {showConsent && agrees && (
-            <Grid container>
-              <Grid item md={4} xs={1}></Grid>
-              <Grid item xs={5.5} md={2} className="page13button">
-                <button
-                  className="page13iagree0buttons"
-                  onClick={() => setShowConfirmationModal(true)} // Trigger confirmation modal
-                >
-                  Agree
-                </button>
-              </Grid>
-              <Grid item xs={5.5} md={2} className="page13button">
-                <button
-                  className="page13iagree0buttons"
-                  onClick={() => handledisagreebutton()}
-                >
-                  Disagree
-                </button>
-              </Grid>
-              <Grid item md={4} xs={0}></Grid>
-            </Grid>
+            />
           )}
-        </div>
+          <div>
+            {showConsent && agrees && (
+              <Grid container>
+                <Grid item md={4} xs={1}></Grid>
+                <Grid item xs={5.5} md={2} className="page13button">
+                  <button
+                    className="page13iagree0buttons"
+                    onClick={() => setShowConfirmationModal(true)} // Trigger confirmation modal
+                  >
+                    Agree
+                  </button>
+                </Grid>
+                <Grid item xs={5.5} md={2} className="page13button">
+                  <button
+                    className="page13iagree0buttons"
+                    onClick={() => handledisagreebutton()}
+                  >
+                    Disagree
+                  </button>
+                </Grid>
+                <Grid item md={4} xs={0}></Grid>
+              </Grid>
+            )}
+          </div>
 
-        <div>
-          {showConsent && Iagree === "1" && !agrees && (
-            <Grid container className="page13parent13state1">
-              <Grid item xs={12} md={1}></Grid>
-              <Grid item xs={12} md={4} className="page13consent" mb={3}>
-                Consent Given on : {consentData.consent_given}
-                <br />
-                Consent valid Until : {consentData.valid_until}
+          <div>
+            {showConsent && Iagree === "1" && !agrees && (
+              <Grid container className="page13parent13state1">
+                <Grid item xs={12} md={1}></Grid>
+                <Grid item xs={12} md={4} className="page13consent" mb={3}>
+                  Consent Given on : {consentData.consent_given}
+                  <br />
+                  Consent valid Until : {consentData.valid_until}
+                </Grid>
+                <Grid xs={2} md={2}></Grid>
+                <Grid item xs={5} md={2} className="page13button" mb={3}>
+                  <button
+                    className="page13iagree1buttons"
+                    onClick={() => setShowRevokeConfirmationModal(true)} // Trigger confirmation modal
+                  >
+                    Revoke
+                  </button>
+                </Grid>
+                <Grid item xs={4} md={2} className="page13button" mb={3}>
+                  <button
+                    className="page13iagree1buttons"
+                    onClick={() => setShowCloseConfirmationModal(true)} // Trigger confirmation modal
+                  >
+                    Close Connection
+                  </button>
+                </Grid>
               </Grid>
-              <Grid xs={2} md={2}></Grid>
-              <Grid item xs={5} md={2} className="page13button" mb={3}>
-                <button
-                  className="page13iagree1buttons"
-                  onClick={() => setShowRevokeConfirmationModal(true)} // Trigger confirmation modal
-                >
-                  Revoke
-                </button>
-              </Grid>
-              <Grid item xs={4} md={2} className="page13button" mb={3}>
-                <button
-                  className="page13iagree1buttons"
-                  onClick={() => setShowCloseConfirmationModal(true)} // Trigger confirmation modal
-                >
-                  Close Connection
-                </button>
-              </Grid>
-            </Grid>
-          )}
-        </div>
+            )}
+          </div>
 
+        </div>
       </div>
+
 
 
     </div>

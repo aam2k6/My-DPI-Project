@@ -2087,11 +2087,11 @@ export const ViewTermsByType = () => {
       const data = await response.json();
       // console.log("revoke consent", data);
       if (response.status === 200) {
-    setIsModalOpenClose(false);
+        setIsModalOpenClose(false);
         setModalMessage({
-            message: 'Successfully Connection closed',
-            type: 'success',
-          });
+          message: 'Successfully Connection closed',
+          type: 'success',
+        });
       } else {
         setModalMessage({
           message: data.message || "Failed to close the connection.",
@@ -2308,7 +2308,7 @@ export const ViewTermsByType = () => {
     navigate(`/target-user-view`, { state: { user: { username: hostUserUsername } } });
   }
 
-  const handleLockerClick = (locker) =>{
+  const handleLockerClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   }
 
@@ -2349,9 +2349,9 @@ export const ViewTermsByType = () => {
             <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
           </button>
           <button
-            onClick={() => setShowRevokeConsentModal(true)} // Trigger confirmation modal
+            onClick={() => handleConsentAndInfo(connectionName)} // Trigger confirmation modal
           >
-            Revoke Consent
+            Manage Consent
           </button>
           <br></br>
           <>
@@ -2859,7 +2859,7 @@ export const ViewTermsByType = () => {
 
 
                         </div>
-                        
+
                         <div className="button-group">
                           <button onClick={handlePageSubmit2}>Submit</button>
                           <button onClick={() => {
@@ -3018,14 +3018,14 @@ export const ViewTermsByType = () => {
                             />
                           )}
 
-                          {showRevokeConsentModal && (
+                          {/* {showRevokeConsentModal && (
                             <Modal
                               message="Are you sure you want to revoke consent?"
                               type="confirmation"
                               onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
                               onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
                             />
-                          )}
+                          )} */}
 
                           {isModalOpenClose && (
                             <Modal
@@ -3150,6 +3150,14 @@ export const ViewTermsByType = () => {
             </div>
           </div>
         </div>
+        {showRevokeConsentModal && (
+          <Modal
+            message="Are you sure you want to revoke consent?"
+            type="confirmation"
+            onClose={() => setShowRevokeConsentModal(false)} // Close modal on "No"
+            onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
+          />
+        )}
       </div>
     </div>
 

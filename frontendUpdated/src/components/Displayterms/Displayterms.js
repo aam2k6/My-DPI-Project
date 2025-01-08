@@ -180,13 +180,17 @@ export const Displayterms = () => {
     validitytime,
     hostUserUsername,
     locker,
+    guestUserUsername,
     viewlockerDisplay,
     hostLocker,
+    guestLocker,
     viewGuestuser,
     connectionType,
     GuestTermDisplay,
     connectionDetails,
-    viewHostDisplay
+    viewHostDisplay,
+    ViewTermsDisplay,
+    hostTermsReviewDisplay,
   } = location.state || {};
   console.log("Location State:", locker.name);
   console.log("Location State:", hostLockerName);
@@ -409,6 +413,16 @@ export const Displayterms = () => {
     });
   };
 
+  const handleViewLockerGuest = () => {
+    navigate('/view-locker', {
+      state: {
+        user: { username: guestUserUsername },
+        locker: guestLocker,
+      },
+    });
+
+  }
+
   const handleConnectionClick = () => {
     const lockers = hostLocker
     const connectionTypes = connectionType
@@ -449,6 +463,49 @@ export const Displayterms = () => {
         hostLocker: connectionDetails.host_locker
       },
     })
+  }
+  console.log("something", { connection_id: connectionDetails },)
+
+  const handleViewTermsClick = () => {
+    navigate("/view-terms-by-type", {
+      state: {
+        connection_id: connectionDetails.connection_id,
+        connectionName: connectionDetails.connection_name,
+        connectionDescription: connectionDetails.connection_description,
+        hostLockerName: connectionDetails?.host_locker?.name,
+        guestLockerName: connectionDetails?.guest_locker?.name,
+        hostUserUsername: connectionDetails?.host_user?.username,
+        guestUserUsername: connectionDetails?.guest_user?.username,
+        locker: connectionDetails?.guest_locker,
+        guest_locker_id: connectionDetails.guest_locker?.locker_id,
+        host_locker_id: connectionDetails.host_locker?.locker_id,
+        connection: connectionDetails,
+        //    Type: connectionType, 
+        guestLocker: connectionDetails.guest_locker,
+        hostLocker: connectionDetails.host_locker
+      },
+    })
+  }
+
+  
+  const handleViewHostTermsClick = () => {
+    navigate("/host-terms-review", {
+      state: {
+        connection: connectionDetails,
+        connection_id: connectionDetails.connection_id,
+        connectionName: connectionDetails.connection_name,
+        connectionDescription: connectionDetails.connection_description,
+        hostLockerName: connectionDetails.host_locker?.name,
+        guestLockerName: connectionDetails.guest_locker?.name,
+        hostUserUsername: connectionDetails.host_user?.username,
+        guestUserUsername: connectionDetails.guest_user?.username,
+        locker: locker,
+        guest_locker_id: connectionDetails.guest_locker?.locker_id,
+        host_locker_id: connectionDetails.host_locker?.locker_id,
+        hostLocker: connectionDetails.host_locker,
+        guestLocker: connectionDetails.guest_locker
+      },
+    });
   }
 
   const content = (
@@ -513,6 +570,26 @@ export const Displayterms = () => {
           <span className="breadcrumb-separator">▶</span>
           <span className="breadcrumb-item current">DisplayTerms</span>
 
+        </>
+      )}
+      {ViewTermsDisplay && (
+        <>
+          <span onClick={() => handleViewLockerGuest()} className="breadcrumb-item">View Locker</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleViewTermsClick()} className="breadcrumb-item">ViewGuestTermsByType</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">DisplayTerms</span>
+        </>
+      )}
+      {hostTermsReviewDisplay && (
+        <>
+          <span onClick={() => handleViewLockerGuest()} className="breadcrumb-item">View Locker</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleViewTermsClick()} className="breadcrumb-item">ViewGuestTermsByType</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleViewHostTermsClick()} className="breadcrumb-item">HostTermsReview</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">DisplayTerms</span>
         </>
       )}
 

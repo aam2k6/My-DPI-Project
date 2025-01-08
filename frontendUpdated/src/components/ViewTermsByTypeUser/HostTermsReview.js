@@ -1193,7 +1193,8 @@ export const HostTermsReview = () => {
         guestLockerName: guestLockerName,
         guestLocker: guestLocker,
         hostLocker: hostLocker,
-
+        hostTermsReviewDisplay:true,
+        connectionDetails
       },
     });
   }

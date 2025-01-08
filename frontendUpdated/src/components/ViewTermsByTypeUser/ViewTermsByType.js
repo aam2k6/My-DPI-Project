@@ -1787,6 +1787,8 @@ export const ViewTermsByType = () => {
           guestLocker: guestLocker,
           createdtime: connectionDetails.created_time,
           validitytime: connectionDetails.validity_time,
+          ViewTermsDisplay: true,
+          connectionDetails
         },
       });
     } else {

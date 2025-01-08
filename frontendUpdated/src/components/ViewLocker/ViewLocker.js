@@ -195,9 +195,6 @@ export const ViewLocker = () => {
       }
     } catch (error) {
       console.error("Error fetching connections and other connections:", error);
-      setError(
-        "An error occurred while fetching connections or other connections"
-      );
     }
   };
 
@@ -1181,7 +1178,7 @@ export const ViewLocker = () => {
                                 contentLabel="PDF Viewer"
                                 style={{
                                   content: {
-                                    top: "55%",
+                                    top: "59%",
                                     left: "50%",
                                     right: "auto",
                                     bottom: "auto",

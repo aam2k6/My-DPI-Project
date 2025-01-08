@@ -2333,7 +2333,7 @@ export const ViewTermsByType = () => {
 
       <Navbar content={content} breadcrumbs={breadcrumbs} />
 
-      <div style={{ marginTop: "120px" }}>
+      <div style={{ marginTop: "140px" }}>
         <div className="connection-details">
           Connection Name: {connectionName}
           <button

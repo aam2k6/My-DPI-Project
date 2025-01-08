@@ -753,13 +753,17 @@ export const CreateConnectionTerms = () => {
     guestUserUsername,
     locker,
     showConsent,
+    connectionType,
     guest_locker_id,
     host_locker_id,
     connection_id,
     lockerComplete,
     hostLocker,
     guestLocker,
-    agrees
+    agrees,
+    viewHost,
+    viewGuest,
+    viewConsentGuest
 
   } = location.state || {};
   console.log("data",
@@ -778,11 +782,13 @@ export const CreateConnectionTerms = () => {
     lockerComplete,
     hostLocker,
     guestLocker,
-    agrees
+    agrees,
+    viewHost,
+    viewGuest,
+    connectionType
   );
 
-  console.log("guest name", guestLocker,);
-
+  console.log("viewHost", viewHost)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -1307,7 +1313,7 @@ export const CreateConnectionTerms = () => {
   const renderGuestTerms = (terms, title) => {
     const canShareMoreData = connectionDetails.terms_value.canShareMoreData
     return (
-      <div style={{ textAlign: "start", fontSize:"17px" }}>
+      <div style={{ textAlign: "start", fontSize: "17px" }}>
         {terms && terms.length > 0 && (
           <ul>
             {terms.map((term, index) => {
@@ -1321,16 +1327,16 @@ export const CreateConnectionTerms = () => {
                       ? ` ${term.typeOfSharing}d `
                       : term.typeOfSharing === "collateral"
                         ? " Pledged "
-                      : term.typeOfSharing === "confer"
-                      ? `${term.typeOfSharing}red `
-                        : ` ${term.typeOfSharing}ed `}
+                        : term.typeOfSharing === "confer"
+                          ? `${term.typeOfSharing}red `
+                          : ` ${term.typeOfSharing}ed `}
                     by {guestUserUsername} will not be accessible to {hostUserUsername}
 
 
                   </li>
                 );
               }
-              return null; 
+              return null;
             })}
 
             {canShareMoreData &&
@@ -1338,13 +1344,13 @@ export const CreateConnectionTerms = () => {
                 <li key={`extra-${index}`}>
                   {key}
                   {value.typeOfSharing === "share"
-                      ? ` ${value.typeOfSharing}d `
-                      : value.typeOfSharing === "collateral"
-                        ? " Pledged "
+                    ? ` ${value.typeOfSharing}d `
+                    : value.typeOfSharing === "collateral"
+                      ? " Pledged "
                       : value.typeOfSharing === "confer"
-                      ? `${value.typeOfSharing}red `
+                        ? `${value.typeOfSharing}red `
                         : ` ${value.typeOfSharing}ed `}
-                    by {guestUserUsername} will not be accessible to {hostUserUsername}
+                  by {guestUserUsername} will not be accessible to {hostUserUsername}
 
                 </li>
               ))}
@@ -1359,7 +1365,7 @@ export const CreateConnectionTerms = () => {
 
   const renderHostTerms = (terms, title) => {
     return (
-      <div style={{ textAlign: "start" , fontSize:"17px"}}>
+      <div style={{ textAlign: "start", fontSize: "17px" }}>
         {terms && terms.length > 0 && (
           <ul>
             {terms.map((term, index) => {
@@ -1371,9 +1377,9 @@ export const CreateConnectionTerms = () => {
                       ? ` ${term.typeOfSharing}d `
                       : term.typeOfSharing === "collateral"
                         ? " Pledged "
-                      : term.typeOfSharing === "confer"
-                      ? `${term.typeOfSharing}red `
-                        : ` ${term.typeOfSharing}ed `} by {hostUserUsername} will no longer be accessible to {guestUserUsername}
+                        : term.typeOfSharing === "confer"
+                          ? `${term.typeOfSharing}red `
+                          : ` ${term.typeOfSharing}ed `} by {hostUserUsername} will no longer be accessible to {guestUserUsername}
                   </li>
                 );
               }
@@ -1388,7 +1394,7 @@ export const CreateConnectionTerms = () => {
   const renderGuest = () => {
     if (res && res.obligations) {
       return (
-        <div style={{ textAlign: "start", fontSize:"17px" }}>
+        <div style={{ textAlign: "start", fontSize: "17px" }}>
           {renderGuestTerms(res.obligations.guest_to_host)}
           {renderHostTerms(res.obligations.host_to_guest)}
           <ul>
@@ -1419,7 +1425,7 @@ export const CreateConnectionTerms = () => {
       return (
         <div className="permissions">
           <ul>
-            <li style={{fontSize:"18px"}}>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
+            <li style={{ fontSize: "18px" }}>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canShareMoreData ? "Can share more data" : "Cannot share more data"}</li>
             {/* <li>{userType === "guest" ? "Guest" : "Host"} {permissionsData.canDownloadData ? "Can download data" : "Cannot download data"}</li> */}
           </ul>
         </div>
@@ -1649,11 +1655,142 @@ export const CreateConnectionTerms = () => {
     });
   };
 
+  const handleViewLockerBreadCrumb = () => {
+    navigate('/view-locker', {
+      state: {
+        user: { username: hostUserUsername },
+        locker: hostLocker,
+      },
+    });
+  };
+
+  const handleConnectionClick = () => {
+    const lockers = hostLocker
+    const connectionTypes = connectionType
+    console.log("navigate show-guest-users", {
+      connectionTypes,
+      lockers
+    });
+    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers } });
+  };
+
+  const handleGuestTermsClick = () => {
+    navigate("/guest-terms-review", {
+      state: {
+        connection: connectionDetails,
+        connectionType: connectionType,
+      },
+    })
+  }
+
+  const handleHostTermsClick = () => {
+    navigate("/view-host-terms-by-type", {
+      state: {
+        connection_id: connectionDetails.connection_id,
+        connectionName: connectionDetails.connection_name,
+        connectionDescription: connectionDetails.connection_description,
+        hostLockerName: connectionDetails?.host_locker?.name,
+        guestLockerName: connectionDetails?.guest_locker?.name,
+        hostUserUsername: connectionDetails?.host_user?.username,
+        guestUserUsername: connectionDetails?.guest_user?.username,
+        locker: connectionDetails?.host_locker,
+        guest_locker_id: connectionDetails.guest_locker?.locker_id,
+        host_locker_id: connectionDetails.host_locker?.locker_id,
+        connection: connectionDetails,
+        connectionType: connectionType,
+        guestLocker: connectionDetails.guest_locker,
+        hostLocker: connectionDetails.host_locker
+      },
+    })
+  }
+
+  const handleLockerClick = () => {
+    navigate('/view-locker', {
+      state: {
+        user: { username: connectionDetails.guest_user.username },
+        locker: connectionDetails.guest_locker,
+      }
+    });
+  }
+
+  const handleViewGuestTermsByType = () => {
+    navigate("/view-terms-by-type", {
+      state: {
+        connection_id: connectionDetails.connection_id,
+        connectionName: connectionDetails.connection_name,
+        connectionDescription: connectionDetails.connection_description,
+        hostLockerName: connectionDetails?.host_locker?.name,
+        guestLockerName: connectionDetails?.guest_locker?.name,
+        hostUserUsername: connectionDetails?.host_user?.username,
+        guestUserUsername: connectionDetails?.guest_user?.username,
+        locker: connectionDetails?.guest_locker,
+        guest_locker_id: connectionDetails.guest_locker?.locker_id,
+        host_locker_id: connectionDetails.host_locker?.locker_id,
+        connection: connectionDetails,
+        connectionType: connectionType,
+        guestLocker: connectionDetails.guest_locker,
+        hostLocker: connectionDetails.host_locker
+      },
+    })
+  }
+
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+
+      {viewHost && (
+        <>
+          <span onClick={() => handleViewLockerBreadCrumb()} className="breadcrumb-item">
+            View Locker
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleConnectionClick()} className="breadcrumb-item">
+            ShowGuestUsers
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleGuestTermsClick()} className="breadcrumb-item">
+            GuestTermsReview
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleHostTermsClick()} className="breadcrumb-item">ViewHostTermsByType</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">ShowConnectionTerms</span>
+        </>
+      )}
+      {viewGuest && (
+        <>
+          <span onClick={() => handleLockerClick()} className="breadcrumb-item">
+            View Locker
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleViewGuestTermsByType()} className="breadcrumb-item">
+            ViewGuestTermsByType
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">ShowConnectionTerms</span>
+        </>
+      )}
+      {viewConsentGuest && (
+        <>
+          <span onClick={() => handleLockerClick()} className="breadcrumb-item">
+            View Locker
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">ShowConnectionTerms</span>
+        </>
+      )}
+
+    </div>
+  )
+
   console.log("connectionDetails", connectionDetails)
   return (
     <div>
-      <Navbar content={content} />
-      <div style={{ marginTop: "120px" }}>
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <div style={{ marginTop: "150px" }}>
         <div className="connection-details longconnectionDescription">
           Connection Name: {connectionName} <br />
           <h3>
@@ -1726,7 +1863,7 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms">Your Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <span style={{fontSize:"18px"}}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</span>
+                      <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -1738,7 +1875,7 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms" >Host Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                       <span style={{fontSize:"18px"}}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</span>
+                      <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                 </div>
@@ -1779,7 +1916,7 @@ export const CreateConnectionTerms = () => {
           {showCloseConfirmationModal && (
             <Modal
               message={
-                <div style={{textAlign:"start", fontSize:"17px"}}>
+                <div style={{ textAlign: "start", fontSize: "17px" }}>
                   <div>You will no longer be allowed to share data</div>
                   <div>{forbiddenContent}</div>
                   <div>Are you sure you want to Close Connection?</div>

@@ -217,4 +217,5 @@
 .view-containers{
     border: 2px solid rgb(107, 120, 231);
     padding: 10px;
+    margin: 20px 20px !important;
 }

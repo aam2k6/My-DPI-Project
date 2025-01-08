@@ -1827,6 +1827,7 @@ export const ViewTermsByType = () => {
           lockerComplete: locker,
           hostLocker: hostLocker,
           guestLocker: guestLocker,
+          viewGuest:true
         },
       });
     }

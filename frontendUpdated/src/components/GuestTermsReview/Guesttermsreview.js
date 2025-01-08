@@ -12,7 +12,7 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
 
-export const  Guesttermsreview = () => {
+export const Guesttermsreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -337,7 +337,7 @@ export const  Guesttermsreview = () => {
       }
     }
   }, [connectionDetails]);
-  
+
 
   useEffect(() => {
     if (connectionDetails) {
@@ -355,20 +355,20 @@ export const  Guesttermsreview = () => {
   }, [connectionDetails]);
 
   useEffect(() => {
-        if (connectionDetails) {
-          const { close_guest, close_host } = connectionDetails;
-          //   console.log(revoke_host, revoke_guest);
-          if (close_host === false && close_guest === true) {
-            setModalMessage({
-              message:
-                "The guest has closed the connection, click Close connection to close the connection",
-              type: "info",
-            });
-            setIsModalOpenClose(true);
-          }
-        }
-      }, [connectionDetails]);
-  
+    if (connectionDetails) {
+      const { close_guest, close_host } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (close_host === false && close_guest === true) {
+        setModalMessage({
+          message:
+            "The guest has closed the connection, click Close connection to close the connection",
+          type: "info",
+        });
+        setIsModalOpenClose(true);
+      }
+    }
+  }, [connectionDetails]);
+
 
   // const handleStatusChange = (index, status, value, type, isFile) => {
   //     if (value !== "") {
@@ -1292,14 +1292,14 @@ export const  Guesttermsreview = () => {
                   <td>{permission.sno}</td>
                   <td>{permission.labelName}</td>
                   <td> <a className="mb-1"
-                                      style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
-                                      onClick={() =>
-                                        handleClick(
-                                          permission.dataElement?.split(";")[0]?.split("|")[1]
-                                        )
-                                      }>
-                                    {permission.dataElement?.split(";")[0]?.split("|")[0]}
-                                  </a></td>{" "}
+                    style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                    onClick={() =>
+                      handleClick(
+                        permission.dataElement?.split(";")[0]?.split("|")[1]
+                      )
+                    }>
+                    {permission.dataElement?.split(";")[0]?.split("|")[0]}
+                  </a></td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
                   <td>
@@ -1355,11 +1355,14 @@ export const  Guesttermsreview = () => {
         connectionDescription: connectionDescription,
         createdtime: connection.created_time,
         validitytime: connection.validity_time,
-        hostUserUsername: hostUserUsername,
+        hostUserUsername: connectionDetails.host_user.username,
         locker: conndetails.host_locker,
         createdtime: connectionDetails.created_time,
         validitytime: connectionDetails.validity_time,
-        
+        GuestTermDisplay:true,
+        connectionType,
+        hostLocker:conndetails.host_locker,
+        connectionDetails
       },
     });
   };
@@ -1411,23 +1414,27 @@ export const  Guesttermsreview = () => {
     });
 
   };
-  
+
   const handleConnectionClick = () => {
     const lockers = conndetails.host_locker
-  const connectionTypes = connectionType
+    const connectionTypes = connectionType
+    const hostLockerName = conndetails?.host_locker?.name;
     console.log("navigate show-guest-users", {
       connectionTypes,
       lockers
     });
-    navigate("/show-guest-users", { state: {connection: connectionTypes,locker:lockers } });
+    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers, hostLocker:conndetails.host_locker,hostUserUsername: curruser.username,hostLockerName } });
   };
 
   const content = (
     <>
-      <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
+      <div className="navbarBrands">
+        {conndetails?.connection_name || "Loading..."}
+      </div>
+      {/* <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
       <div>
         {curruser ? curruser.description : "None"}
-      </div>
+      </div> */}
       {/* <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -1555,7 +1562,7 @@ export const  Guesttermsreview = () => {
       </span>
     );
   };
-  
+
   const handleClose = () => {
     setIsReactModalOpen(false);
     setPdfUrl(null);
@@ -1570,11 +1577,6 @@ export const  Guesttermsreview = () => {
       <Navbar content={content} breadcrumbs={breadcrumbs} />
 
       <div style={{ marginTop: '140px' }}>
-
-        {/* <div className="description">
-          {curruser ? curruser.description : "None"}
-        </div> */}
-
         <div className="connection-details">
           Connection Name: {conndetails?.connection_name || "Loading..."}
           <button
@@ -1618,244 +1620,243 @@ export const  Guesttermsreview = () => {
           </div>
         </div>
 
-        <div style={{ padding: "20px" }}>
-          <div className="view-containers">
-            <div className="b">
-              <div className="tabs">
-                <div
-                  className={`tab-header ${activeTab === "guest" ? "active" : ""
-                    }`}
-                  onClick={() => setActiveTab("guest")}
-                >
-                  Guest Data
-                </div>
-                <div
-                  className={`tab-header ${activeTab === "host" ? "active" : ""
-                    }`}
-                  onClick={() => navigate("/view-host-terms-by-type", {
-                    state: {
-                      connection_id: conndetails.connection_id,
-                      connectionName: conndetails.connection_name,
-                      connectionDescription: conndetails.connection_description,
-                      hostLockerName: conndetails?.host_locker?.name,
-                      guestLockerName: conndetails?.guest_locker?.name,
-                      hostUserUsername: conndetails?.host_user?.username,
-                      guestUserUsername: conndetails?.guest_user?.username,
-                      locker: conndetails?.host_locker,
-                      guest_locker_id: conndetails.guest_locker?.locker_id,
-                      host_locker_id: conndetails.host_locker?.locker_id,
-                      connection: connection,
-                      connectionType: connectionType,
-                      guestLocker: conndetails.guest_locker,
-                      hostLocker: conndetails.host_locker
-                    },
-                  })}
-                >
-                  Host Data
-                </div>
+        <div className="view-containers">
+          <div className="b">
+            <div className="tabs">
+              <div
+                className={`tab-header ${activeTab === "guest" ? "active" : ""
+                  }`}
+                onClick={() => setActiveTab("guest")}
+              >
+                Guest Data
               </div>
-              {/* Added Tabs */}
-              {/* Added Tabs */}
-              <div className="tab-content">
-                {activeTab == "guest" && (
-                  <>
-                    <div className={showResources ? "split-view" : ""}>
-                      <div className="table-container">
-                        <div className="center2">
-                          {globalTemplateNames.length > 0 && "Regulations used: "}
-                          <span style={{ fontWeight: "bold" }}>
-                            {uniqueGlobalConnTypeIds.map((id, index) => {
-                              const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
-                              return template ? (
-                                <span
-                                  key={index}
-                                  onClick={() => handleNavigation(template)}  // Pass the entire template object
-                                  style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
-                                >
-                                  {template.global_connection_type_name}
-                                  {index < uniqueGlobalConnTypeIds.length - 1 && ", "}
-                                </span>
-                              ) : null;
-                            })}
-                          </span>
-                        </div>
-
-                        <Grid container>
-                          <Grid item md={10} xs={12}>
-                            <h3>Guest Obligations</h3>
-                          </Grid>
-
-                          <Grid item md={2} xs={12}>
-                            <button onClick={openTermsPopup} className="">
-                              View Terms
-                            </button>
-                          </Grid>
-                        </Grid>
-                        {showTermsPopup && (
-                          <div className="terms-popup">
-                            <div className="terms-popup-content">
-                              <span className="close" onClick={closeTermsPopup}>
-                                &times;
+              <div
+                className={`tab-header ${activeTab === "host" ? "active" : ""
+                  }`}
+                onClick={() => navigate("/view-host-terms-by-type", {
+                  state: {
+                    connection_id: conndetails.connection_id,
+                    connectionName: conndetails.connection_name,
+                    connectionDescription: conndetails.connection_description,
+                    hostLockerName: conndetails?.host_locker?.name,
+                    guestLockerName: conndetails?.guest_locker?.name,
+                    hostUserUsername: conndetails?.host_user?.username,
+                    guestUserUsername: conndetails?.guest_user?.username,
+                    locker: conndetails?.host_locker,
+                    guest_locker_id: conndetails.guest_locker?.locker_id,
+                    host_locker_id: conndetails.host_locker?.locker_id,
+                    connection: connection,
+                    connectionType: connectionType,
+                    guestLocker: conndetails.guest_locker,
+                    hostLocker: conndetails.host_locker
+                  },
+                })}
+              >
+                Host Data
+              </div>
+            </div>
+            {/* Added Tabs */}
+            {/* Added Tabs */}
+            <div className="tab-content">
+              {activeTab == "guest" && (
+                <>
+                  <div className={showResources ? "split-view" : ""}>
+                    <div className="table-container">
+                      <div className="center2">
+                        {globalTemplateNames.length > 0 && "Regulations used: "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {uniqueGlobalConnTypeIds.map((id, index) => {
+                            const template = globalTemplates.find(template => template.global_connection_type_template_id === id);
+                            return template ? (
+                              <span
+                                key={index}
+                                onClick={() => handleNavigation(template)}  // Pass the entire template object
+                                style={{ cursor: "pointer", textDecoration: "underline" }}  // Indicate it's clickable
+                              >
+                                {template.global_connection_type_name}
+                                {index < uniqueGlobalConnTypeIds.length - 1 && ", "}
                               </span>
-                              <h2>Connection Terms</h2>
-                              {renderObligations()}
-                              {renderPermissions()}
-                              {renderForbidden()}
-                              <div className="permissions">
-                                <h3>Default Host Privileges</h3>
-                                By default Reshare,Download,Aggreagte are disabled unless
-                                otherwise mentioned in the terms
-                              </div>
-                              <div className="permissions">
-                                <h3>Host Obligations</h3>
-                                You will receive a receipt when all the obligations are met.
+                            ) : null;
+                          })}
+                        </span>
+                      </div>
+
+                      <Grid container>
+                        <Grid item md={10} xs={12}>
+                          <h3>Guest Obligations</h3>
+                        </Grid>
+
+                        <Grid item md={2} xs={12}>
+                          <button onClick={openTermsPopup} className="">
+                            View Terms
+                          </button>
+                        </Grid>
+                      </Grid>
+                      {showTermsPopup && (
+                        <div className="terms-popup">
+                          <div className="terms-popup-content">
+                            <span className="close" onClick={closeTermsPopup}>
+                              &times;
+                            </span>
+                            <h2>Connection Terms</h2>
+                            {renderObligations()}
+                            {renderPermissions()}
+                            {renderForbidden()}
+                            <div className="permissions">
+                              <h3>Default Host Privileges</h3>
+                              By default Reshare,Download,Aggreagte are disabled unless
+                              otherwise mentioned in the terms
+                            </div>
+                            <div className="permissions">
+                              <h3>Host Obligations</h3>
+                              You will receive a receipt when all the obligations are met.
 
 
-                              </div>
                             </div>
                           </div>
-                        )}
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>Sno</th>
-                              <th>Name</th>
-                              <th>Data Element</th>
-                              <th>Purpose</th>
-                              <th>Type of Share</th>
-                              <th>Host Privileges</th>
-                              <th>Status</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {res?.obligations.map((obligation, index) => (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{obligation.labelName}</td>
-                                <td>
-                                  {termsValue[obligation.labelName]?.split(";")[0] ? (
-                                    <a
-                                      style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
-                                      onClick={() =>
-                                        handleClick(
-                                          termsValue[obligation.labelName]?.split(";")[0]?.split("|")[1]
-                                        )
-                                      }
-                                    >
-                                      {termsValue[obligation.labelName]?.split(";")[0]?.split("|")[0]}
-                                    </a>
-                                  ) : (
-                                    "None"
-                                  )}
-                                  <ReactModal
-                                    isOpen={isReactModalOpen}
-                                    onRequestClose={handleClose}
-                                    contentLabel="PDF Viewer"
-                                    style={{
-                                      content: {
-                                        top: "55%",
-                                        left: "50%",
-                                        right: "auto",
-                                        bottom: "auto",
-                                        marginRight: "-50%",
-                                        transform: "translate(-50%, -50%)",
-                                        width: "95%",
-                                        height: "80%",
-                                        overflowY: "hidden",
-                                        maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
-                                        maxHeight: "90%", // Max height for larger screens
-                                      },
-                                    }}
-                                  >
-                                    <button
-                                      onClick={handleClose}
-                                      style={{
-                                        marginBottom: "10px",
-                                        cursor: "pointer",
-                                        position: "absolute",
-                                        top: "10px",
-                                        right: "10px", // Button positioned at the top right
-                                        zIndex: 100,
-                                      }}
-                                    >
-                                      Close
-                                    </button>
-                                    {pdfUrl ? (
-                                      <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                                        <Viewer fileUrl={pdfUrl} />
-                                      </Worker>
-                                    ) : (
-                                      <p>Loading PDF...</p>
-                                    )}
-                                  </ReactModal>
-                                </td>
-                                <td>{obligation.purpose}</td>
-                                <td>
-                                  <div className="tooltips">
-                                    {obligation.typeOfSharing}
-                                    {renderTooltip(obligation.typeOfSharing)}
-                                  </div>
-                                </td>
-                                <td>
-                                  {obligation.hostPermissions
-                                    ? obligation.hostPermissions.join(", ")
-                                    : "None"}
-                                </td>
-
-                                <td>
-                                  <select
-                                    value={statuses[obligation.labelName] || ""}
-                                    onChange={(e) =>
-                                      handleStatusChange(
-                                        obligation.labelName,
-                                        e.target.value,
-                                        termsValue[obligation.labelName]?.split(";")[0],
-                                        obligation.typeOfSharing,
-                                        obligation.typeOfAction === "file"
+                        </div>
+                      )}
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Sno</th>
+                            <th>Name</th>
+                            <th>Data Element</th>
+                            <th>Purpose</th>
+                            <th>Type of Share</th>
+                            <th>Host Privileges</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {res?.obligations.map((obligation, index) => (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>{obligation.labelName}</td>
+                              <td>
+                                {termsValue[obligation.labelName]?.split(";")[0] ? (
+                                  <a
+                                    style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                    onClick={() =>
+                                      handleClick(
+                                        termsValue[obligation.labelName]?.split(";")[0]?.split("|")[1]
                                       )
                                     }
                                   >
-                                    <option value="">Select Status</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                  </select>
-                                </td>
-                                <td>
-                                  {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
-                                    <button onClick={() => handleDownload(obligation)} className="download-button">
-                                      <i className="fa fa-download" aria-hidden="true"></i>
-                                    </button>
+                                    {termsValue[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+                                  </a>
+                                ) : (
+                                  "None"
+                                )}
+                                <ReactModal
+                                  isOpen={isReactModalOpen}
+                                  onRequestClose={handleClose}
+                                  contentLabel="PDF Viewer"
+                                  style={{
+                                    content: {
+                                      top: "55%",
+                                      left: "50%",
+                                      right: "auto",
+                                      bottom: "auto",
+                                      marginRight: "-50%",
+                                      transform: "translate(-50%, -50%)",
+                                      width: "95%",
+                                      height: "80%",
+                                      overflowY: "hidden",
+                                      maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                                      maxHeight: "90%", // Max height for larger screens
+                                    },
+                                  }}
+                                >
+                                  <button
+                                    onClick={handleClose}
+                                    style={{
+                                      marginBottom: "10px",
+                                      cursor: "pointer",
+                                      position: "absolute",
+                                      top: "10px",
+                                      right: "10px", // Button positioned at the top right
+                                      zIndex: 100,
+                                    }}
+                                  >
+                                    Close
+                                  </button>
+                                  {pdfUrl ? (
+                                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                      <Viewer fileUrl={pdfUrl} />
+                                    </Worker>
                                   ) : (
-                                    " "
+                                    <p>Loading PDF...</p>
                                   )}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                                </ReactModal>
+                              </td>
+                              <td>{obligation.purpose}</td>
+                              <td>
+                                <div className="tooltips">
+                                  {obligation.typeOfSharing}
+                                  {renderTooltip(obligation.typeOfSharing)}
+                                </div>
+                              </td>
+                              <td>
+                                {obligation.hostPermissions
+                                  ? obligation.hostPermissions.join(", ")
+                                  : "None"}
+                              </td>
 
-                        {/* Permissions Table Rendered Here */}
-                        {renderPermissionsTable()}
+                              <td>
+                                <select
+                                  value={statuses[obligation.labelName] || ""}
+                                  onChange={(e) =>
+                                    handleStatusChange(
+                                      obligation.labelName,
+                                      e.target.value,
+                                      termsValue[obligation.labelName]?.split(";")[0],
+                                      obligation.typeOfSharing,
+                                      obligation.typeOfAction === "file"
+                                    )
+                                  }
+                                >
+                                  <option value="">Select Status</option>
+                                  <option value="approved">Approved</option>
+                                  <option value="rejected">Rejected</option>
+                                </select>
+                              </td>
+                              <td>
+                                {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
+                                  <button onClick={() => handleDownload(obligation)} className="download-button">
+                                    <i className="fa fa-download" aria-hidden="true"></i>
+                                  </button>
+                                ) : (
+                                  " "
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      {/* Permissions Table Rendered Here */}
+                      {renderPermissionsTable()}
+                    </div>
+                    {showResources && (
+                      <div className="resource-container">
+                        <h3>Resource List</h3>
+                        <ul>
+                          {resources.map((resource, index) => (
+                            <li key={index} onClick={() => handleResourceClick(resource)}>
+                              {resource}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      {showResources && (
-                        <div className="resource-container">
-                          <h3>Resource List</h3>
-                          <ul>
-                            {resources.map((resource, index) => (
-                              <li key={index} onClick={() => handleResourceClick(resource)}>
-                                {resource}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                    <br></br>
-                    <div className="save-button-container">
-                      <button onClick={handleSave}>Save</button>
-                    </div>
+                    )}
+                  </div>
+                  <br></br>
+                  <div className="save-button-container">
+                    <button onClick={handleSave}>Save</button>
+                  </div>
 
-                    {/* <div style={{ marginTop: '20px', marginLeft: '10px' }}>
+                  {/* <div style={{ marginTop: '20px', marginLeft: '10px' }}>
                     <h3 style={{ fontSize: '20px', marginLeft: '10px' }}>Host Obligations</h3>
                     <label style={{ fontSize: '20px', marginLeft: '10px' }}>
                       The guest will receive a receipt once all the documents are received.
@@ -1870,46 +1871,46 @@ export const  Guesttermsreview = () => {
 
 
 
-                    {isModalOpen && (
-                      <Modal
-                        message={modalMessage.message}
-                        onClose={handleCloseModal}
-                        type={modalMessage.type}
-                        revoke={revokeState}
-                        onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
-                        viewTerms={() => navigateToConnectionDetails(connectionType)}
-                      />
-                    )}
+                  {isModalOpen && (
+                    <Modal
+                      message={modalMessage.message}
+                      onClose={handleCloseModal}
+                      type={modalMessage.type}
+                      revoke={revokeState}
+                      onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
+                      viewTerms={() => navigateToConnectionDetails(connectionType)}
+                    />
+                  )}
 
-                    {isModalOpenClose && (
-                      <Modal
-                        message={modalMessage.message}
-                        onClose={handleCloseModalClose}
-                        type={modalMessage.type}
-                        closeConnection={closeState}
-                        onCloseConnection={() => onCloseButtonClick(conndetails.connection_id)}
-                        viewTerms={() => navigateToConnectionDetails(connectionType)}
-                      />
-                    )}
+                  {isModalOpenClose && (
+                    <Modal
+                      message={modalMessage.message}
+                      onClose={handleCloseModalClose}
+                      type={modalMessage.type}
+                      closeConnection={closeState}
+                      onCloseConnection={() => onCloseButtonClick(conndetails.connection_id)}
+                      viewTerms={() => navigateToConnectionDetails(connectionType)}
+                    />
+                  )}
 
-                    {isModalOpens && (
-                                                <Modal
-                                                  message={modalMessage.message}
-                                                  onClose={handleCloseModal}
-                                                  type={modalMessage.type}
-                                                />
-                                              )}
+                  {isModalOpens && (
+                    <Modal
+                      message={modalMessage.message}
+                      onClose={handleCloseModal}
+                      type={modalMessage.type}
+                    />
+                  )}
 
-                    {/* {isRevokeModalOpen && (
+                  {/* {isRevokeModalOpen && (
                     <RevokeMessageModal 
                     message={revokeMessage} 
                     onClose={handleCloseModal}
                     />
                     )} */}
 
-                  </>
-                )}
-                {/* {activeTab=="host" &&(
+                </>
+              )}
+              {/* {activeTab=="host" &&(
                   <>
                     <div className="table-container">
                       <h3>Host Obligations</h3>
@@ -1938,7 +1939,6 @@ export const  Guesttermsreview = () => {
                   </div>
                   </>
                 )} */}
-              </div>
             </div>
           </div>
         </div>

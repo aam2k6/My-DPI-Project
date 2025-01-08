@@ -317,3 +317,8 @@
       padding-right: 20px;
     }
   }
+
+  .view-container1{
+    border:2px solid rgb(107, 120, 231);
+    padding: 10px;
+  }

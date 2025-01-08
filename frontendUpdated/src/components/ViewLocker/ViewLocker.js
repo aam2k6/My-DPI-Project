@@ -525,12 +525,20 @@ export const ViewLocker = () => {
       connection,
       locker,
     });
-    navigate("/show-guest-users", { state: { connection, locker } });
+    navigate("/show-guest-users", {
+      state: {
+        connection,
+        locker,
+        hostLocker: connections.incoming_connections[0].host_locker,
+        hostUserUsername : connections.incoming_connections[0].host_user.username,
+        hostLockerName: connections.incoming_connections[0].host_locker.name
+      }
+    });
   };
   const handleIncomingInfo = (connection) => {
 
     console.log("navigates", connections.incoming_connections[0].host_user.username)
-    console.log("navigatess", connections.incoming_connections[0].host_locker.name)
+    console.log("navigatess", connections.incoming_connections[0].host_locker)
     navigate("/display-terms", {
       state: {
         hostLockerName: connections.incoming_connections[0].host_locker.name,
@@ -540,6 +548,8 @@ export const ViewLocker = () => {
         validitytime: connection.validity_time,
         hostUserUsername: connections.incoming_connections[0].host_user.username,
         locker: locker,
+        viewlockerDisplay: true,
+        hostLocker: connections.incoming_connections[0].host_locker,
       },
     });
   };
@@ -620,7 +630,8 @@ export const ViewLocker = () => {
         connection_id: connection.connection_id,
         lockerComplete: locker,
         hostLocker: connection.host_locker,
-        guestLocker: connection.guest_locker
+        guestLocker: connection.guest_locker,
+        viewConsentGuest: true,
       },
     });
   };

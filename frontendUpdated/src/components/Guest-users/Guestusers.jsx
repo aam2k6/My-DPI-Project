@@ -31,6 +31,12 @@ export const Guestusers = () => {
 
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
+  const {
+    hostLockerName,
+    hostUserUsername,
+    hostLocker,
+  } = location.state || {};
+  console.log("connections[0].host_locker", hostUserUsername)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -256,7 +262,6 @@ export const Guestusers = () => {
     });
   };
 
-
   const navigateToConnDetails = (connection) => {
     console.log("print", connection); // Log the connection object
 
@@ -266,18 +271,24 @@ export const Guestusers = () => {
     console.log("Navigating with:", {
       connectionName,
       connectionDescription,
+      hostLockerName,
+      hostUserUsername
     });
 
     navigate("/display-terms", {
       state: {
         connectionTypeName: connectionName, // Extracted from connection object
-        hostLockerName: connections[0].host_locker.name,
+        hostLockerName: hostLockerName,
         connectionTypeName: connection.connection_type_name,
         connectionDescription: connection.connection_description,
         createdtime: connection.created_time,
         validitytime: connection.validity_time,
-        hostUserUsername: connections[0].host_user.username,
+        hostUserUsername: hostUserUsername,
         locker: locker,
+        hostLocker: hostLocker,
+        connectionType:connectionType,
+        connection:connection,
+        viewGuestuser: true,
       },
     });
   };
@@ -369,7 +380,7 @@ export const Guestusers = () => {
             </div>
           </form>
         </div>
-        <Grid container spacing={{ md:5 , xs: 4, sm: 4 }} className="page5container" padding={{ md: 10, sm: 2, xs: 2 }}>
+        <Grid container spacing={{ md: 5, xs: 4, sm: 4 }} className="page5container" padding={{ md: 10, sm: 2, xs: 2 }}>
           {/* {error && <div className="error">{error}</div>} */}
           {filteredConnections.length > 0 ? (
             filteredConnections.map((connection, index) => {
@@ -426,7 +437,7 @@ export const Guestusers = () => {
                       </div>
 
                       <div className="d-flex align-items-center mt-1">
-                      <button className='me-2'
+                        <button className='me-2'
                           onClick={() => handleConnectionHost(connection)}
                           style={{
                             backgroundColor: colorReverse,
@@ -444,7 +455,7 @@ export const Guestusers = () => {
                       </div>
                     </Grid>
                     <Grid md={12} xs={12} sm={12}>
-                    <CardActions sx={{ justifyContent: 'center' }}>
+                      <CardActions sx={{ justifyContent: 'center' }}>
                         <Button
                           className='cardButton'
                           size='small'
@@ -457,12 +468,12 @@ export const Guestusers = () => {
                       </CardActions>
                     </Grid>
                   </Grid>
-                </Grid> 
+                </Grid>
 
               );
             })
           ) : (
-            <Typography variant="body1" padding={{xs:"60px", md:"0px"}}>No guest users found.</Typography>
+            <Typography variant="body1" padding={{ xs: "60px", md: "0px" }}>No guest users found.</Typography>
 
           )}
         </Grid>

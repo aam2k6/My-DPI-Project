@@ -1154,6 +1154,50 @@ export const HostTermsReview = () => {
     });
   };
 
+  const navigateToConnectionTerms = (connection) => {
+    const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+    const connectionDescription = connection?.connection_description;
+    const hostLockerName = connection?.host_locker?.name;
+    const hostLockerDescription = connection?.host_locker?.description;  // Add specific properties
+    const hostUserUsername = connection?.host_user?.username;
+    const guestUserUsername = connection?.guest_user?.username;
+    const connectionName = connection?.connection_name;
+    const createdTime = connection?.created_time;
+    const validityTime = connection?.validity_time;
+    const guestLockerName = connection?.guest_locker?.name
+    const guestLockerId = connection?.guest_locker?.locker_id
+    const guestLocker = connection?.guest_locker
+    const hostLocker = connection?.host_locker
+    // Check if created_time is undefined and log a message if so
+    if (!createdTime) {
+      console.warn("created_time is undefined for this connection.");
+    } else {
+      console.log("Date:", createdTime);
+    }
+
+    console.log("guest", guestUserUsername)
+
+    // Navigate with safe properties
+    navigate("/display-terms", {
+      state: {
+        connectionTypeName: connectionTypeName,
+        hostLockerName: hostLockerName,
+        hostLockerDescription: hostLockerDescription,  // Pass specific properties instead of the whole object
+        connectionName: connectionName,
+        guestUserUsername: guestUserUsername,
+        connectionDescription: connectionDescription,
+        createdtime: createdTime,
+        validitytime: validityTime,
+        hostUserUsername: hostUserUsername,
+        locker: guestLockerName,
+        guestLockerName: guestLockerName,
+        guestLocker: guestLocker,
+        hostLocker: hostLocker,
+
+      },
+    });
+  }
+
   const userTooltips = {
     guest: "Guest",
     host: "Host",
@@ -1463,7 +1507,7 @@ export const HostTermsReview = () => {
           Connection Name: {conndetails?.connection_name || "Loading..."}
           <button
             className="info-button info"
-            onClick={() => navigateToConnectionDetails(connection)}
+            onClick={() => navigateToConnectionTerms(connection)}
             title="Show Connection Terms"
             style={{
               marginLeft: "10px",

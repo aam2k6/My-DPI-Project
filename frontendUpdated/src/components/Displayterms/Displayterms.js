@@ -80,7 +80,7 @@
 //     if (res) {
 //       return (
 //         <div>
-          
+
 //           <ul>
 //             {res.map((term, index) => (
 //               <li key={index}>
@@ -117,7 +117,7 @@
 //       <div className="description">
 //         {curruser ? curruser.description : "None"}
 //       </div>
-    
+
 //     </>
 //   );
 
@@ -170,7 +170,7 @@ export const Displayterms = () => {
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
   const [activeTab, setActiveTab] = useState("guest");
-  
+
   const {
     connectionName,
     hostLockerName,
@@ -180,8 +180,16 @@ export const Displayterms = () => {
     validitytime,
     hostUserUsername,
     locker,
+    viewlockerDisplay,
+    hostLocker,
+    viewGuestuser,
+    connectionType,
+    GuestTermDisplay,
+    connectionDetails,
+    viewHostDisplay
   } = location.state || {};
-  console.log("Location State:",     hostUserUsername);
+  console.log("Location State:", locker.name);
+  console.log("Location State:", hostLockerName);
 
   useEffect(() => {
     if (!curruser) {
@@ -217,22 +225,22 @@ export const Displayterms = () => {
 
         let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}`;
         // console.log("Final API URL:", apiUrl);
-console.log(curruser.username,"curr", hostUserUsername)
+        console.log(curruser.username, "curr", hostUserUsername)
         // Determine which username to use
-    if (curruser && curruser.username === hostUserUsername) {
-      apiUrl += `&host_user_username=${curruser.username}`;
-    } else {
-      apiUrl += `&host_user_username=${hostUserUsername}`;
-    }
+        if (curruser && curruser.username === hostUserUsername) {
+          apiUrl += `&host_user_username=${curruser.username}`;
+        } else {
+          apiUrl += `&host_user_username=${hostUserUsername}`;
+        }
 
-    // Determine which locker name to use
-    if (locker.name === hostLockerName) {
-      apiUrl += `&host_locker_name=${locker.name}`;
-    } else {
-      apiUrl += `&host_locker_name=${hostLockerName}`;
-    }
+        // Determine which locker name to use
+        if (locker.name === hostLockerName) {
+          apiUrl += `&host_locker_name=${locker.name}`;
+        } else {
+          apiUrl += `&host_locker_name=${hostLockerName}`;
+        }
 
-    console.log("Final API URL:", apiUrl);
+        console.log("Final API URL:", apiUrl);
 
         const response = await fetch(apiUrl, {
           method: "GET",
@@ -272,18 +280,18 @@ console.log(curruser.username,"curr", hostUserUsername)
           {terms.map((term, index) => (
             <li key={index}>
               <strong>
-          {userType === "guest"
-            ? term.typeOfSharing === "collateral"
-              ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-              : `Guest shall ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`
-            : term.typeOfSharing === "collateral"
-            ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-            : `Host will ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`}
-        </strong>
-        (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0 
-          ? term.hostPermissions.join(", ") 
-          : "None"})
-      </li>
+                {userType === "guest"
+                  ? term.typeOfSharing === "collateral"
+                    ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
+                    : `Guest shall ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`
+                  : term.typeOfSharing === "collateral"
+                    ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
+                    : `Host will ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`}
+              </strong>
+              (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
+                ? term.hostPermissions.join(", ")
+                : "None"})
+            </li>
           ))}
         </ul>
       ) : (
@@ -291,81 +299,81 @@ console.log(curruser.username,"curr", hostUserUsername)
       )}
     </div>
   );
-  
-  
-const renderObligations = (userType) => {
-  if (res && res.obligations) {
-    return userType === "guest"
-      ? renderTermsSection(res.obligations.guest_to_host, "", "guest")
-      : renderTermsSection(res.obligations.host_to_guest, "", "host");
-  }
-  return <p>No obligations available.</p>;
-};
 
-const renderPermissions = (userType) => {
-  if (res && res.permissions) {
-    const permissionsData = userType === "guest"
-      ? res.permissions.guest_to_host
-      : res.permissions.host_to_guest;
-    return (
-      <div className="permissions">
-        <ul>
-          <li>
-            {userType === "guest"
-              ? `Guest ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`
-              : `Host ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`}
-          </li>
-          {/* <li>
+
+  const renderObligations = (userType) => {
+    if (res && res.obligations) {
+      return userType === "guest"
+        ? renderTermsSection(res.obligations.guest_to_host, "", "guest")
+        : renderTermsSection(res.obligations.host_to_guest, "", "host");
+    }
+    return <p>No obligations available.</p>;
+  };
+
+  const renderPermissions = (userType) => {
+    if (res && res.permissions) {
+      const permissionsData = userType === "guest"
+        ? res.permissions.guest_to_host
+        : res.permissions.host_to_guest;
+      return (
+        <div className="permissions">
+          <ul>
+            <li>
+              {userType === "guest"
+                ? `Guest ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`
+                : `Host ${permissionsData.canShareMoreData ? "Can" : "Cannot"} share more data`}
+            </li>
+            {/* <li>
             {userType === "guest"
               ? `Guest ${permissionsData.canDownloadData ? "Can" : "Cannot"} download data`
               : `Host ${permissionsData.canDownloadData ? "Can" : "Cannot"} download data`}
           </li> */}
-        </ul>
-      </div>
-    );
-  }
-  return <p>No permissions available.</p>;
-};
-
-const renderForbidden = (userType) => {
-  if (res && res.forbidden) {
-    return (
-      <div className="termsSection">
-        {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"] &&
-        res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].length > 0 ? (
-          <ul>
-            {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].map(
-              (term, index) => (
-                <li key={index}>
-                  <strong>
-                    {userType === "guest"
-                      ? `Guest  ${term.labelName} - ${term.labelDescription}`
-                      : `Host  ${term.labelName} - ${term.labelDescription}`}
-                  </strong>
-                  (Host Privilege:{" "}
-                  {term.hostPermissions && term.hostPermissions.length > 0
-                    ? term.hostPermissions.join(", ")
-                    : "None"})
-                </li>
-              )
-            )}
           </ul>
-        ) : (
-          <p>No forbidden terms available.</p>
-        )}
-      </div>
-    );
-  }
-  return <p>No forbidden terms available.</p>;
-};
+        </div>
+      );
+    }
+    return <p>No permissions available.</p>;
+  };
+
+  const renderForbidden = (userType) => {
+    if (res && res.forbidden) {
+      return (
+        <div className="termsSection">
+          {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"] &&
+            res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].length > 0 ? (
+            <ul>
+              {res.forbidden[userType === "guest" ? "guest_to_host" : "host_to_guest"].map(
+                (term, index) => (
+                  <li key={index}>
+                    <strong>
+                      {userType === "guest"
+                        ? `Guest  ${term.labelName} - ${term.labelDescription}`
+                        : `Host  ${term.labelName} - ${term.labelDescription}`}
+                    </strong>
+                    (Host Privilege:{" "}
+                    {term.hostPermissions && term.hostPermissions.length > 0
+                      ? term.hostPermissions.join(", ")
+                      : "None"})
+                  </li>
+                )
+              )}
+            </ul>
+          ) : (
+            <p>No forbidden terms available.</p>
+          )}
+        </div>
+      );
+    }
+    return <p>No forbidden terms available.</p>;
+  };
 
 
-console.log(res);
+  console.log(res);
 
 
 
 
-const uniqueGlobalConnTypeIds = Array.isArray(terms)
+  const uniqueGlobalConnTypeIds = Array.isArray(terms)
     ? [...new Set(terms
       .filter(term => term.global_conn_type_id !== null)
       .map(term => term.global_conn_type_id)
@@ -391,30 +399,139 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
       });
     }
   };
-  
+
+  const handleViewLockerBreadCrumb = () => {
+    navigate('/view-locker', {
+      state: {
+        user: { username: hostUserUsername },
+        locker: hostLocker,
+      },
+    });
+  };
+
+  const handleConnectionClick = () => {
+    const lockers = hostLocker
+    const connectionTypes = connectionType
+    console.log("navigate show-guest-users", {
+      connectionTypes,
+      lockers,
+      hostUserUsername,
+      hostLockerName
+    });
+    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: hostLocker, hostUserUsername, hostLockerName, hostLocker, connectionDetails } });
+  };
+
+  const handleGuestTermsClick = () => {
+    navigate("/guest-terms-review", {
+      state: {
+        connection: connectionDetails,
+        connectionType: connectionType,
+      },
+    })
+  }
+
+  const handleHostTermsClick = () => {
+    navigate("/view-host-terms-by-type", {
+      state: {
+        connection_id: connectionDetails.connection_id,
+        connectionName: connectionDetails.connection_name,
+        connectionDescription: connectionDetails.connection_description,
+        hostLockerName: connectionDetails?.host_locker?.name,
+        guestLockerName: connectionDetails?.guest_locker?.name,
+        hostUserUsername: connectionDetails?.host_user?.username,
+        guestUserUsername: connectionDetails?.guest_user?.username,
+        locker: connectionDetails?.host_locker,
+        guest_locker_id: connectionDetails.guest_locker?.locker_id,
+        host_locker_id: connectionDetails.host_locker?.locker_id,
+        connection: connectionDetails,
+        connectionType: connectionType,
+        guestLocker: connectionDetails.guest_locker,
+        hostLocker: connectionDetails.host_locker
+      },
+    })
+  }
 
   const content = (
     <>
-      <div className="navbarBrands">{curruser ? capitalizeFirstLetter(curruser.username): "None"}</div>
+      {/* <div className="navbarBrands">{curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
       <div>
         {curruser ? curruser.description : "None"}
+      </div> */}
+      <div className="navbarBrands">
+        {connectionName ? connectionName : connectionTypeName}
       </div>
     </>
   );
 
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      {viewlockerDisplay && (
+        <>
+          <span onClick={() => handleViewLockerBreadCrumb()} className="breadcrumb-item">
+            View Locker
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">DisplayTerms</span>
+        </>
+      )}
+      {viewGuestuser && (
+        <>
+          <span onClick={() => handleViewLockerBreadCrumb()} className="breadcrumb-item">
+            View Locker
+          </span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleConnectionClick()} className="breadcrumb-item">ShowGuestUsers</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">DisplayTerms</span>
+        </>
+      )}
+      {GuestTermDisplay && (
+        <>
+          <span onClick={() => handleViewLockerBreadCrumb()} className="breadcrumb-item">View Locker</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleConnectionClick()} className="breadcrumb-item">ShowGuestUsers</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleGuestTermsClick()} className="breadcrumb-item">GuestTermsReview</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">DisplayTerms</span>
+        </>
+      )}
+      {viewHostDisplay && (
+        <>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleViewLockerBreadCrumb()} className="breadcrumb-item">View Locker</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleConnectionClick()} className="breadcrumb-item">ShowGuestUsers</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleGuestTermsClick()} className="breadcrumb-item">GuestTermsReview</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleHostTermsClick()} className="breadcrumb-item">ViewHostTermsByType</span>
+          <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">DisplayTerms</span>
+
+        </>
+      )}
+
+    </div>
+  )
+
   console.log(res, "res");
   return (
     <div>
-      <Navbar content={content} />
-      <div className="connection-details1" style={{marginTop:"120px"}}>
+      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <div className="connection-details" style={{ marginTop: "150px" }}>
         <div className="connectionName1">Connection Type Name: {connectionTypeName}</div>
         <div className="connectionName2">
           {globalTemplateNames.length > 0 && "Connection has been imported from "}
           <span style={{ fontWeight: "bold" }}>
             {globalTemplateNames.filter(Boolean).map((template, index) => (
               <span key={index}>
-                <span 
-                  style={{ cursor: 'pointer', textDecoration  : 'underline' }}
+                <span
+                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
                   onClick={() => handleNavigation(template)}
                 >
                   {template.global_connection_type_name}
@@ -423,67 +540,69 @@ const uniqueGlobalConnTypeIds = Array.isArray(terms)
               </span>
             ))}
           </span>
-        </div>       
-       <div className="dates">
-        <div style={{fontSize:"18px", width:"65%"}}>
-          {connectionDescription}
         </div>
-        <br></br>Created on: {new Date(createdtime).toLocaleString()}
-        <br></br>Valid until: {new Date(validitytime).toLocaleString()}
-       </div>
+        <div className="dates">
+          <div style={{ fontSize: "18px", width: "65%" }}>
+            {connectionDescription}
+          </div>
+          <div style={{ fontSize: "12px" }}>
+            <br></br>Created on: {new Date(createdtime).toLocaleString()}
+            <br></br>Valid until: {new Date(validitytime).toLocaleString()}
+          </div>
+        </div>
       </div>
 
 
       <div className="show-connection">
-      <Grid container className="view-container">
-      <Grid item xs={12}  className="b">
-        <div className="tabs">
-          <div
-            className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
-            onClick={() => setActiveTab("guest")}
-          >
-            Guest Data
-          </div>
-          <div
-            className={`tab-header ${activeTab === "host" ? "active" : ""}`}
-            onClick={() => setActiveTab("host")}
-          >
-            Host Data
-          </div>
-        </div>
-        <div className="tab-content">
-          <div className="table-container">
-            {activeTab === "guest" && (
-              <div>
-                <div className="page13headterms">Your Obligations</div>
-                <div className="page13lowerterms">{renderObligations("guest")}</div>
-                <div className="page13headterms">Your Permissions</div>
-                <div className="page13lowerterms">{renderPermissions("guest")}</div>
-                <div className="page13headterms">Your Forbidden Terms</div>
-                <div className="page13lowerterms">{renderForbidden("guest")}</div>
-                <div className="page13headterms">Default Host Privileges</div>
-                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+        <Grid container className="view-container1">
+          <Grid item xs={12} className="b">
+            <div className="tabs">
+              <div
+                className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
+                onClick={() => setActiveTab("guest")}
+              >
+                Guest Data
               </div>
-            )}
-            {activeTab === "host" && (
-              <div>
-                <div className="page13headterms">Host Obligations</div>
-                <div className="page13lowerterms">{renderObligations("host")}</div>
-                <div className="page13headterms">Host Permissions</div>
-                <div className="page13lowerterms">{renderPermissions("host")}</div>
-                <div className="page13headterms">Host Forbidden Terms</div>
-                <div className="page13lowerterms">{renderForbidden("host")}</div>
-                <div className="page13headterms">Default Host Privileges</div>
-                By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms
+              <div
+                className={`tab-header ${activeTab === "host" ? "active" : ""}`}
+                onClick={() => setActiveTab("host")}
+              >
+                Host Data
               </div>
-            )}
-          </div>
-        </div>
-      </Grid>
-      </Grid>
+            </div>
+            <div className="tab-content">
+              <div className="table-container">
+                {activeTab === "guest" && (
+                  <div>
+                    <div className="page13headterms">Your Obligations</div>
+                    <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderObligations("guest")}</div>
+                    <div className="page13headterms">Your Permissions</div>
+                    <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("guest")}</div>
+                    <div className="page13headterms">Your Forbidden Terms</div>
+                    <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("guest")}</div>
+                    <div className="page13headterms">Default Host Privileges</div>
+                    <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
+                  </div>
+                )}
+                {activeTab === "host" && (
+                  <div>
+                    <div className="page13headterms">Host Obligations</div>
+                    <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderObligations("host")}</div>
+                    <div className="page13headterms">Host Permissions</div>
+                    <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("host")}</div>
+                    <div className="page13headterms">Host Forbidden Terms</div>
+                    <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("host")}</div>
+                    <div className="page13headterms">Default Host Privileges</div>
+                    <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Grid>
+        </Grid>
       </div>
 
-     
+
     </div>
   );
 };

@@ -1304,7 +1304,7 @@ export const ViewHostTermsByType = () => {
       return updatedTerms;
     });
   };
-
+console.log("connectionDetailsss", connectionDetails)
   const navigateToConnectionTerms = (connection) => {
     // console.log("print", connection);
     // Check if connection is a string
@@ -1315,7 +1315,7 @@ export const ViewHostTermsByType = () => {
       // console.log("conntype", connectionTypeName);
       console.log("navigate", guestUserUsername)
 
-      navigate("/show-connection-terms", {
+      navigate("/display-terms", {
         state: {
           connectionName: connectionName, // Pass the string as connectionName
           connectionDescription: connectionDescription,
@@ -1329,6 +1329,11 @@ export const ViewHostTermsByType = () => {
           lockerComplete: locker,
           hostLocker: hostLocker,
           guestLocker: guestLocker,
+          createdtime: connectionDetails.created_time,
+          validitytime: connectionDetails.validity_time,
+          viewHostDisplay: true,
+          connectionDetails,
+          connectionType,
         },
       });
     } else {
@@ -1370,7 +1375,10 @@ export const ViewHostTermsByType = () => {
           connection_id,
           lockerComplete: locker,
           hostLocker: hostLocker,
-          guestLocker: guestLocker
+          guestLocker: guestLocker,
+          viewHost:true,
+          connectionType,
+          connection
         },
       });
     }
@@ -1549,17 +1557,18 @@ export const ViewHostTermsByType = () => {
   const handleConnectionClick = () => {
     const lockers = hostLocker
     const connectionTypes = connectionType
+     const hostLockerName = connectionDetails?.host_locker?.name;
     console.log("navigate show-guest-users", {
       connectionTypes,
       lockers
     });
-    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers } });
+    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers,hostLocker:connectionDetails.host_locker, hostLockerName, hostUserUsername: curruser.username  } });
   };
 
   const handleGuestTermsClick = () => {
     navigate("/guest-terms-review", {
       state: {
-        connection: connection,
+        connection: connectionDetails,
         connectionType: connectionType,
       },
     })
@@ -1821,7 +1830,7 @@ export const ViewHostTermsByType = () => {
                   }`}
                 onClick={() => navigate("/guest-terms-review", {
                   state: {
-                    connection: connection,
+                    connection: connectionDetails,
                     connectionType: connectionType,
                   },
                 })}

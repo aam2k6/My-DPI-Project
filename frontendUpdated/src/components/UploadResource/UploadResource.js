@@ -121,7 +121,7 @@ export const UploadResource = () => {
           <p>{locker.description}</p>
         </div> */}
         <div className="container">
-          <div className="row justify-content-center">
+          <Box className="row justify-content-center" margin={{md:"0", xs:"1px"}}>
             <div className="col-md-8 col-sm-12 p-4 border border-primary rounded shadow">
               <h2 className="text-center mb-4 page4resourceHeading">Resources</h2>
               <form onSubmit={handleSubmit}>
@@ -176,7 +176,7 @@ export const UploadResource = () => {
                 </div>
               </form>
             </div>
-          </div>
+          </Box>
         </div>
       </div>
     </div>

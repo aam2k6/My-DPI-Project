@@ -516,7 +516,7 @@ export const ViewLocker = () => {
     // console.log("Open Education button clicked");
     navigate("/view-locker");
   };
-
+console.log("connectionsss", locker)
   const handleConnectionClick = (connection) => {
     console.log("navigate show-guest-users", {
       connection,
@@ -526,27 +526,26 @@ export const ViewLocker = () => {
       state: {
         connection,
         locker,
-        hostLocker: connections.incoming_connections[0].host_locker,
-        hostUserUsername : connections.incoming_connections[0].host_user.username,
-        hostLockerName: connections.incoming_connections[0].host_locker.name
+        hostLocker: connections?.incoming_connections?.[0]?.host_locker || locker,
+        hostUserUsername : connections?.incoming_connections?.[0]?.host_user.username || curruser.username,
+        hostLockerName: connections?.incoming_connections?.[0]?.host_locker.name || locker.name
       }
     });
   };
   const handleIncomingInfo = (connection) => {
 
-    console.log("navigates", connections.incoming_connections[0].host_user.username)
-    console.log("navigatess", connections.incoming_connections[0].host_locker)
+  
     navigate("/display-terms", {
       state: {
-        hostLockerName: connections.incoming_connections[0].host_locker.name,
+        hostLockerName: connections?.incoming_connections?.[0]?.host_locker.name || locker.name,
         connectionTypeName: connection.connection_type_name,
         connectionDescription: connection.connection_description,
         createdtime: connection.created_time,
         validitytime: connection.validity_time,
-        hostUserUsername: connections.incoming_connections[0].host_user.username,
+        hostUserUsername: connections?.incoming_connections?.[0]?.host_user.username || curruser.username,
         locker: locker,
         viewlockerDisplay: true,
-        hostLocker: connections.incoming_connections[0].host_locker,
+        hostLocker: connections?.incoming_connections?.[0]?.host_locker || locker,
       },
     });
   };

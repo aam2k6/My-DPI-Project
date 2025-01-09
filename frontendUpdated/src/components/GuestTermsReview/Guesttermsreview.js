@@ -315,7 +315,7 @@ export const Guesttermsreview = () => {
       if (revoke_guest === true || revoke_host === true) {
         setModalMessage({
           message:
-            "The guest has closed the connection, click Revoke to revoke the connection",
+            "The guest has revoked the connection, click Revoke to revoke the connection",
           type: "info",
         });
         setIsModalOpen(true);

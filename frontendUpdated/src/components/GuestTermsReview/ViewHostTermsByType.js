@@ -75,6 +75,7 @@ export const ViewHostTermsByType = () => {
   const [showRevokeConsentModal, setShowRevokeConsentModal] = useState(false);
   const [showOpenPopup, setShowOpenPopup] = useState(false);
   const [pdfData, setPdfData] = useState(null)
+  const [selectedRowData, setSelectedRowData] = useState(null);
 
 
 
@@ -138,14 +139,17 @@ export const ViewHostTermsByType = () => {
     setPdfUrl(null);
   };
 
-  const openPopup = (obligation) => {
-    handleClicks(obligation)
-    console.log("obligationss", obligation)
+  const openPopup = (rowData) => {
+    const extractedValue = rowData.value.split(";")[0].split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    setSelectedRowData(rowData);
+    console.log("obligationss", extractedValue);
     setShowOpenPopup(true);
   };
 
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
+    setSelectedRowData(null);
   };
   // console.log("start", guest_locker_id, host_locker_id, locker);
   useEffect(() => {
@@ -1957,88 +1961,53 @@ export const ViewHostTermsByType = () => {
                                   : "None"}
                               </td>
 
-                              <td><button onClick={() => openPopup(termValues[obligation.labelName]?.split(";")[0]?.split("|")[1])}>Open</button></td>
-                              {showOpenPopup && (
+                              <td> <button onClick={() => openPopup(obligation)}>Open</button></td>
+                              {showOpenPopup && selectedRowData && (
                                 <div className="terms-popup">
                                   <div className="terms-popup-content">
                                     <span className="close" onClick={closeOpenPopup}>
                                       &times;
                                     </span>
-                                    <h3 style={{ display: "flex", justifyContent: "center" }}>Consent Artefact</h3>
+                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
+                                      Consent Artefact
+                                    </h3>
                                     <p>
-                                      {termValues[obligation.labelName]?.split(";")[0] ? (
-                                        <p
-
-                                        >
-                                          File: {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+                                      {termValues[selectedRowData.labelName]?.split(";")[0] ? (
+                                        <div>
+                                          File:{" "}
+                                          {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
                                           {pdfData ? (
                                             <div>
-                                              <li>Created on:{new Date(pdfData.created_at).toLocaleString()} </li>
-                                              <li>Valid until:{new Date(pdfData.validity_until).toLocaleString()} </li>
+                                              <li>
+                                                Created on:{" "}
+                                                {new Date(pdfData.created_at).toLocaleString()}
+                                              </li>
+                                              <li>
+                                                Valid until:{" "}
+                                                {new Date(pdfData.validity_until).toLocaleString()}
+                                              </li>
                                             </div>
-                                          ) : <p>Loading...</p>}
-
-                                        </p>
+                                          ) : (
+                                            <p>Loading...</p>
+                                          )}
+                                        </div>
                                       ) : (
                                         "None"
                                       )}
                                     </p>
-                                    <p>Type of share: {obligation.typeOfSharing}
-                                    </p>
-                                    {/* <p>
-                                      {obligation.typeOfSharing === "confer"
-                                        ? ` You are not able to edit resource. If you want to edit, please contact the.`
-                                        : obligation.typeOfSharing === "share"
-                                          ? "You are not allowed to edit."
-                                          : obligation.typeOfSharing === "collateral"
-                                            ? "You are allowed to edit."
-                                            : obligation.typeOfSharing === "transfer"
-                                              ? "You are allowed to edit."
-                                              : "Unknown type of sharing"}
-                                    </p> */}
-                                    <p> Host Privilege:
-                                      {obligation.hostPermissions && obligation.hostPermissions.length > 0 ? (
-                                        obligation.hostPermissions.map((permission, index) => (
-                                          <span key={index}>
-                                            <li>
-                                             Can {permission}
-                                              {/* {permission === "download"
-                                                ? " You have access to download the resource."
-                                                : permission === "reshare"
-                                                  ? " You have access to reshare the resource."
-                                                  : ""} */}
-                                            </li>
-
-                                            {index < obligation.hostPermissions.length - 1} {/* Adds a line break between permissions */}
-                                          </span>
+                                    <p>Type of Share: {selectedRowData.typeOfSharing}</p>
+                                    <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
                                         ))
                                       ) : (
                                         "None"
                                       )}
                                     </p>
-                                    
-                                    {/* <p>
-                                      {termValues[obligation.labelName]?.split(";")[0] ? (
-                                        <p
-
-                                        >
-                                          {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]} :-
-                                          {pdfData ? (
-                                            <div>
-                                              <li>Created on:{new Date(pdfData.created_at).toLocaleString()} </li>
-                                              <li>Valid until:{new Date(pdfData.validity_until).toLocaleString()} </li>
-                                            </div>
-                                          ) : <p>Loading...</p>}
-
-                                        </p>
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-
                                   </div>
                                 </div>
-
                               )}
                               <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
@@ -2046,6 +2015,7 @@ export const ViewHostTermsByType = () => {
                             </tr>
                           ))}
                         </tbody>
+
                       </table>
                     </div>
                     <div style={{ margin: "10px 0" }}>

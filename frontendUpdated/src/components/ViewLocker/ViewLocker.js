@@ -232,7 +232,7 @@ export const ViewLocker = () => {
       }
     } catch (error) {
       console.error("Error fetching resources:", error);
-      setError("An error occurred while fetching resources");
+      // setError("An error occurred while fetching resources");
     }
   };
   // console.log(locker);
@@ -267,7 +267,7 @@ export const ViewLocker = () => {
       //}
     } catch (error) {
       console.error("Error fetching resources:", error);
-      setError("An error occurred while fetching resources");
+      // setError("An error occurred while fetching resources");
     }
   };
 
@@ -302,7 +302,7 @@ export const ViewLocker = () => {
       //}
     } catch (error) {
       console.error("Error fetching resources:", error);
-      setError("An error occurred while fetching resources");
+      // setError("An error occurred while fetching resources");
     }
   };
 
@@ -1092,7 +1092,7 @@ export const ViewLocker = () => {
         }
     } catch (error) {
         console.error("Error in API call:", error);
-        setError("An error occurred while fetching resources.");
+        // setError("An error occurred while fetching resources.");
     } finally {
         console.log("Loading");
     }

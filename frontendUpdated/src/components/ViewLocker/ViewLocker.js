@@ -48,6 +48,7 @@ export const ViewLocker = () => {
   const [xnodes, setXnodes] = useState([]);
   const [isResourcesVisible, setResourcesVisible] = useState(false);
   const [isConnectionsVisible, setConnectionsVisible] = useState(false);
+  const [userResource, setUserResource] = useState([])
 
 
   // const [correspondingNames, setCorrespondingNames] = useState([]);
@@ -516,7 +517,7 @@ export const ViewLocker = () => {
     // console.log("Open Education button clicked");
     navigate("/view-locker");
   };
-console.log("connectionsss", locker)
+  console.log("connectionsss", locker)
   const handleConnectionClick = (connection) => {
     console.log("navigate show-guest-users", {
       connection,
@@ -527,14 +528,14 @@ console.log("connectionsss", locker)
         connection,
         locker,
         hostLocker: connections?.incoming_connections?.[0]?.host_locker || locker,
-        hostUserUsername : connections?.incoming_connections?.[0]?.host_user.username || curruser.username,
+        hostUserUsername: connections?.incoming_connections?.[0]?.host_user.username || curruser.username,
         hostLockerName: connections?.incoming_connections?.[0]?.host_locker.name || locker.name
       }
     });
   };
   const handleIncomingInfo = (connection) => {
 
-  
+
     navigate("/display-terms", {
       state: {
         hostLockerName: connections?.incoming_connections?.[0]?.host_locker.name || locker.name,
@@ -875,6 +876,58 @@ console.log("connectionsss", locker)
       }
     }
   };
+  const handleDeleteClicks = async (resource) => {
+    console.log("Xnode to be deleted:", resource);  // Log the entire xnode object
+
+    if (!resource.resource_name) {
+      console.error("Document name is missing in xnode!");
+      return;  // Exit the function if resource_name is missing
+    }
+
+    if (window.confirm("Do you want to delete this resource?")) {
+      const lockerName = locker.name;
+      const documentName = resource.resource_name;
+      const ownerName = curruser.username;
+
+      const payload = {
+        locker_name: lockerName,
+        owner_name: ownerName,
+        document_name: documentName,
+      };
+
+      console.log("Payload to be sent:", payload);
+
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        console.log("Response from backend:", response);
+        const data = await response.json();
+        console.log("Response data:", data);
+
+        if (response.ok) {
+
+          setXnodes((prevXnodes) =>
+            prevXnodes.filter((item) => item.id !== resource.xnode.id)
+          );
+
+          setModalMessage({ message: "Resource deleted successfully!", type: "success" });
+        } else {
+          setModalMessage({ message: data.message || "Failed to delete resource.", type: "failure" });
+        }
+      } catch (error) {
+        setModalMessage({ message: "An error occurred while deleting the resource.", type: "failure" });
+        console.error("Error during delete:", error);
+      }
+    }
+  };
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -891,20 +944,55 @@ console.log("connectionsss", locker)
   const toggleResourcesVisibility = () => {
     setResourcesVisible(!isResourcesVisible);
   };
-  const [expandedConnection, setExpandedConnection] = useState(null); // Tracks which connection is expanded
+  const [expandedConnection, setExpandedConnection] = useState([]); // Tracks which connection is expanded
   const [connectionUsers, setConnectionUsers] = useState({}); // Store users for each connection
-
+  const [expandedusers, setExpandedusers] = useState([]);
+  const [userResources, setUserResources] = useState({});
   // Toggle connection to expand/collapse user list
-  const toggleConnection = (connectionId) => {
-    if (expandedConnection === connectionId) {
-      setExpandedConnection(null); // Collapse if already expanded
-    } else {
-      setExpandedConnection(connectionId); // Expand new connection
-      if (!connectionUsers[connectionId]) {
-        fetchUsersForConnection(connectionId); // Fetch users if not already fetched
+  const toggleConnection = (connection) => {
+    const connectionId = connection.connection_type_id
+    setExpandedConnection((prev) => {
+      if (prev.includes(connectionId)) {
+        // If the connection is already expanded, close it
+        return prev.filter((id) => id !== connectionId);
+      } else {
+        // Otherwise, expand it
+        return [...prev, connectionId];
       }
+    });
+
+    if (!connectionUsers[connectionId]) {
+      fetchUsersForConnection(connection); // Fetch users if not already fetched
     }
   };
+
+  const toggleuser = (connectionDetail, connection) => {
+    const userId = connectionDetail.guest_user.user_id;
+    const username = connectionDetail.guest_user.username;
+    const connectionId = connection.connection_type_id
+    console.log("usernames", username)
+    setExpandedusers((prev) => {
+      if (prev.includes(userId)) {
+        // If the user is already expanded, remove it
+        return prev.filter((id) => id !== userId);
+      } else {
+        // Otherwise, add the user ID to the expanded list
+        return [...prev, userId];
+      }
+    });
+    if(!expandedusers[connectionId]){
+      fetchResourcesForConnection(connectionId, username)
+
+    }
+    // Optionally, fetch additional data if needed
+    // fetchUsersForConnection(connectionDetail); // Uncomment if fetching is required
+  };
+
+
+
+  console.log("connectionUsers", connectionUsers)
+
+  console.log("expandedConnection", expandedConnection)
   const [loadingConnections, setLoadingConnections] = useState({});
   const fetchUsersForConnection = async (connection) => {
     // Extract required values from the connection object
@@ -965,7 +1053,52 @@ console.log("connectionsss", locker)
 
 
 
+  const fetchResourcesForConnection = async (connectionTypeId, username) => {
+    console.log("Parameters used for API call:");
+    console.log("connectionTypeId:", connectionTypeId);
+    console.log("username:", username);
 
+    const url = `${frontend_host}/get_user_resources_by_connection_type/?connection_type_id=${encodeURIComponent(connectionTypeId)}&username=${encodeURIComponent(username)}`;
+    console.log("Constructed URL:", url);
+
+    try {
+        const token = Cookies.get("authToken");
+        if (!token) {
+            throw new Error("Authentication token is missing.");
+        }
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                Authorization: `Basic ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`API call failed with status ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log("Fetched resources:", responseData);
+
+        if (responseData.success) {
+            setUserResources((prev) => ({
+                ...prev,
+                [username]: responseData.data, // Store the resources using the username as the key
+            }));
+        } else {
+            setError(responseData.message || "Failed to fetch resources");
+        }
+    } catch (error) {
+        console.error("Error in API call:", error);
+        setError("An error occurred while fetching resources.");
+    } finally {
+        console.log("Loading");
+    }
+};
+
+  console.log("datadata", userResource)
   const content = (
     <>
       <div className="navbarBrands">
@@ -1250,54 +1383,214 @@ console.log("connectionsss", locker)
                     <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
                       {otherConnections.length > 0 ? (
                         otherConnections.map((connection) => (
-                          <li
-                            key={connection.connection_type_id}
-                            className="resource-item"
-                            style={{ paddingBottom: "10px", fontSize: "20px" }}
-                          >
-                            {/* Connection Name */}
-                            <span
-                              onClick={() => toggleConnection(connection)}
-                              style={{
-                                cursor: "pointer",
-                                textDecoration: "none",
-                                color: "inherit",
-                                display: "flex",
-                                alignItems: "center",
-                              }}
+                          <>
+                            <li
+                              key={connection.connection_type_id}
+                              className="resource-item"
+                              style={{ paddingBottom: "10px", fontSize: "16px" }}
                             >
-                              {expandedConnection === connection.connection_type_id ? (
-                                <i className="fa-solid fa-folder-open" style={{ marginRight: "10px" }} />
-                              ) : (
-                                <i className="fa-solid fa-folder" style={{ marginRight: "10px" }} />
-                              )}
-                              {connection.connection_type_name}
-                            </span>
+                              {/* Connection Name */}
+                              <span
+                                onClick={() => toggleConnection(connection)}
+                                style={{
+                                  cursor: "pointer",
+                                  textDecoration: "none",
+                                  color: "inherit",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {expandedConnection.includes(connection.connection_type_id) ? (
+                                  <i className="fa-solid fa-folder-open" style={{ marginRight: "10px" }} />
+                                ) : (
+                                  <i className="fa-solid fa-folder" style={{ marginRight: "10px" }} />
+                                )}
+                                {connection.connection_type_name}
+                              </span>
 
-                            {/* Users associated with the connection */}
-                            {expandedConnection === connection.connection_type_id && (
-                              <ul style={{ paddingLeft: "20px", marginTop: "5px" }}>
+                              {/* Users associated with the connection */}
+
+
+                            </li>
+                            {expandedConnection.includes(connection.connection_type_id) && (
+                              <ul>
                                 {loadingConnections[connection.connection_type_id] ? (
                                   <p style={{ fontSize: "16px", color: "#888" }}>Loading users...</p>
-                                ) : connectionUsers[connection.connection_type_id] ? (
-                                  connectionUsers[connection.connection_type_id].map((user) => (
+                                ) : connectionUsers[connection.connection_type_id]?.connections ? (
+                                  connectionUsers[connection.connection_type_id].connections.map((connectionDetail) => (
                                     <li
-                                      key={user.id}
+                                      key={connectionDetail.guest_user.user_id}
                                       style={{
-                                        fontSize: "16px",
-                                        color: "#555",
-                                        paddingBottom: "5px",
+                                        cursor: "pointer",
+                                        textDecoration: "none",
+                                        color: "inherit",
+                                        listStyle:"none",
+                                        alignItems: "center",
+                                        fontSize: "16px"
                                       }}
                                     >
-                                      {user.username}
-                                    </li>
+
+                                      
+                                      <span
+                                       onClick={() => toggleuser(connectionDetail, connection)} >
+                                      {expandedusers.includes(connectionDetail.guest_user.user_id) ? (
+                                        <i className="fa-solid fa-folder-open" style={{ marginRight: "10px" }} />
+                                      ) : (
+                                        <i className="fa-solid fa-folder" style={{ marginRight: "10px" }} />
+                                      )}
+
+
+                                      {/* {connection.connection_type_name} */}
+                                      {capitalizeFirstLetter(connectionDetail.guest_user.username)}
+                                      </span>
+
+                                      <div>
+                                      {expandedusers.includes(connectionDetail.guest_user.user_id) && (
+    <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
+    {userResources[connectionDetail.guest_user.username]?.length > 0 ? (
+      userResources[connectionDetail.guest_user.username].map((resource, index) => (
+        <div
+          key={resource.xnode?.id || index}
+          className="resource-item"
+          style={{ paddingBottom: "10px" }}
+        >
+          <div className="resource-details">
+            <Tooltips
+              title={
+                <>
+                  <div>
+                    <strong>Created:</strong>{" "}
+                    {new Date(resource.xnode.created_at).toLocaleString()}
+                  </div>
+                  <div>
+                    <strong>Validity:</strong>{" "}
+                    {new Date(resource.xnode.validity_until).toLocaleString()}
+                  </div>
+                  <div>
+                    <strong>Node Type:</strong> {resource.xnode.xnode_Type}
+                  </div>
+                  <div>
+                    <strong>Locker:</strong> {resource.xnode?.locker || "N/A"}
+                  </div>
+                </>
+              }
+            >
+              <div
+                id={
+                  resource.xnode.xnode_Type === "INODE"
+                    ? "documents"
+                    : resource.xnode.xnode_Type === "SNODE"
+                    ? "documents-byConfer"
+                    : "documents-byShare"
+                }
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <span
+                    onClick={() => handleClick(resource.xnode?.id)}
+                    style={{ cursor: "pointer", flexGrow: 1 }}
+                  >
+                    {resource.resource_name}
+                  </span>
+                  {/* {error && <div className="error-message">{error}</div>} */}
+                </div>
+                <span
+                  className="resource-icons"
+                  style={{
+                    marginLeft: "auto",
+                    display: "flex",
+                    gap: "10px",
+                  }}
+                >
+                  {resource.xnode.xnode_Type === "INODE" && (
+                    <i
+                      className="fa-regular fa-pen-to-square"
+                      style={{
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleEditClick(resource)}
+                    />
+                  )}
+                  {resource.resource_name && (
+                  <i
+                    className="fa-regular fa-trash-can"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleDeleteClicks(resource)}
+                  />
+                  )
+
+                  }
+                  
+                </span>
+              </div>
+            </Tooltips>
+            <ReactModal
+              isOpen={isModalOpen}
+              onRequestClose={handleClose}
+              contentLabel="PDF Viewer"
+              style={{
+                content: {
+                  top: "59%",
+                  left: "50%",
+                  right: "auto",
+                  bottom: "auto",
+                  marginRight: "-50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "95%",
+                  height: "80%",
+                  overflowY: "hidden",
+                  maxWidth: "100%",
+                  maxHeight: "90%",
+                },
+              }}
+            >
+              <button
+                onClick={handleClose}
+                style={{
+                  marginBottom: "10px",
+                  cursor: "pointer",
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  zIndex: 100,
+                }}
+              >
+                Close
+              </button>
+              {pdfUrl ? (
+                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                  <Viewer fileUrl={pdfUrl} />
+                </Worker>
+              ) : (
+                <p>Loading PDF...</p>
+              )}
+            </ReactModal>
+          </div>
+        </div>
+      ))
+    ) : (
+      <p className="not-found" style={{ fontSize: "14px", color: "#888" }}>
+        No Resources found.
+      </p>
+    )}
+  </ul>
+  
+)}
+
+                              
+                                      </div>
+                                           </li>
+                                    
                                   ))
                                 ) : (
                                   <p style={{ fontSize: "16px", color: "#888" }}>No users found.</p>
                                 )}
                               </ul>
                             )}
-                          </li>
+                          </>
                         ))
                       ) : (
                         <p className="not-found">No connections found.</p>

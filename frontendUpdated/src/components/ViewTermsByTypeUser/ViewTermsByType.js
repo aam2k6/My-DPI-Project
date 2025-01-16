@@ -590,6 +590,9 @@ export const ViewTermsByType = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [isModalOpenClose, setIsModalOpenClose] = useState(false);
   const [closeState, setCloseState] = useState(true);
+  const [showOpenPopup, setShowOpenPopup] = useState(false);
+  const [pdfData, setPdfData] = useState(null)
+  
 
   const {
     connectionName,
@@ -1082,6 +1085,48 @@ export const ViewTermsByType = () => {
       }
     }
   }, [connectionDetails]);
+
+   const handleClicks = async (xnode_id_with_pages) => {
+      const xnode_id = xnode_id_with_pages?.split(',')[0];
+      const pages = xnode_id_with_pages?.split(',')[1];
+      const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
+      const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
+      console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+          /host/,
+          frontend_host
+        ), {
+          method: 'GET',
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to access the resource');
+        }
+  
+        const data = await response.json();
+        console.log("datass", data);
+        const { xnode } = data;
+  
+        if (xnode) {
+          setPdfData(xnode)
+        } else {
+          setError('Unable to retrieve the file link.');
+          console.log(error);
+        }
+      } catch (err) {
+        // setError(`Error: ${err.message}`);
+        console.log(err);
+      } finally {
+        // setLoading(false);
+      }
+    };
 
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
@@ -2154,6 +2199,14 @@ export const ViewTermsByType = () => {
       setToPage('');
     }
   }
+  const openPopup = (obligation) => {
+    handleClicks(obligation)
+    console.log("obligationss", obligation)
+    setShowOpenPopup(true);
+  };
+  const closeOpenPopup = () => {
+    setShowOpenPopup(false);
+  };
   const content = (
     <>
       {/* <div className="navbarBrand">
@@ -2486,6 +2539,7 @@ export const ViewTermsByType = () => {
                             <th>Type of share</th>
                             <th>Enter value</th>
                             <th>Host Privileges</th>
+                            <th>Consent Artefact</th>
                             <th>Status</th> {/* New column for Status */}
                           </tr>
                         </thead>
@@ -2507,6 +2561,89 @@ export const ViewTermsByType = () => {
                                   ? obligation.hostPermissions.join(", ")
                                   : "None"}
                               </td>
+                              <td><button onClick={() => openPopup(termValues[obligation.labelName]?.split(";")[0]?.split("|")[1])}>Open</button></td>
+                              {showOpenPopup && (
+                                <div className="terms-popup">
+                                  <div className="terms-popup-content">
+                                    <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span>
+                                    <h3 style={{ display: "flex", justifyContent: "center" }}>Consent Artefact</h3>
+                                    <p>
+                                      {termValues[obligation.labelName]?.split(";")[0] ? (
+                                        <p
+
+                                        >
+                                          File: {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+                                          {pdfData ? (
+                                            <div>
+                                              <li>Created on:{new Date(pdfData.created_at).toLocaleString()} </li>
+                                              <li>Valid until:{new Date(pdfData.validity_until).toLocaleString()} </li>
+                                            </div>
+                                          ) : <p>Loading...</p>}
+
+                                        </p>
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p>
+                                    <p>Type of share: {obligation.typeOfSharing}
+                                    </p>
+                                    {/* <p>
+                                      {obligation.typeOfSharing === "confer"
+                                        ? ` You are not able to edit resource. If you want to edit, please contact the.`
+                                        : obligation.typeOfSharing === "share"
+                                          ? "You are not allowed to edit."
+                                          : obligation.typeOfSharing === "collateral"
+                                            ? "You are allowed to edit."
+                                            : obligation.typeOfSharing === "transfer"
+                                              ? "You are allowed to edit."
+                                              : "Unknown type of sharing"}
+                                    </p> */}
+                                    <p> Host Privilege:
+                                      {obligation.hostPermissions && obligation.hostPermissions.length > 0 ? (
+                                        obligation.hostPermissions.map((permission, index) => (
+                                          <span key={index}>
+                                            <li>
+                                             Can {permission}
+                                              {/* {permission === "download"
+                                                ? " You have access to download the resource."
+                                                : permission === "reshare"
+                                                  ? " You have access to reshare the resource."
+                                                  : ""} */}
+                                            </li>
+
+                                            {index < obligation.hostPermissions.length - 1} {/* Adds a line break between permissions */}
+                                          </span>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p>
+                                    
+                                    {/* <p>
+                                      {termValues[obligation.labelName]?.split(";")[0] ? (
+                                        <p
+
+                                        >
+                                          {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]} :-
+                                          {pdfData ? (
+                                            <div>
+                                              <li>Created on:{new Date(pdfData.created_at).toLocaleString()} </li>
+                                              <li>Valid until:{new Date(pdfData.validity_until).toLocaleString()} </li>
+                                            </div>
+                                          ) : <p>Loading...</p>}
+
+                                        </p>
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+
+                                  </div>
+                                </div>
+
+                              )}
                               <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
                               {/* <td>{obligation.labelDescription}</td> */}

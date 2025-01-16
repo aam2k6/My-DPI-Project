@@ -73,6 +73,9 @@ export const ViewHostTermsByType = () => {
   const [hostToGuestObligations, setHostToGuestObligations] = useState([]);
   const [pdfUrl, setPdfUrl] = useState(null);
   const [showRevokeConsentModal, setShowRevokeConsentModal] = useState(false);
+  const [showOpenPopup, setShowOpenPopup] = useState(false);
+  const [pdfData, setPdfData] = useState(null)
+
 
 
   const {
@@ -135,6 +138,15 @@ export const ViewHostTermsByType = () => {
     setPdfUrl(null);
   };
 
+  const openPopup = (obligation) => {
+    handleClicks(obligation)
+    console.log("obligationss", obligation)
+    setShowOpenPopup(true);
+  };
+
+  const closeOpenPopup = () => {
+    setShowOpenPopup(false);
+  };
   // console.log("start", guest_locker_id, host_locker_id, locker);
   useEffect(() => {
     if (!curruser) {
@@ -539,7 +551,48 @@ export const ViewHostTermsByType = () => {
       }
     }
   }, [connectionDetails]);
+  const handleClicks = async (xnode_id_with_pages) => {
+    const xnode_id = xnode_id_with_pages?.split(',')[0];
+    const pages = xnode_id_with_pages?.split(',')[1];
+    const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
+    const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
+    console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to access the resource');
+      }
+
+      const data = await response.json();
+      console.log("datass", data);
+      const { xnode } = data;
+
+      if (xnode) {
+        setPdfData(xnode)
+      } else {
+        setError('Unable to retrieve the file link.');
+        console.log(error);
+      }
+    } catch (err) {
+      // setError(`Error: ${err.message}`);
+      console.log(err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+  console.log("pdfData", pdfData)
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
@@ -1304,7 +1357,7 @@ export const ViewHostTermsByType = () => {
       return updatedTerms;
     });
   };
-console.log("connectionDetailsss", connectionDetails)
+  console.log("connectionDetailsss", connectionDetails)
   const navigateToConnectionTerms = (connection) => {
     // console.log("print", connection);
     // Check if connection is a string
@@ -1376,7 +1429,7 @@ console.log("connectionDetailsss", connectionDetails)
           lockerComplete: locker,
           hostLocker: hostLocker,
           guestLocker: guestLocker,
-          viewHost:true,
+          viewHost: true,
           connectionType,
           connection
         },
@@ -1557,12 +1610,12 @@ console.log("connectionDetailsss", connectionDetails)
   const handleConnectionClick = () => {
     const lockers = hostLocker
     const connectionTypes = connectionType
-     const hostLockerName = connectionDetails?.host_locker?.name;
+    const hostLockerName = connectionDetails?.host_locker?.name;
     console.log("navigate show-guest-users", {
       connectionTypes,
       lockers
     });
-    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers,hostLocker:connectionDetails.host_locker, hostLockerName, hostUserUsername: curruser.username  } });
+    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers, hostLocker: connectionDetails.host_locker, hostLockerName, hostUserUsername: curruser.username } });
   };
 
   const handleGuestTermsClick = () => {
@@ -1666,7 +1719,7 @@ console.log("connectionDetailsss", connectionDetails)
       <span className="breadcrumb-separator">▶</span>
       <span onClick={() => handleConnectionClick()} className="breadcrumb-item">ShowGuestUsers</span>
       <span className="breadcrumb-separator">▶</span>
-      <span onClick={()=>handleGuestTermsClick()} className="breadcrumb-item">GuestTermsReview</span>
+      <span onClick={() => handleGuestTermsClick()} className="breadcrumb-item">GuestTermsReview</span>
       <span className="breadcrumb-separator">▶</span>
       <span className="breadcrumb-item current">ViewHostTermsByType</span>
 
@@ -1881,6 +1934,7 @@ console.log("connectionDetailsss", connectionDetails)
                             <th>Type of share</th>
                             <th>Enter value</th>
                             <th>Host Privileges</th>
+                            <th>Consent Artefact</th>
                             <th>Status</th> {/* New column for Status */}
                           </tr>
                         </thead>
@@ -1902,6 +1956,90 @@ console.log("connectionDetailsss", connectionDetails)
                                   ? obligation.hostPermissions.join(", ")
                                   : "None"}
                               </td>
+
+                              <td><button onClick={() => openPopup(termValues[obligation.labelName]?.split(";")[0]?.split("|")[1])}>Open</button></td>
+                              {showOpenPopup && (
+                                <div className="terms-popup">
+                                  <div className="terms-popup-content">
+                                    <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span>
+                                    <h3 style={{ display: "flex", justifyContent: "center" }}>Consent Artefact</h3>
+                                    <p>
+                                      {termValues[obligation.labelName]?.split(";")[0] ? (
+                                        <p
+
+                                        >
+                                          File: {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
+                                          {pdfData ? (
+                                            <div>
+                                              <li>Created on:{new Date(pdfData.created_at).toLocaleString()} </li>
+                                              <li>Valid until:{new Date(pdfData.validity_until).toLocaleString()} </li>
+                                            </div>
+                                          ) : <p>Loading...</p>}
+
+                                        </p>
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p>
+                                    <p>Type of share: {obligation.typeOfSharing}
+                                    </p>
+                                    {/* <p>
+                                      {obligation.typeOfSharing === "confer"
+                                        ? ` You are not able to edit resource. If you want to edit, please contact the.`
+                                        : obligation.typeOfSharing === "share"
+                                          ? "You are not allowed to edit."
+                                          : obligation.typeOfSharing === "collateral"
+                                            ? "You are allowed to edit."
+                                            : obligation.typeOfSharing === "transfer"
+                                              ? "You are allowed to edit."
+                                              : "Unknown type of sharing"}
+                                    </p> */}
+                                    <p> Host Privilege:
+                                      {obligation.hostPermissions && obligation.hostPermissions.length > 0 ? (
+                                        obligation.hostPermissions.map((permission, index) => (
+                                          <span key={index}>
+                                            <li>
+                                             Can {permission}
+                                              {/* {permission === "download"
+                                                ? " You have access to download the resource."
+                                                : permission === "reshare"
+                                                  ? " You have access to reshare the resource."
+                                                  : ""} */}
+                                            </li>
+
+                                            {index < obligation.hostPermissions.length - 1} {/* Adds a line break between permissions */}
+                                          </span>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p>
+                                    
+                                    {/* <p>
+                                      {termValues[obligation.labelName]?.split(";")[0] ? (
+                                        <p
+
+                                        >
+                                          {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]} :-
+                                          {pdfData ? (
+                                            <div>
+                                              <li>Created on:{new Date(pdfData.created_at).toLocaleString()} </li>
+                                              <li>Valid until:{new Date(pdfData.validity_until).toLocaleString()} </li>
+                                            </div>
+                                          ) : <p>Loading...</p>}
+
+                                        </p>
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+
+                                  </div>
+                                </div>
+
+                              )}
                               <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
                               {/* <td>{obligation.labelDescription}</td> */}

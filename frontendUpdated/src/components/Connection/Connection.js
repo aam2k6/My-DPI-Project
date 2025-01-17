@@ -157,7 +157,8 @@ const locker = locker_conn
                 </Typography>
                 </Grid>
                 <Grid item md={8} sm={8} xs={12}>
-                <TextField required fullWidth variant="outlined" 
+                <TextField required fullWidth focused multiline variant="outlined" 
+                rows={4} 
                 type="text"
                 name="connectionDescription"
                 placeholder="Description"

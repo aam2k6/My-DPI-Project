@@ -543,6 +543,11 @@ import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
 import { Grid, Button, Box } from "@mui/material"
 import { Tooltip } from 'react-tooltip';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import Typography from "@mui/material/Typography";
 
 export const ConnectionTerms = () => {
   const navigate = useNavigate();
@@ -1241,8 +1246,53 @@ export const ConnectionTerms = () => {
                           />
                         </div>
                       </div>
-
                       <div className="mb-3 row">
+                        <label className="col-sm-12 col-md-2 col-form-label mt-2">Host Entitlement&nbsp;</label>
+                        <div className="col-md-10 col-sm-12">
+                          <div>
+                            <FormControl style={{ border: "2px solid rgb(107, 120, 231)", paddingRight: "16px", paddingLeft: "5px", borderRadius: "0.25rem", backgroundColor: "white" }}>
+                              <RadioGroup
+                                row
+                                aria-labelledby="demo-row-radio-buttons-group-label"
+                                name="row-radio-buttons-group"
+                              >
+                                <FormControlLabel value="can reshare" control={<Radio size="small" />} label={<Typography noWrap>Can Reshare&nbsp;&nbsp;</Typography>} />
+                                <FormControlLabel value="may reshare" control={<Radio size="small" />} label={<Typography noWrap>May Reshare &nbsp;&nbsp;</Typography>} />
+                                <FormControlLabel value="cannot reshare" control={<Radio size="small" />} label={<Typography noWrap>Cannot Reshare</Typography>} />
+                              </RadioGroup>
+                            </FormControl>
+                          </div>
+
+                          <div className="mt-2">
+                            <FormControl style={{ border: "2px solid rgb(107, 120, 231)", paddingRight: "6px", paddingLeft: "5px", borderRadius: "0.25rem", backgroundColor: "white" }}>
+                              <RadioGroup
+                                row
+                                aria-labelledby="demo-row-radio-buttons-group-label"
+                                name="row-radio-buttons-group"
+                              >
+                                <FormControlLabel value="can download" control={<Radio size="small" />} label={<Typography noWrap>Can Download</Typography>} />
+                                <FormControlLabel value="may download" control={<Radio size="small" />} label={<Typography noWrap>May Download</Typography>} />
+                                <FormControlLabel value="cannot download" control={<Radio size="small" />} label={<Typography noWrap>Cannot Download</Typography>} />
+                              </RadioGroup>
+                            </FormControl>
+                          </div>
+
+                          <div className="mt-2">
+                            <FormControl style={{ border: "2px solid rgb(107, 120, 231)", paddingLeft: "5px", borderRadius: "0.25rem", backgroundColor: "white" }}>
+                              <RadioGroup
+                                row
+                                aria-labelledby="demo-row-radio-buttons-group-label"
+                                name="row-radio-buttons-group"
+                              >
+                                <FormControlLabel value="can aggregate" control={<Radio size="small" />} label={<Typography noWrap>Can Aggregate</Typography>} />
+                                <FormControlLabel value="may aggregate" control={<Radio size="small" />} label={<Typography noWrap>May Aggregate</Typography>} />
+                                <FormControlLabel value="cannot aggregate" control={<Radio size="small" />} label={<Typography noWrap>Cannot Aggregate</Typography>} />
+                              </RadioGroup>
+                            </FormControl>
+                          </div>
+                        </div>
+                      </div>
+                      {/* <div className="mb-3 row">
                         <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>
                         <div className="col-md-9 col-sm-12">
                           <div className="row">
@@ -1304,7 +1354,7 @@ export const ConnectionTerms = () => {
                             </span>
                           </span>}
                         </div>
-                      </div>
+                      </div> */}
                       <Grid container marginBottom={2}>
                         <Grid item md={4} xs={12}>
                           <button
@@ -1398,7 +1448,7 @@ export const ConnectionTerms = () => {
                       >
                         {obligation.labelName}
                       </button>
-                      <Tooltip id={`tooltip-${index}`} style={{ maxWidth: '200px', whiteSpace: 'normal' }}/>
+                      <Tooltip id={`tooltip-${index}`} style={{ maxWidth: '200px', whiteSpace: 'normal' }} />
                     </Grid>
                     <Grid item md={4} sm={4} xs={5}>
                       <button

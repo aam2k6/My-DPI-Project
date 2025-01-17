@@ -1927,7 +1927,7 @@ export const ViewHostTermsByType = () => {
                         </span>
                       </div>
 
-                      <h3>Your Obligations</h3>
+                      <h3>Host Obligations</h3>
 
                       <table>
                         <thead>

@@ -203,6 +203,20 @@ export const ConnectionTermsHost = () => {
       [name]: value,
     });
   };
+  const handleRadioChange = (permissionType, value) => {
+    setFormData((prevData) => {
+      // Remove existing entry for the same permission type
+      const updatedPermissions = prevData.hostPermissions.filter(
+        (permission) => !permission.endsWith(permissionType)
+      );
+
+      // Add the new value for the permission type
+      return {
+        ...prevData,
+        hostPermissions: [...updatedPermissions, value],
+      };
+    });
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -376,6 +390,7 @@ export const ConnectionTermsHost = () => {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
       },
+      hostPermissions: formData.hostPermissions,
       forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
       from: "HOST",
       to: "GUEST"
@@ -472,13 +487,7 @@ export const ConnectionTermsHost = () => {
 
   return (
     <div id="connectionTermHost">
-      {isModalOpen && (
-        <Modal
-          message={modalMessage.message}
-          onClose={handleCloseModal}
-          type={modalMessage.type}
-        />
-      )}
+      
       <Navbar content={content}></Navbar>
       <div>
         {/* <Panel /> */}
@@ -693,6 +702,8 @@ export const ConnectionTermsHost = () => {
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
                                 name="row-radio-buttons-group"
+                                value={formData.hostPermissions.find((perm) => perm.endsWith("reshare")) || ""} // Find the value for reshare
+                                onChange={(e) => handleRadioChange("reshare", e.target.value)}
                               >
                                 <FormControlLabel value="can reshare" control={<Radio size="small" />} label={<Typography noWrap>Can Reshare&nbsp;&nbsp;</Typography>} />
                                 <FormControlLabel value="may reshare" control={<Radio size="small" />} label={<Typography noWrap>May Reshare &nbsp;&nbsp;</Typography>} />
@@ -707,6 +718,8 @@ export const ConnectionTermsHost = () => {
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
                                 name="row-radio-buttons-group"
+                                value={formData.hostPermissions.find((perm) => perm.endsWith("download")) || ""} // Find the value for download
+                                onChange={(e) => handleRadioChange("download", e.target.value)}
                               >
                                 <FormControlLabel value="can download" control={<Radio size="small" />} label={<Typography noWrap>Can Download</Typography>} />
                                 <FormControlLabel value="may download" control={<Radio size="small" />} label={<Typography noWrap>May Download</Typography>} />
@@ -721,6 +734,8 @@ export const ConnectionTermsHost = () => {
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
                                 name="row-radio-buttons-group"
+                                value={formData.hostPermissions.find((perm) => perm.endsWith("aggregate")) || ""} // Find the value for aggregate
+                                onChange={(e) => handleRadioChange("aggregate", e.target.value)}
                               >
                                 <FormControlLabel value="can aggregate" control={<Radio size="small" />} label={<Typography noWrap>Can Aggregate</Typography>} />
                                 <FormControlLabel value="may aggregate" control={<Radio size="small" />} label={<Typography noWrap>May Aggregate</Typography>} />
@@ -910,6 +925,13 @@ export const ConnectionTermsHost = () => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModal}
+          type={modalMessage.type}
+        />
+      )}
     </div>
   );
 };

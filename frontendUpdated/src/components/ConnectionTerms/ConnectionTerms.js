@@ -570,6 +570,7 @@ export const ConnectionTerms = () => {
     canShareMore: false,
     canDownload: false,
     forbidden: false,
+    resharePermission: ""
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -705,6 +706,7 @@ export const ConnectionTerms = () => {
               ...prevFormData,
               canShareMore: permissions.canShareMoreData,
               canDownload: permissions.canDownloadData,
+              resharePermission: formData.resharePermission,
             }));
 
             // Handle forbidden terms (you can also update another state for forbidden terms)
@@ -728,6 +730,23 @@ export const ConnectionTerms = () => {
       [name]: value,
     });
   };
+
+  const handleRadioChange = (permissionType, value) => {
+    setFormData((prevData) => {
+      // Remove existing entry for the same permission type
+      const updatedPermissions = prevData.hostPermissions.filter(
+        (permission) => !permission.endsWith(permissionType)
+      );
+
+      // Add the new value for the permission type
+      return {
+        ...prevData,
+        hostPermissions: [...updatedPermissions, value],
+      };
+    });
+  };
+
+
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -898,6 +917,7 @@ export const ConnectionTerms = () => {
       permissions: {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
+        resharePermission: formData.resharePermission,
       },
     };
     setConnectionTermsData(connectionTermsData); // Update context
@@ -927,6 +947,7 @@ export const ConnectionTerms = () => {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
       },
+      hostPermissions: formData.hostPermissions,
       forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
       from: "GUEST",
       to: "HOST"
@@ -1254,10 +1275,12 @@ export const ConnectionTerms = () => {
                               <RadioGroup
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
-                                name="row-radio-buttons-group"
+                                name="reshare-radio-buttons-group"
+                                value={formData.hostPermissions.find((perm) => perm.endsWith("reshare")) || ""} // Find the value for reshare
+                                onChange={(e) => handleRadioChange("reshare", e.target.value)}
                               >
-                                <FormControlLabel value="can reshare" control={<Radio size="small" />} label={<Typography noWrap>Can Reshare&nbsp;&nbsp;</Typography>} />
-                                <FormControlLabel value="may reshare" control={<Radio size="small" />} label={<Typography noWrap>May Reshare &nbsp;&nbsp;</Typography>} />
+                                <FormControlLabel value="can reshare" control={<Radio size="small" />} label={<Typography noWrap>Can Reshare</Typography>} />
+                                <FormControlLabel value="may reshare" control={<Radio size="small" />} label={<Typography noWrap>May Reshare</Typography>} />
                                 <FormControlLabel value="cannot reshare" control={<Radio size="small" />} label={<Typography noWrap>Cannot Reshare</Typography>} />
                               </RadioGroup>
                             </FormControl>
@@ -1268,7 +1291,9 @@ export const ConnectionTerms = () => {
                               <RadioGroup
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
-                                name="row-radio-buttons-group"
+                                name="download-radio-buttons-group"
+                                value={formData.hostPermissions.find((perm) => perm.endsWith("download")) || ""} // Find the value for download
+                                onChange={(e) => handleRadioChange("download", e.target.value)}
                               >
                                 <FormControlLabel value="can download" control={<Radio size="small" />} label={<Typography noWrap>Can Download</Typography>} />
                                 <FormControlLabel value="may download" control={<Radio size="small" />} label={<Typography noWrap>May Download</Typography>} />
@@ -1282,7 +1307,9 @@ export const ConnectionTerms = () => {
                               <RadioGroup
                                 row
                                 aria-labelledby="demo-row-radio-buttons-group-label"
-                                name="row-radio-buttons-group"
+                                name="aggregate-radio-buttons-group"
+                                value={formData.hostPermissions.find((perm) => perm.endsWith("aggregate")) || ""} // Find the value for aggregate
+                                onChange={(e) => handleRadioChange("aggregate", e.target.value)}
                               >
                                 <FormControlLabel value="can aggregate" control={<Radio size="small" />} label={<Typography noWrap>Can Aggregate</Typography>} />
                                 <FormControlLabel value="may aggregate" control={<Radio size="small" />} label={<Typography noWrap>May Aggregate</Typography>} />

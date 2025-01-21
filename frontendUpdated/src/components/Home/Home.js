@@ -341,7 +341,10 @@ export const Home = () => {
 
         const data = await response.json();
         if (data.success) {
-          setOutgoingConnections(data.outgoing_connections || []);
+          const filteredOutgoing = data.outgoing_connections.filter(
+            (connection) => connection.closed === false
+          );
+          setOutgoingConnections(filteredOutgoing || []);
         } else {
           setError(data.message || data.error);
         }
@@ -364,14 +367,19 @@ export const Home = () => {
 
     navigate("/view-terms-by-type", {
       state: {
+        connection: connection,
         connection_id: connection.connection_id,
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
-        hostLockerName: connection.host_locker,
-        guestLockerName: connection.guest_locker,
-        hostUserUsername: connection.host_user,
-        guestUserUsername: curruser.username,
+        hostLockerName: connection.host_locker?.name,
+        guestLockerName: connection.guest_locker?.name,
+        hostUserUsername: connection.host_user?.username,
+        guestUserUsername: connection.guest_user?.username,
         locker: locker,
+        guest_locker_id: connection.guest_locker?.locker_id,
+        host_locker_id: connection.host_locker?.locker_id,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker
       },
     });
   };
@@ -395,17 +403,25 @@ export const Home = () => {
       connectionDescription: connection.connection_description,
     });
 
-    navigate("/show-connection-terms", {
+    navigate("/display-terms", {
       state: {
         connection_id: connection.connection_id,
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
-        hostLockerName: connection.host_locker,
-        guestLockerName: connection.guest_locker,
-        hostUserUsername: connection.host_user,
+        hostLockerName: connection.host_locker.name,
+        guestLockerName: connection.guest_locker.name,
+        hostUserUsername: connection.host_user.username,
         guestUserUsername: curruser.username,
         locker: locker,
-        connectionTypeName
+        connectionTypeName,
+        guest_locker_id: connection.guest_locker?.id,
+        host_locker_id: connection.host_locker?.id,
+        lockerComplete: locker,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker,
+        createdtime: connection.created_time,
+        validitytime: connection.validity_time,
+        homeDisplay: true,
       },
     });
   };
@@ -437,16 +453,24 @@ export const Home = () => {
 
     navigate("/show-connection-terms", {
       state: {
+        connection: connection,
         connection_id: connection.connection_id,
         connectionName: connection.connection_name,
         connectionDescription: connection.connection_description,
-        hostLockerName: connection.host_locker,
-        guestLockerName: connection.guest_locker,
-        hostUserUsername: connection.host_user,
+        hostLockerName: connection.host_locker.name,
+        guestLockerName: connection.guest_locker.name,
+        hostUserUsername: connection.host_user.username,
         guestUserUsername: curruser.username,
-        locker: locker,
+        locker: locker.name,
         connectionTypeName,
         showConsent: true,
+        guest_locker_id: connection.guest_locker?.id,
+        host_locker_id: connection.host_locker?.id,
+        lockerComplete: locker,
+        hostLocker: connection.host_locker,
+        guestLocker: connection.guest_locker,
+        homeConsent: true,
+
       },
     });
   };
@@ -574,10 +598,10 @@ export const Home = () => {
                               </button>
                             )}
                           </td>
-                          <td>{connection.host_user}</td>
-                          <td>{connection.host_locker}</td>
-                          <td>{connection.guest_locker}</td>
-                          <td>{new Date(connection.created_on).toLocaleString()}</td>
+                          <td>{connection.host_user.username}</td>
+                          <td>{connection.host_locker.name}</td>
+                          <td>{connection.guest_locker.name}</td>
+                          <td>{new Date(connection.created_time).toLocaleString()}</td>
                           <td>{new Date(connection.validity_time).toLocaleString()}</td>
                           <td>
                             <div id="conntent" className="d-flex justify-content-center">

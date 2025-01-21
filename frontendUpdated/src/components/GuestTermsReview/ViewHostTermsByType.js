@@ -1992,7 +1992,7 @@ export const ViewHostTermsByType = () => {
                                           )}
                                         </div>
                                       ) : (
-                                        "None"
+                                        ""
                                       )}
                                     </p>
                                     <p>Type of Share: {selectedRowData.typeOfSharing}</p>

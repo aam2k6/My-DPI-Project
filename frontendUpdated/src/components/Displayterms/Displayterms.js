@@ -191,6 +191,7 @@ export const Displayterms = () => {
     viewHostDisplay,
     ViewTermsDisplay,
     hostTermsReviewDisplay,
+    homeDisplay,
   } = location.state || {};
   console.log("Location State:", locker.name);
   console.log("Location State:", hostLockerName);
@@ -589,6 +590,12 @@ export const Displayterms = () => {
           <span className="breadcrumb-separator">▶</span>
           <span onClick={() => handleViewHostTermsClick()} className="breadcrumb-item">HostTermsReview</span>
           <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">DisplayTerms</span>
+        </>
+      )}
+
+      {homeDisplay && (
+        <>
           <span className="breadcrumb-item current">DisplayTerms</span>
         </>
       )}

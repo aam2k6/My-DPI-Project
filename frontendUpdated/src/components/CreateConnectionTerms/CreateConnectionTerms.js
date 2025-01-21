@@ -763,7 +763,8 @@ export const CreateConnectionTerms = () => {
     agrees,
     viewHost,
     viewGuest,
-    viewConsentGuest
+    viewConsentGuest,
+    homeConsent
 
   } = location.state || {};
   console.log("data",
@@ -1779,6 +1780,11 @@ export const CreateConnectionTerms = () => {
             View Locker
           </span>
           <span className="breadcrumb-separator">▶</span>
+          <span className="breadcrumb-item current">ShowConnectionTerms</span>
+        </>
+      )}
+      {homeConsent && (
+        <>
           <span className="breadcrumb-item current">ShowConnectionTerms</span>
         </>
       )}

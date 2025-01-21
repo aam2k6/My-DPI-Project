@@ -44,6 +44,9 @@ export const HostTermsReview = () => {
   const [statuses2, setStatuses2] = useState({});
   const [activeTab, setActiveTab] = useState("host");
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [showOpenPopup, setShowOpenPopup] = useState(false);
+  const [pdfData, setPdfData] = useState(null)
+  const [selectedRowData, setSelectedRowData] = useState(null);
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -406,11 +409,52 @@ export const HostTermsReview = () => {
       // setLoading(false);
     }
   };
+
   const handleClose = () => {
     setIsModalOpen(false);
     setPdfUrl(null);
   };
-
+const handleClicks = async (xnode_id_with_pages) => {
+      const xnode_id = xnode_id_with_pages?.split(',')[0];
+      const pages = xnode_id_with_pages?.split(',')[1];
+      const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
+      const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
+      console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+          /host/,
+          frontend_host
+        ), {
+          method: 'GET',
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to access the resource');
+        }
+  
+        const data = await response.json();
+        console.log("datass", data);
+        const { xnode } = data;
+  
+        if (xnode) {
+          setPdfData(xnode)
+        } else {
+          setError('Unable to retrieve the file link.');
+          console.log(error);
+        }
+      } catch (err) {
+        // setError(`Error: ${err.message}`);
+        console.log(err);
+      } finally {
+        // setLoading(false);
+      }
+    };
   const handleRevoke = async (connection_id) => {
     const formData = new FormData();
     formData.append("connection_id", connection_id);
@@ -1246,7 +1290,17 @@ export const HostTermsReview = () => {
       },
     });
   };
-
+  const openPopup = (rowData) => {
+    const  labelName = rowData.labelName
+    const extractedValue = termsValue[labelName].split(";")[0].split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    setSelectedRowData(rowData);
+    setShowOpenPopup(true);
+  };
+  const closeOpenPopup = () => {
+    setShowOpenPopup(false);
+    setSelectedRowData(null);
+  };
   const content = (
     <>
       <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
@@ -1656,6 +1710,7 @@ export const HostTermsReview = () => {
                             <th>Purpose</th>
                             <th>Type of Share</th>
                             <th>Host Privileges</th>
+                            <th>Consent Artefact</th>
                             <th>Status</th>
                           </tr>
                         </thead>
@@ -1734,7 +1789,54 @@ export const HostTermsReview = () => {
                                   ? obligation.hostPermissions.join(", ")
                                   : "None"}
                               </td>
-
+                              <td><button onClick={() => openPopup(obligation)}>Open</button></td>
+                              {showOpenPopup && selectedRowData && (
+                                <div className="terms-popup">
+                                  <div className="terms-popup-content">
+                                    <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span>
+                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
+                                      Consent Artefact
+                                    </h3>
+                                    <p>
+                                      {termsValue[selectedRowData.labelName]?.split(";")[0] ? (
+                                        <div>
+                                          File:{" "}
+                                          {termsValue[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
+                                          {pdfData ? (
+                                            <div>
+                                              <li>
+                                                Created on:{" "}
+                                                {new Date(pdfData.created_at).toLocaleString()}
+                                              </li>
+                                              <li>
+                                                Valid until:{" "}
+                                                {new Date(pdfData.validity_until).toLocaleString()}
+                                              </li>
+                                            </div>
+                                          ) : (
+                                            <p>Loading...</p>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p>
+                                    <p>Type of Share: {selectedRowData.typeOfSharing}</p>
+                                    <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
                               <td>
                                 <select
                                   value={statuses[obligation.labelName] || ""}

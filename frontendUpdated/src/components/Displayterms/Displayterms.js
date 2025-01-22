@@ -560,7 +560,6 @@ export const Displayterms = () => {
       )}
       {viewHostDisplay && (
         <>
-          <span className="breadcrumb-separator">▶</span>
           <span onClick={() => handleViewLockerBreadCrumb()} className="breadcrumb-item">View Locker</span>
           <span className="breadcrumb-separator">▶</span>
           <span onClick={() => handleConnectionClick()} className="breadcrumb-item">ShowGuestUsers</span>

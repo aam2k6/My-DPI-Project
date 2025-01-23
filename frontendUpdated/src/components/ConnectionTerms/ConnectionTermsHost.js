@@ -487,7 +487,7 @@ export const ConnectionTermsHost = () => {
 
   return (
     <div id="connectionTermHost">
-      
+
       <Navbar content={content}></Navbar>
       <div>
         {/* <Panel /> */}
@@ -525,53 +525,7 @@ export const ConnectionTermsHost = () => {
                     </Grid>
 
                   </Grid>
-                  {isTemplateModalOpen && (
-                    <Modal
-                      message="Select Global Templates"
-                      onClose={() => setIsTemplateModalOpen(false)}
-                      type="info"
-                    >
-                      <div className="template-selection-container">
-                        {globalTemplates.length > 0 ? (
-                          <>
-                            <label>Select Templates:</label>
-                            {globalTemplates.map((template) => (
-                              <div
-                                key={
-                                  template.global_connection_type_template_id
-                                }
-                              >
-                                <label>
-                                  <input
-                                    className="templete"
-                                    type="checkbox"
-                                    value={
-                                      template.global_connection_type_template_id
-                                    }
-                                    checked={selectedTemplateIds.includes(
-                                      template.global_connection_type_template_id
-                                    )}
-                                    onChange={() =>
-                                      handleTemplateSelection(template)
-                                    }
-                                  />
-                                  {template.global_connection_type_name} (ID:{" "}
-                                  {template.global_connection_type_template_id})
-                                  {/* <br />
-              {template.global_connection_type_description} */}
-                                </label>
-                              </div>
-                            ))}
-                            <button onClick={handleFetchObligations}>
-                              Add Selected Templates
-                            </button>
-                          </>
-                        ) : (
-                          <div>Loading templates...</div>
-                        )}
-                      </div>
-                    </Modal>
-                  )}
+
                 </div>
 
                 <div className="connectionTerms-lockerForm">
@@ -925,6 +879,54 @@ export const ConnectionTermsHost = () => {
           </div>
         </div>
       </div>
+
+      {isTemplateModalOpen && (
+        <Modal
+          message="Select Global Templates"
+          onClose={() => setIsTemplateModalOpen(false)}
+          type="info"
+        >
+          <div className="template-selection-container">
+            {globalTemplates.length > 0 ? (
+              <>
+                <label>Select Templates:</label>
+                {globalTemplates.map((template) => (
+                  <div
+                    key={
+                      template.global_connection_type_template_id
+                    }
+                  >
+                    <label>
+                      <input
+                        className="templete"
+                        type="checkbox"
+                        value={
+                          template.global_connection_type_template_id
+                        }
+                        checked={selectedTemplateIds.includes(
+                          template.global_connection_type_template_id
+                        )}
+                        onChange={() =>
+                          handleTemplateSelection(template)
+                        }
+                      />
+                      {template.global_connection_type_name} (ID:{" "}
+                      {template.global_connection_type_template_id})
+                      {/* <br />
+              {template.global_connection_type_description} */}
+                    </label>
+                  </div>
+                ))}
+                <button onClick={handleFetchObligations}>
+                  Add Selected Templates
+                </button>
+              </>
+            ) : (
+              <div>Loading templates...</div>
+            )}
+          </div>
+        </Modal>
+      )}
       {isModalOpen && (
         <Modal
           message={modalMessage.message}
@@ -932,6 +934,7 @@ export const ConnectionTermsHost = () => {
           type={modalMessage.type}
         />
       )}
+
     </div>
   );
 };

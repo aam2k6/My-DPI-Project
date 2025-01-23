@@ -1101,51 +1101,7 @@ export const ConnectionTerms = () => {
                     </Grid>
 
                   </Grid>
-                  {isTemplateModalOpen && (
-                    <Modal
-                      message="Select Global Templates"
-                      onClose={() => setIsTemplateModalOpen(false)}
-                      type="info"
-                    >
-                      <div className="template-selection-container">
-                        {globalTemplates.length > 0 ? (
-                          <>
-                            <label>Select Templates:</label>
-                            {globalTemplates.map((template) => (
-                              <div
-                                key={
-                                  template.global_connection_type_template_id
-                                }
-                              >
-                                <label>
-                                  <input className="templete"
-                                    type="checkbox"
-                                    value={
-                                      template.global_connection_type_template_id
-                                    }
-                                    checked={selectedTemplateIds.includes(
-                                      template.global_connection_type_template_id
-                                    )}
-                                    onChange={() => handleTemplateSelection(template)}
 
-                                  />
-                                  {template.global_connection_type_name} (ID:{" "}
-                                  {template.global_connection_type_template_id})
-                                  {/* <br />
-                {template.global_connection_type_description} */}
-                                </label>
-                              </div>
-                            ))}
-                            <button onClick={handleFetchObligations}>
-                              Add Selected Templates
-                            </button>
-                          </>
-                        ) : (
-                          <div>Loading templates...</div>
-                        )}
-                      </div>
-                    </Modal>
-                  )}
                 </div>
 
                 <div className="connectionTerms-lockerForm">
@@ -1279,8 +1235,8 @@ export const ConnectionTerms = () => {
                                 value={formData.hostPermissions.find((perm) => perm.endsWith("reshare")) || ""} // Find the value for reshare
                                 onChange={(e) => handleRadioChange("reshare", e.target.value)}
                               >
-                                <FormControlLabel value="can reshare" control={<Radio size="small" />} label={<Typography noWrap>Can Reshare</Typography>} />
-                                <FormControlLabel value="may reshare" control={<Radio size="small" />} label={<Typography noWrap>May Reshare</Typography>} />
+                                <FormControlLabel value="can reshare" control={<Radio size="small" />} label={<Typography noWrap>Can Reshare&nbsp;&nbsp;</Typography>} />
+                                <FormControlLabel value="may reshare" control={<Radio size="small" />} label={<Typography noWrap>May Reshare &nbsp;&nbsp;</Typography>} />
                                 <FormControlLabel value="cannot reshare" control={<Radio size="small" />} label={<Typography noWrap>Cannot Reshare</Typography>} />
                               </RadioGroup>
                             </FormControl>
@@ -1501,6 +1457,51 @@ export const ConnectionTerms = () => {
           </div>
         </div>
       </div>
+      {isTemplateModalOpen && (
+        <Modal
+          message="Select Global Templates"
+          onClose={() => setIsTemplateModalOpen(false)}
+          type="info"
+        >
+          <div className="template-selection-container">
+            {globalTemplates.length > 0 ? (
+              <>
+                <label>Select Templates:</label>
+                {globalTemplates.map((template) => (
+                  <div
+                    key={
+                      template.global_connection_type_template_id
+                    }
+                  >
+                    <label>
+                      <input className="templete"
+                        type="checkbox"
+                        value={
+                          template.global_connection_type_template_id
+                        }
+                        checked={selectedTemplateIds.includes(
+                          template.global_connection_type_template_id
+                        )}
+                        onChange={() => handleTemplateSelection(template)}
+
+                      />
+                      {template.global_connection_type_name} (ID:{" "}
+                      {template.global_connection_type_template_id})
+                      {/* <br />
+                {template.global_connection_type_description} */}
+                    </label>
+                  </div>
+                ))}
+                <button onClick={handleFetchObligations}>
+                  Add Selected Templates
+                </button>
+              </>
+            ) : (
+              <div>Loading templates...</div>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

@@ -11,7 +11,7 @@ import { MdOutlineQrCodeScanner } from "react-icons/md";
 import { QrReader } from 'react-qr-reader';
 import { Grid } from '@mui/material'
 
-export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) {
+export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs }) {
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -66,7 +66,9 @@ export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) 
       }
     }
   };
-
+  const handlePageClick = () => {
+    navigate("/directory");
+  }
   const handleLogout = () => {
     Cookies.remove("authToken");
     localStorage.removeItem("curruser");
@@ -488,17 +490,17 @@ export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) 
                         </a>
                       </li>
                     )}
-                    <li className="nav-item dropdown" ref={directoryRef}>
+                    {/* <li className="nav-item dropdown" ref={directoryRef}>
                       <a
                         className="nav-link dropdown-toggle"
                         role="button"
-                        onClick={toggleDirectoryDropdown} // Use toggle function here
+                        onClick={toggleDirectoryDropdown}
                         aria-expanded={isDirectoryOpen}
                       >
                         Directory
                       </a>
-                      {isDirectoryOpen && ( // Conditionally render the dropdown items
-                        <ul className="dropdown-menu show"> {/* Add 'show' class for Bootstrap visibility */}
+                      {isDirectoryOpen && ( 
+                        <ul className="dropdown-menu show">
                           <div className="">
                             <li>
                               <a className="dropdown-item" onClick={handleDPIDirectory}>
@@ -513,6 +515,12 @@ export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) 
                           </div>
                         </ul>
                       )}
+                    </li> */}
+
+                    <li className="nav-item" style={{ cursor: "pointer" }}>
+                      <a className="nav-link" onClick={handlePageClick}>
+                        Directory
+                      </a>
                     </li>
 
                     <li className="nav-item" style={{ cursor: "pointer" }}>
@@ -520,6 +528,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) 
                         Home
                       </a>
                     </li>
+
                     <li className="nav-item dropdown" ref={notificationsRef}>
                       <a className="nav-link dropdown-toggle" role="button" onClick={toggleNotifications}>
                         <div className="notification-icon">
@@ -647,18 +656,18 @@ export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) 
                                   )}
                                 </div>
                               )} */}
-                               <div >
-                                  <button onClick={handleLockerSettings}>Locker Settings</button>
-                                  {isLockerSettingOpen && (
-                                    <ul className="dropdown-menu menu2 show">
-                                      <li><a onClick={handleLockers} className="dropdown-item">Lockers</a></li>
-                                      {isSystemAdmin && (
-                                        <li><a onClick={handleFreezeLocker} className="dropdown-item">Freeze Lockers</a></li>
+                              <div >
+                                <button onClick={handleLockerSettings}>Locker Settings</button>
+                                {isLockerSettingOpen && (
+                                  <ul className="dropdown-menu menu2 show">
+                                    <li><a onClick={handleLockers} className="dropdown-item">Lockers</a></li>
+                                    {isSystemAdmin && (
+                                      <li><a onClick={handleFreezeLocker} className="dropdown-item">Freeze Lockers</a></li>
 
-                                      )}
-                                    </ul>
-                                  )}
-                                </div>
+                                    )}
+                                  </ul>
+                                )}
+                              </div>
                             </li>
 
                             <li className="dropdown-item dropdown" ref={connectionSettingDropdownRef}>
@@ -673,18 +682,18 @@ export default function Navbar({ content, lockerAdmin, lockerObj ,breadcrumbs}) 
                                 </div>
                               )} */}
                               <div>
-                                  <button onClick={handleConnectionSettings}>Connection Settings</button>
-                                  {isConnectionSettingOpen && (
-                                    <ul className="dropdown-menu menu3 show">
-                                      <li><a onClick={handleConnectionTypes} className="dropdown-item">Connection Types</a></li>
-                                      {/* <li><a className="dropdown-item">Create new Connection Type</a></li> */}
-                                      <li><a onClick={handleGlobalConnectionDirectory} className="dropdown-item">Global Connection Directory</a></li>
-                                      {isSystemAdmin && (
+                                <button onClick={handleConnectionSettings}>Connection Settings</button>
+                                {isConnectionSettingOpen && (
+                                  <ul className="dropdown-menu menu3 show">
+                                    <li><a onClick={handleConnectionTypes} className="dropdown-item">Connection Types</a></li>
+                                    {/* <li><a className="dropdown-item">Create new Connection Type</a></li> */}
+                                    <li><a onClick={handleGlobalConnectionDirectory} className="dropdown-item">Global Connection Directory</a></li>
+                                    {isSystemAdmin && (
                                       <li><a onClick={handleFreezeConnection} className="dropdown-item">Freeze Connection</a></li>
-                                      )}
-                                    </ul>
-                                  )}
-                                </div>
+                                    )}
+                                  </ul>
+                                )}
+                              </div>
                             </li>
 
 

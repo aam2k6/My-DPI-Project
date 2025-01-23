@@ -39,9 +39,8 @@ import { AllLokers } from "./components/ViewLocker/Lockers";
 import { FreezeLocker } from "./components/Freeze/FreezeLocker";
 import { ConnectionTypes } from "./components/ConnectionTypes/ConnectionTypes";
 import { FreezeConnection } from "./components/Freeze/FreezeConnection";
-
-
 import { ConnectionProvider } from "./ConnectionContext";
+import DirectoryPage from "./components/Directory/directory";
 
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 
@@ -297,6 +296,15 @@ function App() {
             element = {
               <ProtectedRoute>
                 <Displayterms/>
+                <Scanner />
+              </ProtectedRoute>
+            }
+            />
+            <Route
+            path = "/directory"
+            element = {
+              <ProtectedRoute>
+                <DirectoryPage/>
                 <Scanner />
               </ProtectedRoute>
             }

@@ -74,6 +74,10 @@ export const DPIdirectory = () => {
       Home
     </a>
     <span className="breadcrumb-separator">▶</span>
+    <a href="/directory" className="breadcrumb-item">
+      Directory
+    </a>
+    <span className="breadcrumb-separator">▶</span>
     <span className="breadcrumb-item current">DPI Directory</span>
   </div>
       

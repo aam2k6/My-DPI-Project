@@ -128,7 +128,7 @@ import './SettingsPage.css';
 import Navbar from '../Navbar/Navbar';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Using FontAwesome icons
 import { frontend_host } from '../../config';
-import { Button, Grid } from '@mui/material'
+import { Button, Grid, Box } from '@mui/material'
 
 export default function SettingsPage() {
     const { curruser, setUser } = useContext(usercontext);
@@ -200,16 +200,17 @@ export default function SettingsPage() {
             Home
           </a>
           <span className="breadcrumb-separator">▶</span>
-          <span className="breadcrumb-item current">Settings</span>
+          <span className="breadcrumb-item current">Profile Settings</span>
         </div>
       )
 
     return (
         <>
             <Navbar breadcrumbs={breadcrumbs} />
-            <div className="settings-page" style={{marginTop:"150px", border:"2px solid rgb(107, 120, 231)"}}>
+            <Box className="settings-page" style={{border:"2px solid rgb(107, 120, 231)"}} marginTop={{xs:"50%", md:"15%"}}>
                 <h1>User Profile</h1>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
+                <div style={{alignItems:"center"}}>
                 <div className="profile-info">
                     <label>Username:</label>
                     {isEditing ? (
@@ -234,6 +235,7 @@ export default function SettingsPage() {
                         <p>{curruser.description}</p>
                     )}
                 </div>
+                </div>
                 {isEditing && (
                     <div className="profile-info">
                         <label>Password:</label>
@@ -252,23 +254,23 @@ export default function SettingsPage() {
                         </div>
                     </div>
                 )}
-                <Grid container className="" spacing={2}>
-                    <Grid item md={3} xs={12}>
+                <Grid container spacing={1}>
+                    <Grid item md={3} xs={10}>
                         <Button fullWidth variant="contained" onClick={handleEditToggle}>
                             {isEditing ? 'Cancel' : 'Edit Profile'}
                         </Button>
                     </Grid>
-                    <Grid md={3}></Grid>
-                    <Grid md={3}></Grid>
-                    <Grid item md={3} xs={12}>
+                    <Grid item md={3} xs={12}></Grid>
+                    <Grid item md={3.7}  xs={10}>
                         {isEditing && (
                             <Button fullWidth variant="contained" onClick={handleSave}>
                                 Save Changes
                             </Button>
                         )}
                     </Grid>
+                    <Grid item md={2.3}></Grid>
                 </Grid>
-            </div>
+            </Box>
         </>
     );
 }

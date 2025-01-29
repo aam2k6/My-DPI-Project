@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation, Link } from "react-router-dom"
 import Cookies from "js-cookie"
 import { Grid } from "@mui/material"
 import { FaChevronDown, FaChevronRight } from "react-icons/fa"
@@ -7,10 +7,12 @@ import Navbar from "../Navbar/Navbar"
 import { usercontext } from "../../usercontext"
 import { frontend_host } from "../../config"
 import "./CreateGlobalConnectionType.css"
+import "../DPIdirectory/DPIdirectory.css"
 
 const COMPONENT_ID = "create-global-connection-type"
 
 export default function CreateGlobalConnectionType() {
+  const location = useLocation();
   const [connectionTypes, setConnectionTypes] = useState([])
   const [error, setError] = useState(null)
   const [expandedStates, setExpandedStates] = useState({})
@@ -116,8 +118,8 @@ export default function CreateGlobalConnectionType() {
         Home
       </a>
       <span className="breadcrumb-separator">▶</span>
-      <a href="/directory" className="breadcrumb-item">
-        Directory
+      <a href="/dpi-directory" className="breadcrumb-item">
+        DPI Directory
       </a>
       <span className="breadcrumb-separator">▶</span>
       <span className="breadcrumb-item current">GlobalConnectionTypes</span>
@@ -129,30 +131,64 @@ export default function CreateGlobalConnectionType() {
   return (
     <div id={COMPONENT_ID} className="manage-connection-page">
       <Navbar breadcrumbs={breadcrumbs} />
-      <Grid container className="manage-connection-content" style={{ marginTop: "140px" }}>
-        <Grid item xs={12}>
-          <h2>Global Connections</h2>
-          {error && <p className="error">{error}</p>}
+      <div className="dpi-directories" style={{ marginTop: "140px" }}>
+        <div className="sidebars">
+          <button className="btn-open" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i class="bi bi-chevron-right"></i></button>
 
-          <div className="section">
-            <h4>Templates</h4>
-            {allDomains.map((domain) => renderConnectionList(domain, "template"))}
-          </div>
-
-          <div className="section">
-            <h4>Policies</h4>
-            {allDomains.map((domain) => renderConnectionList(domain, "policy"))}
-          </div>
-
-          {isSystemAdmin && (
-            <div className="add-connection-type-container">
-              <button className="add-connection-type-button" onClick={handleAddNewConnectionType}>
-                Add New Global Connection Type
-              </button>
+          <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+            <div className="offcanvas-header">
+              <button type="button" className="btn-closes" data-bs-dismiss="offcanvas" aria-label="Close"><i class="bi bi-chevron-left"></i></button>
             </div>
-          )}
+            <div className="offcanvas-body">
+              <ul>
+
+                <li
+                  className={location.pathname === "/dpi-directory" ? "selected" : ""}
+                >
+                  <Link to="/dpi-directory">DPI Directory</Link>
+                </li>
+                <li
+                  className={
+                    location.pathname === "/create-global-connection-type"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  <Link className='links' to="/create-global-connection-type">
+                    Create Global Connection Type
+                  </Link>
+                </li>
+
+
+              </ul>
+            </div>
+          </div>
+        </div>
+        <Grid container className="manage-connection-content">
+          <Grid item xs={12}>
+            <h2>Global Connections</h2>
+            {error && <p className="error">{error}</p>}
+
+            <div className="section">
+              <h4>Templates</h4>
+              {allDomains.map((domain) => renderConnectionList(domain, "template"))}
+            </div>
+
+            <div className="section">
+              <h4>Policies</h4>
+              {allDomains.map((domain) => renderConnectionList(domain, "policy"))}
+            </div>
+
+            {isSystemAdmin && (
+              <div className="add-connection-type-container">
+                <button className="add-connection-type-button" onClick={handleAddNewConnectionType}>
+                  Add New Global Connection Type
+                </button>
+              </div>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
+      </div>
     </div>
   )
 }

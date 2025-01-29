@@ -67,7 +67,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
     }
   };
   const handlePageClick = () => {
-    navigate("/directory");
+    navigate("/dpi-directory");
   }
   const handleLogout = () => {
     Cookies.remove("authToken");
@@ -529,7 +529,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                       </a>
                     </li>
 
-                    <li className="nav-item dropdown" ref={notificationsRef}>
+                    {/* <li className="nav-item dropdown" ref={notificationsRef}>
                       <a className="nav-link dropdown-toggle" role="button" onClick={toggleNotifications}>
                         <div className="notification-icon">
                           <FontAwesomeIcon
@@ -546,7 +546,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                       </a>
 
                       {isNotificationsOpen && (
-                        <ul className="dropdownmenu"> {/* Add 'show' to make dropdown visible */}
+                        <ul className="dropdownmenu">
                           <div className="">
                             <div className="notification-dropdown dropdownContent" min-width={{ xs: "", md: "450px" }}>
                               <h4>Notifications</h4>
@@ -575,13 +575,13 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                           </div>
                         </ul>
                       )}
-                    </li>
-                    <li className="nav-item" style={{ cursor: "pointer" }}>
+                    </li> */}
+                    {/* <li className="nav-item" style={{ cursor: "pointer" }}>
                       <div className="nav-link qr-scanner-icons" onClick={handleQRScanner}>
                         <MdOutlineQrCodeScanner size={24} />
                       </div>
-                    </li>
-                    {isQRModalOpen && (
+                    </li> */}
+                    {/* {isQRModalOpen && (
                       <div className="qr-scanner-overlays">
                         <div className="qr-scanner-boxs">
                           <QrReader
@@ -599,7 +599,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                           <button className="qr-scanner-closes" onClick={handleQRModalClose}>Close</button>
                         </div>
                       </div>
-                    )}
+                    )} */}
                     <li className="nav-item dropdown" ref={profileDropdownRef}>
                       <a
                         className="nav-link dropdown-toggle"
@@ -704,7 +704,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                             </li>
 
                             <li className="dropdown-item">
-                              <button onClick={handleSettings}>Settings</button>
+                              <button onClick={handleSettings}>Profile Settings</button>
                             </li>
 
                             <li className="dropdown-item">

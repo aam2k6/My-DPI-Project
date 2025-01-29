@@ -76,3 +76,25 @@ body{
       margin-top: -30px; /* Add margin-top for larger screens */
     }
   }
+
+  .btn-color {
+    background-color: #0d6efd !important;
+    font-weight: bold !important;
+    color: #ffff !important;
+  }
+  
+  .btn-color:hover {
+    background-color: #0b5ed7 !important;
+  }
+
+  .subbutton{
+    background-color: white !important;
+    color: #0d6efd !important;
+    border: 2px solid #0d6efd !important;
+  }
+
+  .subbutton:hover{
+    background-color: #0d6efd !important;
+    color: #ffff !important;
+    
+  }

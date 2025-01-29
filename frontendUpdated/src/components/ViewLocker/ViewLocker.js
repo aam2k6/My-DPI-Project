@@ -1270,7 +1270,7 @@ export const ViewLocker = () => {
                                   <div>
                                     <span
                                       onClick={() => handleClick(xnode.id)}
-                                      style={{ cursor: "pointer", flexGrow: 1 }}
+                                      style={{ cursor: "pointer", flexGrow: 1, fontSize:"16px" }}
                                     >
                                       {xnode.resource_name}
                                     </span>
@@ -1491,7 +1491,7 @@ export const ViewLocker = () => {
                 <div>
                   <span
                     onClick={() => handleClick(resource.xnode?.id)}
-                    style={{ cursor: "pointer", flexGrow: 1 }}
+                    style={{ cursor: "pointer", flexGrow: 1, fontSize:"16px" }}
                   >
                     {resource.resource_name}
                   </span>
@@ -1709,8 +1709,8 @@ export const ViewLocker = () => {
                           </Grid>
 
                           <Grid item md={1} xs={1}>
-                            <i class="bi bi-info-circle " style={{ fontSize: "20px", fontWeight: "bold", cursor: "pointer" }} onClick={() => handleIncomingInfo(connection)}></i>
-
+                            <i class="bi bi-info-circle info-icon " data-tooltip-id="tooltip" data-tooltip-content="Connection Terms" style={{ fontSize: "20px", fontWeight: "bold", cursor: "pointer" }} onClick={() => handleIncomingInfo(connection)}></i>
+ <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
                             {/* <button
                               className="info-button2"
                               onClick={() => handleIncomingInfo(connection)}

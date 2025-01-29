@@ -7,7 +7,7 @@ import "./Admin.css";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal"; // Import the Modal component
 import { frontend_host } from "../../config";
-import { Grid } from '@mui/material'
+import { Grid, Button } from '@mui/material'
 
 export const Admin = () => {
   const location = useLocation();
@@ -456,11 +456,11 @@ export const Admin = () => {
   return (
     <div>
       <Navbar content={content} breadcrumbs={breadcrumbs} />
-      <button onClick={gotopage12createconnection} className="admin-btn" style={{ marginTop: "120px" }}>
+      <Button onClick={gotopage12createconnection} className="btn-color" style={{ marginTop: "140px", marginLeft: "30px", padding: "8px" }}>
         Create New Connection Type
-      </button>
+      </Button>
       <Grid container padding={"30px"}>
-        <Grid item md={9} xs={12} className="page8parent">
+        <Grid item md={5.7} xs={12} className="page8parent">
           <div className="descriptionadmin">Existing Connections Type</div>
           {filteredConnections.length > 0 ? (
             filteredConnections.map((connection) => (
@@ -500,6 +500,7 @@ export const Admin = () => {
                     padding: 0,
                     cursor: "pointer",
                     color: "inherit",
+                    fontSize: "19px"
                   }}
                 >
                   {connection.connection_type_name}
@@ -538,16 +539,16 @@ export const Admin = () => {
                   )}
                 </>
                 <div className="button-group">
-                  <button onClick={() => handleEditConnectionClick(connection)}>
+                  <Button onClick={() => handleEditConnectionClick(connection)}>
                     Edit
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() =>
                       handleDeleteConnection(connection.connection_type_id)
                     }
                   >
                     Delete
-                  </button>
+                  </Button>
                 </div>
 
                 {showEditConnectionModal && (
@@ -636,18 +637,18 @@ export const Admin = () => {
 
                       {/* Modal Buttons */}
                       <div className="modal-buttons">
-                        <button
-                          className="cancel-btn"
+                        <Button
+                          className="btn-color"
                           onClick={() => setShowEditConnectionModal(false)}
                         >
                           Cancel
-                        </button>
-                        <button
-                          className="save-btn"
+                        </Button>
+                        <Button
+                          className="btn-color"
                           onClick={handleSaveConnectionChanges}
                         >
                           Save Changes
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -658,22 +659,29 @@ export const Admin = () => {
             <p>No connections found.</p>
           )}
         </Grid>
-      </Grid>
+        {/* </Grid> */}
 
+        <Grid item md={0.6} xs={12}></Grid>
 
-      <Grid container padding={"30px"}>
-        <Grid item className="page8parent" md={9} xs={12}>
+        {/* <Grid container padding={"30px"}> */}
+        <Grid item className="page8parent" md={5.7} xs={12} marginTop={{md:0, xs:"1rem" }}>
           <div className="descriptionadmin">Locker</div>
           {filteredLockers.length > 0 ? (
             filteredLockers.map((locker) => (
               <div key={locker.locker_id} className="page8connections">
-                <h4>{locker.name}</h4>
+                <h4 style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  color: "inherit",
+                  fontSize: "19px",
+                }}>{locker.name}</h4>
                 <p>{locker.description}</p>
                 <div className="button-group">
-                  <button onClick={() => handleEditClick(locker)}>Edit</button>
-                  <button onClick={() => handleDeleteClick(locker.locker_id)}>
+                  <Button onClick={() => handleEditClick(locker)}>Edit</Button>
+                  <Button onClick={() => handleDeleteClick(locker.locker_id)}>
                     Delete
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))
@@ -703,15 +711,15 @@ export const Admin = () => {
                 />
               </div>
               <div className="modal-buttons">
-                <button
-                  className="cancel-btn"
+                <Button
+                  className="btn-color"
                   onClick={() => setShowEditModal(false)}
                 >
                   Cancel
-                </button>
-                <button className="save-btn" onClick={handleSaveClick}>
+                </Button>
+                <Button className="btn-color" onClick={handleSaveClick}>
                   Save Changes
-                </button>
+                </Button>
               </div>
             </div>
           </div>

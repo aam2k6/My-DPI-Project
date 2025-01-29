@@ -2,9 +2,9 @@
   border: 1px solid rgb(107, 120, 231);
   border-radius: 0.5rem;
   height: auto; /* Adjusted to fit content */
-  width: 20rem;
+  width: 25rem;
   padding: 1rem;
-  margin-left: 1rem;
+  /* margin-left: 1rem; */
   margin-top: 1rem;
   overflow: hidden;
   font-weight: 400;
@@ -15,6 +15,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+@media (max-width: 991px) {
+  .page8connections {
+    width: 16.60rem;
+  }
+  .descriptionadmin {
+    font-size: 1.25rem !important;
+  }
 }
 
 .page8connections h4 {
@@ -58,7 +67,7 @@
 }
 
 .descriptionadmin {
-  font-size: 1.45rem;
+  font-size: 1.35rem;
   font-weight: bold;
   text-align: center;
   margin-bottom: 1rem; /* Added space below the description */
@@ -70,7 +79,7 @@
   /* margin: 2rem; */
   width: 100%; /* Adjusted to use full width of the parent container */
   max-width: 80rem; /* Ensures a reasonable max width */
-  max-height: 17rem;
+  max-height: 30rem;
   overflow-x: auto;
   overflow-y: auto;
 }

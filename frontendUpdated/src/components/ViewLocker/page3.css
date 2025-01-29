@@ -398,8 +398,8 @@ overflow-x: auto;
 }
 
 .tab-header.active {
-  background-color: #007bff;
-  color: #fff;
+  border:2px solid #007bff;
+  border-bottom: none;
   font-weight: bold;
 }
 

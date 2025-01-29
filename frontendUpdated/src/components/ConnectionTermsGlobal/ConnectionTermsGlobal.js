@@ -261,8 +261,8 @@ export const ConnectionTermsGlobal = () => {
         Home
       </a>
       <span className="breadcrumb-separator">▶</span>
-      <a href="/directory" className="breadcrumb-item">
-        Directory
+      <a href="/dpi-directory" className="breadcrumb-item">
+       DPI Directory
       </a>
       <span className="breadcrumb-separator">▶</span>
       <span onClick={() => handleGlobalConnection()} className="breadcrumb-item">GlobalConnectionTypes</span>

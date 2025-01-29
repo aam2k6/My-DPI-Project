@@ -512,13 +512,13 @@ export const Home = () => {
             </Grid>
             <Grid item md={4} xs={6}>
               {!showOutgoingConnections && (
-                <Button variant="contained" style={{ fontWeight: "bold" }} onClick={handleNewLockerClick} size="small">
+                <Button className="btn-color" variant="contained" style={{ fontWeight: "bold" }} onClick={handleNewLockerClick} size="small">
                   Create New Locker
                 </Button>
               )}
             </Grid>
             <Grid item md={4} xs={6}>
-              <Button variant="contained" style={{ fontWeight: "bold" }} onClick={handleConsentDashboardClick} size="small" >
+              <Button className="btn-color" variant="contained"  onClick={handleConsentDashboardClick} size="small" >
                 {showOutgoingConnections ? "Lockers" : "Consent Dashboard"} {/* Change button text based on state */}
               </Button>
             </Grid>
@@ -637,9 +637,9 @@ export const Home = () => {
                   <div key={locker.locker_id} className="page1-locker">
                     <h4>{locker.name}</h4>
                     {locker.is_frozen === false ? (
-                      <button className="btn btn-primary" id="openLockerBtn" onClick={() => handleClick(locker)}>
+                      <Button className="subbutton" id="openLockerBtn" onClick={() => handleClick(locker)}>
                         Open
-                      </button>
+                      </Button>
                     ) : (
                       <button className="btn btn-secondary" id="openLockerBtn">Frozen</button>
                     )}
@@ -647,7 +647,7 @@ export const Home = () => {
                   </div>
                 ))
               ) : (
-                <p>No lockers found.</p>
+                <p style={{marginTop:"1.30rem"}}>No lockers found.</p>
               )}
             </div>
           )}

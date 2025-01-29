@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
 import { frontend_host } from '../../config';
-// import './page5.css';
+import './DPIdirectory.css';
 import {
   Card,
   CardContent,
@@ -17,6 +17,7 @@ import {
 
 export const DPIdirectory = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,59 +71,88 @@ export const DPIdirectory = () => {
 
   const breadcrumbs = (
     <div className="breadcrumbs" >
-    <a href="/home" className="breadcrumb-item">
-      Home
-    </a>
-    <span className="breadcrumb-separator">▶</span>
-    <a href="/directory" className="breadcrumb-item">
-      Directory
-    </a>
-    <span className="breadcrumb-separator">▶</span>
-    <span className="breadcrumb-item current">DPI Directory</span>
-  </div>
-      
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">DPI Directory</span>
+    </div>
+
   )
 
   return (
     <div id="dpi-directory">
       <Navbar breadcrumbs={breadcrumbs} />
-      <div className="page5heroContainer" style={{marginTop:"120px"}}>
-        <div className="search">
-          <form onSubmit={handleSearch}>
-          <div className="searchContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <TextField
-            placeholder="Search"
-            variant="outlined"
-            value={searchTerm}
-            size='small'
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{
-              width:"250px",
-              marginRight: '0.5rem',
-              border:"2px solid black",
-              borderRadius:"10px"
-            }}
-            
-          />
+      <div className="page5heroContainer dpi-directories" style={{ marginTop: "120px" }}>
+        <div className="sidebars">
+          <button className="btn-open" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i class="bi bi-chevron-right"></i></button>
 
-            <Button
-              variant="contained"
-              type="submit"
-              size='small'
-              sx={{ minWidth: '80px', padding: '0.5rem 1rem', fontWeight: 'bold' }}
-            >
-              Search
-            </Button>
+          <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+            <div className="offcanvas-header">
+              <button type="button" className="btn-closes" data-bs-dismiss="offcanvas" aria-label="Close"><i class="bi bi-chevron-left"></i></button>
+            </div>
+            <div className="offcanvas-body">
+              <ul>
+
+                <li
+                  className={location.pathname === "/dpi-directory" ? "selected" : ""}
+                >
+                  <Link to="/dpi-directory">DPI Directory</Link>
+                </li>
+                <li
+                  className={
+                    location.pathname === "/create-global-connection-type"
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  <Link className='links' to="/create-global-connection-type">
+                    Create Global Connection Type
+                  </Link>
+                </li>
+
+
+              </ul>
+            </div>
           </div>
+        </div>
+        <div className="search" style={{ marginTop: "45px" }}>
+          <form onSubmit={handleSearch}>
+            <div className="searchContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <TextField
+                placeholder="Search"
+                variant="outlined"
+                value={searchTerm}
+                size='small'
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{
+                  width: "250px",
+                  marginRight: '0.5rem',
+                  border: "2px solid black",
+                  borderRadius: "10px"
+                }}
+
+              />
+
+              <Button
+                variant="contained"
+                type="submit"
+                size='small'
+                className='btn-color'
+                sx={{ minWidth: '80px', padding: '0.5rem 1rem', fontWeight: 'bold' }}
+              >
+                Search
+              </Button>
+            </div>
 
           </form>
         </div>
-        <Grid container spacing={3} className="page5container" padding={{md:10, sm:2, xs:2}}>
+        <Grid container spacing={3} className="page5container" padding={{ md: 10, sm: 2, xs: 2 }}>
           {error && <Typography color="error">{error}</Typography>}
           {filteredUsers.length > 0 ? (
             filteredUsers.map(user => (
               <Grid item xs={12} sm={6} md={4} key={user.user_id}>
-                <Card sx={{ backgroundColor: 'white', border: '2px solid blue', textAlign: 'center', padding: '1rem' }}>
+                <Card sx={{ backgroundColor: 'white', border: '2px solid #007bff', textAlign: 'center', padding: '1rem' }}>
                   <CardContent>
                     <Typography variant="h5" sx={{ fontSize: '1.45rem', marginBottom: '1rem' }}>{user.username}</Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -133,8 +163,7 @@ export const DPIdirectory = () => {
                     <Button
                       size="small"
                       variant="contained"
-                      color="primary"
-                      sx={{ fontWeight: 'bold' }}
+                      className="btn-color subbutton"
                       onClick={() => handleuserclick(user)}
                     >
                       Enter

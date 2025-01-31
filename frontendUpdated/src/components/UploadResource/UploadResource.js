@@ -21,7 +21,11 @@ export const UploadResource = () => {
   const navigate = useNavigate();
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorModalMessage, setErrorModalMessage] = useState('');
-
+  const [permissions, setPermissions] = useState({
+    reshare: false,
+    download: false,
+    aggregate: false,
+  });
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -52,11 +56,13 @@ export const UploadResource = () => {
     data.append('type', visibility);
     data.append('document', document);
     data.append('validity_time', validityTime); // Add validity time
-
+    data.append("reshare", permissions.reshare);
+    data.append("download", permissions.download);
+    data.append("aggregate", permissions.aggregate);
 
     const token = Cookies.get('authToken');
 
-    fetch('host/upload-resource/'.replace(/host/, frontend_host), {
+    fetch('host/upload-resource_v2/'.replace(/host/, frontend_host), {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${token}`
@@ -79,7 +85,13 @@ export const UploadResource = () => {
       });
   };
 
-
+  const handleChange = (event) => {
+    const { name, checked } = event.target;
+    setPermissions((prevPermissions) => ({
+      ...prevPermissions,
+      [name]: checked,
+    }));
+  };
 
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
@@ -121,7 +133,7 @@ export const UploadResource = () => {
           <p>{locker.description}</p>
         </div> */}
         <div className="container">
-          <Box className="row justify-content-center" margin={{md:"0", xs:"1px"}}>
+          <Box className="row justify-content-center" margin={{ md: "0", xs: "1px" }}>
             <div className="col-md-8 col-sm-12 p-4 border border-primary rounded shadow">
               <h2 className="text-center mb-4 page4resourceHeading">Resources</h2>
               <form onSubmit={handleSubmit}>
@@ -171,6 +183,53 @@ export const UploadResource = () => {
                     required
                   />
                 </div>
+                <div className="mt-3">
+                  <label className="form-label fw-bold mb-2">Permissions</label>
+                <div style={{marginLeft:"3px"}}>
+                <div className="mb-2">
+                    <input
+                      className="hidden-checkbox"
+                      type="checkbox"
+                      id="reshare"
+                      name="reshare"
+                      checked={permissions.reshare}
+                      onChange={handleChange}
+                    />
+                    <label className={`custom-checkbox ${permissions.reshare ? "checked" : ""}`} htmlFor="reshare">
+                      Reshare
+                    </label>
+                  </div>
+                  <div className="mb-2">
+                    <input
+                      className="hidden-checkbox"
+                      type="checkbox"
+                      id="download"
+                      name="download"
+                      checked={permissions.download}
+                      onChange={handleChange}
+                    />
+                    <label className={`custom-checkbox ${permissions.download ? "checked" : ""}`} htmlFor="download">
+                      Download
+                    </label>
+                  </div>
+                  <div className="mb-2">
+                    <input
+                      className="hidden-checkbox"
+                      type="checkbox"
+                      id="aggregate"
+                      name="aggregate"
+                      checked={permissions.aggregate}
+                      onChange={handleChange}
+                    />
+                    <label className={`custom-checkbox ${permissions.aggregate ? "checked" : ""}`} htmlFor="aggregate">
+                      Aggregate
+                    </label>
+                  </div>
+                </div>
+                </div>
+
+
+
                 <div className="text-center">
                   <button type="submit" className="btn btn-primary">Submit</button>
                 </div>

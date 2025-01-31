@@ -1018,7 +1018,7 @@ export const ViewTermsByType = () => {
         const params = new URLSearchParams({ locker_id: locker.locker_id });
 
         const response = await fetch(
-          `host/get-all-xnodes-for-locker/?${params}`.replace(
+          `host/get_all_xnodes_for_locker_v2/?${params}`.replace(
             /host/,
             frontend_host
           ),
@@ -1360,7 +1360,7 @@ export const ViewTermsByType = () => {
     }
     const token = Cookies.get("authToken");
     try {
-      const response = await fetch('host/get-total-pages/'.replace(
+      const response = await fetch('host/get_total_pages_v2/'.replace(
         /host/,
         frontend_host
       ), {
@@ -1452,7 +1452,7 @@ export const ViewTermsByType = () => {
     }
     const token = Cookies.get("authToken");
     try {
-      const response = await fetch('host/get-total-pages/'.replace(
+      const response = await fetch('host/get_total_pages_v2/'.replace(
         /host/,
         frontend_host
       ), {
@@ -2067,7 +2067,7 @@ export const ViewTermsByType = () => {
   };
 
   const fetchTotalPages = async (selectedResourceId, token) => {
-    const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId}`;
+    const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${selectedResourceId}`;
     console.log("Fetching data from URL:", url); // Log the URL
 
     try {
@@ -2157,7 +2157,7 @@ export const ViewTermsByType = () => {
   };
 
   const fetchTotalPages2 = async (selectedResourceId2, token) => {
-    const url = `${frontend_host}/get-total-pages/?xnode_id=${selectedResourceId2}`;
+    const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${selectedResourceId2}`;
     console.log("Fetching data from URL:", url); // Log the URL
 
     try {

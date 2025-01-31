@@ -81,3 +81,43 @@
   .page4lockerForm button:hover {
     background-color: #0056b3;
   }
+
+  .hidden-checkbox {
+    display: none; /* Hide default checkbox */
+  }
+  
+  .custom-checkbox {
+    display: flex;
+    align-items: center;
+    /* padding: 3px 4px; */
+    border-radius: 20px;
+    /* background-color: #f0f0f0; */
+    /* width: 20%; */
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .custom-checkbox::before {
+    content: "";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 10%;
+    background-color: rgb(255, 255, 255);
+    border: 2px solid #ccc;
+    margin-right: 10px;
+    transition: background-color 0.3s, border 0.3s;
+  }
+  
+  
+  .checked::before {
+    content: "✔"; /* Display tick mark */
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background-color: #007aff;
+    border: none;
+  }

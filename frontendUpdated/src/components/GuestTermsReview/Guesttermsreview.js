@@ -69,6 +69,8 @@ export const Guesttermsreview = () => {
   //     </div>
   // );
 
+  console.log("resourcesDatass", resourcesData)
+
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -806,7 +808,6 @@ export const Guesttermsreview = () => {
       }, {});
 
 
-
       // Preserve the existing canShareMoreData structure without overriding other terms
       if (termsValue?.canShareMoreData) {
         console.log(termsValue.canShareMoreData, "data extra");
@@ -869,7 +870,7 @@ export const Guesttermsreview = () => {
       console.log("Request Body:", requestBody);
 
       const updateResponse = await fetch(
-        `host/update-connection-terms/`.replace(/host/, frontend_host),
+        `host/update_connection_terms_v2/`.replace(/host/, frontend_host),
         {
           method: "PATCH",
           headers: {
@@ -977,7 +978,7 @@ export const Guesttermsreview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/transfer-resource/`,
+        `${frontend_host}/transfer_resource_v2/`,
         {
           method: "POST",
           headers: {
@@ -1026,7 +1027,7 @@ export const Guesttermsreview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/share-resource/`.replace(/host/, frontend_host),
+        `host/share-resource-v2/`.replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -1079,7 +1080,7 @@ export const Guesttermsreview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/confer-resource/`,
+        `${frontend_host}/confer_resource_v2/`,
         {
           method: "POST",
           headers: {
@@ -1127,7 +1128,7 @@ export const Guesttermsreview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/collateral-resource/`,
+        `${frontend_host}/collateral_resource_v2/`,
         {
           method: "POST",
           headers: {

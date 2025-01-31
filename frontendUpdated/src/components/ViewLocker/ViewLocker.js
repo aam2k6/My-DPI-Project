@@ -81,7 +81,7 @@ export const ViewLocker = () => {
       const params = new URLSearchParams({ locker_id: locker.locker_id });
 
       const response = await fetch(
-        `host/get-all-xnodes-for-locker/?${params}`.replace(
+        `host/get_all_xnodes_for_locker_v2/?${params}`.replace(
           /host/,
           frontend_host
         ),
@@ -1229,7 +1229,7 @@ export const ViewLocker = () => {
                             style={{ paddingBottom: "0px" }}
                           >
                             <div className="resource-details">
-                              <Tooltips
+                              {/* <Tooltips
                                 title={
                                   <>
                                     <div>
@@ -1253,7 +1253,7 @@ export const ViewLocker = () => {
                                     </div>
                                   </>
                                 }
-                              >
+                              > */}
                                 <div
                                   id={
                                     xnode.xnode_Type === "INODE"
@@ -1303,7 +1303,7 @@ export const ViewLocker = () => {
                                     />
                                   </span>
                                 </div>
-                              </Tooltips>
+                              {/* </Tooltips> */}
                               <ReactModal
                                 isOpen={isModalOpen}
                                 onRequestClose={handleClose}

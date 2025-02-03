@@ -931,7 +931,7 @@ export const Guesttermsreview = () => {
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/update-inode/`.replace(/host/, frontend_host),
+        `host/update_inode_v2/`.replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {

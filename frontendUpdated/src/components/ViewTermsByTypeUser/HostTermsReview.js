@@ -368,7 +368,7 @@ export const HostTermsReview = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
         /host/,
         frontend_host
       ), {
@@ -422,7 +422,7 @@ const handleClicks = async (xnode_id_with_pages) => {
       console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+        const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
           /host/,
           frontend_host
         ), {
@@ -728,7 +728,7 @@ const handleClicks = async (xnode_id_with_pages) => {
       console.log("Request Body:", requestBody);
 
       const updateResponse = await fetch(
-        `host/update-connection-terms/`.replace(/host/, frontend_host),
+        `host/update_connection_terms_v2/`.replace(/host/, frontend_host),
         {
           method: "PATCH",
           headers: {
@@ -788,7 +788,7 @@ const handleClicks = async (xnode_id_with_pages) => {
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/update-inode/`.replace(/host/, frontend_host),
+        `host/update_inode_v2/`.replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -835,7 +835,7 @@ const handleClicks = async (xnode_id_with_pages) => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/transfer-resource-reverse/`,
+        `${frontend_host}/transfer_resource_reverse_v2/`,
         {
           method: "POST",
           headers: {
@@ -884,7 +884,7 @@ const handleClicks = async (xnode_id_with_pages) => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/share-resource-reverse/`.replace(/host/, frontend_host),
+        `host/share-resource-reverse-v2/`.replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -936,7 +936,7 @@ const handleClicks = async (xnode_id_with_pages) => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/confer-resource-reverse/`,
+        `${frontend_host}/confer-resource-reverse_v2/`,
         {
           method: "POST",
           headers: {
@@ -985,7 +985,7 @@ const handleClicks = async (xnode_id_with_pages) => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/collateral-resource-reverse/`,
+        `${frontend_host}/collateral_resource_reverse_v2/`,
         {
           method: "POST",
           headers: {
@@ -1856,7 +1856,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                                 </select>
                               </td>
                               <td>
-                                {obligation.hostPermissions && obligation.hostPermissions.some(permission => ["can download", "may download"].includes(permission)) ? (
+                                {obligation.hostPermissions && obligation.hostPermissions.some(permission => ["download"].includes(permission)) ? (
                                   <button onClick={() => handleDownload(obligation)} className="download-button">
                                     <i className="fa fa-download" aria-hidden="true"></i>
                                   </button>

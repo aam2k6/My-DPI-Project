@@ -236,7 +236,12 @@
     margin-top: 10px;
   }
   
+  .disabled-label {
+    color: grey; /* Make text grey */
+  }
   
+  .disabled-label input {
+    opacity: 0.5; /* Make radio button slightly faded */
+  }
   
-
 

@@ -561,6 +561,7 @@ export const ViewTermsByType = () => {
   const [isReactModalOpen, setIsReactModalOpen] = useState(false);
   const [moreDataTerms, setMoreDataTerms] = useState([]);
   const [xnodes, setXnodes] = useState([]);
+  const [filteredXnodes, setFilteredXnodes] = useState([])
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   const [showPageInput, setShowPageInput] = useState(false);
   const [fromPage, setFromPage] = useState('');
@@ -593,8 +594,7 @@ export const ViewTermsByType = () => {
   const [showOpenPopup, setShowOpenPopup] = useState(false);
   const [pdfData, setPdfData] = useState(null)
   const [selectedRowData, setSelectedRowData] = useState(null);
-  
-  
+  const [typeofShare, setTypeofShare] = useState(null)
 
   const {
     connectionName,
@@ -1040,7 +1040,12 @@ export const ViewTermsByType = () => {
 
         if (data.xnode_list) {
           setXnodes(data.xnode_list);
-          // setCorrespondingNames(data.corresponding_document_name_list);
+          const filteredData = data.xnode_list.filter(
+            (node) => node.node_information?.primary_owner === node.node_information?.current_owner
+          );
+
+          // Set filtered xnodes
+          setFilteredXnodes(filteredData);
         } else {
           setError(data.message || "Failed to fetch Xnodes");
         }
@@ -1096,7 +1101,7 @@ export const ViewTermsByType = () => {
       console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+        const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
           /host/,
           frontend_host
         ), {
@@ -1138,7 +1143,7 @@ export const ViewTermsByType = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
         /host/,
         frontend_host
       ), {
@@ -1230,7 +1235,7 @@ export const ViewTermsByType = () => {
             )}
 
 
-            <button onClick={() => handleButtonClick(obligation.labelName)}>
+            <button onClick={() => handleButtonClick(obligation)}>
               {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
               Select Resource
             </button>
@@ -1293,10 +1298,11 @@ export const ViewTermsByType = () => {
     }
   };
 
-  const handleButtonClick = (labelName) => {
+  const handleButtonClick = (obligation) => {
     setSelectedLocker(guestLockerName);
     setShowResources(true);
-    setCurrentLabelName(labelName);
+    setCurrentLabelName(obligation.labelName);
+    setTypeofShare(obligation.typeOfSharing)
   };
 
   const handleResourceSelection = (resource) => {
@@ -1687,7 +1693,7 @@ export const ViewTermsByType = () => {
       // }
 
       const updateResponse = await fetch(
-        `host/update-connection-terms/`.replace(/host/, frontend_host),
+        `host/update_connection_terms_v2/`.replace(/host/, frontend_host),
         {
           method: "PATCH",
           headers: {
@@ -1973,7 +1979,7 @@ export const ViewTermsByType = () => {
     console.log("xnode_id", xnode_id)
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}`.replace(
+      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -2638,26 +2644,42 @@ export const ViewTermsByType = () => {
                           {/* {error && <p className="error">{error}</p>} */}
 
                           <ul>
-                            {xnodes.map((resource, index) => (
-                              <li key={index}>
-                                <div>
-                                  <label>
-                                    <input
-                                      type="radio"
-                                      name="selectedResource"
-                                      value={resource.resource_name} //i changed here
-                                      checked={
-                                        selection[currentLabelName]
-                                          ?.id === resource.id
-                                      }
-                                      onClick={() => handleResourceSelection(resource)}
-                                    />
-                                    {resource.resource_name}  <button id="view" onClick={() => handleClick(resource.id)}>View</button>
-                                  </label>
+                            {xnodes.map((resource, index) => {
+                              const isResourceInFiltered = filteredXnodes.some((item) => item.id === resource.id);
 
-                                </div>
-                              </li>
-                            ))}
+                              return (
+                                <li key={index}>
+                                  <div style={{ display: "flex", alignItems: "center" }}>
+                                    <label id={
+                                      resource.xnode_Type === "INODE"
+                                        ? "documents"
+                                        : resource.xnode_Type === "SNODE"
+                                          ? "documents-byConfer"
+                                          : "documents-byShare"
+                                    } className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}>
+                                      <input
+                                        type="radio"
+                                        name="selectedResource"
+                                        value={resource.resource_name}
+                                        checked={selection[currentLabelName]?.id === resource.id}
+                                        onClick={() => handleResourceSelection(resource)}
+                                        disabled={typeofShare !== "share" && !isResourceInFiltered}
+                                      />
+                                      {resource.resource_name}
+                                      
+                                    </label>
+                                    <button
+                                        id="view"
+                                        style={{textDecoration:"none"}}
+                                        onClick={() => handleClick(resource.id)}
+                                      >
+                                        View
+                                      </button>
+                                  </div>
+                                </li>
+                              );
+                            })}
+
                           </ul>
                           <button className="btn btn-primary clsoeBtn" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources(false)}>Cancel</button>
                         </div>

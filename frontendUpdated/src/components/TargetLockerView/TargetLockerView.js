@@ -1179,7 +1179,7 @@ export const TargetLockerView = () => {
       const params = new URLSearchParams({ locker_id: locker.locker_id });
 
       const response = await fetch(
-        `host/get-all-xnodes-for-locker/?${params}`.replace(/host/, frontend_host),
+        `host/get_all_xnodes_for_locker_v2/?${params}`.replace(/host/, frontend_host),
         {
           method: "GET",
           headers: {

@@ -703,7 +703,7 @@ export const ViewLocker = () => {
 
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}`.replace(
+      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -1229,7 +1229,7 @@ export const ViewLocker = () => {
                             style={{ paddingBottom: "0px" }}
                           >
                             <div className="resource-details">
-                              {/* <Tooltips
+                              <Tooltips
                                 title={
                                   <>
                                     <div>
@@ -1243,17 +1243,17 @@ export const ViewLocker = () => {
                                     <div>
                                       <strong>Node Type:</strong> {xnode.xnode_Type}
                                     </div>
-                                    <div>
+                                    {/* <div>
                                       <strong>Host User:</strong>{" "}
                                       {xnode.locker?.user || "N/A"}
                                     </div>
                                     <div>
                                       <strong>Guest User:</strong>{" "}
                                       {xnode.connection?.guest_user || "N/A"}
-                                    </div>
+                                    </div> */}
                                   </>
                                 }
-                              > */}
+                              >
                                 <div
                                   id={
                                     xnode.xnode_Type === "INODE"
@@ -1303,7 +1303,7 @@ export const ViewLocker = () => {
                                     />
                                   </span>
                                 </div>
-                              {/* </Tooltips> */}
+                              </Tooltips>
                               <ReactModal
                                 isOpen={isModalOpen}
                                 onRequestClose={handleClose}

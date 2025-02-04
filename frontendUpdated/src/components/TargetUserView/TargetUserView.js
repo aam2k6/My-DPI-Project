@@ -103,14 +103,8 @@ export const TargetUserView = () => {
     <div>
       <Navbar content={content} breadcrumbs={breadcrumbs}/>
 
-      <div style={{ marginTop: "120px" }}>
+      <div style={{ marginTop: "140px" }}>
         <div className="heroContainers">
-          <div className="newLocker">
-            <h3></h3>
-            {/* <button id="newLockerBtn" onClick={handleNewLockerClick}>
-            Create New Locker
-          </button> */}
-          </div>
           <div className="page6-allLockers">
             {error && <div className="error">{error}</div>}
             {Array.isArray(allLockers) && allLockers.length > 0 ? (
@@ -118,7 +112,7 @@ export const TargetUserView = () => {
                 <div key={lockers.locker_id} className="page6-locker">
                   <h4>{lockers.name}</h4>
 
-                  {lockers.is_frozen === false && <Button id="docsBtn" variant="contained" onClick={() => handleLockersClick(lockers)}>
+                  {lockers.is_frozen === false && <Button id="docsBtn" className="subbutton" variant="contained" onClick={() => handleLockersClick(lockers)}>
                     Open
                   </Button>}
                   {lockers.is_frozen === true && <Button id="docsBtn" variant="contained">Frozen</Button>}

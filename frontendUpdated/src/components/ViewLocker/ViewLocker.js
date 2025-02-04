@@ -1243,14 +1243,14 @@ export const ViewLocker = () => {
                                     <div>
                                       <strong>Node Type:</strong> {xnode.xnode_Type}
                                     </div>
-                                    {/* <div>
-                                      <strong>Host User:</strong>{" "}
-                                      {xnode.locker?.user || "N/A"}
+                                    <div>
+                                      <strong>Primary owner:</strong>{" "}
+                                      {xnode.node_information?.primary_owner || "N/A"}
                                     </div>
                                     <div>
-                                      <strong>Guest User:</strong>{" "}
-                                      {xnode.connection?.guest_user || "N/A"}
-                                    </div> */}
+                                      <strong>Current owner:</strong>{" "}
+                                      {xnode.node_information?.current_owner || "N/A"}
+                                    </div> 
                                   </>
                                 }
                               >

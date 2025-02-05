@@ -1,56 +1,72 @@
 .page2heroContainer {
-    border: 2px solid rgb(107, 120, 231);
-    display: flex;
-    margin: 3rem;
-    justify-content: center;
-    align-items: center;
-    height: calc(80vh - 4rem); /* Adjusting for the navbar height */
-  }
-  
-  .page2lockerForm {
-    
-    display: flex;
-    flex-direction: column;
-    width: 85%; /* Adjust as needed */
-    /* max-width: 600px; */
-  }
-  
-  .page2lockerForm label {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 5rem;
-   
-  }
+  border: 2px solid #4285f4;
+  display: flex;
+  margin: 3rem;
+  justify-content: center;
+  align-items: center;
+  height: calc(80vh - 4rem);
+}
 
-  .page2lockerForm input {
-    padding: 0.5rem ;
-    /* margin-top: 0.5rem; */
-    border: 2px solid rgb(107, 120, 231);
-    border-radius: 0.25rem; 
-    width: 55%;
-  }
-  
-  .page2lockerForm button {
-    background-color: #007bff;
-    color: #fff;
-    width: auto;
-    border: none;
-    padding: 1rem 0.75rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    font-weight: bolder;
-    /* padding: 0.5rem 0.25rem;  */
-    max-width: 200px;
+.page2lockerForm {
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+}
 
-  }
+.page2lockerForm label {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5rem;
+}
 
-  .page2lockerForm label span {
-    margin-right: 5rem; /* Space between label text and input */
-    font-size: 1.45rem;
-    font-weight: bolder;
-    flex: 0.3;
-  }
-  
-  .page2lockerForm button:hover {
-    background-color: #0056b3;
-  }
+.page2lockerForm input {
+  padding: 0.5rem;
+  border: 2px solid #4285f4;
+  border-radius: 0.25rem;
+  width: 55%;
+}
+
+.page2lockerForm button {
+  background-color: #4285f4;
+  color: #fff;
+  width: auto;
+  border: none;
+  padding: 1rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: bolder;
+  max-width: 200px;
+}
+
+.page2lockerForm label span {
+  margin-right: 5rem;
+  font-size: 1.45rem;
+  font-weight: bolder;
+  flex: 0.3;
+}
+
+.page2lockerForm button:hover {
+  background-color: #3367d6;
+}
+
+.breadcrumbs {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb-item {
+  color: #4285f4;
+  text-decoration: none;
+}
+
+.breadcrumb-item.current {
+  color: #666;
+}
+
+.breadcrumb-separator {
+  color: #666;
+  font-size: 0.8rem;
+}
+

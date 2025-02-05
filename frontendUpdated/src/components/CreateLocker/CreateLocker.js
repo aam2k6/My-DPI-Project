@@ -1,64 +1,64 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { usercontext } from "../../usercontext";
-import Cookies from "js-cookie";
-import Navbar from "../Navbar/Navbar";
-import { frontend_host } from "../../config";
-import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material";
-import "./page2.css";
+import { useState, useEffect, useContext } from "react"
+import { useNavigate } from "react-router-dom"
+import { usercontext } from "../../usercontext"
+import Cookies from "js-cookie"
+import Navbar from "../Navbar/Navbar"
+import { frontend_host } from "../../config"
+import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material"
+import "./page2.css"
 
 export const CreateLocker = () => {
-  const navigate = useNavigate();
-  const [lockerName, setLockerName] = useState("");
-  const [description, setDescription] = useState("");
-  const { curruser, setUser } = useContext(usercontext);
+  const navigate = useNavigate()
+  const [lockerName, setLockerName] = useState("")
+  const [description, setDescription] = useState("")
+  const { curruser, setUser } = useContext(usercontext)
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const token = Cookies.get('authToken');
+    const token = Cookies.get("authToken")
 
     // Prepare data to send
-    const data = new FormData();
-    data.append('name', lockerName);
-    data.append('description', description);
+    const data = new FormData()
+    data.append("name", lockerName)
+    data.append("description", description)
 
     // Send data to the backend
-    fetch('host/create-locker/'.replace(/host/, frontend_host), {
-      method: 'POST',
+    fetch("host/create-locker/".replace(/host/, frontend_host), {
+      method: "POST",
       headers: {
-        'Authorization': `Basic ${token}`, // Add token to the headers
+        Authorization: `Basic ${token}`, // Add token to the headers
       },
       body: data,
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.success) {
-          console.log('Locker created:', data);
+          console.log("Locker created:", data)
           // Redirect to another page or show success message
-          navigate('/home');
-        } else if (data.error === 'Locker with this name already exists') {
+          navigate("/home")
+        } else if (data.error === "Locker with this name already exists") {
           // Handle case where locker with same name exists
-          alert('A locker with this name already exists. Please choose a different name.');
+          alert("A locker with this name already exists. Please choose a different name.")
         } else {
-          console.error('Error:', data.error);
+          console.error("Error:", data.error)
           // Show error message for other cases
-          alert(data.error);
+          alert(data.error)
         }
       })
-      .catch(error => {
-        console.error("Error:", error);
+      .catch((error) => {
+        console.error("Error:", error)
         // Show error message
-        alert("An error occurred while creating the locker");
-      });
-  };
+        alert("An error occurred while creating the locker")
+      })
+  }
 
   useEffect(() => {
     if (!curruser) {
-      navigate('/');
-      return;
+      navigate("/")
+      return
     }
-  }, []);
+  }, [curruser, navigate]) // Added curruser and navigate to dependencies
 
   const breadcrumbs = (
     <div className="breadcrumbs">
@@ -71,60 +71,97 @@ export const CreateLocker = () => {
   )
 
   return (
-    <div>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar breadcrumbs={breadcrumbs} />
 
-      <Container maxWidth="sm" style={{ marginTop: "150px" }}>
-        <Box
-          sx={{
-            border: '1px solid blue',
-            borderRadius: '8px',
-            padding: '50px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom fontWeight="bold" >
-                  Locker Name
-                </Typography>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  value={lockerName}
-                  onChange={(e) => setLockerName(e.target.value)}
-                  placeholder="Enter Locker Name"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom fontWeight="bold">
-                  Description
-                </Typography>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Enter description"
-                />
-              </Grid>
-              <Grid item xs={12} container justifyContent="center">
-                <Grid item>
+      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Container maxWidth="sm">
+          <Box
+            sx={{
+              border: "1px solid #4285f4",
+              borderRadius: "8px",
+              padding: "2rem",
+              backgroundColor: "white",
+              width: "100%",
+              maxWidth: "500px",
+              margin: "0 auto",
+            }}
+          >
+            <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: "bold", color: "#333" }}>
+              Create New Locker
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: "medium" }}>
+                    Locker Name
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    value={lockerName}
+                    onChange={(e) => setLockerName(e.target.value)}
+                    placeholder="Enter Locker Name"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "#4285f4",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#4285f4",
+                        },
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: "medium" }}>
+                    Description
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter description"
+                    multiline
+                    rows={4}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "#4285f4",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#4285f4",
+                        },
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
                   <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
                     fullWidth
+                    sx={{
+                      backgroundColor: "#4285f4",
+                      color: "white",
+                      padding: "0.75rem",
+                      fontWeight: "bold",
+                      "&:hover": {
+                        backgroundColor: "#3367d6",
+                      },
+                    }}
                   >
-                    Submit
+                    Create Locker
                   </Button>
                 </Grid>
               </Grid>
-            </Grid>
-          </form>
-        </Box>
-      </Container>
+            </form>
+          </Box>
+        </Container>
+      </div>
     </div>
-  );
-};
+  )
+}
+

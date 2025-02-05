@@ -1901,7 +1901,7 @@ export const Guesttermsreview = () => {
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>{permission}</li>
+                                          <li key={index}>Can {permission}</li>
                                         ))
                                       ) : (
                                         "None"
@@ -1929,7 +1929,7 @@ export const Guesttermsreview = () => {
                                 </select>
                               </td>
                               <td>
-                                {obligation.hostPermissions && obligation.hostPermissions.some(permission => ["can download", "may download"].includes(permission)) ? (
+                              {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
                                   <button onClick={() => handleDownload(obligation)} className="download-button">
                                     <i className="fa fa-download" aria-hidden="true"></i>
                                   </button>

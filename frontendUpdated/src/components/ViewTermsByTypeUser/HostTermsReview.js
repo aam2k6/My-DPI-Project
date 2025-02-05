@@ -1828,7 +1828,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>{permission}</li>
+                                          <li key={index}>Can {permission}</li>
                                         ))
                                       ) : (
                                         "None"
@@ -1856,7 +1856,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                                 </select>
                               </td>
                               <td>
-                                {obligation.hostPermissions && obligation.hostPermissions.some(permission => ["download"].includes(permission)) ? (
+                              {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
                                   <button onClick={() => handleDownload(obligation)} className="download-button">
                                     <i className="fa fa-download" aria-hidden="true"></i>
                                   </button>

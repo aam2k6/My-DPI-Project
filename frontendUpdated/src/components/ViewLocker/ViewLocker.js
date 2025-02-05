@@ -784,7 +784,7 @@ export const ViewLocker = () => {
 
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
+      const response = await fetch(`${frontend_host}/edit-delete-resource-v2/`, {
         method: "PUT",
         headers: {
           Authorization: `Basic ${token}`,
@@ -847,7 +847,7 @@ export const ViewLocker = () => {
 
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
+        const response = await fetch(`${frontend_host}/edit-delete-resource-v2/`, {
           method: "DELETE",
           headers: {
             Authorization: `Basic ${token}`,
@@ -899,7 +899,7 @@ export const ViewLocker = () => {
 
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/edit-delete-resource/`, {
+        const response = await fetch(`${frontend_host}/edit-delete-resource-v2/`, {
           method: "DELETE",
           headers: {
             Authorization: `Basic ${token}`,

@@ -595,6 +595,7 @@ export const ConnectionTermsGlobal = () => {
                 </div>
                 <div className="connectionTerms-btn">
                   <button type="submit">Submit</button>
+                  <button onClick={() => handleGlobalConnection()}>Cancel</button>
                 </div>
               </form>
             </div>

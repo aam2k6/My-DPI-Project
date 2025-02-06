@@ -1124,7 +1124,7 @@ export const ViewTermsByType = () => {
         if (xnode) {
           setPdfData(xnode)
         } else {
-          setError('Unable to retrieve the file link.');
+          // setError('Unable to retrieve the file link.');
           console.log(error);
         }
       } catch (err) {

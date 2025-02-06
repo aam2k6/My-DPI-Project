@@ -1245,11 +1245,11 @@ export const ViewLocker = () => {
                                     </div>
                                     <div>
                                       <strong>Primary owner:</strong>{" "}
-                                      {xnode.node_information?.primary_owner || "N/A"}
+                                      {capitalizeFirstLetter(xnode.primary_owner_username) || "N/A"}
                                     </div>
                                     <div>
                                       <strong>Current owner:</strong>{" "}
-                                      {xnode.node_information?.current_owner || "N/A"}
+                                      {capitalizeFirstLetter(xnode.current_owner_username) || "N/A"}
                                     </div> 
                                   </>
                                 }

@@ -121,7 +121,7 @@ export const TargetUserView = () => {
                 </div>
               ))
             ) : (
-              <div>No lockers found.</div>
+              <p style={{marginTop:"1.30rem"}}>No lockers found.</p>
             )}
           </div>
         </div>

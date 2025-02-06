@@ -1575,7 +1575,7 @@ export const TargetLockerView = () => {
 
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource/?xnode_id=${xnode_id}`.replace(
+      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {

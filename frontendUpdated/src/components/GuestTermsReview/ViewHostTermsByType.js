@@ -2041,7 +2041,7 @@ export const ViewHostTermsByType = () => {
                     <div>
                       {showResources && (
                         <div className="resource-container">
-                          <h3>Select Resource forS {currentLabelName}</h3>
+                          <h3>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
 
                           <ul>

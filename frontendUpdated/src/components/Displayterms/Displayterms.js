@@ -657,11 +657,11 @@ export const Displayterms = () => {
               <div className="table-container">
                 {activeTab === "guest" && (
                   <div>
-                    <div className="page13headterms">Your Obligations</div>
+                    <div className="page13headterms">Guest Obligations</div>
                     <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderObligations("guest")}</div>
-                    <div className="page13headterms">Your Permissions</div>
+                    <div className="page13headterms">Guest Permissions</div>
                     <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("guest")}</div>
-                    <div className="page13headterms">Your Forbidden Terms</div>
+                    <div className="page13headterms">Guest Forbidden Terms</div>
                     <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("guest")}</div>
                     <div className="page13headterms">Default Host Privileges</div>
                     <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>

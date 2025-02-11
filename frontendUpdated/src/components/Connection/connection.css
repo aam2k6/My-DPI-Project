@@ -39,7 +39,7 @@
   .connection-lockerForms label {
     display: flex;
     flex-direction: row;
-    margin-bottom: 5rem;
+    /* margin-bottom: 5rem; */
     
    
   }

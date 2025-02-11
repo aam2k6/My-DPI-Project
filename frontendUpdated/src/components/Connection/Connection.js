@@ -8,7 +8,7 @@ import "./connection.css";
 import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
-import { Container, Grid, TextField, Button, Typography,Box} from "@mui/material";
+import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material";
 
 export const Connection = () => {
   const navigate = useNavigate();
@@ -23,7 +23,14 @@ export const Connection = () => {
   const [connectionDescription, setConnectionDescription] = useState(null);
   const [validity, setValidity] = useState(null);
   const [selectedLocker, setSelectedLocker] = useState(null);
-
+  const [permissions, setPermissions] = useState({
+    download: false,
+    subset: false,
+    reshare: false,
+    confer: false,
+    collateral: false,
+    transfer: false
+  });
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -77,17 +84,17 @@ export const Connection = () => {
     navigate("/connectionTerms");
   };
 
-const locker = locker_conn
+  const locker = locker_conn
 
   const handleClick = (locker) => {
-    console.log("lockers",locker)
+    console.log("lockers", locker)
     navigate('/view-locker', { state: { locker } });
   };
 
-  const handleLockerAdmin = () =>{
+  const handleLockerAdmin = () => {
     navigate("/admin", { state: locker_conn });
   }
-  
+
 
   const content = (
     <>
@@ -109,78 +116,170 @@ const locker = locker_conn
       <span className="breadcrumb-item current">CreateConnectionType</span>
     </div>
   )
-
+  const handleChange = (event) => {
+    const { name, checked } = event.target;
+    setPermissions((prevPermissions) => ({
+      ...prevPermissions,
+      [name]: checked,
+    }));
+  };
   return (
     <>
       <Navbar content={content} breadcrumbs={breadcrumbs}></Navbar>
       {/* <Panel /> */}
-      <Container maxWidth="md" style={{marginTop:"120px"}}>
+      <Container maxWidth="md" style={{ marginTop: "140px" }}>
         <div>
           {/* <div className="connection-resourceHeading">Connection</div> */}
           <div className="connection-lockerForms">
-          <Box
-          sx={{
-            border: '1px solid blue',
-            borderRadius: '8px',
-            padding: '50px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          <div className="connection-resourceHeading">Connection Type</div>
-          <form  onSubmit={handleSubmit}>
-            <Grid container className=" mb-4">
-                <Grid item md={2} sm={2} xs={12}>
-                <Typography variant="h6" gutterBottom fontWeight="bold" >Locker
-                </Typography>
+            <Box
+              sx={{
+                border: '1px solid blue',
+                borderRadius: '8px',
+                padding: '30px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <div className="connection-resourceHeading">Connection Type</div>
+              <form onSubmit={handleSubmit}>
+                <Grid container className=" mb-3">
+                  <Grid item md={2} sm={2} xs={12}>
+                    <Typography variant="h6" gutterBottom fontWeight="bold" >Locker
+                    </Typography>
+                  </Grid>
+                  <Grid item md={8} sm={8} xs={12}>
+                    <TextField fullWidth variant="outlined" value={locker_conn ? locker_conn.name : ""} readOnly />
+                  </Grid>
                 </Grid>
-                <Grid item md={8} sm={8} xs={12}>
-                <TextField  fullWidth variant="outlined" value={locker_conn ? locker_conn.name : ""} readOnly />
-                </Grid>
-            </Grid>
 
-            <Grid container className=" mb-4">
-                <Grid item md={2} sm={2} xs={12}>
-                <Typography variant="h6" gutterBottom fontWeight="bold" >Name
-                </Typography>
+                <Grid container className=" mb-3">
+                  <Grid item md={2} sm={2} xs={12}>
+                    <Typography variant="h6" gutterBottom fontWeight="bold" >Name
+                    </Typography>
+                  </Grid>
+                  <Grid item md={8} sm={8} xs={12}>
+                    <TextField required fullWidth variant="outlined" type="text"
+                      name="connectionName"
+                      placeholder="Connection Type Name"
+                      onChange={(e) => setConnectionName(e.target.value)} />
+                  </Grid>
                 </Grid>
-                <Grid item md={8} sm={8} xs={12}>
-                <TextField required fullWidth variant="outlined" type="text"
-                name="connectionName"
-                placeholder="Connection Type Name"
-                onChange={(e) => setConnectionName(e.target.value)} />
-                </Grid>
-            </Grid>
 
-            <Grid container className=" mb-4">
-                <Grid item md={2} sm={2} xs={12}>
-                <Typography variant="h6" gutterBottom fontWeight="bold" >Description
-                </Typography>
+                <Grid container className=" mb-3">
+                  <Grid item md={2} sm={2} xs={12}>
+                    <Typography variant="h6" gutterBottom fontWeight="bold" >Description
+                    </Typography>
+                  </Grid>
+                  <Grid item md={8} sm={8} xs={12}>
+                    <TextField required fullWidth focused multiline variant="outlined"
+                      rows={4}
+                      type="text"
+                      name="connectionDescription"
+                      placeholder="Description"
+                      onChange={(e) => setConnectionDescription(e.target.value)} />
+                  </Grid>
                 </Grid>
-                <Grid item md={8} sm={8} xs={12}>
-                <TextField required fullWidth focused multiline variant="outlined" 
-                rows={4} 
-                type="text"
-                name="connectionDescription"
-                placeholder="Description"
-                onChange={(e) => setConnectionDescription(e.target.value)} />
-                </Grid>
-            </Grid>
 
-            <Grid container className=" mb-4">
-                <Grid item md={2} sm={2} xs={12}>
-                <Typography variant="h6" gutterBottom fontWeight="bold" >Validity
-                </Typography>
+                <Grid container className="mb-3">
+                  <Grid item md={2} sm={2} xs={12}>
+                    <Typography variant="h6" gutterBottom fontWeight="bold" >Validity
+                    </Typography>
+                  </Grid>
+                  <Grid item md={8} sm={8} xs={12}>
+                    <TextField required fullWidth variant="outlined" type="date"
+                      name="validity"
+                      placeholder="Calendar Picker"
+                      onChange={(e) => setValidity(e.target.value)} />
+                  </Grid>
                 </Grid>
-                <Grid item md={8} sm={8} xs={12}>
-                <TextField required fullWidth variant="outlined"  type="date"
-                name="validity"
-                placeholder="Calendar Picker"
-                onChange={(e) => setValidity(e.target.value)} />
+                <Grid container className="mb-3">
+                  <Grid item md={2} sm={2} xs={12}>
+                    <Typography variant="h6" gutterBottom fontWeight="bold" >Post Conditions </Typography>
+                  </Grid>
+                  <Grid container md={8} sm={8} xs={12} style={{ marginLeft: "3px" }}>
+
+                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="download"
+                        name="download"
+                        checked={permissions.download}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.download ? "checked" : ""}`} htmlFor="download">
+                        Download
+                      </label>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="subset"
+                        name="subset"
+                        checked={permissions.subset}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.subset ? "checked" : ""}`} htmlFor="subset">
+                        Subset
+                      </label>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="reshare"
+                        name="reshare"
+                        checked={permissions.reshare}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.reshare ? "checked" : ""}`} htmlFor="reshare">
+                        Reshare
+                      </label>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="confer"
+                        name="confer"
+                        checked={permissions.confer}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.confer ? "checked" : ""}`} htmlFor="confer">
+                        Confer
+                      </label>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="collateral"
+                        name="collateral"
+                        checked={permissions.collateral}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.collateral ? "checked" : ""}`} htmlFor="collateral">
+                        Collateral
+                      </label>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="transfer"
+                        name="transfer"
+                        checked={permissions.transfer}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
+                        Transfer
+                      </label>
+                    </Grid>
+                  </Grid>
                 </Grid>
-            </Grid>
-            <button type="submit">Next</button>
-          </form>
-        </Box>
+                <button type="submit">Next</button>
+              </form>
+            </Box>
           </div>
         </div>
       </Container>

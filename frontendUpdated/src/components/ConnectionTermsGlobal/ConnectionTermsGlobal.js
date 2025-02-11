@@ -7,7 +7,7 @@ import Navbar from "../Navbar/Navbar";
 import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
 import { frontend_host } from "../../config";
-import { Grid, Button } from '@mui/material'
+import { Grid, Button, Box } from '@mui/material'
 
 export const ConnectionTermsGlobal = () => {
   const navigate = useNavigate();
@@ -342,12 +342,12 @@ export const ConnectionTermsGlobal = () => {
 
       <Grid container className="parent-container secondContainer">
           <Grid item xs={12} md={8} className="parent-left-heading">
-            <Grid container padding={"1rem"}>
+            <Grid container padding={"5px"}>
               <Grid item xs={12} md={6} className="connectionTerms-resourceHeading">
                 Guest Obligations
               </Grid>
               <Grid item xs={12} md={3}></Grid>
-              <Grid item xs={12} md={3}>
+              {/* <Grid item xs={12} md={3}>
                 <button
                   className=""
                   type="button"
@@ -355,13 +355,21 @@ export const ConnectionTermsGlobal = () => {
                 >
                   Add Obligations
                 </button>
-              </Grid>
+              </Grid> */}
             </Grid>
 
-            <div style={{marginLeft:"20px"}}>
+            <div >
               <form
                 onSubmit={handleSubmit}
               >
+                <Box sx={{
+                      border: '1px solid rgb(107, 120, 231)',
+                      borderRadius: '8px',
+                      marginBottom: "10px",
+                      padding: '10px',
+
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                    }}>
                 <div className="mb-3 row">
                   <label className="col-sm-2 col-md-2 col-form-label">Label</label>
                   <div className="col-md-10 col-sm-10 col-xs-10">
@@ -538,18 +546,29 @@ export const ConnectionTermsGlobal = () => {
                   </div>
                   
                 </div>
-                
+                <Grid container marginBottom={2}>
+                                        <Grid item md={4} xs={12}>
+                                          <button
+                                            className=""
+                                            type="button"
+                                            onClick={handleAddObligation}
+                                          >
+                                            Add Obligations
+                                          </button>
+                                        </Grid>
+                                      </Grid>
+                                      </Box>
                 <div className="mb-1 row">
-                <h4><b>Permissions</b></h4>
+                <h5><b>Permissions</b></h5>
                 </div>
 
                 <div className="mb-3 row">
-                  <div className="col-md-6 col-xs-12">
+                  <div className="col-md-7 col-xs-12">
                     <label className="col-md-7 col-xs-12" style={{fontWeight:"normal"}}>
                       Can the guest share more data
                     </label>
                   </div>
-                  <div className="col-6">
+                  <div className="col-md-1 col-xs-2">
                     <input
                       type="checkbox"
                       name="canShareMore"
@@ -558,7 +577,7 @@ export const ConnectionTermsGlobal = () => {
                     />
                   </div>
                 </div>
-                <div className="mb-3 row">
+                {/* <div className="mb-3 row">
                 <div className="col-md-6 col-xs-12">
                     <label className="col-md-6 col-xs-12" style={{fontWeight:"normal"}}>
                       Can they download the data
@@ -572,19 +591,19 @@ export const ConnectionTermsGlobal = () => {
                       onChange={handleCheckboxChange}
                     />
                   </div>
-                </div>
+                </div> */}
 
                 <div className="mb-1 row">
                   <h4><b>Forbidden</b></h4>
                 </div>
 
                 <div className="mb-3 row">
-                  <div className="col-md-6 col-xs-12 agreeLabel">
-                    <label className="col-md-6 col-xs-12" style={{fontWeight:"normal"}}>
+                  <div className="col-md-7 col-xs-12 ">
+                    <label className="agreeLabel" style={{fontWeight:"normal"}}>
                     You cannot unilaterally close the connection
                     </label>
                   </div>
-                  <div className="col-6">
+                  <div className="col-md-1 col-xs-2">
                   <input
                     type="checkbox"
                     name="forbidden"

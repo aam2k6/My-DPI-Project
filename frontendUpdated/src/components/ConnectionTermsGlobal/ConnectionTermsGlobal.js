@@ -155,7 +155,9 @@ export const ConnectionTermsGlobal = () => {
         canShareMoreData: obligationFormData.canShareMore,
         canDownloadData: obligationFormData.canDownload,
       },
-      forbidden: obligationFormData.forbidden, // Include forbidden state in form submission
+      forbidden: obligationFormData.forbidden,
+      from_Type: "GUEST",
+      to_Type: "HOST"
     };
 
     console.log(connectionTermsData);
@@ -456,6 +458,7 @@ export const ConnectionTermsGlobal = () => {
                     <input 
                       type="text"
                       name="purpose"
+                      placeholder="Purpose of collecting data"
                       value={obligationFormData.purpose}
                       onChange={(e) =>
                         setObligationFormData({

@@ -246,7 +246,7 @@ const GlobalTermsView = () => {
     <div className="global-terms-view-page" id="global-terms-view">
       <Navbar content={content} breadcrumbs={breadcrumbs} />
       {/* {isSystemAdmin && <Sidebar />} Show Sidebar only for System Admin */}
-      <div style={{ marginTop: "130px" }}>
+      <div style={{ marginTop: "140px" }}>
         <div className="connection-details" >
           <div className="connectionName1">Global Connection Type Name: {res ? res.template_name : "Loading..."}</div>
           <div className="dates">

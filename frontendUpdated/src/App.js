@@ -17,6 +17,7 @@ import { Connection } from "./components/Connection/Connection";
 import { ConnectionTerms } from "./components/ConnectionTerms/ConnectionTerms";
 import { ConnectionTermsHost } from "./components/ConnectionTerms/ConnectionTermsHost"
 import { ConnectionTermsGlobal } from "./components/ConnectionTermsGlobal/ConnectionTermsGlobal";
+import { ConnectionTermsGlobalHost } from "./components/ConnectionTermsGlobal/ConnectionTermsGlobalHost";
 import { TargetLockerView } from "./components/TargetLockerView/TargetLockerView";
 import { Admin } from "./components/Admin/Admin";
 import { CreateConnectionType } from "./components/CreateConnectionType/CreateConnectionType";
@@ -165,6 +166,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ConnectionTermsGlobal />
+                  <Scanner />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ConnectionTermsGlobalHost"
+              element={
+                <ProtectedRoute>
+                  <ConnectionTermsGlobalHost />
                   <Scanner />
                 </ProtectedRoute>
               }

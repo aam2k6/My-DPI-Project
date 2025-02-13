@@ -2,22 +2,23 @@ import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./ConnectionTermsGlobal.css";
 import Navbar from "../Navbar/Navbar";
-import { ConnectionContext } from "../../ConnectionContext";
 import Modal from "../Modal/Modal.jsx";
 import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
 import { frontend_host } from "../../config";
 import { Grid, Button, Box } from '@mui/material'
+import { ConnectionContext } from "../../ConnectionContext";
 
-export const ConnectionTermsGlobal = () => {
+export const ConnectionTermsGlobalHost = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Get the state passed from the previous page
-  const { connectionTypeName, connectionTypeDescription, existingTerms } =
+  const { connectionTypeName, connectionTypeDescription, existingTerms, globalTemplateData } =
     location.state || {};
   const [purpose, setPurpose] = useState(""); // Ensure it's initialized
-  const { setConnectionData } = useContext(ConnectionContext);
-
-
+  const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [navigatePrev, setNavigatePrev] = useState(false)
+  
   // Separate states for global and obligation form data
   const initialObligationForm = {
     labelName: "",
@@ -38,6 +39,9 @@ export const ConnectionTermsGlobal = () => {
     domain: "",
   };
 
+  const { connectionData } = useContext(ConnectionContext);
+  console.log("connectionDatass", connectionData)
+
   const [globalFormData, setGlobalFormData] = useState(initialGlobalForm);
   const [obligationFormData, setObligationFormData] = useState(
     initialObligationForm
@@ -46,15 +50,19 @@ export const ConnectionTermsGlobal = () => {
   const [error, setError] = useState(null);
   const { curruser, setUser } = useContext(usercontext);
   const [isOpen, setIsOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const globalTemplateData = location.state?.globalTemplateData;
+
+  // console.log("Received Data:", connectionTermsData);
 
   useEffect(() => {
     if (location.state) {
-      setGlobalFormData({
-        globalName: connectionTypeName || "",
-        globalDescription: connectionTypeDescription || "",
-      });
+      // setGlobalFormData(
+      //   {
+      //     globalName: connectionData.global_connection_type_name || "",
+      //     globalDescription: connectionData.global_connection_type_description || "",
+
+      //   }
+      // );
 
       const { forbidden, obligations } = existingTerms || {};
       console.log("existing terms ", forbidden, obligations); // Debugging logs
@@ -82,17 +90,17 @@ export const ConnectionTermsGlobal = () => {
     existingTerms,
   ]);
 
-  const { globalName, globalDescription, globaltype } = globalFormData;
+  // const { globalName, globalDescription, globaltype } = globalFormData;
 
   // Handle changes for global fields
-  const handleGlobalChange = (event) => {
-    const { name, value } = event.target;
-    setGlobalFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
+  // const handleGlobalChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setGlobalFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
+  // console.log("globalDescriptions", globalName, globalDescription)
   // Handle changes for obligation fields
   const handleObligationChange = (event) => {
     const { name, value } = event.target;
@@ -143,24 +151,9 @@ export const ConnectionTermsGlobal = () => {
     setObligations(obligations.filter((_, i) => i !== index));
   };
 
-  const handleSubmits = (event) => {
-    navigate("/ConnectionTermsGlobalHost"); // Navigate to next page
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (globalName.trim() === "" || globalDescription.trim() === "") {
-      // alert("Please fill out both the Name and Description fields.");
-      setError("Please fill out both the Name and Description fields.");
-      setModalMessage({
-        message: "Please fill out both the Name and Description fields.",
-        type: "info",
-      });
-      setIsModalOpen(true);
-      return; // Prevent form submission if fields are empty
-    }
-
+  
     if (obligations.length === 0) {
       setError("At least one obligation must be added.");
       setModalMessage({
@@ -170,98 +163,69 @@ export const ConnectionTermsGlobal = () => {
       setIsModalOpen(true); // Open modal with info message.
       return;
     }
-
+    
     const token = Cookies.get("authToken");
-    const globalTemplateData = {
-      connectionName: globalFormData.globalName,
-      connectionDescription: globalFormData.globalDescription,
-      globaltype: globalFormData.globaltype,
-      domain: globalFormData.domain, // Include domain here
-    };
-    console.log("globalTemplateData", globalTemplateData)
-    setConnectionData(globalTemplateData);
-    const connectionTermsData = {
-      ...globalTemplateData,
-      obligations,
+
+    const newConnectionTermsData = {
+      ...connectionData,
+      obligations, // Updating with new obligations
       permissions: {
         canShareMoreData: obligationFormData.canShareMore,
         canDownloadData: obligationFormData.canDownload,
       },
       forbidden: obligationFormData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
-      from: "GUEST",
-      to: "HOST"
+      from: "HOST",
+      to: "GUEST"
     };
 
-    console.log(connectionTermsData);
-    console.log(globalName);
-    console.log(globalDescription);
+    console.log("newConnectionTermsData", newConnectionTermsData);
+    // console.log(globalName);
+    // console.log(globalDescription);
     fetch(`${frontend_host}/create-global-terms/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Basic ${token}`, // Corrected template literal
       },
-      body: JSON.stringify(connectionTermsData),
+      body: JSON.stringify(newConnectionTermsData),
     })
-    .then((response) =>
-      response.json().then((data) => ({ status: response.status, data }))
-    )
+    .then(async (response) => {
+      const data = await response.json();
+      console.log("datas", data)
+      if (data.success) {
+        // setError("Connection Type successfully created!");
+        setModalMessage({
+          message: data.connection_type_message          ,
+          type: "success",
+        });
+        setIsModalOpen(true);
+        setNavigatePrev(true);
+        // setNavigateHome(true);
+      } else {
+        // General error handling.
+        console.error("Error:", data.error);
+        setError(data.error);
+        setModalMessage({
+          message: data.error,
+          type: "error",
+        });
+        setIsModalOpen(true); // Open modal with error message.
+      }
+    })
       // .then((response) => {
-      //   console.log("response", response)
       //   if (response.status === 200 || response.status === 201) {
       //     return response.json().then((data) => {
-      //       navigate("/ConnectionTermsGlobalHost"); // Navigate after parsing response
+      //       navigate("/create-global-connection-type");
       //       return data;
       //     });
-      //   } else if (response.status === 400 && response.error.includes("already exists")) {
-      //     setError(
-      //       "Global Connection type with this name already exists."
-      //     );
-      //     setModalMessage({
-      //       message:
-      //         "Global Connection type with this name already exists.",
-      //       type: "error",
-      //     });
-      //     setIsModalOpen(true)
       //   } else {
-      //     // General error handling.
-      //     console.error("Error:", response.error);
-      //     setError(response.error);
-      //     setModalMessage({
-      //       message: response.error,
-      //       type: "error",
-      //     });
-      //     setIsModalOpen(true); // Open modal with error message.
+      //     throw new Error("Failed to create global terms");
       //   }
       // })
-      .then(({ status, data }) => {
-        if (status === 200 || status ===201) {
-          handleSubmits()
-        } else if (status === 400 && data.error.includes("already exists")) {
-          // Handle the case where the connection type already exists.
-          setError(
-            `${data.error}`
-          );
-          setModalMessage({
-            message:
-              `${data.error}`,
-            type: "error",
-          });
-          setIsModalOpen(true);
-        } else {
-          // General error handling.
-          console.error("Error:", data.error);
-          setError(data.error);
-          setModalMessage({
-            message: data.error,
-            type: "error",
-          });
-          setIsModalOpen(true); // Open modal with error message.
-        }
-      })
+
       // .then((data) => {
       //   console.log("Global terms created successfully.");
-      //   navigate("/create-global-connection-type");
+      //   navigate("/ConnectionTermsGlobalHost");
       //   const termsIDs = data.terms.map((term) => term.terms_id);
 
       //   const globalTemplateData = {
@@ -269,35 +233,30 @@ export const ConnectionTermsGlobal = () => {
       //     global_connection_type_description: globalFormData.globalDescription,
       //     global_terms_IDs: termsIDs,
       //     globaltype: globalFormData.globaltype,
-      //     domain: globalFormData.domain, // Include domain here
+      //     domain: globalFormData.domain,
+      //     obligations: obligations, // Store obligations in context
       //   };
+
       //   console.log(globalTemplateData);
-      //   // return fetch(`${frontend_host}/add-global-template/`, {
-      //   //   method: "POST",
-      //   //   headers: {
-      //   //     "Content-Type": "application/json",
-      //   //     Authorization: `Basic ${token}`,
-      //   //   },
-      //   //   body: JSON.stringify(globalTemplateData),
-      //   // });
+
+
+      //   return fetch(`${frontend_host}/add-global-template/`, {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Basic ${token}`,
+      //     },
+      //     body: JSON.stringify(globalTemplateData),
+      //   });
       // })
-      // .then((response) => {
-      //   if (response.status === 200 || response.status === 201) {
-      //     return response.json();
-      //   } else {
-      //     throw new Error("Failed to add global template");
-      //   }
-      // })
-      // .then(() => {
-      //   alert("Global template added successfully.");
-      // })
+
       .catch((error) => {
         console.error("Error:", error);
         setError("An error occurred while submitting the data.");
       });
   };
 
-console.log("errors", error)
+
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
 
@@ -325,7 +284,7 @@ console.log("errors", error)
       };
     });
   };
-
+console.log("isModalOpen", isModalOpen)
   useEffect(() => {
     if (!curruser) {
       navigate("/");
@@ -339,108 +298,101 @@ console.log("errors", error)
     navigate('/create-global-connection-type');
   }
 
-  const handleCloseModal = () => {
+  //   const breadcrumbs = (
+  //     <div className="breadcrumbs">
+  //       <a href="/home" className="breadcrumb-item">
+  //         Home
+  //       </a>
+  //       <span className="breadcrumb-separator">▶</span>
+  //       <a href="/dpi-directory" className="breadcrumb-item">
+  //        DPI Directory
+  //       </a>
+  //       <span className="breadcrumb-separator">▶</span>
+  //       <span onClick={() => handleGlobalConnection()} className="breadcrumb-item">GlobalConnectionTypes</span>
+  //       <span className="breadcrumb-separator">▶</span>
+  //       <span className="breadcrumb-item current">AddNewGlobalConnectionType</span>
+  //     </div>
+  //   )
+const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
+    if (navigatePrev) {
+      navigate("/create-global-connection-type");
+      setNavigatePrev(false); // Reset the state to avoid navigation in other cases
+    }
   };
-
-  const breadcrumbs = (
-    <div className="breadcrumbs">
-      <a href="/home" className="breadcrumb-item">
-        Home
-      </a>
-      <span className="breadcrumb-separator">▶</span>
-      <a href="/dpi-directory" className="breadcrumb-item">
-        DPI Directory
-      </a>
-      <span className="breadcrumb-separator">▶</span>
-      <span onClick={() => handleGlobalConnection()} className="breadcrumb-item">GlobalConnectionTypes</span>
-      <span className="breadcrumb-separator">▶</span>
-      <span className="breadcrumb-item current">AddNewGlobalConnectionType</span>
-    </div>
-  )
-
   return (
     <div id="connectionTerms">
-      {/* {isModalOpen && (
-        <Modal
-          message={modalMessage.message}
-          onClose={handleCloseModal}
-          type={modalMessage.type}
-        />
-      )} */}
-      <Navbar breadcrumbs={breadcrumbs} />
+      <Navbar />
 
       <div className="connectionTermsContainer">
 
-        <div className="connectionTerms-heroContainer">
-          {/* Global Name and Description */}
-          <div style={{ paddingLeft: "20px" }}>
-            <div className="mb-3 mt-3 row">
-              <label className="col-sm-2 col-md-2 col-form-label">Name</label>
-              <div className="col-md-3 col-sm-10 col-xs-10">
-                <input
-                  type="text"
-                  name="globalName"
-                  placeholder="Global Connection Type Name"
-                  value={globalFormData.globalName}
-                  onChange={handleGlobalChange} className="form-control" />
-              </div>
-            </div>
-
-            <div className="mb-3 row">
-              <label className="col-sm-2 col-md-2 col-form-label">Description</label>
-              <div className="col-md-3 col-sm-10 col-xs-10">
-                <input
-                  type="text"
-                  name="globalDescription"
-                  placeholder="Description"
-                  value={globalFormData.globalDescription}
-                  onChange={handleGlobalChange} className="form-control" />
-              </div>
-            </div>
-
-            <div className="mb-3 row">
-              <label className="col-sm-2 col-md-2 col-form-label">Template/Policy</label>
-              <div className="col-md-3 col-sm-10 col-xs-10">
-                <select className="form-select form-select-md" aria-label="Small select example" name="globaltype"
-                  value={globalFormData.globaltype}
-                  onChange={handleGlobalChange}>
-                  <option value="">Select Template/Policy</option>{" "}
-                  <option value="template">template</option>{" "}
-                  <option value="policy">policy</option>{" "}
-                </select>
-              </div>
-            </div>
-
-            <div className="mb-3 row">
-              <label className="col-sm-2 col-md-2 col-form-label">Domain</label>
-              <div className="col-md-3 col-sm-10 col-xs-10">
-                <select className="form-select form-select-md" aria-label="Small select example"
-                  name="domain"
-                  value={globalFormData.domain}
-                  onChange={handleGlobalChange} >
-                  <option value="">Select Domain</option>{" "}
-                  <option value="health">Healthcare</option>{" "}
-                  <option value="finance">Finance</option>{" "}
-                  <option value="education">Education</option>{" "}
-                  <option value="personal data">Personal data</option>
-                </select>
-              </div>
+        {/*<div className="connectionTerms-heroContainer">
+         <div style={{paddingLeft:"20px"}}>
+          <div className="mb-3 mt-3 row">
+            <label className="col-sm-2 col-md-2 col-form-label">Name</label>
+            <div className="col-md-3 col-sm-10 col-xs-10">
+              <input
+                type="text"
+                name="globalName"
+                placeholder="Global Connection Type Name"
+                value={globalFormData.globalName}
+                onChange={handleGlobalChange} className="form-control" />
             </div>
           </div>
-          {/* <div className="main-heading" style={{textAlign:"center"}}>Guest Terms Of Service</div> */}
 
-        </div>
+          <div className="mb-3 row">
+            <label className="col-sm-2 col-md-2 col-form-label">Description</label>
+            <div className="col-md-3 col-sm-10 col-xs-10">
+              <input
+                type="text"
+                name="globalDescription"
+                placeholder="Description"
+                value={globalFormData.globalDescription}
+                onChange={handleGlobalChange} className="form-control" />
+            </div>
+          </div>
 
-        <div className="main-heading">Guest Terms Of Service</div>
+          <div className="mb-3 row">
+            <label className="col-sm-2 col-md-2 col-form-label">Template/Policy</label>
+            <div className="col-md-3 col-sm-10 col-xs-10">
+              <select className="form-select form-select-md" aria-label="Small select example" name="globaltype"
+                value={globalFormData.globaltype}
+                onChange={handleGlobalChange}>
+                <option value="">Select Template/Policy</option>{" "}
+                <option value="template">template</option>{" "}
+                <option value="policy">policy</option>{" "}
+              </select>
+            </div>
+          </div>
+
+          <div className="mb-3 row">
+            <label className="col-sm-2 col-md-2 col-form-label">Domain</label>
+            <div className="col-md-3 col-sm-10 col-xs-10">
+              <select className="form-select form-select-md" aria-label="Small select example"
+                name="domain"
+                value={globalFormData.domain}
+                onChange={handleGlobalChange} >
+                <option value="">Select Domain</option>{" "}
+                <option value="health">Healthcare</option>{" "}
+                <option value="finance">Finance</option>{" "}
+                <option value="education">Education</option>{" "}
+                <option value="technology">Technology</option>
+              </select>
+            </div>
+          </div>
+        </div> 
+
+      </div>*/}
+
+        <div className="main-heading">Host Terms Of Service</div>
 
 
         <Grid container className="parent-container secondContainer">
           <Grid item xs={12} md={8} className="parent-left-heading">
             <Grid container padding={"5px"}>
               <Grid item xs={12} md={6} className="connectionTerms-resourceHeading">
-                Guest Obligations
+                Host Obligations
               </Grid>
               <Grid item xs={12} md={3}></Grid>
               {/* <Grid item xs={12} md={3}>
@@ -580,7 +532,7 @@ console.log("errors", error)
                   </div>
 
                   <div className="mb-3 row">
-                    <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>
+                    <label className="col-sm-12 col-md-2 col-form-label">Guest Permissions</label>
                     <div className="col-md-9 col-sm-12">
                       <div className="row">
                         <div className="col-md-2 col-xs-2">
@@ -710,7 +662,7 @@ console.log("errors", error)
                   </div>
                 </div>
                 <div className="connectionTerms-btn">
-                  <button type="submit">Next</button>
+                  <button type="submit">Submit</button>
                   <button onClick={() => handleGlobalConnection()}>Cancel</button>
                 </div>
               </form>

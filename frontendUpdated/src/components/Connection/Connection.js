@@ -203,7 +203,7 @@ export const Connection = () => {
                   </Grid>
                   <Grid container md={8} sm={8} xs={12} style={{ marginLeft: "3px" }}>
 
-                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -216,7 +216,7 @@ export const Connection = () => {
                         Download
                       </label>
                     </Grid>
-                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -229,7 +229,7 @@ export const Connection = () => {
                         Subset
                       </label>
                     </Grid>
-                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -242,7 +242,7 @@ export const Connection = () => {
                         Reshare
                       </label>
                     </Grid>
-                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -255,7 +255,7 @@ export const Connection = () => {
                         Confer
                       </label>
                     </Grid>
-                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -268,7 +268,7 @@ export const Connection = () => {
                         Collateral
                       </label>
                     </Grid>
-                    <Grid item md={4} sm={4} xs={12} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"

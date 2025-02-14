@@ -35,7 +35,9 @@ export const Connection = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-
+  const {
+    connectionBreadcrumbs,
+  } = location.state || {};
   useEffect(() => {
     if (!curruser) {
       navigate("/");
@@ -110,8 +112,12 @@ export const Connection = () => {
       </a>
       <span className="breadcrumb-separator">▶</span>
       <span onClick={() => handleClick(locker)} className="breadcrumb-item">View Locker</span>
-      <span className="breadcrumb-separator">▶</span>
-      <span onClick={() => handleLockerAdmin(locker)} className="breadcrumb-item">Locker Admin</span>
+      {!connectionBreadcrumbs && (
+        <>
+          <span className="breadcrumb-separator">▶</span>
+          <span onClick={() => handleLockerAdmin(locker)} className="breadcrumb-item">Locker Admin</span>
+        </>
+      )}
       <span className="breadcrumb-separator">▶</span>
       <span className="breadcrumb-item current">CreateConnectionType</span>
     </div>

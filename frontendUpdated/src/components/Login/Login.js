@@ -31,23 +31,12 @@ export const Login = () => {
         // Log form values to ensure they're being set correctly
         console.log("Form Values: ", { username, password, description });
 
-        const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'http://127.0.0.1:8000/login-user/'.replace(/host/, frontend_host);
-        // const headers = {};
+        const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
+        const headers = {};
 
-        // console.log(url);
-        
-
-        // if (!isSignup) {
-        //     headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
-        // }
-
-        const headers = {
-            'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
-            'Content-Type': 'application/json',
-        };
-
-        console.log(headers);
-        
+        if (!isSignup) {
+            headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
+        }
 
         fetch(url, {
             method: 'POST',

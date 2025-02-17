@@ -238,35 +238,68 @@ export const Home = () => {
     }
   }, [curruser, navigate]);
 
-
+  const token = Cookies.get('authToken');
+  console.log(token)
   useEffect(() => {
+    // const fetchLockers = async () => {
+    //   try {
+    //     const token = Cookies.get('authToken');
+    //     const response = await fetch('host/get-lockers-user/'.replace(/host/, frontend_host), {
+    //       method: 'GET',
+    //       headers: {
+    //         'Authorization': `Basic ${token}`,
+    //         'Content-Type': 'application/json',
+    //       },
+    //     });
+
+    //     if (!response.ok) {
+    //       const errorData = await response.json();
+    //       setError(errorData.error || 'Failed to fetch lockers');
+    //       return;
+    //     }
+
+    //     const data = await response.json();
+    //     if (data.success) {
+    //       setLockers(data.lockers || []);
+    //     } else {
+    //       setError(data.message || data.error);
+    //     }
+    //   } catch (error) {
+    //     setError("An error occurred while fetching lockers.");
+    //   }
+    // };
+
     const fetchLockers = async () => {
       try {
-        const token = Cookies.get('authToken');
-        const response = await fetch('host/get-lockers-user/'.replace(/host/, frontend_host), {
-          method: 'GET',
-          headers: {
-            'Authorization': `Basic ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          setError(errorData.error || 'Failed to fetch lockers');
-          return;
-        }
-
-        const data = await response.json();
-        if (data.success) {
-          setLockers(data.lockers || []);
-        } else {
-          setError(data.message || data.error);
-        }
+          const token = Cookies.get('authToken');
+  
+          const response = await fetch(`${frontend_host}/get-lockers-user/`, {
+              method: 'GET',
+              headers: {
+                  'Authorization': `Basic ${(token)}`,  // Ensure proper decoding
+                  'Content-Type': 'application/json',
+              },
+              mode: 'cors',  // Enable CORS
+              credentials: 'include' // Include cookies if required
+          });
+  
+          if (!response.ok) {
+              const errorData = await response.json();
+              setError(errorData.error || 'Failed to fetch lockers');
+              return;
+          }
+  
+          const data = await response.json();
+          if (data.success) {
+              setLockers(data.lockers || []);
+          } else {
+              setError(data.message || data.error);
+          }
       } catch (error) {
-        setError("An error occurred while fetching lockers.");
+          setError("An error occurred while fetching lockers.");
       }
-    };
+  };
+  
 
     if (curruser) {
       fetchLockers();

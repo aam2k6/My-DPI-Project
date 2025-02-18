@@ -79,6 +79,7 @@ export const Connection = () => {
       connectionName,
       connectionDescription,
       validity,
+      postConditions:permissions,
     };
     setConnectionData(connectionData);
     console.log("Form submitted");

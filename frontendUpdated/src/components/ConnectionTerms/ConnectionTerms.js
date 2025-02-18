@@ -572,7 +572,7 @@ export const ConnectionTerms = () => {
     forbidden: false,
     resharePermission: ""
   };
-
+console.log("connectionData", connectionData)
   const [formData, setFormData] = useState(initialFormData);
   const [obligations, setObligations] = useState([]); // Change to an array
   const [error, setError] = useState(null);
@@ -923,7 +923,7 @@ export const ConnectionTerms = () => {
     setConnectionTermsData(connectionTermsData); // Update context
     navigate("/connectionTermsHost"); // Navigate to next page
   };
-
+console.log("connectionData", connectionData)
   const handleSubmit = (event) => {
     event.preventDefault();
     if (obligations.length === 0) {

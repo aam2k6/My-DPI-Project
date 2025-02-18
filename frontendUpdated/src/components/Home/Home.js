@@ -273,7 +273,7 @@ export const Home = () => {
       try {
           const token = Cookies.get('authToken');
   
-          const response = await fetch(`${frontend_host}/get-lockers-user/`, {
+          const response = await fetch(`http://127.0.0.1:8000/get-lockers-user/`, {
               method: 'GET',
               headers: {
                   'Authorization': `Basic ${(token)}`,  // Ensure proper decoding

@@ -24,12 +24,16 @@ export const UploadResource = () => {
   const [permissions, setPermissions] = useState({
     reshare: false,
     download: false,
-    aggregate: false,
+    subset: false,
+    confer: false,
+    collateral: false,
+    transfer: false,
   });
+  console.log("permissions", permissions)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    return string.charAt(0).toUpperCase()  + string.slice(1);
   };
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export const UploadResource = () => {
     }
   }, [curruser, navigate]);
 
-
+  console.log("JSON Data",  JSON.stringify(permissions))
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -49,17 +53,16 @@ export const UploadResource = () => {
       return;
     }
 
-
     const data = new FormData();
     data.append('locker_name', locker.name);
     data.append('resource_name', resourceName);
     data.append('type', visibility);
     data.append('document', document);
     data.append('validity_time', validityTime); // Add validity time
-    data.append("reshare", permissions.reshare);
-    data.append("download", permissions.download);
-    data.append("aggregate", permissions.aggregate);
-
+    // data.append("reshare", permissions.reshare);
+    // data.append("download", permissions.download);
+    // data.append("aggregate", permissions.aggregate);
+    data.append('post_conditions', JSON.stringify(permissions))
     const token = Cookies.get('authToken');
 
     fetch('host/upload-resource_v2/'.replace(/host/, frontend_host), {
@@ -185,47 +188,86 @@ export const UploadResource = () => {
                 </div>
                 <div className="mt-3">
                   <label className="form-label fw-bold mb-2">Permissions</label>
-                <div style={{marginLeft:"3px"}}>
-                <div className="mb-2">
-                    <input
-                      className="hidden-checkbox"
-                      type="checkbox"
-                      id="reshare"
-                      name="reshare"
-                      checked={permissions.reshare}
-                      onChange={handleChange}
-                    />
-                    <label className={`custom-checkbox ${permissions.reshare ? "checked" : ""}`} htmlFor="reshare">
-                      Reshare
-                    </label>
-                  </div>
-                  <div className="mb-2">
-                    <input
-                      className="hidden-checkbox"
-                      type="checkbox"
-                      id="download"
-                      name="download"
-                      checked={permissions.download}
-                      onChange={handleChange}
-                    />
-                    <label className={`custom-checkbox ${permissions.download ? "checked" : ""}`} htmlFor="download">
-                      Download
-                    </label>
-                  </div>
-                  <div className="mb-2">
-                    <input
-                      className="hidden-checkbox"
-                      type="checkbox"
-                      id="aggregate"
-                      name="aggregate"
-                      checked={permissions.aggregate}
-                      onChange={handleChange}
-                    />
-                    <label className={`custom-checkbox ${permissions.aggregate ? "checked" : ""}`} htmlFor="aggregate">
-                      Aggregate
-                    </label>
-                  </div>
-                </div>
+                  <Grid container md={8} sm={8} xs={12} style={{ marginLeft: "3px" }}>
+                    <Grid item  md={4} sm={4} xs={6} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="download"
+                        name="download"
+                        checked={permissions.download}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.download ? "checked" : ""}`} htmlFor="download">
+                        Download
+                      </label>
+                    </Grid>
+                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="subset"
+                        name="subset"
+                        checked={permissions.subset}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.subset ? "checked" : ""}`} htmlFor="subset">
+                        Subset
+                      </label>
+                    </Grid>
+                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="reshare"
+                        name="reshare"
+                        checked={permissions.reshare}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.reshare ? "checked" : ""}`} htmlFor="reshare">
+                        Reshare
+                      </label>
+                    </Grid>
+                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="confer"
+                        name="confer"
+                        checked={permissions.confer}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.confer ? "checked" : ""}`} htmlFor="confer">
+                        Confer
+                      </label>
+                    </Grid>
+                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="collateral"
+                        name="collateral"
+                        checked={permissions.collateral}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.collateral ? "checked" : ""}`} htmlFor="collateral">
+                        Collateral
+                      </label>
+                    </Grid>
+                    <Grid item  md={4} sm={4} xs={6} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="transfer"
+                        name="transfer"
+                        checked={permissions.transfer}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
+                        Transfer
+                      </label>
+                    </Grid>
+                  </Grid>
                 </div>
 
 

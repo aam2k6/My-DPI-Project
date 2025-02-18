@@ -1683,7 +1683,7 @@ export const TargetLockerView = () => {
       Home
     </a>
     <span className="breadcrumb-separator">▶</span>
-    <a className="breadcrumb-item" href="/dpi-directory">DPI Directory</a>
+    <a className="breadcrumb-item" href="/dpi-directory">User Directory</a>
     <span className="breadcrumb-separator">▶</span>
     <span onClick={()=>handleTargetUserView(locker)} className="breadcrumb-item">TargetUserView</span>
     <span className="breadcrumb-separator">▶</span>

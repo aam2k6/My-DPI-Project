@@ -104,7 +104,9 @@ export default function CreateGlobalConnectionType() {
               </li>
             ))}
             {filteredTypes.length === 0 && (
-              <li className="no-connection-item">No {globalType}s found for this domain.</li>
+              <li className="no-connection-item">
+                No {globalType === "policy" ? "policies" : `${globalType}s`} found for this domain.
+              </li>
             )}
           </ol>
         )}
@@ -117,12 +119,12 @@ export default function CreateGlobalConnectionType() {
       <a href="/home" className="breadcrumb-item">
         Home
       </a>
-      <span className="breadcrumb-separator">▶</span>
+      {/* <span className="breadcrumb-separator">▶</span>
       <a href="/dpi-directory" className="breadcrumb-item">
-        DPI Directory
-      </a>
+        User Directory
+      </a> */}
       <span className="breadcrumb-separator">▶</span>
-      <span className="breadcrumb-item current">GlobalConnectionTypes</span>
+      <span className="breadcrumb-item current">GlobalConnectionDirectory</span>
     </div>
   )
 
@@ -145,7 +147,7 @@ export default function CreateGlobalConnectionType() {
                 <li
                   className={location.pathname === "/dpi-directory" ? "selected" : ""}
                 >
-                  <Link to="/dpi-directory">DPI Directory</Link>
+                  <Link to="/dpi-directory">User Directory</Link>
                 </li>
                 <li
                   className={
@@ -155,7 +157,7 @@ export default function CreateGlobalConnectionType() {
                   }
                 >
                   <Link className='links' to="/create-global-connection-type">
-                    Create Global Connection Type
+                    Global Connection Directory
                   </Link>
                 </li>
 
@@ -166,7 +168,7 @@ export default function CreateGlobalConnectionType() {
         </div>
         <Grid container className="manage-connection-content">
           <Grid item xs={12}>
-            <h2>Global Connections</h2>
+            <h3>Global Connection Directory</h3>
             {error && <p className="error">{error}</p>}
 
             <div className="section">

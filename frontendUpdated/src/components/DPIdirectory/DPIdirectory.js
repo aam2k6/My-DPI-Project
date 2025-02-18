@@ -42,8 +42,9 @@ export const DPIdirectory = () => {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          setUsers(data.users);
-          setFilteredUsers(data.users);
+          const sortedUsers = data.users.slice().sort((a, b) => a.username.localeCompare(b.username));
+          setUsers(sortedUsers);
+          setFilteredUsers(sortedUsers);
         } else {
           setError(data.message || data.error);
         }
@@ -75,7 +76,7 @@ export const DPIdirectory = () => {
         Home
       </a>
       <span className="breadcrumb-separator">▶</span>
-      <span className="breadcrumb-item current">DPI Directory</span>
+      <span className="breadcrumb-item current">User Directory</span>
     </div>
 
   )
@@ -97,7 +98,7 @@ export const DPIdirectory = () => {
                 <li
                   className={location.pathname === "/dpi-directory" ? "selected" : ""}
                 >
-                  <Link to="/dpi-directory">DPI Directory</Link>
+                  <Link to="/dpi-directory">User Directory</Link>
                 </li>
                 <li
                   className={
@@ -107,7 +108,7 @@ export const DPIdirectory = () => {
                   }
                 >
                   <Link className='links' to="/create-global-connection-type">
-                    Create Global Connection Type
+                    Global Connection Directory
                   </Link>
                 </li>
 

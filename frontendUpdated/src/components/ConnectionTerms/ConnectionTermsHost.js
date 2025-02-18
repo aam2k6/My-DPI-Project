@@ -155,7 +155,7 @@ export const ConnectionTermsHost = () => {
           if (data.success) {
             const { obligations, permissions, forbidden } = data.data;
             const templateName = templateNameMapping[templateId] || "Host Obligation";
-            const obligationsWithGlobalId = obligations.map((obligation) => ({
+            const obligationsWithGlobalId = obligations.host_guest.map((obligation) => ({
               ...obligation,
               templateName,
               global_conn_type_id: templateId,  // Add global_conn_type_id

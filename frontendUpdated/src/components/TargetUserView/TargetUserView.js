@@ -93,7 +93,7 @@ export const TargetUserView = () => {
         Home
       </a>
       <span className="breadcrumb-separator">▶</span>
-      <a className="breadcrumb-item" href="/dpi-directory">DPI Directory</a>
+      <a className="breadcrumb-item" href="/dpi-directory">User Directory</a>
       <span className="breadcrumb-separator">▶</span>
       <span className="breadcrumb-item current">TargetUserView</span>
     </div>

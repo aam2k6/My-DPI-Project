@@ -679,7 +679,7 @@ console.log("connectionData", connectionData)
           if (data.success) {
             const { obligations, permissions, forbidden } = data.data;
 
-            const obligationsWithGlobalId = obligations.map((obligation) => {
+            const obligationsWithGlobalId = obligations.guest_host.map((obligation) => {
               const templateName = templateNameMapping[templateId] || "Guest Obligation";
               return {
                 ...obligation,

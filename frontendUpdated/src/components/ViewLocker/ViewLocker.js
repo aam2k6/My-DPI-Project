@@ -8,7 +8,7 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal";
-import { Grid, Button } from "@mui/material"
+import { Grid, Button, ButtonBase } from "@mui/material"
 import Tooltips from '@mui/material/Tooltip';
 import { Tooltip } from 'react-tooltip';
 import ReactModal from "react-modal";
@@ -1229,10 +1229,10 @@ console.log("lockers", lockers)
                       className={`fa-solid fa-folder${isResourcesVisible ? "-open" : ""}`}
                       style={{ marginRight: "10px", fontSize: "24px" }}
                     />
-                    <span>My Resources</span>
-                    <button style={{ marginLeft: "12px", fontSize: "12px" }} onClick={handleUploadResource}>
-                      Upload resource
-                    </button>
+                    <span fontSize={{md:"16px", xs:"12px"}}>My Resources</span>
+                    <Button className="btn-color" style={{ marginLeft: "12px", fontSize: "13px", }} onClick={handleUploadResource}>
+                      UPLOAD RESOURCE
+                    </Button>
                   </div>
 
                   {/* Resource List inside the folder */}
@@ -1629,7 +1629,7 @@ console.log("lockers", lockers)
            <Grid item md={4} xs={12}><h3 id="mycon">My Connections:</h3></Grid>
            <Grid item md={3} xs={12}></Grid>
             <Grid item md={5} xs={12}>
-            <Button onClick={gotopage12createconnection} className="btn-color" style={{ padding: "8px" }}>
+            <Button onClick={gotopage12createconnection} className="btn-color" style={{fontSize:"13px"}}>
               Create New Connection Type
             </Button>
             </Grid>

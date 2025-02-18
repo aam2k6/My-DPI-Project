@@ -350,11 +350,7 @@ console.log("errors", error)
         Home
       </a>
       <span className="breadcrumb-separator">▶</span>
-      <a href="/dpi-directory" className="breadcrumb-item">
-        DPI Directory
-      </a>
-      <span className="breadcrumb-separator">▶</span>
-      <span onClick={() => handleGlobalConnection()} className="breadcrumb-item">GlobalConnectionTypes</span>
+      <span onClick={() => handleGlobalConnection()} className="breadcrumb-item">GlobalConnectionDirectory</span>
       <span className="breadcrumb-separator">▶</span>
       <span className="breadcrumb-item current">AddNewGlobalConnectionType</span>
     </div>

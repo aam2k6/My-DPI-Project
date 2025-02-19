@@ -172,13 +172,13 @@ export default function CreateGlobalConnectionType() {
             {error && <p className="error">{error}</p>}
 
             <div className="section">
-              <h4>Templates</h4>
-              {allDomains.map((domain) => renderConnectionList(domain, "template"))}
+              <h4>Policies</h4>
+              {allDomains.map((domain) => renderConnectionList(domain, "policy"))}
             </div>
 
             <div className="section">
-              <h4>Policies</h4>
-              {allDomains.map((domain) => renderConnectionList(domain, "policy"))}
+              <h4>Templates</h4>
+              {allDomains.map((domain) => renderConnectionList(domain, "template"))}
             </div>
 
             {isSystemAdmin && (

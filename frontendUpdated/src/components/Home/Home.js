@@ -238,8 +238,6 @@ export const Home = () => {
     }
   }, [curruser, navigate]);
 
-  const token = Cookies.get('authToken');
-  console.log(token)
   useEffect(() => {
     const fetchLockers = async () => {
       try {

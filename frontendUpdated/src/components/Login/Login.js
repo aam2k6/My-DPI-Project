@@ -17,6 +17,67 @@ export const Login = () => {
     const navigate = useNavigate();
     const { setUser } = useContext(usercontext);
 
+    // const handleSubmit = async (event) => {
+    //     event.preventDefault();
+
+    //     const data = new FormData();
+    //     data.append('username', username);
+    //     data.append('password', password);
+
+    //     if (isSignup) {
+    //         data.append('description', description);
+    //     }
+
+    //     // Log form values to ensure they're being set correctly
+    //     console.log("Form Values: ", { username, password, description });
+
+    //     const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
+    //     // const headers = {};
+
+    //     // console.log(url);
+
+
+    //     // if (!isSignup) {
+    //     //     headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
+    //     // }
+
+    //     const headers = {
+    //         'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
+    //         'Content-Type': 'application/json',
+    //     };
+
+    //     console.log(headers);
+
+
+    //     fetch(url, {
+    //         method: 'POST',
+    //         headers: headers,
+    //         body: data,
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.success) {
+    //                 console.log(isSignup ? "Signup successful:" : "Login successful:", data);
+    //                 if (isSignup) {
+    //                     setIsSignup(false); // Switch to login form after successful signup
+    //                     alert("Signup successful. Please log in.");
+    //                 } else {
+    //                     Cookies.set('authToken', btoa(`${username}:${password}`));
+    //                     setUser(data.user);
+    //                     localStorage.setItem('curruser', JSON.stringify(data.user));
+    //                     navigate('/home');
+    //                 }
+    //             } else {
+    //                 console.error("Error:", data.error);
+    //                 alert("Invalid Credentials" || data.error);
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error("Error:", error);
+    //             alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
+    //         });
+    // };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -32,22 +93,11 @@ export const Login = () => {
         console.log("Form Values: ", { username, password, description });
 
         const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
-        // const headers = {};
+        const headers = {};
 
-        // console.log(url);
-        
-
-        // if (!isSignup) {
-        //     headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
-        // }
-
-        const headers = {
-            'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
-            'Content-Type': 'application/json',
-        };
-
-        console.log(headers);
-        
+        if (!isSignup) {
+            headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
+        }
 
         fetch(url, {
             method: 'POST',
@@ -77,6 +127,7 @@ export const Login = () => {
                 alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
             });
     };
+
 
     return (
         <>

@@ -919,14 +919,51 @@ export const Guesttermsreview = () => {
         await handleCollateralResource();
       }
 
-      navigate("/home");
+      // navigate("/home");
     } catch (err) {
       console.error("Error:", err.message);
       setError(err.message);
     }
   };
 
-  // console.log("conndetials", conndetails);
+  console.log("conndetials", conndetails);
+
+  // const handleSave = async () => {
+  //   try {
+  //     // First, call handleCollateralResource and ensure it succeeds
+  //     const collateralSuccess = await handleCollateralResource();
+  //     if (!collateralSuccess) {
+  //       console.log("Collateralization failed, not updating the row.");
+  //       return; // Stop execution if collateralization fails
+  //     }
+  
+  //     const token = Cookies.get("authToken");
+  
+  //     // Proceed with processing only if collateralization was successful
+  //     const terms_value = res?.obligations.reduce((acc, obligation) => {
+  //       console.log(res?.obligations, "data not extra");
+  
+  //       const status =
+  //         statuses[obligation.labelName] === "approved"
+  //           ? "T"
+  //           : statuses[obligation.labelName] === "rejected"
+  //           ? "R"
+  //           : "F";
+  //       const resourceName =
+  //         termsValue[obligation.labelName]?.split(";")[0] || "";
+  
+  //       acc[obligation.labelName] = `${resourceName};${status}`;
+  //       return acc;
+  //     }, {});
+  
+  //     console.log("Collateralization successful, proceeding with save.");
+  //     // Continue save logic here...
+  
+  //   } catch (err) {
+  //     console.error("Error in handleSave:", err);
+  //   }
+  // };
+  
   const updateXnode = async (resource) => {
     try {
       const token = Cookies.get("authToken");
@@ -996,21 +1033,21 @@ export const Guesttermsreview = () => {
         }
       );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log(response.error);
-        throw new Error("Failed to transfer resource");
-      }
+      // if (!response.ok) {
+      //   const errorText = await response.text();
+      //   console.log(response.error);
+      //   throw new Error("Failed to transfer resource");
+      // }
 
       const data = await response.json();
       // console.log("transfer", data);
       if (data.success) {
-        alert("Resource transfer successful");
+        alert(data.message || "Resource transfered successful");
       } else {
-        setError(data.error || "Failed to transfer resource");
+        alert(data.error || "Failed to transfer resource");
       }
     } catch (err) {
-      setError(err.message);
+      alert(err.message || "Error occured");
     }
   };
 
@@ -1047,23 +1084,20 @@ export const Guesttermsreview = () => {
 
 
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error Response:", errorText);
-        throw new Error("Failed to share resource");
-      }
+      // if (!response.ok) {
+      //   const errorText = await response.text();
+      //   console.error("Error Response:", errorText);
+      //   throw new Error("Failed to share resource");
+      // }
 
       const data = await response.json();
-      if (!data.success) {
-        throw new Error(data.error || "Failed to share resource");
-      }
-      else {
-        console.log(data.message);
-        alert(data.message);
+      if (data.success) {
+        alert(data.message || "Resource shared successfully..");
+      } else {
+        alert(data.error || "Failed to share resource");
       }
     } catch (err) {
-      console.error("Error:", err.message);
-      throw err; // Rethrow error to be handled by the main try-catch
+      alert(err.message || "Error occured");
     }
   };
 
@@ -1098,20 +1132,20 @@ export const Guesttermsreview = () => {
         }
       );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log(response.error);
-        throw new Error("Failed to confer resource");
-      }
+      // if (!response.ok) {
+      //   const errorText = await response.text();
+      //   console.log(response.error);
+      //   throw new Error("Failed to confer resource");
+      // }
 
       const data = await response.json();
       if (data.success) {
-        alert("Resource confer successful");
+        alert(data.message || "Resource conferred successful");
       } else {
-        setError(data.error || "Failed to confer resource");
+        alert(data.error || "Failed to confer resource");
       }
     } catch (err) {
-      setError(err.message);
+      alert(err.message || "Error occured");
     }
   };
 
@@ -1146,20 +1180,20 @@ export const Guesttermsreview = () => {
         }
       );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log(response.error);
-        throw new Error("Failed to collateral resource");
-      }
+      // if (!response.ok) {
+      //   const errorText = await response.text();
+      //   console.log(response.error);
+      //   throw new Error("Failed to collateral resource");
+      // }
 
       const data = await response.json();
-      if (data.success) {
-        alert("Resource collateral successful");
+      if (data.success == "true") {
+        alert(data.message || "Resource pledged successful");
       } else {
-        setError(data.error || "Failed to collateral resource");
+        alert(data.error || "Failed to collateral resource");
       }
     } catch (err) {
-      setError(err.message);
+      alert(err.message || "Error occured");
     }
   };
 
@@ -1783,7 +1817,7 @@ export const Guesttermsreview = () => {
                             <th>Data Element</th>
                             <th>Purpose</th>
                             <th>Type of Share</th>
-                            <th>Host Privileges</th>
+                            {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
                             <th>Status</th>
                           </tr>
@@ -1857,11 +1891,11 @@ export const Guesttermsreview = () => {
                                   {renderTooltip(obligation.typeOfSharing)}
                                 </div>
                               </td>
-                              <td>
+                              {/* <td>
                                 {obligation.hostPermissions
                                   ? obligation.hostPermissions.join(", ")
                                   : "None"}
-                              </td>
+                              </td> */}
                               <td> <button onClick={() => openPopup(obligation)}>Open</button></td>
                               {showOpenPopup && selectedRowData && (
                                 <div className="terms-popup">
@@ -1887,6 +1921,14 @@ export const Guesttermsreview = () => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
+                                              <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li>
+                                              <li>
+                                                Current owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li>
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -1897,7 +1939,7 @@ export const Guesttermsreview = () => {
                                       )}
                                     </p>
                                     <p>Type of Share: {selectedRowData.typeOfSharing}</p>
-                                    <p>
+                                    {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
@@ -1906,7 +1948,7 @@ export const Guesttermsreview = () => {
                                       ) : (
                                         "None"
                                       )}
-                                    </p>
+                                    </p> */}
                                   </div>
                                 </div>
                               )}

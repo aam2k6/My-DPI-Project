@@ -1709,7 +1709,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                             <th>Data Element</th>
                             <th>Purpose</th>
                             <th>Type of Share</th>
-                            <th>Host Privileges</th>
+                            {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
                             <th>Status</th>
                           </tr>
@@ -1784,11 +1784,11 @@ const handleClicks = async (xnode_id_with_pages) => {
                                   {renderTooltip(obligation.typeOfSharing)}
                                 </div>
                               </td>
-                              <td>
+                              {/* <td>
                                 {obligation.hostPermissions
                                   ? obligation.hostPermissions.join(", ")
                                   : "None"}
-                              </td>
+                              </td> */}
                               <td><button onClick={() => openPopup(obligation)}>Open</button></td>
                               {showOpenPopup && selectedRowData && (
                                 <div className="terms-popup">
@@ -1814,6 +1814,14 @@ const handleClicks = async (xnode_id_with_pages) => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
+                                              <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li>
+                                              <li>
+                                                Current owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li>
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -1824,7 +1832,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                                       )}
                                     </p>
                                     <p>Type of Share: {selectedRowData.typeOfSharing}</p>
-                                    <p>
+                                    {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
@@ -1833,7 +1841,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                                       ) : (
                                         "None"
                                       )}
-                                    </p>
+                                    </p> */}
                                   </div>
                                 </div>
                               )}

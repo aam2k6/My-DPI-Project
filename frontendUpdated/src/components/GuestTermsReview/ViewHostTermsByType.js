@@ -1948,7 +1948,7 @@ export const ViewHostTermsByType = () => {
                             <th>purpose</th>
                             <th>Type of share</th>
                             <th>Enter value</th>
-                            <th>Host Privileges</th>
+                            {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
                             <th>Status</th> {/* New column for Status */}
                           </tr>
@@ -1966,11 +1966,11 @@ export const ViewHostTermsByType = () => {
                                 </div>
                               </td>
                               <td>{renderInputField(obligation)}</td>
-                              <td>
+                              {/* <td>
                                 {obligation.hostPermissions
                                   ? obligation.hostPermissions.join(", ")
                                   : "None"}
-                              </td>
+                              </td> */}
 
                               <td> <button onClick={() => openPopup(obligation)}>Open</button></td>
                               {showOpenPopup && selectedRowData && (
@@ -1997,6 +1997,14 @@ export const ViewHostTermsByType = () => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
+                                              <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li>
+                                              <li>
+                                                Current owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li>
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -2007,7 +2015,7 @@ export const ViewHostTermsByType = () => {
                                       )}
                                     </p>
                                     <p>Type of Share: {selectedRowData.typeOfSharing}</p>
-                                    <p>
+                                    {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
@@ -2016,7 +2024,7 @@ export const ViewHostTermsByType = () => {
                                       ) : (
                                         "None"
                                       )}
-                                    </p>
+                                    </p> */}
                                   </div>
                                 </div>
                               )}

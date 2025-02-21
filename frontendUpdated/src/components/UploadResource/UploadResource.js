@@ -22,12 +22,12 @@ export const UploadResource = () => {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorModalMessage, setErrorModalMessage] = useState('');
   const [permissions, setPermissions] = useState({
-    reshare: false,
-    download: false,
-    subset: false,
-    confer: false,
-    collateral: false,
-    transfer: false,
+    share: true,
+    download: true,
+    subset: true,
+    confer: true,
+    collateral: true,
+    transfer: true,
   });
   console.log("permissions", permissions)
 
@@ -219,12 +219,12 @@ export const UploadResource = () => {
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
-                        id="reshare"
-                        name="reshare"
+                        id="share"
+                        name="share"
                         checked={permissions.reshare}
                         onChange={handleChange}
                       />
-                      <label className={`custom-checkbox ${permissions.reshare ? "checked" : ""}`} htmlFor="reshare">
+                      <label className={`custom-checkbox ${permissions.share ? "checked" : ""}`} htmlFor="share">
                         Reshare
                       </label>
                     </Grid>

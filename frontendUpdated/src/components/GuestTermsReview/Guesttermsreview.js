@@ -1041,7 +1041,7 @@ export const Guesttermsreview = () => {
 
       const data = await response.json();
       // console.log("transfer", data);
-      if (data.success=="true") {
+      if (data.success) {
         alert(data.message || "Resource transfered successful");
       } else {
         alert(data.error || "Failed to transfer resource");
@@ -1091,7 +1091,7 @@ export const Guesttermsreview = () => {
       // }
 
       const data = await response.json();
-      if (data.success=="true") {
+      if (data.success) {
         alert(data.message || "Resource shared successfully..");
       } else {
         alert(data.error || "Failed to share resource");
@@ -1139,7 +1139,7 @@ export const Guesttermsreview = () => {
       // }
 
       const data = await response.json();
-      if (data.success=="true") {
+      if (data.success) {
         alert(data.message || "Resource conferred successful");
       } else {
         alert(data.error || "Failed to confer resource");
@@ -1187,7 +1187,7 @@ export const Guesttermsreview = () => {
       // }
 
       const data = await response.json();
-      if (data.success=="true") {
+      if (data.success) {
         alert(data.message || "Resource pledged successful");
       } else {
         alert(data.error || "Failed to collateral resource");

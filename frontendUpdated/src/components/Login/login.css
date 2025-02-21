@@ -25,26 +25,27 @@
     z-index: 1000;
     text-align: center;
     background-color: rgba(23, 22, 75, 1);
-    display: 'flex';
-    justify-content: 'space-between';
-    align-items: 'center';
+    display: flex;  /* Fixed improper quotes */
+    justify-content: space-between;  /* Fixed improper quotes */
+    align-items: center;  /* Fixed improper quotes */
+    padding: 1rem; /* Added padding for consistent spacing */
 }
 
 .headerlogin h1 {
-    margin-left: 0rem;
-    margin-top: 0rem;
+    margin: 0; /* Removed unnecessary left margin */
     font-size: 3rem;
     color: #ffffff;
     height: 4rem;
     text-align: center;
     background-color: rgba(23, 22, 75);
     flex: 1;
+    padding: 0.5rem; /* Ensuring consistent spacing */
 }
 
 .form-headers {
     margin-top: 2rem;
-    margin-left: 15rem;
-    margin-bottom: 6rem;
+    margin-bottom: 3rem; /* Adjusted margin for better spacing */
+    text-align: center;
 }
 
 .containerlogin {
@@ -53,6 +54,7 @@
     border: 1.75rem solid rgba(23, 22, 75);
     height: 30rem;
     width: 40rem;
+    padding: 2rem; /* Ensuring spacing inside the container */
 }
 
 .signup-form {
@@ -61,36 +63,49 @@
 
 .form-input {
     font-size: large;
-    margin-bottom: 2rem;
-    margin-left: 8rem;
+    margin-bottom: 1.5rem; /* Ensuring equal spacing between inputs */
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%; /* Centering and ensuring uniform spacing */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.submit-btnlogin1 {
-    margin-left: 14rem;
-    margin-right: 3rem;
+.form-input label {
+    flex: 1;
+}
+
+.form-input input {
+    flex: 2;
     padding: 0.5rem;
-
 }
 
+.submit-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem; /* Ensuring even spacing between buttons */
+}
+
+.submit-btnlogin1,
 .submit-btnlogin2 {
-    padding: 0.5rem;
+    padding: 0.2rem;
+    width: 35%;
+    font-size: 1rem;
+    text-align: center;
 }
 
-#form-inplogin1 input {
-    margin-left: 1.75rem;
-}
-
-#form-inplogin2 input {
-    margin-left: 1.45rem;
-}
-
+#form-inplogin1 input,
+#form-inplogin2 input,
 #form-inplogin3 input {
-    margin-left: 0.65rem;
+    margin-left: 0;
+    width: 100%;
+    padding: 0.20rem;
+    box-sizing: border-box;
 }
 
-/* Media Queries for Mobile (412px width) */
+/* Mobile Responsiveness */
 @media screen and (max-width: 660px) {
-
     .loginpage {
         width: 100vw;
         height: 70vh;
@@ -111,10 +126,9 @@
 
     .form-headers {
         margin-top: 1rem;
-        margin-left: 1rem;
         margin-bottom: 1rem;
         text-align: center;
-        font-size: 0.7rem;
+        font-size: 0.9rem;
     }
 
     .containerlogin {
@@ -127,67 +141,20 @@
         box-sizing: border-box;
     }
 
-    .signup-form {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0;
-    }
-
     .form-input {
         font-size: 1rem;
-        margin-bottom: 1rem;
-        margin-left: 0;
         width: 100%;
+        display: block;
     }
 
-    .submit-btnlogin1 {
-        width: 40%;
-        margin-left: 0;
-        margin-right: 0;
-        padding: 0.5rem;
-        font-size: 1rem;
-        text-align: center;
-        margin-left: 1rem;
+    .submit-buttons {
+        flex-direction: column;
+        align-items: center;
     }
 
+    .submit-btnlogin1,
     .submit-btnlogin2 {
-        width: 40%;
-        padding: 0.5rem;
-        font-size: 1rem;
-        text-align: center;
-        margin-left: 1rem;
+        width: 80%;
+        margin: 0.5rem 0;
     }
-
-    #form-inplogin1 input,
-    #form-inplogin2 input,
-    #form-inplogin3 input {
-        margin-left: 0;
-        width: 100%;
-        padding: 0.2rem;
-        box-sizing: border-box;
-    }
-
-    .logo-container .websciencelogo {
-        width: 70px;
-        height: auto;
-        margin-top: -40px;
-    }
-
-    .logo-container .iiitlogo {
-        width: 80px;
-        height: auto;
-        margin-top: -40px;
-    }
-
-}
-
-
-.logo-container .iiitlogo {
-    max-width: 100px;
-    height: auto;
-}
-
-.logo-container .websciencelogo {
-    max-width: 90px;
-    height: auto;
 }

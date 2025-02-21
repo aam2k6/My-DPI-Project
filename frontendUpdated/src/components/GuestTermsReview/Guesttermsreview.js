@@ -1041,7 +1041,7 @@ export const Guesttermsreview = () => {
 
       const data = await response.json();
       // console.log("transfer", data);
-      if (data.success==) {
+      if (data.success=="true") {
         alert(data.message || "Resource transfered successful");
       } else {
         alert(data.error || "Failed to transfer resource");

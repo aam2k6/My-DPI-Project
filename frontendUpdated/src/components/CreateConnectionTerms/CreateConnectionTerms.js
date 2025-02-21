@@ -721,7 +721,6 @@ export const CreateConnectionTerms = () => {
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [connectionDetails, setConnectionDetails] = useState(null);
-  const [permissions, setPermissions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
@@ -790,7 +789,7 @@ export const CreateConnectionTerms = () => {
     connectionType
   );
 
-  console.log("permissions", permissions)
+  console.log("viewHost", viewHost)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -884,7 +883,7 @@ export const CreateConnectionTerms = () => {
 
       try {
         const response = await fetch(
-          `host/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
+          `host/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
           {
             method: "GET",
             headers: {
@@ -898,7 +897,6 @@ export const CreateConnectionTerms = () => {
         console.log("data conn", data);
         if (response.ok) {
           setConnectionDetails(data.connections);
-          setPermissions(data.post_conditions)
           setTermsValue(data.connections.terms_value || {})
           setTermsValueReverse(data.connections.terms_value_reverse || {})
         } else {
@@ -1873,13 +1871,7 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms">Your Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default {Object.entries(permissions)
-                        .filter(([key, value]) => value)
-                        .map(([key]) => key)
-                        .join(", ")} are disabled unless otherwise mentioned in the terms</li>
-                      <div>
-
-                      </div>
+                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -1891,10 +1883,7 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms" >Host Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default {Object.entries(permissions)
-                        .filter(([key, value]) => value)
-                        .map(([key]) => key)
-                        .join(", ")} are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                 </div>

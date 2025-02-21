@@ -221,7 +221,7 @@ export const UploadResource = () => {
                         type="checkbox"
                         id="share"
                         name="share"
-                        checked={permissions.reshare}
+                        checked={permissions.share}
                         onChange={handleChange}
                       />
                       <label className={`custom-checkbox ${permissions.share ? "checked" : ""}`} htmlFor="share">

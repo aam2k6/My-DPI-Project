@@ -1044,7 +1044,7 @@ export const Guesttermsreview = () => {
       if (data.success) {
         alert(data.message || "Resource transfered successful");
       } else {
-        alert(data.error || "Failed to transfer resource");
+        alert("Failed to transfer resource");
       }
     } catch (err) {
       // alert(err.message || "Error occured");

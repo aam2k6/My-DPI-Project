@@ -721,6 +721,7 @@ export const CreateConnectionTerms = () => {
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [connectionDetails, setConnectionDetails] = useState(null);
+  const [permissions, setPermissions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
@@ -789,7 +790,7 @@ export const CreateConnectionTerms = () => {
     connectionType
   );
 
-  console.log("viewHost", viewHost)
+  console.log("permissions", permissions)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -883,7 +884,7 @@ export const CreateConnectionTerms = () => {
 
       try {
         const response = await fetch(
-          `host/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
+          `host/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
           {
             method: "GET",
             headers: {
@@ -897,6 +898,7 @@ export const CreateConnectionTerms = () => {
         console.log("data conn", data);
         if (response.ok) {
           setConnectionDetails(data.connections);
+          setPermissions(data.post_conditions)
           setTermsValue(data.connections.terms_value || {})
           setTermsValueReverse(data.connections.terms_value_reverse || {})
         } else {
@@ -1299,9 +1301,9 @@ export const CreateConnectionTerms = () => {
                     : `Host will ${term.typeOfSharing} ${term.labelName} `}
               </strong>
               - {term.labelDescription}
-              (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
+              {/* (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
                 ? term.hostPermissions.join(", ")
-                : "None"})
+                : "None"}) */}
             </li>
           ))}
         </ul>
@@ -1450,16 +1452,18 @@ export const CreateConnectionTerms = () => {
                         ? `Guest  ${term.labelName} - ${term.labelDescription}`
                         : `Host  ${term.labelName} - ${term.labelDescription}`}
                     </strong>
-                    (Host Privilege:{" "}
+                    {/* (Host Privilege:{" "}
                     {term.hostPermissions && term.hostPermissions.length > 0
                       ? term.hostPermissions.join(", ")
-                      : "None"})
+                      : "None"}) */}
                   </li>
                 )
               )}
             </ul>
           ) : (
-            <p>No forbidden terms available.</p>
+            <ul>
+              <li>No forbidden terms available.</li>
+            </ul>
           )}
         </div>
       );
@@ -1869,7 +1873,13 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms">Your Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px" }}>By default {Object.entries(permissions)
+                        .filter(([key, value]) => value)
+                        .map(([key]) => key)
+                        .join(", ")} are disabled unless otherwise mentioned in the terms</li>
+                      <div>
+
+                      </div>
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -1881,7 +1891,10 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms" >Host Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px" }}>By default {Object.entries(permissions)
+                        .filter(([key, value]) => value)
+                        .map(([key]) => key)
+                        .join(", ")} are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                 </div>

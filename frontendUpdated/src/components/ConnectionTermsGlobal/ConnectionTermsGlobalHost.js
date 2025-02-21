@@ -531,7 +531,7 @@ const handleCloseModal = () => {
                     </div>
                   </div>
 
-                  <div className="mb-3 row">
+                  {/* <div className="mb-3 row">
                     <label className="col-sm-12 col-md-2 col-form-label">Guest Permissions</label>
                     <div className="col-md-9 col-sm-12">
                       <div className="row">
@@ -594,7 +594,7 @@ const handleCloseModal = () => {
                       </span>
                     </div>
 
-                  </div>
+                  </div> */}
                   <Grid container marginBottom={2}>
                     <Grid item md={4} xs={12}>
                       <button

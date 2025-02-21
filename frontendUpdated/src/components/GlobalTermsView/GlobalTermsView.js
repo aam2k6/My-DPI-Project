@@ -135,9 +135,9 @@ const GlobalTermsView = () => {
                     ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
                     : `Host will ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`}
               </strong>
-              (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
+              {/* (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
                 ? term.hostPermissions.join(", ")
-                : "None"})
+                : "None"}) */}
             </li>
           ))}
         </ul>
@@ -197,16 +197,18 @@ const GlobalTermsView = () => {
                         ? `Guest  ${term.labelName} - ${term.labelDescription}`
                         : `Host  ${term.labelName} - ${term.labelDescription}`}
                     </strong>
-                    (Host Privilege:{" "}
+                    {/* (Host Privilege:{" "}
                     {term.hostPermissions && term.hostPermissions.length > 0
                       ? term.hostPermissions.join(", ")
-                      : "None"})
+                      : "None"}) */}
                   </li>
                 )
               )}
             </ul>
           ) : (
-            <p>No forbidden terms available.</p>
+            <ul>
+              <li>No forbidden terms available.</li>
+            </ul>
           )}
         </div>
       );
@@ -283,7 +285,7 @@ const GlobalTermsView = () => {
                       <div className="page13headterms">Guest Forbidden Terms</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("guest")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -295,7 +297,7 @@ const GlobalTermsView = () => {
                       <div className="page13headterms">Host Forbidden Terms</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("host")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default Reshare,Download,Aggreagte are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                 </div>

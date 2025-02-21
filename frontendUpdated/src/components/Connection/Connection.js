@@ -24,12 +24,12 @@ export const Connection = () => {
   const [validity, setValidity] = useState(null);
   const [selectedLocker, setSelectedLocker] = useState(null);
   const [permissions, setPermissions] = useState({
-    download: false,
-    subset: false,
-    reshare: false,
-    confer: false,
-    collateral: false,
-    transfer: false
+    download: true,
+    subset: true,
+    share: true,
+    confer: true,
+    collateral: true,
+    transfer: true
   });
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -234,12 +234,12 @@ export const Connection = () => {
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
-                        id="reshare"
-                        name="reshare"
-                        checked={permissions.reshare}
+                        id="share"
+                        name="share"
+                        checked={permissions.share}
                         onChange={handleChange}
                       />
-                      <label className={`custom-checkbox ${permissions.reshare ? "checked" : ""}`} htmlFor="reshare">
+                      <label className={`custom-checkbox ${permissions.share ? "checked" : ""}`} htmlFor="share">
                         Reshare
                       </label>
                     </Grid>

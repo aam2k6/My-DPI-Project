@@ -233,7 +233,7 @@ const GlobalTermsView = () => {
       </a>
       <span className="breadcrumb-separator">▶</span>
       <a href="/dpi-directory" className="breadcrumb-item">
-        DPI Directory
+        User Directory
       </a>
       <span className="breadcrumb-separator">▶</span>
       <a href="/create-global-connection-type" className="breadcrumb-item">

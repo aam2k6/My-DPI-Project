@@ -2764,7 +2764,10 @@ export const ViewTermsByType = () => {
                               </li>
                             ))}
                           </ul>
-                          <button className="btn btn-primary clsoeBtn" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources2(false)}>Cancel</button>
+                          <div className="button-group">
+                          <button className="btn-color"  onClick={() => setShowResources2(false)}>Cancel</button>
+                          <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
+                          </div>
                         </div>
                       )}
 

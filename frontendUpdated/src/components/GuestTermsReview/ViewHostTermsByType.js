@@ -2113,7 +2113,7 @@ export const ViewHostTermsByType = () => {
 
                           </ul>
                           <div className="button-group">
-                          <button className="btn-color" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources(false)}>Cancel</button>
+                          <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
                           <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                           </div>
                         </div>

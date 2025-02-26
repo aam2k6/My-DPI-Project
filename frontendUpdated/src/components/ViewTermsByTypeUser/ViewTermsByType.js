@@ -1374,7 +1374,7 @@ export const ViewTermsByType = () => {
       ...prev,
       [currentLabelName]: resource,
     }));
-    setShowResources2(false);
+    // setShowResources2(false);
     setSelectedResourceId2(resource.id);
     // setShowPageInput2(true);
     // console.log("resources selected", selectedResources);
@@ -1793,7 +1793,7 @@ export const ViewTermsByType = () => {
 
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/update-extra-data/`, {
+      const response = await fetch(`${frontend_host}/update-extra-data-v2/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -2620,10 +2620,10 @@ export const ViewTermsByType = () => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
-                                              <li>
+                                              {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li>
+                                              </li> */}
                                               <li>
                                                 Current owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}

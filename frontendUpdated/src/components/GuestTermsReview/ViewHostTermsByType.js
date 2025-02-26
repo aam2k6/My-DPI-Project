@@ -393,7 +393,7 @@ export const ViewHostTermsByType = () => {
         if (data.success) {
           // Create an array from the shared_more_data_terms object
           console.log(data.shared_more_data_terms);
-          const sharedData = Object.entries(data.shared_more_data_terms).map(
+          const sharedData = Object.entries(data.shared_more_data_terms_reverse).map(
             ([key, value], index) => ({
               sno: index + 1,
               labelName: key,
@@ -809,11 +809,11 @@ export const ViewHostTermsByType = () => {
     console.log("Connection Post_conditions", postConditions[typeofShare])
     console.log("User Post_conditions", curruser.user_id)
     console.log("Creator Post_conditions", resource.creator)
-    if(resource.creator == curruser.user_id || resource.post_conditions[typeofShare]){
+    if (resource.creator == curruser.user_id || resource.post_conditions[typeofShare]) {
 
       const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${resource.id}`;
       // Update selection state
-  
+
       setSelection((prev) => ({
         ...prev,
         [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
@@ -826,10 +826,10 @@ export const ViewHostTermsByType = () => {
       setSelectedResourceId(resource.id);
       // setShowPageInput(true);
       const token = Cookies.get("authToken");
-  
+
       // Fetch total pages for the selected resource
       try {
-  
+
         const response = await fetch(url, {
           method: 'GET',
           headers: {
@@ -838,7 +838,7 @@ export const ViewHostTermsByType = () => {
           },
         });
         const data = await response.json();
-  
+
         if (response.ok) {
           setTotalPages(data.total_pages);
           setError(null); // Clear any previous errors
@@ -860,7 +860,7 @@ export const ViewHostTermsByType = () => {
       setPostModal(true);
       // alert(`You are not allowed to ${typeofShare} the resource`)
     }
-  
+
   };
 
   console.log("TotallPages", totalPages);
@@ -888,44 +888,44 @@ export const ViewHostTermsByType = () => {
       ...prev,
       [currentLabelName]: resource,
     }));
-    setShowResources2(false);
+    // setShowResources2(false);
     setSelectedResourceId2(resource.id);
-    setShowPageInput2(true);
+    // setShowPageInput2(true);
     // console.log("resources selected", selectedResources);
     // console.log("selection", selection);
   };
 
   const handlePageSubmit2 = async () => {
-    if (!fromPage || !toPage) {
-      setErrorMessage("Both from_page and to_page are required.");
-      return;
-    }
+    // if (!fromPage || !toPage) {
+    //   setErrorMessage("Both from_page and to_page are required.");
+    //   return;
+    // }
     const token = Cookies.get("authToken");
     try {
-      const response = await fetch('host/get_total_pages_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+      // const response = await fetch('host/get_total_pages_v2/'.replace(
+      //   /host/,
+      //   frontend_host
+      // ), {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify({
-          xnode_id: selectedResourceId2,
-          from_page: parseInt(fromPage, 10),
-          to_page: parseInt(toPage, 10)
-        })
-      });
+      //   },
+      //   body: JSON.stringify({
+      //     xnode_id: selectedResourceId2,
+      //     from_page: parseInt(fromPage, 10),
+      //     to_page: parseInt(toPage, 10)
+      //   })
+      // });
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (response.ok && data.success) {
+      if (true) {
 
         const resource = selection2[currentLabelName]; // Current selected resource
         // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id},(${fromPage}:${toPage}); F`;
+        const termValue = `${resource.resource_name}|${resource.id}; F`;
         // console.log(termValue, "termValue");
 
 
@@ -933,12 +933,13 @@ export const ViewHostTermsByType = () => {
 
 
         setShowPageInput2(false);
+        setShowResources2(false)
         setErrorMessage(null);
         setFromPage('');
         setToPage('');
       } else {
 
-        setErrorMessage(data.error);
+        setErrorMessage("Error occured");
       }
     } catch (error) {
       setErrorMessage("An error occurred while validating pages.");
@@ -1347,7 +1348,7 @@ export const ViewHostTermsByType = () => {
 
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/update-extra-data/`, {
+      const response = await fetch(`${frontend_host}/update-extra-data-v2/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -2016,10 +2017,10 @@ export const ViewHostTermsByType = () => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
-                                              <li>
+                                              {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li>
+                                              </li> */}
                                               <li>
                                                 Current owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
@@ -2084,8 +2085,8 @@ export const ViewHostTermsByType = () => {
                                         : resource.xnode_Type === "SNODE"
                                           ? "documents-byConfer"
                                           : "documents-byShare"
-                                    } 
-                                    className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}
+                                    }
+                                      className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}
                                     >
                                       <input
                                         type="radio"
@@ -2096,16 +2097,16 @@ export const ViewHostTermsByType = () => {
                                         disabled={typeofShare !== "share" && !isResourceInFiltered}
                                       />
                                       {resource.resource_name}
-                                      
+
                                     </label>
                                     <button
-                                        id="view"
-                                        className="subbutton"
-                                        style={{textDecoration:"none"}}
-                                        onClick={() => handleClick(resource.id)}
-                                      >
-                                        View
-                                      </button>
+                                      id="view"
+                                      className="subbutton"
+                                      style={{ textDecoration: "none" }}
+                                      onClick={() => handleClick(resource.id)}
+                                    >
+                                      View
+                                    </button>
                                   </div>
                                 </li>
                               );
@@ -2113,8 +2114,8 @@ export const ViewHostTermsByType = () => {
 
                           </ul>
                           <div className="button-group">
-                          <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
-                          <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
+                            <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
+                            <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                           </div>
                         </div>
                       )}
@@ -2128,7 +2129,13 @@ export const ViewHostTermsByType = () => {
                             {xnodes.map((resource, index) => (
                               <li key={index}>
                                 <div>
-                                  <label>
+                                  <label id={
+                                    resource.xnode_Type === "INODE"
+                                      ? "documents"
+                                      : resource.xnode_Type === "SNODE"
+                                        ? "documents-byConfer"
+                                        : "documents-byShare"
+                                  }>
                                     <input
                                       type="radio"
                                       name="selectedResource"
@@ -2146,7 +2153,10 @@ export const ViewHostTermsByType = () => {
                               </li>
                             ))}
                           </ul>
-                          <button onClick={() => setShowResources2(false)}>Select</button>
+                          <div className="button-group">
+                            <button className="btn-color" onClick={() => setShowResources2(false)}>Cancel</button>
+                            <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
+                          </div>
                         </div>
                       )}
 
@@ -2320,6 +2330,289 @@ export const ViewHostTermsByType = () => {
           }}>Cancel</button>
           </div>
         <div> */}
+                    {permissions?.canShareMoreData && (
+                      <div className="table-container">
+
+                        <h3>Share more data</h3>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Sno</th>
+                              <th>Name</th>
+                              <th>Purpose</th>
+                              <th>Type of Shares</th>
+                              <th>Value</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                            {permissionsData.map((permission) => (
+                              <tr key={permission.sno}>
+                                <td>{permission.sno}</td>
+                                <td>{permission.labelName}</td>
+                                <td>{permission.purpose || "None"}</td>
+
+                                <td>{permission.share}</td>
+                                {/* <td>
+                                  {permission.dataElement || "None"}
+
+                                </td> */}
+                                <td>
+
+                                  <a className="mb-1"
+                                    style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                    onClick={() =>
+                                      fetchAndOpenResource(
+                                        permission.dataElement?.split(";")[0]?.split("|")[1]
+                                      )
+                                    }>
+                                    {permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}
+                                  </a>
+                                  {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
+                                  {/* Display "None" if empty */}
+                                </td>
+                                <td>{statuses2[permission.labelName]}</td>
+                              </tr>
+                            ))}
+                            {moreDataTerms.map((term, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    value={term.labelName}
+                                    onChange={(e) =>
+                                      updateTerm(index, "labelName", e.target.value)
+                                    }
+                                    placeholder="Label Name"
+                                    required
+                                  />
+                                </td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    value={term.purpose}
+                                    onChange={(e) =>
+                                      updateTerm(index, "purpose", e.target.value)
+                                    }
+                                    placeholder="Purpose"
+                                    required
+                                  />
+                                </td>
+                                <td>
+                                  <select
+                                    value={term.typeOfShare}
+                                    onChange={(e) =>
+                                      updateTerm(index, "typeOfShare", e.target.value)
+                                    }
+                                  >
+                                    <option value="share">Share</option>
+                                    <option value="transfer">Transfer</option>
+                                    <option value="confer">Confer</option>
+                                    <option value="collateral">Collateral</option>
+                                  </select>
+                                </td>
+                                <td>
+
+
+                                  {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] && (
+                                    <a className="mb-1"
+                                      style={{ display: "block", textDecoration: "underline", cursor: "pointer" }}
+                                      onClick={() =>
+                                        fetchAndOpenResource(
+                                          moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[1]
+                                        )
+                                      }
+                                    >
+                                      {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
+                                    </a>
+                                  )}
+                                  <button onClick={() => handleButtonClick2(term.labelName)}>
+
+                                    Select Resources
+                                  </button>
+                                </td>
+                                <td>Pending</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        <div style={{ margin: "20px 0" }}>
+                          <div>
+                            <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
+                              Add New Term
+                            </button>
+                            <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
+                              Remove Last Term
+                            </button>
+                            <button onClick={handleMoreSubmit}>Submit</button>
+                          </div>
+
+                          {allObligationsApproved() && (
+                            <div>
+                              <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+                                Host Obligations
+                              </h3>
+                              <p>You will receive a receipt from the host</p>
+                            </div>
+                          )}
+
+                          {hostObligationMessage && (
+                            <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+                              Host Obligation: {hostObligationMessage}
+                            </h3>
+                          )}
+
+                          {isModalOpen && (
+                            <Modal
+                              message={modalMessage.message}
+                              onClose={handleCloseModal}
+                              type={modalMessage.type}
+                            />
+                          )}
+
+
+
+                          {/* {showPageInput && (
+          <div className="page-input-modal">
+          <div>
+            <h3>Enter Page Range for {currentLabelName}</h3>
+            {errorMessage && <p className="error">{errorMessage}</p>}
+        
+            <label>
+              From Page:
+              <input
+                type="number"
+                value={fromPage}
+                onChange={(e) => setFromPage(e.target.value)}
+                min="1"
+              />
+            </label>
+            <br></br>
+        
+            <label>
+              To Page:
+              <input
+                type="number"
+                value={toPage}
+                onChange={(e) => setToPage(e.target.value)}
+                min="1"
+              />
+            </label>
+        
+            
+
+          </div>v
+          <div className="button-group">
+            <button onClick={handlePageSubmit}>Submit</button>
+            <button onClick={() =>{
+            setShowPageInput(false);
+            setErrorMessage(null);
+            setFromPage('');
+            setToPage('');
+          }}>Cancel</button>
+          </div>
+        <div> */}
+                          {showPageInput && (
+                            <div className="page-input-modal">
+                              <div>
+                                <h5 style={{ fontWeight: "bold" }}>Enter Page Range for {currentLabelName}</h5>
+                                {errorMessage && <p className="error">{errorMessage}</p>}
+
+                                <label>
+                                  From Page:
+                                  <input
+                                    type="number"
+                                    value={fromPage}
+                                    onChange={(e) => setFromPage(e.target.value)}
+                                    min="1"
+                                    disabled={isCompletePages} // Disable if "Complete Pages" is selected
+                                  />
+                                </label>
+
+                                <label>
+                                  To Page:
+                                  <input
+                                    type="number"
+                                    value={toPage}
+                                    onChange={(e) => setToPage(e.target.value)}
+                                    min="1"
+                                    disabled={isCompletePages} // Disable if "Complete Pages" is selected
+                                  />
+                                </label>
+
+                                <p className="or-text">OR</p>
+
+                                <label>
+                                  Select All Pages &nbsp; &nbsp;
+                                </label>
+                                <input
+                                  className="checkboxEntire"
+                                  type="checkbox"
+                                  checked={isCompletePages}
+                                  onChange={handleCompletePagesChange}
+                                />
+
+
+                              </div>
+                              <div className="button-group">
+                                <button onClick={handlePageSubmit}>Submit</button>
+                                <button onClick={() => {
+                                  setShowPageInput(false);
+                                  setErrorMessage(null);
+                                  setFromPage('');
+                                  setToPage('');
+                                  setIsCompletePages(false)
+                                }}>Cancel</button>
+                              </div>
+                            </div>
+                          )}
+
+                          {showPageInput2 && (
+                            <div className="page-input-modal">
+                              <div>
+                                <h3>Enter Page Range for {currentLabelName}</h3>
+                                {errorMessage && <p className="error">{errorMessage}</p>}
+
+                                <label>
+                                  From Page:
+                                  <input
+                                    type="number"
+                                    value={fromPage}
+                                    onChange={(e) => setFromPage(e.target.value)}
+                                    min="1"
+                                  />
+                                </label>
+
+                                <label>
+                                  To Page:
+                                  <input
+                                    type="number"
+                                    value={toPage}
+                                    onChange={(e) => setToPage(e.target.value)}
+                                    min="1"
+                                  />
+                                </label>
+
+
+                              </div>
+                              <div className="button-group">
+                                <button onClick={handlePageSubmit2}>Submit</button>
+                                <button onClick={() => {
+                                  setShowPageInput2(false);
+                                  setErrorMessage(null);
+                                  setFromPage('');
+                                  setToPage('');
+                                }}>Cancel</button>
+                              </div>
+                            </div>
+                          )}
+
+
+                        </div>
+                      </div>
+                    )}
                     {showPageInput && (
                       <div className="page-input-modal">
                         <div>
@@ -2428,12 +2721,12 @@ export const ViewHostTermsByType = () => {
                 />
               )}
               {postModal && (
-                      <Modal
-                        message={modalMessage.message}
-                        onClose={handleCloseModal}
-                        type={modalMessage.type}
-                      />
-                    )}
+                <Modal
+                  message={modalMessage.message}
+                  onClose={handleCloseModal}
+                  type={modalMessage.type}
+                />
+              )}
             </div>
           </div>
         </div>

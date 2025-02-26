@@ -197,7 +197,7 @@ export const HostTermsReview = () => {
         const data = await response.json();
         if (data.success) {
           // Create an array from the shared_more_data_terms object
-          const sharedData = Object.entries(data.shared_more_data_terms).map(
+          const sharedData = Object.entries(data.shared_more_data_terms_reverse).map(
             ([key, value], index) => ({
               sno: index + 1,
               labelName: key,
@@ -212,7 +212,7 @@ export const HostTermsReview = () => {
           const initialStatuses2 = {}
           console.log(data.shared_more_data_terms);
           for (const [key, value] of Object.entries(
-            data.shared_more_data_terms
+            data.shared_more_data_terms_reverse
           )) {
             initialStatuses2[key] = value.enter_value.endsWith("T")
               ? "approved"
@@ -1123,7 +1123,15 @@ const handleClicks = async (xnode_id_with_pages) => {
                 <tr key={index}>
                   <td>{permission.sno}</td>
                   <td>{permission.labelName}</td>
-                  <td>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</td>{" "}
+                  <td> <a className="mb-1"
+                    style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                    onClick={() =>
+                      handleClick(
+                        permission.dataElement?.split(";")[0]?.split("|")[1]
+                      )
+                    }>
+                    {permission.dataElement?.split(";")[0]?.split("|")[0]}
+                  </a></td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
                   <td>
@@ -1814,10 +1822,10 @@ const handleClicks = async (xnode_id_with_pages) => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
-                                              <li>
+                                              {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li>
+                                              </li> */}
                                               <li>
                                                 Current owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
@@ -1878,7 +1886,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                       </table>
 
                       {/* Permissions Table Rendered Here */}
-                      {/* {renderPermissionsTable()} */}
+                      {renderPermissionsTable()}
                     </div>
                     {showResources && (
                       <div className="resource-container">

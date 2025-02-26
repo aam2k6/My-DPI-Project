@@ -1105,7 +1105,7 @@ const handleClicks = async (xnode_id_with_pages) => {
   const renderPermissionsTable = () => {
     if (permissionsData.length > 0) {
       return (
-        <div className="permissions-table">
+        <div className="permissions-table mt-4">
           <h3>User Permissions</h3>
           <table>
             <thead>

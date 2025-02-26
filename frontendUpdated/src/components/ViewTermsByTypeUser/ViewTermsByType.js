@@ -1355,6 +1355,10 @@ export const ViewTermsByType = () => {
   };
 
   const handleResourceSelection2 = (resource) => {
+    console.log("X_NODE Post_conditions", resource.post_conditions[typeofShare]);
+    console.log("Connection Post_conditions", postConditions[typeofShare])
+    console.log("User Post_conditions", curruser.user_id)
+    console.log("Creator Post_conditions", resource.creator)
     // console.log("inside",resource);
     // initialResources[obligation.labelName] = {
     //                 document_name,
@@ -1372,42 +1376,42 @@ export const ViewTermsByType = () => {
     }));
     setShowResources2(false);
     setSelectedResourceId2(resource.id);
-    setShowPageInput2(true);
+    // setShowPageInput2(true);
     // console.log("resources selected", selectedResources);
     // console.log("selection", selection);
   };
 
   const handlePageSubmit2 = async () => {
-    if (!fromPage || !toPage) {
-      setErrorMessage("Both from_page and to_page are required.");
-      return;
-    }
+    // if (!fromPage || !toPage) {
+    //   setErrorMessage("Both from_page and to_page are required.");
+    //   return;
+    // }
     const token = Cookies.get("authToken");
     try {
-      const response = await fetch('host/get_total_pages_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+      // const response = await fetch('host/get_total_pages_v2/'.replace(
+      //   /host/,
+      //   frontend_host
+      // ), {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify({
-          xnode_id: selectedResourceId2,
-          from_page: parseInt(fromPage, 10),
-          to_page: parseInt(toPage, 10)
-        })
-      });
+      //   },
+      //   body: JSON.stringify({
+      //     xnode_id: selectedResourceId2,
+      //     from_page: parseInt(fromPage, 10),
+      //     to_page: parseInt(toPage, 10)
+      //   })
+      // });
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (response.ok && data.success) {
+      if (true) {
 
         const resource = selection2[currentLabelName]; // Current selected resource
         // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id},(${fromPage}:${toPage}); F`;
+        const termValue = `${resource.resource_name}|${resource.id}; F`;
         // console.log(termValue, "termValue");
 
 
@@ -1416,11 +1420,12 @@ export const ViewTermsByType = () => {
 
         setShowPageInput2(false);
         setErrorMessage(null);
+        setShowResources2(false)
         setFromPage('');
         setToPage('');
       } else {
 
-        setErrorMessage(data.error);
+        setErrorMessage("Error occured");
       }
     } catch (error) {
       setErrorMessage("An error occurred while validating pages.");
@@ -2732,8 +2737,14 @@ export const ViewTermsByType = () => {
                           <ul>
                             {xnodes.map((resource, index) => (
                               <li key={index}>
-                                <div>
-                                  <label>
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                  <label id={
+                                      resource.xnode_Type === "INODE"
+                                        ? "documents"
+                                        : resource.xnode_Type === "SNODE"
+                                          ? "documents-byConfer"
+                                          : "documents-byShare"
+                                    } >
                                     <input
                                       type="radio"
                                       name="selectedResource"
@@ -2744,8 +2755,10 @@ export const ViewTermsByType = () => {
                                       }
                                       onClick={() => handleResourceSelection2(resource)}
                                     />
-                                    {resource.resource_name}  <button id="view" onClick={() => handleClick(resource.id)}>View</button>
+                                    {resource.resource_name}
                                   </label>
+                                  <button id="view" className="subbutton" style={{textDecoration:"none"}} onClick={() => handleClick(resource.id)}>View</button>
+
 
                                 </div>
                               </li>

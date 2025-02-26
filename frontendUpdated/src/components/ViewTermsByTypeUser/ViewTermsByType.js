@@ -555,6 +555,8 @@ export const ViewTermsByType = () => {
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
   const [connectionDetails, setConnectionDetails] = useState(null);
+  const [postConditions, setPostConditions] = useState(null);
+  const [postModal, setPostModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -666,6 +668,10 @@ export const ViewTermsByType = () => {
     navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
   };
 
+  const handleCloseModals =() => {
+    setPostModal(false);
+    setModalMessage({ message: "", type: "" });
+  }
   const handleClose = () => {
     setIsReactModalOpen(false);
     setPdfUrl(null);
@@ -705,6 +711,7 @@ export const ViewTermsByType = () => {
         console.log("data conn", data.connections);
         if (response.ok) {
           setConnectionDetails(data.connections);
+          setPostConditions(data.post_conditions)
         } else {
           setError(data.error || "Failed to fetch connection details.");
         }
@@ -1101,7 +1108,7 @@ export const ViewTermsByType = () => {
       console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+        const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
           /host/,
           frontend_host
         ), {
@@ -1143,7 +1150,7 @@ export const ViewTermsByType = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -1306,13 +1313,17 @@ export const ViewTermsByType = () => {
   };
 
   const handleResourceSelection = (resource) => {
+    console.log("X_NODE Post_conditions", resource.post_conditions[typeofShare]);
+    console.log("Connection Post_conditions", postConditions[typeofShare])
+    console.log("User Post_conditions", curruser.user_id)
+    console.log("Creator Post_conditions", resource.creator)
     // console.log("inside",resource);
     // initialResources[obligation.labelName] = {
     //                 document_name,
     //                 i_node_pointer: obligation.i_node_pointer,
     //                 typeOfSharing: obligation.typeOfSharing,
     //               };
-
+    if(resource.creator == curruser.user_id || resource.post_conditions[typeofShare]){
     setSelection((prev) => ({
       ...prev,
       [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
@@ -1323,9 +1334,16 @@ export const ViewTermsByType = () => {
     }));
     setShowResources(true);
     setSelectedResourceId(resource.id);
-    setShowPageInput(true);
-    // console.log("resources selected", selectedResources);
-    // console.log("selection", selection);
+    // setShowPageInput(true);
+  } else {
+    setError(`You are not allowed to ${typeofShare} the resource`)
+      setModalMessage({
+        message: `You are not allowed to ${typeofShare} the resource`,
+        type: "error",
+      });
+      setPostModal(true);
+  }
+
   };
 
 
@@ -1452,36 +1470,36 @@ export const ViewTermsByType = () => {
   });
 
   const handlePageSubmit = async () => {
-    if (!fromPage || !toPage) {
-      setErrorMessage("Both from_page and to_page are required.");
-      return;
-    }
+    // if (!fromPage || !toPage) {
+    //   setErrorMessage("Both from_page and to_page are required.");
+    //   return;
+    // }
     const token = Cookies.get("authToken");
     try {
-      const response = await fetch('host/get_total_pages_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+      // const response = await fetch('host/get_total_pages_v2/'.replace(
+      //   /host/,
+      //   frontend_host
+      // ), {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify({
-          xnode_id: selectedResourceId,
-          from_page: parseInt(fromPage, 10),
-          to_page: parseInt(toPage, 10)
-        })
-      });
+      //   },
+      //   body: JSON.stringify({
+      //     xnode_id: selectedResourceId,
+      //     from_page: parseInt(fromPage, 10),
+      //     to_page: parseInt(toPage, 10)
+      //   })
+      // });
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (response.ok && data.success) {
+      if (true) {
 
         const resource = selection[currentLabelName]; // Current selected resource
         // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id},(${fromPage}:${toPage}); F`;
+        const termValue = `${resource.resource_name}|${resource.id}; F`;
         // console.log(termValue, "termValue");
 
 
@@ -1496,7 +1514,7 @@ export const ViewTermsByType = () => {
         setIsCompletePages(false)
       } else {
 
-        setErrorMessage(data.error);
+        setErrorMessage("Error occured");
       }
     } catch (error) {
       setErrorMessage("An error occurred while validating pages.");
@@ -2678,6 +2696,7 @@ export const ViewTermsByType = () => {
                                     </label>
                                     <button
                                         id="view"
+                                        className="subbutton"
                                         style={{textDecoration:"none"}}
                                         onClick={() => handleClick(resource.id)}
                                       >
@@ -2689,7 +2708,10 @@ export const ViewTermsByType = () => {
                             })}
 
                           </ul>
-                          <button className="btn btn-primary clsoeBtn" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources(false)}>Cancel</button>
+                          <div className="button-group">
+                          <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
+                          <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
+                          </div>
                         </div>
                       )}
                       {/* {showRevokeConsentModal && (
@@ -3298,6 +3320,13 @@ export const ViewTermsByType = () => {
             onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
           />
         )}
+        {postModal && (
+                              <Modal
+                                message={modalMessage.message}
+                                onClose={handleCloseModals}
+                                type={modalMessage.type}
+                              />
+                            )}
       </div>
     </div>
 

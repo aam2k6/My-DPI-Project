@@ -41,9 +41,11 @@ export const ViewHostTermsByType = () => {
   const [globalTemplates, setGlobalTemplates] = useState([]);
   const [terms, setTerms] = useState([]);
   const [connectionDetails, setConnectionDetails] = useState(null);
+  const [postConditions, setPostConditions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [postModal, setPostModal] = useState(false);
   const [moreDataTerms, setMoreDataTerms] = useState([]);
   const [xnodes, setXnodes] = useState([]);
   const [filteredXnodes, setFilteredXnodes] = useState([])
@@ -131,9 +133,9 @@ export const ViewHostTermsByType = () => {
   // }, [selectedResourceId]);
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setPostModal(false);
     setModalMessage({ message: "", type: "" });
-    navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
+    // navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
   };
 
   const handleClose = () => {
@@ -173,7 +175,7 @@ export const ViewHostTermsByType = () => {
 
       try {
         const response = await fetch(
-          `host/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
+          `host/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
           {
             method: "GET",
             headers: {
@@ -187,6 +189,7 @@ export const ViewHostTermsByType = () => {
         console.log("data conn", data.connections);
         if (response.ok) {
           setConnectionDetails(data.connections);
+          setPostConditions(data.post_conditions)
         } else {
           setError(data.error || "Failed to fetch connection details.");
         }
@@ -573,7 +576,7 @@ export const ViewHostTermsByType = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -615,7 +618,7 @@ export const ViewHostTermsByType = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -802,46 +805,62 @@ export const ViewHostTermsByType = () => {
   console.log("page input", showPageInput);
 
   const handleResourceSelection = async (resource) => {
+    console.log("X_NODE Post_conditions", resource.post_conditions[typeofShare]);
+    console.log("Connection Post_conditions", postConditions[typeofShare])
+    console.log("User Post_conditions", curruser.user_id)
+    console.log("Creator Post_conditions", resource.creator)
+    if(resource.creator == curruser.user_id || resource.post_conditions[typeofShare]){
 
-    const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${resource.id}`;
-    // Update selection state
-
-    setSelection((prev) => ({
-      ...prev,
-      [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
-    }));
-    setSelectedResources((prev) => ({
-      ...prev,
-      [currentLabelName]: resource,
-    }));
-    setShowResources(true);
-    setSelectedResourceId(resource.id);
-    setShowPageInput(true);
-    const token = Cookies.get("authToken");
-
-    // Fetch total pages for the selected resource
-    try {
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
-        },
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setTotalPages(data.total_pages);
-        setError(null); // Clear any previous errors
-      } else {
-        setError(data.error); // Handle error message
+      const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${resource.id}`;
+      // Update selection state
+  
+      setSelection((prev) => ({
+        ...prev,
+        [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
+      }));
+      setSelectedResources((prev) => ({
+        ...prev,
+        [currentLabelName]: resource,
+      }));
+      setShowResources(true);
+      setSelectedResourceId(resource.id);
+      // setShowPageInput(true);
+      const token = Cookies.get("authToken");
+  
+      // Fetch total pages for the selected resource
+      try {
+  
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${token}`,
+          },
+        });
+        const data = await response.json();
+  
+        if (response.ok) {
+          setTotalPages(data.total_pages);
+          setError(null); // Clear any previous errors
+        } else {
+          setError(data.error); // Handle error message
+          setTotalPages(null);
+        }
+      } catch (err) {
+        setError("An unexpected error occurred while fetching total pages.");
         setTotalPages(null);
       }
-    } catch (err) {
-      setError("An unexpected error occurred while fetching total pages.");
-      setTotalPages(null);
+
+    } else {
+      setError(`You are not allowed to ${typeofShare} the resource`)
+      setModalMessage({
+        message: `You are not allowed to ${typeofShare} the resource`,
+        type: "error",
+      });
+      setPostModal(true);
+      // alert(`You are not allowed to ${typeofShare} the resource`)
     }
+  
   };
 
   console.log("TotallPages", totalPages);
@@ -974,36 +993,36 @@ export const ViewHostTermsByType = () => {
   });
 
   const handlePageSubmit = async () => {
-    if (!fromPage || !toPage) {
-      setErrorMessage("Both from_page and to_page are required.");
-      return;
-    }
+    // if (!fromPage || !toPage) {
+    //   setErrorMessage("Both from_page and to_page are required.");
+    //   return;
+    // }
     const token = Cookies.get("authToken");
     try {
-      const response = await fetch('host/get_total_pages_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+      // const response = await fetch('host/get_total_pages_v2/'.replace(
+      //   /host/,
+      //   frontend_host
+      // ), {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify({
-          xnode_id: selectedResourceId,
-          from_page: parseInt(fromPage, 10),
-          to_page: parseInt(toPage, 10)
-        })
-      });
+      //   },
+      //   body: JSON.stringify({
+      //     xnode_id: selectedResourceId,
+      //     from_page: parseInt(fromPage, 10),
+      //     to_page: parseInt(toPage, 10)
+      //   })
+      // });
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (response.ok && data.success) {
+      if (true) {
 
         const resource = selection[currentLabelName]; // Current selected resource
         // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id},(${fromPage}:${toPage}); F`;
+        const termValue = `${resource.resource_name}|${resource.id}; F`;
         // console.log(termValue, "termValue");
 
 
@@ -1018,7 +1037,7 @@ export const ViewHostTermsByType = () => {
         setIsCompletePages(false)
       } else {
 
-        setErrorMessage(data.error);
+        setErrorMessage("Error occured");
       }
     } catch (error) {
       setErrorMessage("An error occurred while validating pages.");
@@ -2065,7 +2084,9 @@ export const ViewHostTermsByType = () => {
                                         : resource.xnode_Type === "SNODE"
                                           ? "documents-byConfer"
                                           : "documents-byShare"
-                                    } className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}>
+                                    } 
+                                    className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}
+                                    >
                                       <input
                                         type="radio"
                                         name="selectedResource"
@@ -2079,6 +2100,7 @@ export const ViewHostTermsByType = () => {
                                     </label>
                                     <button
                                         id="view"
+                                        className="subbutton"
                                         style={{textDecoration:"none"}}
                                         onClick={() => handleClick(resource.id)}
                                       >
@@ -2090,7 +2112,10 @@ export const ViewHostTermsByType = () => {
                             })}
 
                           </ul>
-                          <button className="btn btn-primary clsoeBtn" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources(false)}>Cancel</button>
+                          <div className="button-group">
+                          <button className="btn-color" style={{ backgroundColor: "#007bff" }} onClick={() => setShowResources(false)}>Cancel</button>
+                          <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
+                          </div>
                         </div>
                       )}
 
@@ -2402,6 +2427,13 @@ export const ViewHostTermsByType = () => {
                   onConfirm={handleRevokeConsentConfirm} // Execute revoke consent action
                 />
               )}
+              {postModal && (
+                      <Modal
+                        message={modalMessage.message}
+                        onClose={handleCloseModal}
+                        type={modalMessage.type}
+                      />
+                    )}
             </div>
           </div>
         </div>

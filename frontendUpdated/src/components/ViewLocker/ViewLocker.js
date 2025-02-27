@@ -1260,10 +1260,10 @@ console.log("lockers", lockers)
                                     <div>
                                       <strong>Node Type:</strong> {xnode.xnode_Type}
                                     </div>
-                                    <div>
+                                    {/* <div>
                                       <strong>Primary owner:</strong>{" "}
                                       {capitalizeFirstLetter(xnode.primary_owner_username) || "N/A"}
-                                    </div>
+                                    </div> */}
                                     <div>
                                       <strong>Current owner:</strong>{" "}
                                       {capitalizeFirstLetter(xnode.current_owner_username) || "N/A"}

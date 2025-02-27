@@ -422,7 +422,7 @@ const handleClicks = async (xnode_id_with_pages) => {
       console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+        const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
           /host/,
           frontend_host
         ), {
@@ -455,6 +455,12 @@ const handleClicks = async (xnode_id_with_pages) => {
         // setLoading(false);
       }
     };
+    const getTrueKeys = (obj) => {
+      return Object.entries(obj)
+        .filter(([key, value]) => value === true)
+        .map(([key]) => key);
+    };
+    const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
   const handleRevoke = async (connection_id) => {
     const formData = new FormData();
     formData.append("connection_id", connection_id);
@@ -1826,6 +1832,16 @@ const handleClicks = async (xnode_id_with_pages) => {
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
+                                              <div className="mt-2">Post Conditions:</div>
+      {postConditionsKeys.length > 0 ? (
+        <ul>
+          {postConditionsKeys.map((key) => (
+            <li key={key}>{key}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No conditions found</p>
+      )}
                                               <li>
                                                 Current owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}

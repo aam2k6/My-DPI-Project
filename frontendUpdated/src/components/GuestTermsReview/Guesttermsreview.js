@@ -54,8 +54,6 @@ export const Guesttermsreview = () => {
   
   
   
-
-
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -448,6 +446,7 @@ export const Guesttermsreview = () => {
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setSelectedRowData(null);
+    setPdfData(null);
   };
 
   const handleClick = async (xnode_id_with_pages) => {
@@ -507,7 +506,7 @@ export const Guesttermsreview = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -540,6 +539,13 @@ export const Guesttermsreview = () => {
       // setLoading(false);
     }
   };
+  console.log("pdfData", pdfData)
+  const getTrueKeys = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+  const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
   const handleRevoke = async (connection_id) => {
     const formData = new FormData();
     formData.append("connection_id", connection_id);
@@ -1925,9 +1931,19 @@ export const Guesttermsreview = () => {
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
+                                              <div className="mt-2">Post Conditions:</div>
+      {postConditionsKeys.length > 0 ? (
+        <ul>
+          {postConditionsKeys.map((key) => (
+            <li key={key}>{key}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No conditions found</p>
+      )}
                                               <li>
                                                 Current owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
                                               </li>
                                             </div>
                                           ) : (

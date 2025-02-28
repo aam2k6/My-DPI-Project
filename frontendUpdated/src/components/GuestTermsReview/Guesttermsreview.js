@@ -51,9 +51,10 @@ export const Guesttermsreview = () => {
   const [showOpenPopup, setShowOpenPopup] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [pdfData, setPdfData] = useState(null)
-  
-  
-  
+  const [resourceModal, setResourceModal] = useState(false);
+
+
+
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -375,7 +376,7 @@ export const Guesttermsreview = () => {
     }
   }, [connectionDetails]);
 
-  
+
 
   // const handleStatusChange = (index, status, value, type, isFile) => {
   //     if (value !== "") {
@@ -436,13 +437,17 @@ export const Guesttermsreview = () => {
     });
   };
   const openPopup = (rowData) => {
-    const  labelName = rowData.labelName
+    const labelName = rowData.labelName
     const extractedValue = termsValue[labelName].split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
     setSelectedRowData(rowData);
     setShowOpenPopup(true);
   };
-
+  const handleCloseResourceModal = () => {
+    setResourceModal(false);
+    setSelectedRowData(null)
+    setModalMessage({ message: "", type: "" });
+  };
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setSelectedRowData(null);
@@ -533,8 +538,11 @@ export const Guesttermsreview = () => {
         console.log(error);
       }
     } catch (err) {
-      // setError(`Error: ${err.message}`);
-      console.log(err);
+      setModalMessage({
+        message: 'Resource not found.',
+        type: 'info',
+      });
+      setResourceModal(true);
     } finally {
       // setLoading(false);
     }
@@ -942,13 +950,13 @@ export const Guesttermsreview = () => {
   //       console.log("Collateralization failed, not updating the row.");
   //       return; // Stop execution if collateralization fails
   //     }
-  
+
   //     const token = Cookies.get("authToken");
-  
+
   //     // Proceed with processing only if collateralization was successful
   //     const terms_value = res?.obligations.reduce((acc, obligation) => {
   //       console.log(res?.obligations, "data not extra");
-  
+
   //       const status =
   //         statuses[obligation.labelName] === "approved"
   //           ? "T"
@@ -957,19 +965,19 @@ export const Guesttermsreview = () => {
   //           : "F";
   //       const resourceName =
   //         termsValue[obligation.labelName]?.split(";")[0] || "";
-  
+
   //       acc[obligation.labelName] = `${resourceName};${status}`;
   //       return acc;
   //     }, {});
-  
+
   //     console.log("Collateralization successful, proceeding with save.");
   //     // Continue save logic here...
-  
+
   //   } catch (err) {
   //     console.error("Error in handleSave:", err);
   //   }
   // };
-  
+
   const updateXnode = async (resource) => {
     try {
       const token = Cookies.get("authToken");
@@ -1458,9 +1466,9 @@ export const Guesttermsreview = () => {
         locker: conndetails.host_locker,
         createdtime: connectionDetails.created_time,
         validitytime: connectionDetails.validity_time,
-        GuestTermDisplay:true,
+        GuestTermDisplay: true,
         connectionType,
-        hostLocker:conndetails.host_locker,
+        hostLocker: conndetails.host_locker,
         connectionDetails
       },
     });
@@ -1522,7 +1530,7 @@ export const Guesttermsreview = () => {
       connectionTypes,
       lockers
     });
-    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers, hostLocker:conndetails.host_locker,hostUserUsername: curruser.username,hostLockerName } });
+    navigate("/show-guest-users", { state: { connection: connectionTypes, locker: lockers, hostLocker: conndetails.host_locker, hostUserUsername: curruser.username, hostLockerName } });
   };
 
   const content = (
@@ -1903,7 +1911,7 @@ export const Guesttermsreview = () => {
                                   : "None"}
                               </td> */}
                               <td> <button onClick={() => openPopup(obligation)}>Open</button></td>
-                              {showOpenPopup && selectedRowData && (
+                              {showOpenPopup && selectedRowData && pdfData &&(
                                 <div className="terms-popup">
                                   <div className="terms-popup-content">
                                     <span className="close" onClick={closeOpenPopup}>
@@ -1927,24 +1935,27 @@ export const Guesttermsreview = () => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
+                                              <li>
+                                                Current owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
+                                              </li>
+                                              <p className="mt-2">Type of Share: {selectedRowData.typeOfSharing}</p>
+
                                               {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
                                               <div className="mt-2">Post Conditions:</div>
-      {postConditionsKeys.length > 0 ? (
-        <ul>
-          {postConditionsKeys.map((key) => (
-            <li key={key}>{key}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No conditions found</p>
-      )}
-                                              <li>
-                                                Current owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-                                              </li>
+                                              {postConditionsKeys.length > 0 ? (
+                                                <ul>
+                                                  {postConditionsKeys.map((key) => (
+                                                    <li key={key}>{key}</li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
+
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -1954,7 +1965,6 @@ export const Guesttermsreview = () => {
                                         ""
                                       )}
                                     </p>
-                                    <p>Type of Share: {selectedRowData.typeOfSharing}</p>
                                     {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
@@ -1987,7 +1997,7 @@ export const Guesttermsreview = () => {
                                 </select>
                               </td>
                               <td>
-                              {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
+                                {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
                                   <button onClick={() => handleDownload(obligation)} className="download-button">
                                     <i className="fa fa-download" aria-hidden="true"></i>
                                   </button>
@@ -2107,6 +2117,14 @@ export const Guesttermsreview = () => {
             </div>
           </div>
         </div>
+        {resourceModal && (
+          <Modal
+            message={modalMessage.message}
+            onClose={handleCloseResourceModal}
+            type={modalMessage.type}
+          />
+        )}
+
       </div>
 
 

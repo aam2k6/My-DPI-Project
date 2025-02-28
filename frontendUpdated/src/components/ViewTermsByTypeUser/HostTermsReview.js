@@ -40,6 +40,8 @@ export const HostTermsReview = () => {
   const [connectionDetails, setConnectionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [revokeState, setRevokeState] = useState(true);
+  const [resourceModal, setResourceModal] = useState(false);
+
 
   const [statuses2, setStatuses2] = useState({});
   const [activeTab, setActiveTab] = useState("host");
@@ -52,6 +54,8 @@ export const HostTermsReview = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+  console.log("pdfData", pdfData)
+
 
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
@@ -360,6 +364,12 @@ export const HostTermsReview = () => {
     });
   };
 
+  const handleCloseResourceModal = () => {
+    setResourceModal(false);
+    setSelectedRowData(null)
+    setModalMessage({ message: "", type: "" });
+  };
+
   const handleClick = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
@@ -414,53 +424,56 @@ export const HostTermsReview = () => {
     setIsModalOpen(false);
     setPdfUrl(null);
   };
-const handleClicks = async (xnode_id_with_pages) => {
-      const xnode_id = xnode_id_with_pages?.split(',')[0];
-      const pages = xnode_id_with_pages?.split(',')[1];
-      const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
-      const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
-      console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
-      try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
-          /host/,
-          frontend_host
-        ), {
-          method: 'GET',
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-  
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to access the resource');
-        }
-  
-        const data = await response.json();
-        console.log("datass", data);
-        const { xnode } = data;
-  
-        if (xnode) {
-          setPdfData(xnode)
-        } else {
-          setError('Unable to retrieve the file link.');
-          console.log(error);
-        }
-      } catch (err) {
-        // setError(`Error: ${err.message}`);
-        console.log(err);
-      } finally {
-        // setLoading(false);
+  const handleClicks = async (xnode_id_with_pages) => {
+    const xnode_id = xnode_id_with_pages?.split(',')[0];
+    const pages = xnode_id_with_pages?.split(',')[1];
+    const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
+    const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
+    console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to access the resource');
       }
-    };
-    const getTrueKeys = (obj) => {
-      return Object.entries(obj)
-        .filter(([key, value]) => value === true)
-        .map(([key]) => key);
-    };
-    const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
+
+      const data = await response.json();
+      console.log("datass", data);
+      const { xnode } = data;
+
+      if (xnode) {
+        setPdfData(xnode)
+      } else {
+        setError('Unable to retrieve the file link.');
+        console.log(error);
+      }
+    } catch (err) {
+      setModalMessage({
+        message: 'Resource not found.',
+        type: 'info',
+      });
+      setResourceModal(true);
+    } finally {
+      // setLoading(false);
+    }
+  };
+  const getTrueKeys = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+  const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
   const handleRevoke = async (connection_id) => {
     const formData = new FormData();
     formData.append("connection_id", connection_id);
@@ -1251,7 +1264,7 @@ const handleClicks = async (xnode_id_with_pages) => {
         guestLockerName: guestLockerName,
         guestLocker: guestLocker,
         hostLocker: hostLocker,
-        hostTermsReviewDisplay:true,
+        hostTermsReviewDisplay: true,
         connectionDetails
       },
     });
@@ -1305,7 +1318,7 @@ const handleClicks = async (xnode_id_with_pages) => {
     });
   };
   const openPopup = (rowData) => {
-    const  labelName = rowData.labelName
+    const labelName = rowData.labelName
     const extractedValue = termsValue[labelName].split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
     setSelectedRowData(rowData);
@@ -1314,6 +1327,7 @@ const handleClicks = async (xnode_id_with_pages) => {
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setSelectedRowData(null);
+    setPdfData(null);
   };
   const content = (
     <>
@@ -1527,7 +1541,7 @@ const handleClicks = async (xnode_id_with_pages) => {
     });
   }
 
-  const handleHostTermsClick = () =>{
+  const handleHostTermsClick = () => {
     navigate("/view-terms-by-type", {
       state: {
         connection_id: conndetails.connection_id,
@@ -1804,7 +1818,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                                   : "None"}
                               </td> */}
                               <td><button onClick={() => openPopup(obligation)}>Open</button></td>
-                              {showOpenPopup && selectedRowData && (
+                              {showOpenPopup && selectedRowData && pdfData && (
                                 <div className="terms-popup">
                                   <div className="terms-popup-content">
                                     <span className="close" onClick={closeOpenPopup}>
@@ -1828,24 +1842,26 @@ const handleClicks = async (xnode_id_with_pages) => {
                                                 Valid until:{" "}
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </li>
+                                              <li>
+                                                Current owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li>
+                                              <p className="mt-2">Type of Share: {selectedRowData.typeOfSharing}</p>
+
                                               {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
                                               <div className="mt-2">Post Conditions:</div>
-      {postConditionsKeys.length > 0 ? (
-        <ul>
-          {postConditionsKeys.map((key) => (
-            <li key={key}>{key}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No conditions found</p>
-      )}
-                                              <li>
-                                                Current owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li>
+                                              {postConditionsKeys.length > 0 ? (
+                                                <ul>
+                                                  {postConditionsKeys.map((key) => (
+                                                    <li key={key}>{key}</li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -1855,7 +1871,6 @@ const handleClicks = async (xnode_id_with_pages) => {
                                         "None"
                                       )}
                                     </p>
-                                    <p>Type of Share: {selectedRowData.typeOfSharing}</p>
                                     {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
@@ -1888,7 +1903,7 @@ const handleClicks = async (xnode_id_with_pages) => {
                                 </select>
                               </td>
                               <td>
-                              {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
+                                {obligation.hostPermissions && obligation.hostPermissions.includes("download") ? (
                                   <button onClick={() => handleDownload(obligation)} className="download-button">
                                     <i className="fa fa-download" aria-hidden="true"></i>
                                   </button>
@@ -1989,7 +2004,13 @@ const handleClicks = async (xnode_id_with_pages) => {
             </div>
           </div>
         </div>
-
+        {resourceModal && (
+          <Modal
+            message={modalMessage.message}
+            onClose={handleCloseResourceModal}
+            type={modalMessage.type}
+          />
+        )}
       </div>
 
 

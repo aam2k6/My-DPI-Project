@@ -557,6 +557,7 @@ export const ViewTermsByType = () => {
   const [connectionDetails, setConnectionDetails] = useState(null);
   const [postConditions, setPostConditions] = useState(null);
   const [postModal, setPostModal] = useState(false);
+  const [resourceModal, setResourceModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -614,7 +615,7 @@ export const ViewTermsByType = () => {
     guestLocker
   } = location.state || {};
 
-
+  console.log("datass", modalMessage.message, modalMessage.type)
   useEffect(() => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
@@ -667,8 +668,13 @@ export const ViewTermsByType = () => {
     setModalMessage({ message: "", type: "" });
     navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
   };
+  const handleCloseResourceModal = () => {
+    setResourceModal(false);
+    setSelectedRowData(null)
+    setModalMessage({ message: "", type: "" });
+  };
 
-  const handleCloseModals =() => {
+  const handleCloseModals = () => {
     setPostModal(false);
     setModalMessage({ message: "", type: "" });
   }
@@ -676,7 +682,16 @@ export const ViewTermsByType = () => {
     setIsReactModalOpen(false);
     setPdfUrl(null);
   };
+  const openPopup = (rowData) => {
+    setSelectedRowData(rowData);
+  };
 
+  // Use useEffect to call openInfoPopup only when selectedRowData is updated
+  useEffect(() => {
+    if (selectedRowData) {
+      openInfoPopup();
+    }
+  }, [selectedRowData]);
   // console.log("start", guest_locker_id, host_locker_id, locker);
   useEffect(() => {
     if (!curruser) {
@@ -1085,7 +1100,7 @@ export const ViewTermsByType = () => {
       }
     }
   }, [connectionDetails]);
-
+  console.log("ismod", isModalOpen)
   useEffect(() => {
     if (connectionDetails) {
       const { close_guest, close_host } = connectionDetails;
@@ -1100,47 +1115,57 @@ export const ViewTermsByType = () => {
     }
   }, [connectionDetails]);
 
-   const handleClicks = async (xnode_id_with_pages) => {
-      const xnode_id = xnode_id_with_pages?.split(',')[0];
-      const pages = xnode_id_with_pages?.split(',')[1];
-      const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
-      const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
-      console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
-      try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
-          /host/,
-          frontend_host
-        ), {
-          method: 'GET',
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-  
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to access the resource');
-        }
-  
-        const data = await response.json();
-        console.log("datass", data);
-        const { xnode } = data;
-  
-        if (xnode) {
-          setPdfData(xnode)
-        } else {
-          // setError('Unable to retrieve the file link.');
-          console.log(error);
-        }
-      } catch (err) {
-        // setError(`Error: ${err.message}`);
-        console.log(err);
-      } finally {
-        // setLoading(false);
+  const handleClicks = async (xnode_id_with_pages) => {
+    const xnode_id = xnode_id_with_pages?.split(',')[0];
+    const pages = xnode_id_with_pages?.split(',')[1];
+    const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
+    const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
+    console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}`.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to access the resource');
       }
-    };
+
+      const data = await response.json();
+      console.log("datass", data);
+      const { xnode } = data;
+
+      if (xnode) {
+        setPdfData(xnode)
+      } else {
+        // setError('Unable to retrieve the file link.');
+        console.log(error);
+      }
+    } catch (err) {
+      setModalMessage({
+        message: 'Please select a resource.',
+        type: 'info',
+      });
+      setResourceModal(true);
+    } finally {
+      // setLoading(false);
+    }
+  };
+  const getTrueKeys = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+
+  const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
 
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
@@ -1323,26 +1348,26 @@ export const ViewTermsByType = () => {
     //                 i_node_pointer: obligation.i_node_pointer,
     //                 typeOfSharing: obligation.typeOfSharing,
     //               };
-    if(resource.creator == curruser.user_id || resource.post_conditions[typeofShare]){
-    setSelection((prev) => ({
-      ...prev,
-      [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
-    }));
-    setSelectedResources((prev) => ({
-      ...prev,
-      [currentLabelName]: resource,
-    }));
-    setShowResources(true);
-    setSelectedResourceId(resource.id);
-    // setShowPageInput(true);
-  } else {
-    setError(`You are not allowed to ${typeofShare} the resource`)
+    if (resource.creator == curruser.user_id || resource.post_conditions[typeofShare]) {
+      setSelection((prev) => ({
+        ...prev,
+        [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
+      }));
+      setSelectedResources((prev) => ({
+        ...prev,
+        [currentLabelName]: resource,
+      }));
+      setShowResources(true);
+      setSelectedResourceId(resource.id);
+      // setShowPageInput(true);
+    } else {
+      setError(`You are not allowed to ${typeofShare} the resource`)
       setModalMessage({
         message: `You are not allowed to ${typeofShare} the resource`,
         type: "error",
       });
       setPostModal(true);
-  }
+    }
 
   };
 
@@ -1905,7 +1930,7 @@ export const ViewTermsByType = () => {
           lockerComplete: locker,
           hostLocker: hostLocker,
           guestLocker: guestLocker,
-          viewGuest:true
+          viewGuest: true
         },
       });
     }
@@ -2230,15 +2255,18 @@ export const ViewTermsByType = () => {
       setToPage('');
     }
   }
-  const openPopup = (rowData) => {
-    const extractedValue = rowData.value.split(";")[0].split("|")[1]; // Extract the required value
+
+  console.log("selectedRowData", selectedRowData)
+  const openInfoPopup = () => {
+    console.log("selectedRowDatas", selectedRowData)
+    const extractedValue = termValues[selectedRowData.labelName]?.split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
-    setSelectedRowData(rowData);
     console.log("obligationss", extractedValue);
     setShowOpenPopup(true);
-  };
+  }
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
+    setPdfData(null);
     setSelectedRowData(null);
   };
   const content = (
@@ -2596,7 +2624,7 @@ export const ViewTermsByType = () => {
                                   : "None"}
                               </td> */}
                               <td><button onClick={() => openPopup(obligation)}>Open</button></td>
-                              {showOpenPopup && selectedRowData && (
+                              {showOpenPopup && selectedRowData && pdfData && (
                                 <div className="terms-popup">
                                   <div className="terms-popup-content">
                                     <span className="close" onClick={closeOpenPopup}>
@@ -2628,6 +2656,18 @@ export const ViewTermsByType = () => {
                                                 Current owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li>
+                                              <p className="mt-2">Type of Share: {selectedRowData.typeOfSharing}</p>
+
+                                              <div className="mt-2">Post Conditions:</div>
+                                              {postConditionsKeys.length > 0 ? (
+                                                <ul>
+                                                  {postConditionsKeys.map((key) => (
+                                                    <li key={key}>{key}</li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -2637,7 +2677,6 @@ export const ViewTermsByType = () => {
                                         "None"
                                       )}
                                     </p>
-                                    <p>Type of Share: {selectedRowData.typeOfSharing}</p>
                                     {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
@@ -2697,16 +2736,16 @@ export const ViewTermsByType = () => {
                                         disabled={typeofShare !== "share" && !isResourceInFiltered}
                                       />
                                       {resource.resource_name}
-                                      
+
                                     </label>
                                     <button
-                                        id="view"
-                                        className="subbutton"
-                                        style={{textDecoration:"none"}}
-                                        onClick={() => handleClick(resource.id)}
-                                      >
-                                        View
-                                      </button>
+                                      id="view"
+                                      className="subbutton"
+                                      style={{ textDecoration: "none" }}
+                                      onClick={() => handleClick(resource.id)}
+                                    >
+                                      View
+                                    </button>
                                   </div>
                                 </li>
                               );
@@ -2714,8 +2753,8 @@ export const ViewTermsByType = () => {
 
                           </ul>
                           <div className="button-group">
-                          <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
-                          <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
+                            <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
+                            <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                           </div>
                         </div>
                       )}
@@ -2739,12 +2778,12 @@ export const ViewTermsByType = () => {
                               <li key={index}>
                                 <div style={{ display: "flex", alignItems: "center" }}>
                                   <label id={
-                                      resource.xnode_Type === "INODE"
-                                        ? "documents"
-                                        : resource.xnode_Type === "SNODE"
-                                          ? "documents-byConfer"
-                                          : "documents-byShare"
-                                    } >
+                                    resource.xnode_Type === "INODE"
+                                      ? "documents"
+                                      : resource.xnode_Type === "SNODE"
+                                        ? "documents-byConfer"
+                                        : "documents-byShare"
+                                  } >
                                     <input
                                       type="radio"
                                       name="selectedResource"
@@ -2757,7 +2796,7 @@ export const ViewTermsByType = () => {
                                     />
                                     {resource.resource_name}
                                   </label>
-                                  <button id="view" className="subbutton" style={{textDecoration:"none"}} onClick={() => handleClick(resource.id)}>View</button>
+                                  <button id="view" className="subbutton" style={{ textDecoration: "none" }} onClick={() => handleClick(resource.id)}>View</button>
 
 
                                 </div>
@@ -2765,8 +2804,8 @@ export const ViewTermsByType = () => {
                             ))}
                           </ul>
                           <div className="button-group">
-                          <button className="btn-color"  onClick={() => setShowResources2(false)}>Cancel</button>
-                          <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
+                            <button className="btn-color" onClick={() => setShowResources2(false)}>Cancel</button>
+                            <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
                           </div>
                         </div>
                       )}
@@ -3196,6 +3235,7 @@ export const ViewTermsByType = () => {
                             />
                           )}
 
+
                           {/* {showRevokeConsentModal && (
                             <Modal
                               message="Are you sure you want to revoke consent?"
@@ -3337,12 +3377,20 @@ export const ViewTermsByType = () => {
           />
         )}
         {postModal && (
-                              <Modal
-                                message={modalMessage.message}
-                                onClose={handleCloseModals}
-                                type={modalMessage.type}
-                              />
-                            )}
+          <Modal
+            message={modalMessage.message}
+            onClose={handleCloseModals}
+            type={modalMessage.type}
+          />
+        )}
+
+        {resourceModal && (
+          <Modal
+            message={modalMessage.message}
+            onClose={handleCloseResourceModal}
+            type={modalMessage.type}
+          />
+        )}
       </div>
     </div>
 

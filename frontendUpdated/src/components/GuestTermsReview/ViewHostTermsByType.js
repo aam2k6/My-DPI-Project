@@ -44,6 +44,7 @@ export const ViewHostTermsByType = () => {
   const [postConditions, setPostConditions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
+  const [resourceModal, setResourceModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [postModal, setPostModal] = useState(false);
   const [moreDataTerms, setMoreDataTerms] = useState([]);
@@ -138,21 +139,39 @@ export const ViewHostTermsByType = () => {
     // navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
   };
 
+  const handleCloseResourceModal = () => {
+    setResourceModal(false);
+    setSelectedRowData(null)
+    setModalMessage({ message: "", type: "" });
+  };
+
   const handleClose = () => {
     setIsModalOpen(false);
     setPdfUrl(null);
   };
 
   const openPopup = (rowData) => {
-    const extractedValue = rowData.value.split(";")[0].split("|")[1]; // Extract the required value
-    handleClicks(extractedValue); // Pass the extracted value to handleClicks
     setSelectedRowData(rowData);
-    console.log("obligationss", extractedValue);
-    setShowOpenPopup(true);
   };
 
+  console.log("selectedRowData", selectedRowData)
+  const openInfoPopup = () => {
+    console.log("selectedRowDatas", selectedRowData)
+    const extractedValue = termValues[selectedRowData.labelName]?.split(";")[0].split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    console.log("obligationss", extractedValue);
+    setShowOpenPopup(true);
+  }
+
+  useEffect(() => {
+      if (selectedRowData) {
+        openInfoPopup();
+      }
+    }, [selectedRowData]);
+console.log("pdfDatas",selectedRowData)
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
+    setPdfData(null);
     setSelectedRowData(null);
   };
   // console.log("start", guest_locker_id, host_locker_id, locker);
@@ -576,7 +595,7 @@ export const ViewHostTermsByType = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
+      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -603,13 +622,23 @@ export const ViewHostTermsByType = () => {
         console.log(error);
       }
     } catch (err) {
-      // setError(`Error: ${err.message}`);
-      console.log(err);
+      setModalMessage({
+        message: 'Please select a resource.',
+        type: 'info',
+      });
+      setResourceModal(true);
     } finally {
       // setLoading(false);
     }
   };
-  console.log("pdfData", pdfData)
+  const getTrueKeys = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+
+  const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
+
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
@@ -1993,7 +2022,7 @@ export const ViewHostTermsByType = () => {
                               </td> */}
 
                               <td> <button onClick={() => openPopup(obligation)}>Open</button></td>
-                              {showOpenPopup && selectedRowData && (
+                              {showOpenPopup && selectedRowData && pdfData && (
                                 <div className="terms-popup">
                                   <div className="terms-popup-content">
                                     <span className="close" onClick={closeOpenPopup}>
@@ -2025,6 +2054,17 @@ export const ViewHostTermsByType = () => {
                                                 Current owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li>
+                                              <p className="mt-2">Type of Share: {selectedRowData.typeOfSharing}</p>
+                                              <div className="mt-2">Post Conditions:</div>
+                                              {postConditionsKeys.length > 0 ? (
+                                                <ul>
+                                                  {postConditionsKeys.map((key) => (
+                                                    <li key={key}>{key}</li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -2034,7 +2074,7 @@ export const ViewHostTermsByType = () => {
                                         ""
                                       )}
                                     </p>
-                                    <p>Type of Share: {selectedRowData.typeOfSharing}</p>
+                                    
                                     {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
@@ -2727,6 +2767,13 @@ export const ViewHostTermsByType = () => {
                   type={modalMessage.type}
                 />
               )}
+              {resourceModal && (
+                        <Modal
+                          message={modalMessage.message}
+                          onClose={handleCloseResourceModal}
+                          type={modalMessage.type}
+                        />
+                      )}
             </div>
           </div>
         </div>

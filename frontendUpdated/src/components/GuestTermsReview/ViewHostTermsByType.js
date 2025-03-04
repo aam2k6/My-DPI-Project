@@ -164,11 +164,11 @@ export const ViewHostTermsByType = () => {
   }
 
   useEffect(() => {
-      if (selectedRowData) {
-        openInfoPopup();
-      }
-    }, [selectedRowData]);
-console.log("pdfDatas",selectedRowData)
+    if (selectedRowData) {
+      openInfoPopup();
+    }
+  }, [selectedRowData]);
+  console.log("pdfDatas", selectedRowData)
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setPdfData(null);
@@ -739,11 +739,12 @@ console.log("pdfDatas",selectedRowData)
             )}
 
 
-
-            <button onClick={() => handleButtonClick(obligation)}>
-              {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
-              Select Resource
-            </button>
+            {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
+              <button onClick={() => handleButtonClick(obligation)}>
+                {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
+                Select Resource
+              </button>
+            )}
             <ReactModal
               isOpen={isModalOpen}
               onRequestClose={handleClose}
@@ -2074,7 +2075,7 @@ console.log("pdfDatas",selectedRowData)
                                         ""
                                       )}
                                     </p>
-                                    
+
                                     {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
@@ -2768,12 +2769,12 @@ console.log("pdfDatas",selectedRowData)
                 />
               )}
               {resourceModal && (
-                        <Modal
-                          message={modalMessage.message}
-                          onClose={handleCloseResourceModal}
-                          type={modalMessage.type}
-                        />
-                      )}
+                <Modal
+                  message={modalMessage.message}
+                  onClose={handleCloseResourceModal}
+                  type={modalMessage.type}
+                />
+              )}
             </div>
           </div>
         </div>

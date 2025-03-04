@@ -1267,10 +1267,12 @@ export const ViewTermsByType = () => {
             )}
 
 
-            <button onClick={() => handleButtonClick(obligation)}>
-              {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
-              Select Resource
-            </button>
+            {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
+              <button onClick={() => handleButtonClick(obligation)}>
+                Select Resource
+              </button>
+            )}
+
             <ReactModal
               isOpen={isReactModalOpen}
               onRequestClose={handleClose}

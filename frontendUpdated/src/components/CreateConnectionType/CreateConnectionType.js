@@ -139,7 +139,7 @@ export const CreateConnectionType = () => {
         navigate('/target-locker-view', {
             state: {
               user: { username: parentUser.username },
-              locker: { name: locker.name}
+              locker: locker
             }
           });
     }

@@ -472,8 +472,29 @@ overflow-x: auto;
   color: #555;
 }
 
-.resource-icons i:hover {
-  color: #000;
+
+.subset-icon{
+
+    display: inline-block;
+    width: 20px;  /* Set width */
+    height: 20px; /* Set height */
+    background-image: url('../../../public/subset.png');
+    background-size: cover;
+
+}
+.resource-icons {
+  transition: opacity 0.3s ease-in-out;
+}
+.resource-hover:hover .resource-icons {
+  display: flex !important;
+}
+
+.subset-title {
+  font-size: 1.5rem; /* Increase font size */
+  font-weight: bold; /* Make it bold */
+  text-align: center; /* Center align */
+  margin-bottom: 10px; /* Add space below */
+  color: #333; /* Darker text color */
 }
 
 

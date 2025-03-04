@@ -15,6 +15,7 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { ConnectionContext } from "../../ConnectionContext";
+import { use } from "react";
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
   const location = useLocation();
@@ -25,6 +26,7 @@ export const ViewLocker = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resources, setResources] = useState([]);
   const [error, setError] = useState(null);
+  const [subsetError, setSubsetError] = useState(null)
   const [connections, setConnections] = useState({
     incoming_connections: [],
     outgoing_connections: [],
@@ -51,10 +53,17 @@ export const ViewLocker = () => {
   const [isConnectionsVisible, setConnectionsVisible] = useState(false);
   const [userResource, setUserResource] = useState([])
   const { locker_conn, setLocker_conn } = useContext(ConnectionContext);
-const [lockers, setLockers] = useState(() => {
+  const [lockers, setLockers] = useState(() => {
     const storedLocker = localStorage.getItem("locker");
     return storedLocker ? JSON.parse(storedLocker) : location.state || null;
   });
+  const [showSubsetModal, setShowSubsetModal] = useState(false);
+  const [totalPages, setTotalPages] = useState("Loading...")
+  const [selectedResourceId, setSelectedResourceId] = useState(null)
+  const [inodeName, setInodeName] = useState("");
+  const [fromPage, setFromPage] = useState();
+  const [toPage, setToPage] = useState();
+  const [hovered, setHovered] = useState(null);
 
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
@@ -80,7 +89,21 @@ const [lockers, setLockers] = useState(() => {
       localStorage.setItem("locker", JSON.stringify(locker));
     }
   }, [locker]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = Cookies.get("authToken"); // Get the token from Cookies
+      if (!token) return alert("Authentication token is missing.");
 
+      try {
+        const pages = await fetchTotalPages(selectedResourceId, token);
+        setTotalPages(pages); // Set the total pages in state
+      } catch (error) {
+        alert(error.message || "Failed to fetch total pages.");
+      }
+    };
+
+    if (selectedResourceId) fetchData();
+  }, [selectedResourceId]);
   const legendItems = [
     { color: "blue", label: "Your resource" },
     { color: "rgb(255, 38, 0)", label: "Shared resource" },
@@ -126,7 +149,29 @@ const [lockers, setLockers] = useState(() => {
       setError("An error occurred while fetching Xnodes");
     }
   };
+  const fetchTotalPages = async (selectedResourceId, token) => {
+    const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${selectedResourceId}`;
+    console.log("Fetching data from URL:", url); // Log the URL
 
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to fetch total pages.");
+      }
+      return data.total_pages;
+    } catch (error) {
+      console.error("Error details:", error); // Log the error details
+      // throw new Error("An error occurred while fetching the total pages.");
+    }
+  };
   // console.log("locker", locker);
   // console.log("resources", resources);
   const fetchConnectionsAndOtherConnections = async () => {
@@ -711,8 +756,8 @@ const [lockers, setLockers] = useState(() => {
   //   window.location.reload();
   // };
 
-  
-console.log("lockers", lockers)
+
+  console.log("lockers", lockers)
   const handleClick = async (xnode_id) => {
 
     try {
@@ -772,7 +817,18 @@ console.log("lockers", lockers)
     setResourceValidity(xnode.validity_until);
     setShowEditModal(true);
   };
-  console.log("resourcevalidity", resourceValidity, resourceVisibility);
+
+  const handleSubsetClick = (xnode) => {
+    setSelectedResource(xnode);
+    // setResourceName(xnode.resource_name);
+    // setResourceVisibility(xnode.visibility);
+    // setResourceValidity(xnode.validity_until);
+    setSelectedResourceId(xnode.id)
+    console.log("clicked", totalPages);
+
+    setShowSubsetModal(true);
+  };
+  console.log("resourcevalidity", selectedResourceId);
   const handleSaveResource = async (xnode) => {
     console.log("xnode in handleSaveResource:", xnode);
 
@@ -831,6 +887,73 @@ console.log("lockers", lockers)
       setModalMessage({ message: "An error occurred while updating the resource.", type: "failure" });
     }
   };
+
+  const handleCreateSubset = async () => {
+    // if (!selectedResourceId || !fromPage || !toPage || !inodeName) {
+    //     alert("Please fill all fields.");
+    //     return;
+    // }
+
+    try {
+      const token = Cookies.get("authToken");
+      console.log("Sending request with:", {
+        xnode_id: selectedResourceId,
+        from_page: parseInt(fromPage, 10),  // Convert to integer
+        to_page: parseInt(toPage, 10),      // Convert to integer
+        resource_name: inodeName,
+      });
+
+      const response = await fetch(`${frontend_host}/create-subset-resource/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          xnode_id: selectedResourceId,
+          from_page: parseInt(fromPage, 10), // Ensure integers are sent
+          to_page: parseInt(toPage, 10),     // Ensure integers are sent
+          resource_name: inodeName,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Subset resource created successfully!");
+        setTimeout(() => {
+          setShowSubsetModal(false);
+          setTotalPages("Loading...");
+          setSelectedResourceId(null)
+          setInodeName("");
+          setFromPage();
+          setToPage();
+          setSubsetError(null)
+        }, 1000);
+
+
+        fetchXnodes();
+      } else {
+        setSubsetError(data.error)
+        // alert(`Error: ${data.error}`);
+        // console.error("API Error:", data);
+      }
+    } catch (error) {
+      setSubsetError(error);
+      // alert("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleCloseSubset = () => {
+    setShowSubsetModal(false)
+    setTotalPages("Loading...");
+    setSelectedResourceId(null)
+    setInodeName("");
+    setFromPage();
+    setToPage();
+    setSubsetError(null)
+    fetchXnodes();
+  }
+
 
 
 
@@ -1102,7 +1225,7 @@ console.log("lockers", lockers)
           [username]: responseData.data, // Store the resources using the username as the key
         }));
       } else {
-        setError(responseData.message || "Failed to fetch resources");
+        // setError(responseData.message || "Failed to fetch resources");
       }
     } catch (error) {
       console.error("Error in API call:", error);
@@ -1140,7 +1263,7 @@ console.log("lockers", lockers)
   );
 
   const gotopage12createconnection = () => {
-    navigate("/connection", { state: { lockers, connectionBreadcrumbs:true, } });
+    navigate("/connection", { state: { lockers, connectionBreadcrumbs: true, } });
     console.log("dataa", locker)
   };
   return (
@@ -1229,7 +1352,7 @@ console.log("lockers", lockers)
                       className={`fa-solid fa-folder${isResourcesVisible ? "-open" : ""}`}
                       style={{ marginRight: "10px", fontSize: "24px" }}
                     />
-                    <span fontSize={{md:"16px", xs:"12px"}}>My Resources</span>
+                    <span fontSize={{ md: "16px", xs: "12px" }}>My Resources</span>
                     <Button className="btn-color" style={{ marginLeft: "12px", fontSize: "13px", }} onClick={handleUploadResource}>
                       UPLOAD RESOURCE
                     </Button>
@@ -1271,7 +1394,7 @@ console.log("lockers", lockers)
                                   </>
                                 }
                               >
-                                <div
+                                <div className="resource-hover"
                                   id={
                                     xnode.xnode_Type === "INODE"
                                       ? "documents"
@@ -1283,6 +1406,8 @@ console.log("lockers", lockers)
                                     display: "flex",
                                     alignItems: "center",
                                   }}
+                                  onMouseEnter={() => setHovered(xnode.id)}
+                                  onMouseLeave={() => setHovered(null)}
                                 >
                                   <div>
                                     <span
@@ -1294,30 +1419,69 @@ console.log("lockers", lockers)
 
 
 
-                                    {error && <div className="error-message">{error}</div>}
+                                    {/* {error && <div className="error-message">{error}</div>} */}
                                   </div>
                                   <span
                                     className="resource-icons"
                                     style={{
                                       marginLeft: "auto",
                                       display: "flex",
+                                      display: hovered === xnode.id ? "flex" : "none",
                                       gap: "10px",
                                     }}
                                   >
-                                    {xnode.xnode_Type === "INODE" && (
-                                      <i
-                                        className="fa-regular fa-pen-to-square"
-                                        style={{
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() => handleEditClick(xnode)}
-                                      />
+                                    {xnode.xnode_Type === "SNODE" && (
+
+                                      <>
+                                        <i
+                                          className="subset-icon"
+                                          data-tooltip-id="tooltip" data-tooltip-content="Subset"
+                                          style={{
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => handleSubsetClick(xnode)}
+
+                                        />
+                                        <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+
+                                      </>
+
                                     )}
+                                    {xnode.xnode_Type === "INODE" && (
+                                      <>
+                                        <i
+                                          className="subset-icon"
+                                          data-tooltip-id="tooltip" data-tooltip-content="Subset"
+
+                                          style={{
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => handleSubsetClick(xnode)}
+
+                                        />
+
+                                        <i
+                                          className="fa-regular fa-pen-to-square"
+                                          data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                          style={{
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => handleEditClick(xnode)}
+                                        />
+                                        <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px", backgroundColor: "grey" }} />
+
+                                      </>
+
+                                    )}
+
                                     <i
                                       className="fa-regular fa-trash-can"
+                                      data-tooltip-id="tooltip" data-tooltip-content="Delete"
                                       style={{ cursor: "pointer" }}
                                       onClick={() => handleDeleteClick(xnode)}
                                     />
+                                    <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+
                                   </span>
                                 </div>
                               </Tooltips>
@@ -1522,15 +1686,44 @@ console.log("lockers", lockers)
                                                             gap: "10px",
                                                           }}
                                                         >
-                                                          {resource.xnode.xnode_Type === "INODE" && (
+                                                          {resource.xnode.xnode_Type === "SNODE" && (
+
                                                             <i
-                                                              className="fa-regular fa-pen-to-square"
+                                                              className="subset-icon"
                                                               style={{
                                                                 cursor: "pointer",
                                                               }}
-                                                              onClick={() => handleEditClick(resource)}
+
                                                             />
                                                           )}
+                                                          {resource.xnode.xnode_Type === "INODE" && (
+                                                            <>
+                                                              <i
+                                                                className="fa-regular fa-pen-to-square"
+                                                                style={{
+                                                                  cursor: "pointer",
+                                                                }}
+                                                                onClick={() => handleEditClick(resource)}
+                                                              />
+                                                              <i
+                                                                className="subset-icon"
+                                                                style={{
+                                                                  cursor: "pointer",
+                                                                }}
+
+                                                              />
+                                                            </>
+                                                          )}
+                                                          {resource.xnode.xnode_Type === "INODE" && (
+                                                            <i
+                                                              className="subset-icon"
+                                                              style={{
+                                                                cursor: "pointer",
+                                                              }}
+
+                                                            />
+                                                          )}
+
                                                           {resource.resource_name && (
                                                             <i
                                                               className="fa-regular fa-trash-can"
@@ -1625,15 +1818,15 @@ console.log("lockers", lockers)
           </Grid>
           <Grid item md={1} xs={12} marginBottom={{ md: "", xs: "50px" }}></Grid>
           <Grid item md={5.5} xs={12} className="b">
-           <Grid container paddingBottom={"10px"}>
-           <Grid item md={4} xs={12}><h3 id="mycon">My Connections:</h3></Grid>
-           <Grid item md={3} xs={12}></Grid>
-            <Grid item md={5} xs={12}>
-            <Button onClick={gotopage12createconnection} className="btn-color" style={{fontSize:"13px"}}>
-              Create New Connection Type
-            </Button>
+            <Grid container paddingBottom={"10px"}>
+              <Grid item md={4} xs={12}><h3 id="mycon">My Connections:</h3></Grid>
+              <Grid item md={3} xs={12}></Grid>
+              <Grid item md={5} xs={12}>
+                <Button onClick={gotopage12createconnection} className="btn-color" style={{ fontSize: "13px" }}>
+                  Create New Connection Type
+                </Button>
+              </Grid>
             </Grid>
-           </Grid>
             <div className="tabs">
               <div
                 className={`tab-header ${activeTab === "incoming" ? "active" : ""
@@ -1748,6 +1941,62 @@ console.log("lockers", lockers)
                     ) : (
                       <p>No connections found.</p>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {showSubsetModal && (
+                <div className="edit-modal">
+                  <div className="modal-content">
+                    <h4 className="subset-title">
+                      Create Subset for {selectedResource.resource_name}
+                    </h4>
+                    {/* {subsetError && <div className="error-popup" style={{color:"red"}}>*{subsetError}</div>} */}
+                    <label className="form-label fw-bold mt-1">Resource Name <span style={{ color: "red" }}>*</span></label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      value={inodeName}
+                      onChange={(e) => setInodeName(e.target.value)}
+                    />
+                    <label className="form-label fw-bold  mt-1">Max Page</label>
+                    <input readOnly disabled
+                      className="form-control"
+                      // type="number"
+                      // min="1"
+                      value={totalPages}
+                    />
+                    <label className="form-label fw-bold mt-1">From Page <span style={{ color: "red" }}>*</span></label>
+                    <input
+                      className="form-control"
+                      type="number"
+
+                      // max={maxPage ? maxPage - 1 : ""}
+                      value={fromPage}
+                      onChange={(e) =>
+                        setFromPage(e.target.value)
+                      }
+
+                    />
+                    <label className="form-label fw-bold  mt-1">To Page <span style={{ color: "red" }}>*</span></label>
+                    <input
+                      className="form-control"
+                      type="number"
+                      value={toPage}
+                      onChange={(e) =>
+                        setToPage(e.target.value)
+                      }
+                    />
+                    {subsetError && <div className="error-popup mt-1" style={{ color: "red" }}>{subsetError}</div>}
+
+                    <div className="modal-buttons mt-4">
+                      <button
+                        onClick={() => handleCreateSubset(selectedResource)}
+                      >
+                        Create
+                      </button>
+                      <button onClick={() => handleCloseSubset()}>Cancel</button>
+                    </div>
                   </div>
                 </div>
               )}

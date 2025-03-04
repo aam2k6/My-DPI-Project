@@ -1122,8 +1122,11 @@ import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import Modal from '../Modal/Modal.jsx';
 import QRCode from "react-qr-code";
-import { Grid, Box } from '@mui/material'
+import { Grid, Box, Button } from '@mui/material'
 import { Tooltip } from 'react-tooltip';
+import ReactModal from "react-modal";
+// import pdfWorker from "pdfjs-dist/build/pdf.worker.min.js"
+import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
 export const TargetLockerView = () => {
   const navigate = useNavigate();
@@ -1132,17 +1135,18 @@ export const TargetLockerView = () => {
   const [parentUser, setParentUser] = useState(
     location.state ? location.state.user : null
   );
+  const [pdfUrl, setPdfUrl] = useState(null);
   const [resources, setResources] = useState([]);
   const [otherConnections, setOtherConnections] = useState([]);
   const [locker, setLocker] = useState(
     location.state ? location.state.locker : null
   );
   const [error, setError] = useState(null);
-
   const [outgoingConnections, setOutgoingConnections] = useState([]); // State for outgoing connections
   const [trackerData, setTrackerData] = useState({}); // State for tracker data
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [qrData, setQrData] = useState("");  // State for QR code data
   const [xnodes, setXnodes] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -1172,7 +1176,10 @@ export const TargetLockerView = () => {
     setModalMessage({ message: "", type: "" });
     setQrData("");  // Reset QR code data when modal is closed
   };
-
+  const handleClose = () => {
+    setIsPdfModalOpen(false);
+    setPdfUrl(null);
+  };
   const fetchXnodes = async () => {
     try {
       const token = Cookies.get("authToken");
@@ -1596,11 +1603,12 @@ export const TargetLockerView = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
-        console.log("link to file", link_To_File);
-        window.open(link_To_File, '_blank');
+        const secureFileUrl = link_To_File.replace('http://', 'https://');
+        setPdfUrl(secureFileUrl);
         // setPdfUrl(link_To_File);
+        setIsPdfModalOpen(true);
       } else {
-        setError('Unable to retrieve the file link.');
+        // setError('Unable to retrieve the file link.');
         console.log(error);
       }
     } catch (err) {
@@ -1613,10 +1621,10 @@ export const TargetLockerView = () => {
 
 
   const handleTargetUserView = () => {
-    console.log("parentUser",parentUser)
+    console.log("parentUser", parentUser)
     navigate('/target-user-view', {
       state: {
-        user: { username: parentUser.username , description: parentUser.description },
+        user: { username: parentUser.username, description: parentUser.description },
         // locker:{description:parentUser.description}
       },
     });
@@ -1679,16 +1687,16 @@ export const TargetLockerView = () => {
 
   const breadcrumbs = (
     <div className="breadcrumbs">
-    <a href="/home" className="breadcrumb-item">
-      Home
-    </a>
-    <span className="breadcrumb-separator">▶</span>
-    <a className="breadcrumb-item" href="/dpi-directory">User Directory</a>
-    <span className="breadcrumb-separator">▶</span>
-    <span onClick={()=>handleTargetUserView(locker)} className="breadcrumb-item">TargetUserView</span>
-    <span className="breadcrumb-separator">▶</span>
-    <span className="breadcrumb-item current">TargetLockerView</span>
-  </div>
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <a className="breadcrumb-item" href="/dpi-directory">User Directory</a>
+      <span className="breadcrumb-separator">▶</span>
+      <span onClick={() => handleTargetUserView(locker)} className="breadcrumb-item">TargetUserView</span>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">TargetLockerView</span>
+    </div>
   )
 
   const handleToggle = (id) => {
@@ -1709,12 +1717,12 @@ export const TargetLockerView = () => {
           </Grid>
           <Grid item md={1.5} sm={12}>
             {/* <Box display="flex" justifyContent="center" textAlign="center"> */}
-            <button onClick={handleClick} className="new-connection-btns-1">Create New Connection</button>
+            <Button onClick={handleClick} className="btn-color" size="small" variant="contained" style={{ fontWeight: "bold" }}>Create New Connection</Button>
             {/* </Box> */}
           </Grid>
         </Grid>
 
-        <Grid container className="page7containers" padding={{ md: "4rem" }}>
+        <Grid container className="page7containers" marginTop={0} padding={{ md: "4rem" }}>
           <Grid container md={5} className="notvisible">
             <Grid item md={12} xs={12} className="page7publicresource">
               <p>Resources</p>
@@ -1745,7 +1753,7 @@ export const TargetLockerView = () => {
                               ? "documents"
                               : "documents-byShare"
                           }
-                          style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px", marginLeft:"0rem" }}
+                          style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px", marginLeft: "0rem" }}
                           onClick={() =>
                             handleXnodeClick(xnode.id)
                           }
@@ -1758,7 +1766,49 @@ export const TargetLockerView = () => {
                       </div>
                     </div>
                   ))}
+                  <ReactModal
+                    isOpen={isPdfModalOpen}
+                    onRequestClose={handleClose}
+                    contentLabel="PDF Viewer"
+                    style={{
+                      content: {
+                        top: "59%",
+                        left: "50%",
+                        right: "auto",
+                        bottom: "auto",
+                        marginRight: "-50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "95%",
+                        height: "80%",
+                        overflowY: "hidden",
+                        maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                        maxHeight: "90%", // Max height for larger screens
+                      },
+                    }}
+                  >
+                    <button
+                      onClick={handleClose}
+                      style={{
+                        marginBottom: "10px",
+                        cursor: "pointer",
+                        position: "absolute",
+                        top: "10px",
+                        right: "10px", // Button positioned at the top right
+                        zIndex: 100,
+                      }}
+                    >
+                      Close
+                    </button>
+                    {pdfUrl ? (
+                      <Worker workerUrl="/pdf.worker.min.js">
+                        <Viewer fileUrl={pdfUrl} />
+                      </Worker>
+                    ) : (
+                      <p>Loading PDF...</p>
+                    )}
+                  </ReactModal>
                 </ul>
+
               ) : (
                 <p className="not-found">No resources visible to you.</p>
               )}

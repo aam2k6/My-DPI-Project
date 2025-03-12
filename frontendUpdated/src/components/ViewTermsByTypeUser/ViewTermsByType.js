@@ -597,6 +597,8 @@ export const ViewTermsByType = () => {
   const [showOpenPopup, setShowOpenPopup] = useState(false);
   const [pdfData, setPdfData] = useState(null)
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [selectedRowData1, setSelectedRowData1] = useState(null);
+  const [selectedRowData2, setSelectedRowData2] = useState(null);
   const [typeofShare, setTypeofShare] = useState(null)
 
   const {
@@ -683,6 +685,7 @@ export const ViewTermsByType = () => {
     setPdfUrl(null);
   };
   const openPopup = (rowData) => {
+    console.log("first one", rowData)
     setSelectedRowData(rowData);
   };
 
@@ -692,6 +695,27 @@ export const ViewTermsByType = () => {
       openInfoPopup();
     }
   }, [selectedRowData]);
+
+
+  const openPopup1 = (rowData) =>{
+    console.log("second one", rowData)
+    setSelectedRowData1(rowData)
+  }
+  useEffect(() => {
+    if (selectedRowData1) {
+      openInfoPopup1();
+    }
+  }, [selectedRowData1]);
+
+  const openPopup2 = (rowData) =>{
+    console.log("Third one", rowData)
+    setSelectedRowData2(rowData)
+  }
+  useEffect(() => {
+    if (selectedRowData2) {
+      openInfoPopup2();
+    }
+  }, [selectedRowData2]);
   // console.log("start", guest_locker_id, host_locker_id, locker);
   useEffect(() => {
     if (!curruser) {
@@ -935,7 +959,7 @@ export const ViewTermsByType = () => {
               dataElement: value.enter_value,
               purpose: value.purpose,
               action: value.typeOfValue,
-              share: value.typeOfShare,
+              share: value.typeOfSharing || value.typeOfShare,
             })
           );
           setPermissionsData(sharedData);
@@ -1159,14 +1183,19 @@ export const ViewTermsByType = () => {
       // setLoading(false);
     }
   };
+  // const getTrueKeys = (obj) => {
+  //   return Object.entries(obj)
+  //     .filter(([key, value]) => value === true )
+  //     .map(([key]) => key);
+  // };
   const getTrueKeys = (obj) => {
-    return Object.entries(obj)
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key);
+    return Object.fromEntries(
+      Object.entries(obj).filter(([key]) => key !== "creator_conditions") // Exclude creator_conditions
+    );
   };
 
   const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
-
+  console.log("postConditionsKeys", postConditionsKeys)
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
@@ -1350,35 +1379,47 @@ export const ViewTermsByType = () => {
     //                 i_node_pointer: obligation.i_node_pointer,
     //                 typeOfSharing: obligation.typeOfSharing,
     //               };
-    if (resource.creator == curruser.user_id || resource.post_conditions[typeofShare]) {
-      setSelection((prev) => ({
-        ...prev,
-        [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
-      }));
-      setSelectedResources((prev) => ({
-        ...prev,
-        [currentLabelName]: resource,
-      }));
-      setShowResources(true);
-      setSelectedResourceId(resource.id);
-      // setShowPageInput(true);
-    } else {
-      setError(`You are not allowed to ${typeofShare} the resource`)
-      setModalMessage({
-        message: `You are not allowed to ${typeofShare} the resource`,
-        type: "error",
-      });
-      setPostModal(true);
-    }
+
+    setSelection((prev) => ({
+      ...prev,
+      [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
+    }));
+    setSelectedResources((prev) => ({
+      ...prev,
+      [currentLabelName]: resource,
+    }));
+    setShowResources(true);
+    setSelectedResourceId(resource.id);
+    // if (resource.creator == curruser.user_id || resource.post_conditions[typeofShare]) {
+    //   setSelection((prev) => ({
+    //     ...prev,
+    //     [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
+    //   }));
+    //   setSelectedResources((prev) => ({
+    //     ...prev,
+    //     [currentLabelName]: resource,
+    //   }));
+    //   setShowResources(true);
+    //   setSelectedResourceId(resource.id);
+    //   // setShowPageInput(true);
+    // } else {
+    //   setError(`You are not allowed to ${typeofShare} the resource`)
+    //   setModalMessage({
+    //     message: `You are not allowed to ${typeofShare} the resource`,
+    //     type: "error",
+    //   });
+    //   setPostModal(true);
+    // }
 
   };
 
 
   //********************************************************** */
-  const handleButtonClick2 = (labelName) => {
+  const handleButtonClick2 = (term) => {
     setSelectedLocker(guestLockerName);
     setShowResources2(true);
-    setCurrentLabelName(labelName);
+    setCurrentLabelName(term.labelName);
+    setTypeofShare(term.typeOfSharing || term.typeOfSharing)
   };
 
   const handleResourceSelection2 = (resource) => {
@@ -1409,54 +1450,101 @@ export const ViewTermsByType = () => {
   };
 
   const handlePageSubmit2 = async () => {
-    // if (!fromPage || !toPage) {
-    //   setErrorMessage("Both from_page and to_page are required.");
-    //   return;
-    // }
+    const resource = selection2[currentLabelName];
     const token = Cookies.get("authToken");
+    const data = {
+      connection_name: connectionName,
+      guest_locker_name: guestLockerName,
+      guest_user_username: guestUserUsername,
+      xnode_id: resource.id,
+      share_Type: typeofShare,
+    };
+    console.log("typesss",typeofShare)
+    console.log("typesss",data)
     try {
-      // const response = await fetch('host/get_total_pages_v2/'.replace(
-      //   /host/,
-      //   frontend_host
-      // ), {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Basic ${token}`,
+      const response = await fetch('host/share_confer_resource_v2/'.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
 
-      //   },
-      //   body: JSON.stringify({
-      //     xnode_id: selectedResourceId2,
-      //     from_page: parseInt(fromPage, 10),
-      //     to_page: parseInt(toPage, 10)
-      //   })
-      // });
+        },
+        body: JSON.stringify(data)
+      });
 
-      // const data = await response.json();
-
-      if (true) {
-
-        const resource = selection2[currentLabelName]; // Current selected resource
-        // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id}; F`;
-        // console.log(termValue, "termValue");
-
-
+      const result = await response.json();
+      if (response.ok) {
+        // alert(result.message);
+        console.log("New Xnode ID:", result.new_xnode_id);
+        const new_xnode_id = result.new_xnode_id
+        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
         appendPagesToTerms2(termValue);
 
 
         setShowPageInput2(false);
         setErrorMessage(null);
         setShowResources2(false)
-        setFromPage('');
-        setToPage('');
+        setIsCompletePages(false)
       } else {
-
-        setErrorMessage("Error occured");
+        const errorMsg = result.error
+        setError(`You are not allowed to ${typeofShare} the resource`)
+        setModalMessage({
+          message: errorMsg,
+          type: "error",
+        });
+        setPostModal(true);
+        // alert(result.error);
       }
     } catch (error) {
-      setErrorMessage("An error occurred while validating pages.");
+      console.error("Error:", error);
+      alert("Something went wrong!");
     }
+    // try {
+    //   // const response = await fetch('host/get_total_pages_v2/'.replace(
+    //   //   /host/,
+    //   //   frontend_host
+    //   // ), {
+    //   //   method: 'POST',
+    //   //   headers: {
+    //   //     'Content-Type': 'application/json',
+    //   //     Authorization: `Basic ${token}`,
+
+    //   //   },
+    //   //   body: JSON.stringify({
+    //   //     xnode_id: selectedResourceId2,
+    //   //     from_page: parseInt(fromPage, 10),
+    //   //     to_page: parseInt(toPage, 10)
+    //   //   })
+    //   // });
+
+    //   // const data = await response.json();
+
+    //   if (true) {
+
+    //     const resource = selection2[currentLabelName]; // Current selected resource
+    //     // console.log("in page res", resource);
+    //     const termValue = `${resource.resource_name}|${resource.id}; F`;
+    //     // console.log(termValue, "termValue");
+
+
+    //     appendPagesToTerms2(termValue);
+
+
+    //     setShowPageInput2(false);
+    //     setErrorMessage(null);
+    //     setShowResources2(false)
+    //     setFromPage('');
+    //     setToPage('');
+    //   } else {
+
+    //     setErrorMessage("Error occured");
+    //   }
+    // } catch (error) {
+    //   setErrorMessage("An error occurred while validating pages.");
+    // }
   };
 
   // const appendPagesToTerms2 = (termValue) => {
@@ -1501,57 +1589,129 @@ export const ViewTermsByType = () => {
     combinedResources.push(vnode.resource);
   });
 
+  // const handlePageSubmitss = async () => {
+  //   // if (!fromPage || !toPage) {
+  //   //   setErrorMessage("Both from_page and to_page are required.");
+  //   //   return;
+  //   // }
+  //   const token = Cookies.get("authToken");
+  //   try {
+  //     // const response = await fetch('host/get_total_pages_v2/'.replace(
+  //     //   /host/,
+  //     //   frontend_host
+  //     // ), {
+  //     //   method: 'POST',
+  //     //   headers: {
+  //     //     'Content-Type': 'application/json',
+  //     //     Authorization: `Basic ${token}`,
+
+  //     //   },
+  //     //   body: JSON.stringify({
+  //     //     xnode_id: selectedResourceId,
+  //     //     from_page: parseInt(fromPage, 10),
+  //     //     to_page: parseInt(toPage, 10)
+  //     //   })
+  //     // });
+
+  //     // const data = await response.json();
+
+  //     if (true) {
+
+  //       const resource = selection[currentLabelName]; // Current selected resource
+  //       // console.log("in page res", resource);
+  //       const termValue = `${resource.resource_name}|${resource.id}; F`;
+  //       // console.log(termValue, "termValue");
+
+
+  //       appendPagesToTerms(termValue);
+
+
+  //       setShowPageInput(false);
+  //       setErrorMessage(null);
+  //       setShowResources(false)
+  //       setFromPage('');
+  //       setToPage('');
+  //       setIsCompletePages(false)
+  //     } else {
+
+  //       setErrorMessage("Error occured");
+  //     }
+  //   } catch (error) {
+  //     setErrorMessage("An error occurred while validating pages.");
+  //   }
+  // };
+
   const handlePageSubmit = async () => {
-    // if (!fromPage || !toPage) {
-    //   setErrorMessage("Both from_page and to_page are required.");
-    //   return;
-    // }
     const token = Cookies.get("authToken");
+    const resource = selection[currentLabelName];
+    const data = {
+      connection_name: connectionName,
+      guest_locker_name: guestLockerName,
+      guest_user_username: guestUserUsername,
+      xnode_id: resource.id,
+      share_Type: typeofShare,
+    };
+    console.log("payload for post", data)
+
     try {
-      // const response = await fetch('host/get_total_pages_v2/'.replace(
-      //   /host/,
-      //   frontend_host
-      // ), {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Basic ${token}`,
+      const response = await fetch('host/share_confer_resource_v2/'.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
 
-      //   },
-      //   body: JSON.stringify({
-      //     xnode_id: selectedResourceId,
-      //     from_page: parseInt(fromPage, 10),
-      //     to_page: parseInt(toPage, 10)
-      //   })
-      // });
+        },
+        body: JSON.stringify(data)
+      });
 
-      // const data = await response.json();
-
-      if (true) {
-
-        const resource = selection[currentLabelName]; // Current selected resource
-        // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id}; F`;
-        // console.log(termValue, "termValue");
-
-
+      const result = await response.json();
+      if (response.ok) {
+        // alert(result.message);
+        console.log("New Xnode ID:", result.new_xnode_id);
+        const new_xnode_id = result.new_xnode_id
+        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
         appendPagesToTerms(termValue);
 
 
         setShowPageInput(false);
         setErrorMessage(null);
         setShowResources(false)
-        setFromPage('');
-        setToPage('');
         setIsCompletePages(false)
       } else {
-
-        setErrorMessage("Error occured");
+        const errorMsg = result.error
+        setError(`You are not allowed to ${typeofShare} the resource`)
+        setModalMessage({
+          message: errorMsg,
+          type: "error",
+        });
+        setPostModal(true);
+        // alert(result.error);
       }
     } catch (error) {
-      setErrorMessage("An error occurred while validating pages.");
+      console.error("Error:", error);
+      alert("Something went wrong!");
     }
-  };
+    // if (typeofShare == 'share' || typeofShare == 'confer') {
+      
+    // } else if (typeofShare == 'transfer' || typeofShare == 'collateral') {
+    //   const termValue = `${resource.resource_name}|${resource.id}; F`;
+    //   // console.log(termValue, "termValue");
+
+
+    //   appendPagesToTerms(termValue);
+
+
+    //   setShowPageInput(false);
+    //   setErrorMessage(null);
+    //   setShowResources(false)
+    //   setIsCompletePages(false)
+    // } else {
+    //   console.log("error")
+    // }
+  }
 
   const appendPagesToTerms = (termValue) => {
     // console.log("in append", termValue);
@@ -2266,10 +2426,26 @@ export const ViewTermsByType = () => {
     console.log("obligationss", extractedValue);
     setShowOpenPopup(true);
   }
+  const openInfoPopup1 = () => {
+    console.log("selectedRowDatas1", selectedRowData1.dataElement?.split("|")[1])
+    const extractedValue = selectedRowData1.dataElement.split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    console.log("obligationss", extractedValue);
+    setShowOpenPopup(true);
+  }
+  const openInfoPopup2 = () => {
+    console.log("selectedRowDatas2", selectedRowData2.enter_value?.split(";")[0].split("|")[1])
+    const extractedValue = selectedRowData2.enter_value?.split(";")[0].split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    // console.log("obligationss", extractedValue);
+    setShowOpenPopup(true);
+  }
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setPdfData(null);
     setSelectedRowData(null);
+    setSelectedRowData1(null);
+    setSelectedRowData2(null);
   };
   const content = (
     <>
@@ -2627,49 +2803,82 @@ export const ViewTermsByType = () => {
                               </td> */}
                               <td><button onClick={() => openPopup(obligation)}>Open</button></td>
                               {showOpenPopup && selectedRowData && pdfData && (
-                                <div className="terms-popup">
-                                  <div className="terms-popup-content">
-                                    <span className="close" onClick={closeOpenPopup}>
+                                <div className="edit-modal" >
+                                  <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                    {/* <span className="close" onClick={closeOpenPopup}>
                                       &times;
-                                    </span>
-                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
+                                    </span> */}
+                                    <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
                                       Consent Artefact
                                     </h3>
-                                    <p>
+                                    <>
                                       {termValues[selectedRowData.labelName]?.split(";")[0] ? (
                                         <div>
-                                          File:{" "}
+                                          <label className="form-label fw-bold mt-1">File:{" "}</label>
                                           {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
                                           {pdfData ? (
                                             <div>
-                                              <li>
-                                                Created on:{" "}
+
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
                                                 {new Date(pdfData.created_at).toLocaleString()}
-                                              </li>
-                                              <li>
-                                                Valid until:{" "}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                                                 {new Date(pdfData.validity_until).toLocaleString()}
-                                              </li>
+                                              </div>
                                               {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
-                                              <li>
-                                                Current owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li>
-                                              <p className="mt-2">Type of Share: {selectedRowData.typeOfSharing}</p>
 
-                                              <div className="mt-2">Post Conditions:</div>
-                                              {postConditionsKeys.length > 0 ? (
-                                                <ul>
-                                                  {postConditionsKeys.map((key) => (
-                                                    <li key={key}>{key}</li>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                {selectedRowData.typeOfSharing}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                              {Object.keys(postConditionsKeys).length > 0 ? (
+                                                <ul
+                                                  style={{
+                                                    display: "grid",
+                                                    gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                    gap: "20px",
+                                                    listStyleType: "none",
+                                                    padding: 0,
+                                                  }}
+                                                >
+                                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                      <input
+                                                        type="checkbox"
+                                                        id={key}
+                                                        name={key}
+                                                        checked={value} // Will be checked if true, unchecked if false
+                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                      />
+                                                      <label htmlFor={key}>{key}</label>
+                                                    </li>
                                                   ))}
                                                 </ul>
                                               ) : (
                                                 <p>No conditions found</p>
                                               )}
+                                              <div className="modal-buttons mt-4">
+                                                <button
+                                                // onClick={() => handleCreateSubset(selectedResource)}
+                                                >
+                                                  Submit
+                                                </button>
+                                                <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                              </div>
                                             </div>
                                           ) : (
                                             <p>Loading...</p>
@@ -2678,7 +2887,7 @@ export const ViewTermsByType = () => {
                                       ) : (
                                         "None"
                                       )}
-                                    </p>
+                                    </>
                                     {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
@@ -2728,14 +2937,13 @@ export const ViewTermsByType = () => {
                                         : resource.xnode_Type === "SNODE"
                                           ? "documents-byConfer"
                                           : "documents-byShare"
-                                    } className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}>
+                                    }>
                                       <input
                                         type="radio"
                                         name="selectedResource"
                                         value={resource.resource_name}
                                         checked={selection[currentLabelName]?.id === resource.id}
                                         onClick={() => handleResourceSelection(resource)}
-                                        disabled={typeofShare !== "share" && !isResourceInFiltered}
                                       />
                                       {resource.resource_name}
 
@@ -3104,6 +3312,7 @@ export const ViewTermsByType = () => {
                               <th>Purpose</th>
                               <th>Type of Share</th>
                               <th>Value</th>
+                              <th>Consent Artefact</th>
                               <th>Status</th> {/* Changed "Remove" to "Status" */}
                             </tr>
                           </thead>
@@ -3130,6 +3339,107 @@ export const ViewTermsByType = () => {
                                   {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
                                   {/* Display "None" if empty */}
                                 </td>
+                                <td><button onClick={() => openPopup1(permission)}>Open</button></td>
+                                {showOpenPopup && selectedRowData1 && pdfData && (
+                                <div className="edit-modal" >
+                                  <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                    {/* <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span> */}
+                                    <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                                      Consent Artefact
+                                    </h3>
+                                    <>
+                                      {selectedRowData1.dataElement ? (
+                                        <div>
+                                          <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                          {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                          {selectedRowData1.dataElement.split("|")[0]}
+                                          {pdfData ? (
+                                            <div>
+
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                {new Date(pdfData.created_at).toLocaleString()}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                {new Date(pdfData.validity_until).toLocaleString()}
+                                              </div>
+                                              {/* <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li> */}
+
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                {selectedRowData1.share}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                              {Object.keys(postConditionsKeys).length > 0 ? (
+                                                <ul
+                                                  style={{
+                                                    display: "grid",
+                                                    gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                    gap: "20px",
+                                                    listStyleType: "none",
+                                                    padding: 0,
+                                                  }}
+                                                >
+                                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                      <input
+                                                        type="checkbox"
+                                                        id={key}
+                                                        name={key}
+                                                        checked={value} // Will be checked if true, unchecked if false
+                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                      />
+                                                      <label htmlFor={key}>{key}</label>
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
+                                              <div className="modal-buttons mt-4">
+                                                <button
+                                                // onClick={() => handleCreateSubset(selectedResource)}
+                                                >
+                                                  Submit
+                                                </button>
+                                                <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <p>Loading...</p>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </>
+                                    {/* <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+                                  </div>
+                                </div>
+                              )}
                                 <td>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
@@ -3193,11 +3503,112 @@ export const ViewTermsByType = () => {
                                       {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
                                     </a>
                                   )}
-                                  <button onClick={() => handleButtonClick2(term.labelName)}>
+                                  <button onClick={() => handleButtonClick2(term)}>
 
                                     Select Resource
                                   </button>
                                 </td>
+                                <td><button onClick={() => openPopup2(moreDataTerms[index])}>Open</button></td>
+                                {showOpenPopup && selectedRowData2 && pdfData && (
+                                <div className="edit-modal" >
+                                  <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                    {/* <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span> */}
+                                    <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                                      Consent Artefact
+                                    </h3>
+                                    <>
+                                      {selectedRowData2.enter_value ? (
+                                        <div>
+                                          <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                          {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                          {selectedRowData2.enter_value.split(";")[0].split("|")[0]}
+                                          {pdfData ? (
+                                            <div>
+
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                {new Date(pdfData.created_at).toLocaleString()}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                {new Date(pdfData.validity_until).toLocaleString()}
+                                              </div>
+                                              {/* <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li> */}
+
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                {selectedRowData2.share}
+
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                              {Object.keys(postConditionsKeys).length > 0 ? (
+                                                <ul
+                                                  style={{
+                                                    display: "grid",
+                                                    gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                    gap: "20px",
+                                                    listStyleType: "none",
+                                                    padding: 0,
+                                                  }}
+                                                >
+                                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                      <input
+                                                        type="checkbox"
+                                                        id={key}
+                                                        name={key}
+                                                        checked={value} // Will be checked if true, unchecked if false
+                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                      />
+                                                      <label htmlFor={key}>{key}</label>
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
+                                              <div className="modal-buttons mt-4">
+                                                <button
+                                                // onClick={() => handleCreateSubset(selectedResource)}
+                                                >
+                                                  Submit
+                                                </button>
+                                                <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <p>Loading...</p>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </>
+                                    {/* <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+                                  </div>
+                                </div>
+                              )}
                                 <td>Pending</td> {/* Example status value */}
                               </tr>
                             ))}

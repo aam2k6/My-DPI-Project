@@ -1078,7 +1078,7 @@ export const Guesttermsreview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/share-resource-v2/`.replace(/host/, frontend_host),
+        `host/share_resource_approve_v2/`.replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -1091,7 +1091,7 @@ export const Guesttermsreview = () => {
             guest_locker_name: conndetails.guest_locker.name,
             host_user_username: conndetails.host_user.username,
             guest_user_username: conndetails.guest_user.username,
-            validity_until: conndetails.validity_time,
+            // validity_until: conndetails.validity_time,
           }),
         }
       );
@@ -1128,7 +1128,7 @@ export const Guesttermsreview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/confer_resource_v2/`,
+        `${frontend_host}/confer_resource_approve_v2/`,
         {
           method: "POST",
           headers: {
@@ -1141,7 +1141,7 @@ export const Guesttermsreview = () => {
             guest_locker_name: conndetails.guest_locker.name,
             host_user_username: conndetails.host_user.username,
             guest_user_username: conndetails.guest_user.username,
-            validity_until: conndetails.validity_time,
+            // validity_until: conndetails.validity_time,
           }),
         }
       );

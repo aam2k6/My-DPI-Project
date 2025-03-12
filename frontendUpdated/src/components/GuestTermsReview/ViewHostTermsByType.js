@@ -1997,7 +1997,7 @@ export const ViewHostTermsByType = () => {
                             <th>Name</th>
                             <th>purpose</th>
                             <th>Type of share</th>
-                            <th>Enter value</th>
+                            <th>Enter Data</th>
                             {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
                             <th>Status</th> {/* New column for Status */}
@@ -2382,7 +2382,7 @@ export const ViewHostTermsByType = () => {
                               <th>Name</th>
                               <th>Purpose</th>
                               <th>Type of Shares</th>
-                              <th>Value</th>
+                              <th>Enter Data</th>
                               <th>Status</th>
                             </tr>
                           </thead>

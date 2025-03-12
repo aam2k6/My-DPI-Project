@@ -2777,7 +2777,7 @@ export const ViewTermsByType = () => {
                             <th>Name</th>
                             <th>purpose</th>
                             <th>Type of share</th>
-                            <th>Enter value</th>
+                            <th>Enter Data</th>
                             {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
                             <th>Status</th> {/* New column for Status */}
@@ -3311,7 +3311,7 @@ export const ViewTermsByType = () => {
                               <th>Name</th>
                               <th>Purpose</th>
                               <th>Type of Share</th>
-                              <th>Value</th>
+                              <th>Enter Data</th>
                               <th>Consent Artefact</th>
                               <th>Status</th> {/* Changed "Remove" to "Status" */}
                             </tr>

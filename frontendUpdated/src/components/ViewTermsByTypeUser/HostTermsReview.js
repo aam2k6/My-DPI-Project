@@ -903,7 +903,7 @@ export const HostTermsReview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `host/share-resource-reverse-v2/`.replace(/host/, frontend_host),
+        `host/share_resource_approve_reverse_v2/`.replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -955,7 +955,7 @@ export const HostTermsReview = () => {
 
       const token = Cookies.get("authToken");
       const response = await fetch(
-        `${frontend_host}/confer-resource-reverse_v2/`,
+        `${frontend_host}/confer_resource_approve_reverse_v2/`,
         {
           method: "POST",
           headers: {

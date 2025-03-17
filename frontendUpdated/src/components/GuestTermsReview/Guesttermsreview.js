@@ -50,6 +50,7 @@ export const Guesttermsreview = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [showOpenPopup, setShowOpenPopup] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [selectedRowData1, setSelectedRowData1] = useState(null);
   const [pdfData, setPdfData] = useState(null)
   const [resourceModal, setResourceModal] = useState(false);
 
@@ -437,12 +438,22 @@ export const Guesttermsreview = () => {
     });
   };
   const openPopup = (rowData) => {
-    const labelName = rowData.labelName
-    const extractedValue = termsValue[labelName].split(";")[0].split("|")[1]; // Extract the required value
+    const labelName = rowData?.labelName
+    const extractedValue = termsValue[labelName]?.split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
     setSelectedRowData(rowData);
     setShowOpenPopup(true);
   };
+
+  const openPopup1 = (rowData) => {
+    console.log("selectedRowDatas1", rowData?.dataElement?.split("|")[1])
+    // const labelName = rowData?.labelName
+    const extractedValue = rowData?.dataElement?.split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    setSelectedRowData1(rowData);
+    setShowOpenPopup(true);
+  };
+
   const handleCloseResourceModal = () => {
     setResourceModal(false);
     setSelectedRowData(null)
@@ -451,6 +462,7 @@ export const Guesttermsreview = () => {
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setSelectedRowData(null);
+    setSelectedRowData1(null);
     setPdfData(null);
   };
 
@@ -1390,6 +1402,7 @@ export const Guesttermsreview = () => {
                 <th>Data Element</th>
                 <th>Purpose</th>
                 <th>Type of Share</th> {/* New column for Type of Share */}
+                <th>Consent Artefact</th>
                 <th>Status</th> {/* New column for status dropdown */}
               </tr>
             </thead>
@@ -1409,6 +1422,84 @@ export const Guesttermsreview = () => {
                   </a></td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
+                  <td><button onClick={() => openPopup1(permission)}>Open</button></td>
+                  {showOpenPopup && selectedRowData1 && pdfData &&(
+                                <div className="terms-popup">
+                                  <div className="terms-popup-content">
+                                    <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span>
+                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
+                                      Consent Artefact
+                                    </h3>
+                                    <p>
+                                    {selectedRowData1.dataElement ? (
+                                          <div>
+                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                            {selectedRowData1.dataElement.split("|")[0]}
+                                            {pdfData ? (
+                                              <div>
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                  {new Date(pdfData.created_at).toLocaleString()}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                  {new Date(pdfData.validity_until).toLocaleString()}
+                                                </div>
+                                                {/* <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li> */}
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                  {selectedRowData1.share}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                                  {/* <div className="mt-2">Post Conditions:</div> */}
+                                              {postConditionsKeys.length > 0 ? (
+                                                <ul>
+                                                  {postConditionsKeys.map((key) => (
+                                                    <li key={key}>{key}</li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
+                                               
+                                              </div>
+                                            ) : (
+                                              <p>Loading...</p>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          "None"
+                                        )}
+                                    </p> 
+                                    {/* <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+                                  </div>
+                                </div>
+                              )}
                   <td>
                     <select
                       value={statuses2[permission.labelName] || ""}
@@ -1964,7 +2055,7 @@ export const Guesttermsreview = () => {
                                       ) : (
                                         ""
                                       )}
-                                    </p>
+                                    </p> 
                                     {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (

@@ -697,7 +697,7 @@ export const ViewTermsByType = () => {
   }, [selectedRowData]);
 
 
-  const openPopup1 = (rowData) =>{
+  const openPopup1 = (rowData) => {
     console.log("second one", rowData)
     setSelectedRowData1(rowData)
   }
@@ -707,7 +707,7 @@ export const ViewTermsByType = () => {
     }
   }, [selectedRowData1]);
 
-  const openPopup2 = (rowData) =>{
+  const openPopup2 = (rowData) => {
     console.log("Third one", rowData)
     setSelectedRowData2(rowData)
   }
@@ -1296,11 +1296,15 @@ export const ViewTermsByType = () => {
             )}
 
 
-            {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
+            {/* {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
               <button onClick={() => handleButtonClick(obligation)}>
                 Select Resource
               </button>
-            )}
+            )} */}
+
+            <button onClick={() => handleButtonClick(obligation)}>
+              Select Resource
+            </button>
 
             <ReactModal
               isOpen={isReactModalOpen}
@@ -1452,6 +1456,7 @@ export const ViewTermsByType = () => {
   const handlePageSubmit2 = async () => {
     const resource = selection2[currentLabelName];
     const token = Cookies.get("authToken");
+    if(resource){
     const data = {
       connection_name: connectionName,
       guest_locker_name: guestLockerName,
@@ -1459,8 +1464,8 @@ export const ViewTermsByType = () => {
       xnode_id: resource.id,
       share_Type: typeofShare,
     };
-    console.log("typesss",typeofShare)
-    console.log("typesss",data)
+    console.log("typesss", typeofShare)
+    console.log("typesss", data)
     try {
       const response = await fetch('host/share_confer_resource_v2/'.replace(
         /host/,
@@ -1545,7 +1550,14 @@ export const ViewTermsByType = () => {
     // } catch (error) {
     //   setErrorMessage("An error occurred while validating pages.");
     // }
-  };
+  } else {
+    setModalMessage({
+      message: "Please choose a resource.",
+      type: "error",
+    });
+    setPostModal(true);
+  }
+}
 
   // const appendPagesToTerms2 = (termValue) => {
   // console.log("more", currentLabelName, termValue)
@@ -1644,6 +1656,7 @@ export const ViewTermsByType = () => {
   const handlePageSubmit = async () => {
     const token = Cookies.get("authToken");
     const resource = selection[currentLabelName];
+    if(resource){
     const data = {
       connection_name: connectionName,
       guest_locker_name: guestLockerName,
@@ -1695,7 +1708,7 @@ export const ViewTermsByType = () => {
       alert("Something went wrong!");
     }
     // if (typeofShare == 'share' || typeofShare == 'confer') {
-      
+
     // } else if (typeofShare == 'transfer' || typeofShare == 'collateral') {
     //   const termValue = `${resource.resource_name}|${resource.id}; F`;
     //   // console.log(termValue, "termValue");
@@ -1711,7 +1724,14 @@ export const ViewTermsByType = () => {
     // } else {
     //   console.log("error")
     // }
+  } else {
+    setModalMessage({
+      message: "Please choose a resource.",
+      type: "error",
+    });
+    setPostModal(true);
   }
+}
 
   const appendPagesToTerms = (termValue) => {
     // console.log("in append", termValue);
@@ -2835,7 +2855,7 @@ export const ViewTermsByType = () => {
 
                                               <div>
                                                 <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
 
                                               </div>
                                               <div>
@@ -2844,7 +2864,8 @@ export const ViewTermsByType = () => {
 
                                               </div>
                                               <div>
-                                                <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                                <label className="form-label fw-bold mt-1">Post Conditions:</label>
+                                              </div>
                                               {Object.keys(postConditionsKeys).length > 0 ? (
                                                 <ul
                                                   style={{
@@ -3341,93 +3362,93 @@ export const ViewTermsByType = () => {
                                 </td>
                                 <td><button onClick={() => openPopup1(permission)}>Open</button></td>
                                 {showOpenPopup && selectedRowData1 && pdfData && (
-                                <div className="edit-modal" >
-                                  <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                    {/* <span className="close" onClick={closeOpenPopup}>
+                                  <div className="edit-modal" >
+                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                      {/* <span className="close" onClick={closeOpenPopup}>
                                       &times;
                                     </span> */}
-                                    <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                      Consent Artefact
-                                    </h3>
-                                    <>
-                                      {selectedRowData1.dataElement ? (
-                                        <div>
-                                          <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                          {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                                          {selectedRowData1.dataElement.split("|")[0]}
-                                          {pdfData ? (
-                                            <div>
-
+                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                                        Consent Artefact
+                                      </h3>
+                                      <>
+                                        {selectedRowData1.dataElement ? (
+                                          <div>
+                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                            {selectedRowData1.dataElement.split("|")[0]}
+                                            {pdfData ? (
                                               <div>
-                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                {new Date(pdfData.created_at).toLocaleString()}
 
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                {new Date(pdfData.validity_until).toLocaleString()}
-                                              </div>
-                                              {/* <li>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                  {new Date(pdfData.created_at).toLocaleString()}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                  {new Date(pdfData.validity_until).toLocaleString()}
+                                                </div>
+                                                {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
 
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
 
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                {selectedRowData1.share}
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                  {selectedRowData1.share}
 
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                                {Object.keys(postConditionsKeys).length > 0 ? (
+                                                  <ul
+                                                    style={{
+                                                      display: "grid",
+                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                      gap: "20px",
+                                                      listStyleType: "none",
+                                                      padding: 0,
+                                                    }}
+                                                  >
+                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                        <input
+                                                          type="checkbox"
+                                                          id={key}
+                                                          name={key}
+                                                          checked={value} // Will be checked if true, unchecked if false
+                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                        />
+                                                        <label htmlFor={key}>{key}</label>
+                                                      </li>
+                                                    ))}
+                                                  </ul>
+                                                ) : (
+                                                  <p>No conditions found</p>
+                                                )}
+                                                <div className="modal-buttons mt-4">
+                                                  <button
+                                                  // onClick={() => handleCreateSubset(selectedResource)}
+                                                  >
+                                                    Submit
+                                                  </button>
+                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                                </div>
                                               </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                              {Object.keys(postConditionsKeys).length > 0 ? (
-                                                <ul
-                                                  style={{
-                                                    display: "grid",
-                                                    gridTemplateColumns: "repeat(3, auto)", // Three columns
-                                                    gap: "20px",
-                                                    listStyleType: "none",
-                                                    padding: 0,
-                                                  }}
-                                                >
-                                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                      <input
-                                                        type="checkbox"
-                                                        id={key}
-                                                        name={key}
-                                                        checked={value} // Will be checked if true, unchecked if false
-                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
-                                                      />
-                                                      <label htmlFor={key}>{key}</label>
-                                                    </li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p>No conditions found</p>
-                                              )}
-                                              <div className="modal-buttons mt-4">
-                                                <button
-                                                // onClick={() => handleCreateSubset(selectedResource)}
-                                                >
-                                                  Submit
-                                                </button>
-                                                <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <p>Loading...</p>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </>
-                                    {/* <p>
+                                            ) : (
+                                              <p>Loading...</p>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          "None"
+                                        )}
+                                      </>
+                                      {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
@@ -3437,9 +3458,9 @@ export const ViewTermsByType = () => {
                                         "None"
                                       )}
                                     </p> */}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
                                 <td>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
@@ -3510,93 +3531,93 @@ export const ViewTermsByType = () => {
                                 </td>
                                 <td><button onClick={() => openPopup2(moreDataTerms[index])}>Open</button></td>
                                 {showOpenPopup && selectedRowData2 && pdfData && (
-                                <div className="edit-modal" >
-                                  <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                    {/* <span className="close" onClick={closeOpenPopup}>
+                                  <div className="edit-modal" >
+                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                      {/* <span className="close" onClick={closeOpenPopup}>
                                       &times;
                                     </span> */}
-                                    <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                      Consent Artefact
-                                    </h3>
-                                    <>
-                                      {selectedRowData2.enter_value ? (
-                                        <div>
-                                          <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                          {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                                          {selectedRowData2.enter_value.split(";")[0].split("|")[0]}
-                                          {pdfData ? (
-                                            <div>
-
+                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                                        Consent Artefact
+                                      </h3>
+                                      <>
+                                        {selectedRowData2.enter_value ? (
+                                          <div>
+                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                            {selectedRowData2.enter_value.split(";")[0].split("|")[0]}
+                                            {pdfData ? (
                                               <div>
-                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                {new Date(pdfData.created_at).toLocaleString()}
 
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                {new Date(pdfData.validity_until).toLocaleString()}
-                                              </div>
-                                              {/* <li>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                  {new Date(pdfData.created_at).toLocaleString()}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                  {new Date(pdfData.validity_until).toLocaleString()}
+                                                </div>
+                                                {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
 
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
 
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                {selectedRowData2.share}
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                  {selectedRowData2.share}
 
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                                {Object.keys(postConditionsKeys).length > 0 ? (
+                                                  <ul
+                                                    style={{
+                                                      display: "grid",
+                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                      gap: "20px",
+                                                      listStyleType: "none",
+                                                      padding: 0,
+                                                    }}
+                                                  >
+                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                        <input
+                                                          type="checkbox"
+                                                          id={key}
+                                                          name={key}
+                                                          checked={value} // Will be checked if true, unchecked if false
+                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                        />
+                                                        <label htmlFor={key}>{key}</label>
+                                                      </li>
+                                                    ))}
+                                                  </ul>
+                                                ) : (
+                                                  <p>No conditions found</p>
+                                                )}
+                                                <div className="modal-buttons mt-4">
+                                                  <button
+                                                  // onClick={() => handleCreateSubset(selectedResource)}
+                                                  >
+                                                    Submit
+                                                  </button>
+                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                                </div>
                                               </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                              {Object.keys(postConditionsKeys).length > 0 ? (
-                                                <ul
-                                                  style={{
-                                                    display: "grid",
-                                                    gridTemplateColumns: "repeat(3, auto)", // Three columns
-                                                    gap: "20px",
-                                                    listStyleType: "none",
-                                                    padding: 0,
-                                                  }}
-                                                >
-                                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                      <input
-                                                        type="checkbox"
-                                                        id={key}
-                                                        name={key}
-                                                        checked={value} // Will be checked if true, unchecked if false
-                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
-                                                      />
-                                                      <label htmlFor={key}>{key}</label>
-                                                    </li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p>No conditions found</p>
-                                              )}
-                                              <div className="modal-buttons mt-4">
-                                                <button
-                                                // onClick={() => handleCreateSubset(selectedResource)}
-                                                >
-                                                  Submit
-                                                </button>
-                                                <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <p>Loading...</p>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </>
-                                    {/* <p>
+                                            ) : (
+                                              <p>Loading...</p>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          "None"
+                                        )}
+                                      </>
+                                      {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
@@ -3606,9 +3627,9 @@ export const ViewTermsByType = () => {
                                         "None"
                                       )}
                                     </p> */}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
                                 <td>Pending</td> {/* Example status value */}
                               </tr>
                             ))}

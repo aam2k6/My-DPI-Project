@@ -631,11 +631,20 @@ export const ViewHostTermsByType = () => {
       // setLoading(false);
     }
   };
+
   const getTrueKeys = (obj) => {
-    return Object.entries(obj)
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key);
+    return Object.fromEntries(
+      Object.entries(obj).filter(([key]) => key !== "creator_conditions") // Exclude creator_conditions
+    );
   };
+
+  // const getTrueKeys = (obj) => {
+  //   return Object.entries(obj)
+  //     .filter(([key, value]) => value === true)
+  //     .map(([key]) => key);
+  // };
+
+ 
 
   const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
 
@@ -737,14 +746,17 @@ export const ViewHostTermsByType = () => {
                 {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
               </a>
             )}
-
-
-            {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
-              <button onClick={() => handleButtonClick(obligation)}>
+<button onClick={() => handleButtonClick(obligation)}>
                 {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
                 Select Resource
               </button>
-            )}
+
+            {/* {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
+              <button onClick={() => handleButtonClick(obligation)}>
+                
+                Select Resource
+              </button>
+            )} */}
             <ReactModal
               isOpen={isModalOpen}
               onRequestClose={handleClose}
@@ -839,61 +851,69 @@ export const ViewHostTermsByType = () => {
     console.log("Connection Post_conditions", postConditions[typeofShare])
     console.log("User Post_conditions", curruser.user_id)
     console.log("Creator Post_conditions", resource.creator)
-    if (resource.creator == curruser.user_id || resource.post_conditions[typeofShare]) {
+    // if (resource.creator == curruser.user_id || resource.post_conditions[typeofShare]) {
 
-      const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${resource.id}`;
-      // Update selection state
+    //   const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${resource.id}`;
+    //   // Update selection state
 
-      setSelection((prev) => ({
-        ...prev,
-        [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
-      }));
-      setSelectedResources((prev) => ({
-        ...prev,
-        [currentLabelName]: resource,
-      }));
-      setShowResources(true);
-      setSelectedResourceId(resource.id);
-      // setShowPageInput(true);
-      const token = Cookies.get("authToken");
+    //   setSelection((prev) => ({
+    //     ...prev,
+    //     [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
+    //   }));
+    //   setSelectedResources((prev) => ({
+    //     ...prev,
+    //     [currentLabelName]: resource,
+    //   }));
+    //   setShowResources(true);
+    //   setSelectedResourceId(resource.id);
+    //   // setShowPageInput(true);
+    //   const token = Cookies.get("authToken");
 
-      // Fetch total pages for the selected resource
-      try {
+    //   // Fetch total pages for the selected resource
+    //   try {
 
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
-          },
-        });
-        const data = await response.json();
+    //     const response = await fetch(url, {
+    //       method: 'GET',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Basic ${token}`,
+    //       },
+    //     });
+    //     const data = await response.json();
 
-        if (response.ok) {
-          setTotalPages(data.total_pages);
-          setError(null); // Clear any previous errors
-        } else {
-          setError(data.error); // Handle error message
-          setTotalPages(null);
-        }
-      } catch (err) {
-        setError("An unexpected error occurred while fetching total pages.");
-        setTotalPages(null);
-      }
+    //     if (response.ok) {
+    //       setTotalPages(data.total_pages);
+    //       setError(null); // Clear any previous errors
+    //     } else {
+    //       setError(data.error); // Handle error message
+    //       setTotalPages(null);
+    //     }
+    //   } catch (err) {
+    //     setError("An unexpected error occurred while fetching total pages.");
+    //     setTotalPages(null);
+    //   }
 
-    } else {
-      setError(`You are not allowed to ${typeofShare} the resource`)
-      setModalMessage({
-        message: `You are not allowed to ${typeofShare} the resource`,
-        type: "error",
-      });
-      setPostModal(true);
-      // alert(`You are not allowed to ${typeofShare} the resource`)
-    }
-
+    // } else {
+    //   setError(`You are not allowed to ${typeofShare} the resource`)
+    //   setModalMessage({
+    //     message: `You are not allowed to ${typeofShare} the resource`,
+    //     type: "error",
+    //   });
+    //   setPostModal(true);
+    //   // alert(`You are not allowed to ${typeofShare} the resource`)
+    // }
+    setSelection((prev) => ({
+      ...prev,
+      [currentLabelName]: { id: resource.id, resource_name: resource.resource_name, }
+    }));
+    setSelectedResources((prev) => ({
+      ...prev,
+      [currentLabelName]: resource,
+    }));
+    setShowResources(true);
+    setSelectedResourceId(resource.id);
   };
 
-  console.log("TotallPages", totalPages);
 
   //********************************************************** */
   const handleButtonClick2 = (labelName) => {
@@ -925,56 +945,117 @@ export const ViewHostTermsByType = () => {
     // console.log("selection", selection);
   };
 
+  // const handlePageSubmits2 = async () => {
+  //   // if (!fromPage || !toPage) {
+  //   //   setErrorMessage("Both from_page and to_page are required.");
+  //   //   return;
+  //   // }
+  //   const token = Cookies.get("authToken");
+  //   try {
+  //     // const response = await fetch('host/get_total_pages_v2/'.replace(
+  //     //   /host/,
+  //     //   frontend_host
+  //     // ), {
+  //     //   method: 'POST',
+  //     //   headers: {
+  //     //     'Content-Type': 'application/json',
+  //     //     Authorization: `Basic ${token}`,
+
+  //     //   },
+  //     //   body: JSON.stringify({
+  //     //     xnode_id: selectedResourceId2,
+  //     //     from_page: parseInt(fromPage, 10),
+  //     //     to_page: parseInt(toPage, 10)
+  //     //   })
+  //     // });
+
+  //     // const data = await response.json();
+
+  //     if (true) {
+
+  //       const resource = selection2[currentLabelName]; // Current selected resource
+  //       // console.log("in page res", resource);
+  //       const termValue = `${resource.resource_name}|${resource.id}; F`;
+  //       // console.log(termValue, "termValue");
+
+
+  //       appendPagesToTerms2(termValue);
+
+
+  //       setShowPageInput2(false);
+  //       setShowResources2(false)
+  //       setErrorMessage(null);
+  //       setFromPage('');
+  //       setToPage('');
+  //     } else {
+
+  //       setErrorMessage("Error occured");
+  //     }
+  //   } catch (error) {
+  //     setErrorMessage("An error occurred while validating pages.");
+  //   }
+  // };
+
   const handlePageSubmit2 = async () => {
-    // if (!fromPage || !toPage) {
-    //   setErrorMessage("Both from_page and to_page are required.");
-    //   return;
-    // }
     const token = Cookies.get("authToken");
+    const resource = selection2[currentLabelName];
+    if(resource){
+    const data = {
+      connection_name: connectionName,
+      host_locker_name: hostLockerName,
+      host_user_username: hostUserUsername,
+      xnode_id: resource.id,
+      share_Type: typeofShare,
+    };
+    console.log("payload for post", data)
     try {
-      // const response = await fetch('host/get_total_pages_v2/'.replace(
-      //   /host/,
-      //   frontend_host
-      // ), {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Basic ${token}`,
+      const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
 
-      //   },
-      //   body: JSON.stringify({
-      //     xnode_id: selectedResourceId2,
-      //     from_page: parseInt(fromPage, 10),
-      //     to_page: parseInt(toPage, 10)
-      //   })
-      // });
+        },
+        body: JSON.stringify(data)
+      });
 
-      // const data = await response.json();
-
-      if (true) {
-
-        const resource = selection2[currentLabelName]; // Current selected resource
-        // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id}; F`;
-        // console.log(termValue, "termValue");
-
-
+      const result = await response.json();
+      if (response.ok) {
+        // alert(result.message);
+        console.log("New Xnode ID:", result.new_xnode_id);
+        const new_xnode_id = result.new_xnode_id
+        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
         appendPagesToTerms2(termValue);
 
 
         setShowPageInput2(false);
         setShowResources2(false)
         setErrorMessage(null);
-        setFromPage('');
-        setToPage('');
       } else {
-
-        setErrorMessage("Error occured");
+        const errorMsg = result.error
+        setError(`You are not allowed to ${typeofShare} the resource`)
+        setModalMessage({
+          message: errorMsg,
+          type: "error",
+        });
+        setPostModal(true);
+        // alert(result.error);
       }
     } catch (error) {
-      setErrorMessage("An error occurred while validating pages.");
+      console.error("Error:", error);
+      alert("Something went wrong!");
     }
-  };
+  } else {
+    setModalMessage({
+      message: "Please choose a resource.",
+      type: "error",
+    });
+    setPostModal(true);
+  }
+}
 
   const handleRevokeConsentConfirm = () => {
     setShowRevokeConsentModal(false); // Close the modal
@@ -1023,57 +1104,122 @@ export const ViewHostTermsByType = () => {
     combinedResources.push(vnode.resource);
   });
 
+  // const handlePageSubmits = async () => {
+  //   // if (!fromPage || !toPage) {
+  //   //   setErrorMessage("Both from_page and to_page are required.");
+  //   //   return;
+  //   // }
+  //   const token = Cookies.get("authToken");
+  //   try {
+  //     // const response = await fetch('host/get_total_pages_v2/'.replace(
+  //     //   /host/,
+  //     //   frontend_host
+  //     // ), {
+  //     //   method: 'POST',
+  //     //   headers: {
+  //     //     'Content-Type': 'application/json',
+  //     //     Authorization: `Basic ${token}`,
+
+  //     //   },
+  //     //   body: JSON.stringify({
+  //     //     xnode_id: selectedResourceId,
+  //     //     from_page: parseInt(fromPage, 10),
+  //     //     to_page: parseInt(toPage, 10)
+  //     //   })
+  //     // });
+
+  //     // const data = await response.json();
+
+  //     if (true) {
+
+  //       const resource = selection[currentLabelName]; // Current selected resource
+  //       // console.log("in page res", resource);
+  //       const termValue = `${resource.resource_name}|${resource.id}; F`;
+  //       // console.log(termValue, "termValue");
+
+
+  //       appendPagesToTerms(termValue);
+
+
+  //       setShowPageInput(false);
+  //       setErrorMessage(null);
+  //       setShowResources(false)
+  //       setFromPage('');
+  //       setToPage('');
+  //       setIsCompletePages(false)
+  //     } else {
+
+  //       setErrorMessage("Error occured");
+  //     }
+  //   } catch (error) {
+  //     setErrorMessage("An error occurred while validating pages.");
+  //   }
+  // };
+
   const handlePageSubmit = async () => {
-    // if (!fromPage || !toPage) {
-    //   setErrorMessage("Both from_page and to_page are required.");
-    //   return;
-    // }
     const token = Cookies.get("authToken");
+    const resource = selection[currentLabelName];
+    console.log("resourcess", resource)
+    if(resource){
+    const data = {
+      connection_name: connectionName,
+      host_locker_name: hostLockerName,
+      host_user_username: hostUserUsername,
+      xnode_id: resource.id,
+      share_Type: typeofShare,
+    };
+    console.log("payload for post", data)
     try {
-      // const response = await fetch('host/get_total_pages_v2/'.replace(
-      //   /host/,
-      //   frontend_host
-      // ), {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Basic ${token}`,
+      const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${token}`,
 
-      //   },
-      //   body: JSON.stringify({
-      //     xnode_id: selectedResourceId,
-      //     from_page: parseInt(fromPage, 10),
-      //     to_page: parseInt(toPage, 10)
-      //   })
-      // });
+        },
+        body: JSON.stringify(data)
+      });
 
-      // const data = await response.json();
-
-      if (true) {
-
-        const resource = selection[currentLabelName]; // Current selected resource
-        // console.log("in page res", resource);
-        const termValue = `${resource.resource_name}|${resource.id}; F`;
-        // console.log(termValue, "termValue");
-
-
+      const result = await response.json();
+      if (response.ok) {
+        // alert(result.message);
+        console.log("New Xnode ID:", result.new_xnode_id);
+        const new_xnode_id = result.new_xnode_id
+        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
         appendPagesToTerms(termValue);
 
 
         setShowPageInput(false);
         setErrorMessage(null);
         setShowResources(false)
-        setFromPage('');
-        setToPage('');
         setIsCompletePages(false)
       } else {
-
-        setErrorMessage("Error occured");
+        const errorMsg = result.error
+        // setError(`You are not allowed to ${typeofShare} the resource`)
+        setModalMessage({
+          message: errorMsg,
+          type: "error",
+        });
+        setPostModal(true);
+        // alert(result.error);
       }
     } catch (error) {
-      setErrorMessage("An error occurred while validating pages.");
+      console.error("Error:", error);
+      alert("Something went wrong!");
     }
-  };
+  } else{
+    // setError(`You are not allowed to ${typeofShare} the resource`)
+        setModalMessage({
+          message: "Please choose a resource.",
+          type: "error",
+        });
+        setPostModal(true);
+  }
+  }
+
   // const fetchTotalPages = async (selectedResourceId, token) => {
   //   const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${selectedResourceId}`;
   //   console.log("Fetching data from URL:", url); // Log the URL
@@ -2039,34 +2185,64 @@ export const ViewHostTermsByType = () => {
                                           {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
                                           {pdfData ? (
                                             <div>
-                                              <li>
-                                                Created on:{" "}
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
                                                 {new Date(pdfData.created_at).toLocaleString()}
-                                              </li>
-                                              <li>
-                                                Valid until:{" "}
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                                                 {new Date(pdfData.validity_until).toLocaleString()}
-                                              </li>
+                                              </div>
                                               {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
-                                              <li>
-                                                Current owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li>
-                                              <p className="mt-2">Type of Share: {selectedRowData.typeOfSharing}</p>
-                                              <div className="mt-2">Post Conditions:</div>
-                                              {postConditionsKeys.length > 0 ? (
-                                                <ul>
-                                                  {postConditionsKeys.map((key) => (
-                                                    <li key={key}>{key}</li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p>No conditions found</p>
-                                              )}
-                                            </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                {selectedRowData.typeOfSharing}
+                                              </div>
+                                              <div>
+                                                <label className="form-label fw-bold mt-1">Post Conditions:</label>
+                                              </div>
+                                              {Object.keys(postConditionsKeys).length > 0 ? (
+                                                  <ul
+                                                    style={{
+                                                      display: "grid",
+                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                      gap: "20px",
+                                                      listStyleType: "none",
+                                                      padding: 0,
+                                                    }}
+                                                  >
+                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                        <input
+                                                          type="checkbox"
+                                                          id={key}
+                                                          name={key}
+                                                          checked={value} // Will be checked if true, unchecked if false
+                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                        />
+                                                        <label htmlFor={key}>{key}</label>
+                                                      </li>
+                                                    ))}
+                                                  </ul>
+                                                ) : (
+                                                  <p>No conditions found</p>
+                                                )}
+                                                <div className="modal-buttons mt-4">
+                                                  <button
+                                                  // onClick={() => handleCreateSubset(selectedResource)}
+                                                  >
+                                                    Submit
+                                                  </button>
+                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                                </div>
+                                            </div>  
                                           ) : (
                                             <p>Loading...</p>
                                           )}
@@ -2127,7 +2303,7 @@ export const ViewHostTermsByType = () => {
                                           ? "documents-byConfer"
                                           : "documents-byShare"
                                     }
-                                      className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}
+                                    // className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}
                                     >
                                       <input
                                         type="radio"
@@ -2135,7 +2311,7 @@ export const ViewHostTermsByType = () => {
                                         value={resource.resource_name}
                                         checked={selection[currentLabelName]?.id === resource.id}
                                         onClick={() => handleResourceSelection(resource)}
-                                        disabled={typeofShare !== "share" && !isResourceInFiltered}
+                                      // disabled={typeofShare !== "share" && !isResourceInFiltered}
                                       />
                                       {resource.resource_name}
 

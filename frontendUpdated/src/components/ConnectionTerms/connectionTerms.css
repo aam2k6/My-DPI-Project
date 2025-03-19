@@ -88,7 +88,7 @@
 }
 
 #connectionTerm .templete{
-  width: 3%;
+  width: 5%;
 }
 
 .parent-left-heading .connectionTerms-lockerForm select {
@@ -278,5 +278,25 @@
 }
 
 #connectionTermHost .templete{
-  width: 3%
+  width: 5%
+}
+
+#connectionTerm .modalWidth .modals {
+  width: 30%;
+}
+
+@media (max-width: 1183px) {
+  #connectionTerm .modalWidth .modals {
+    width: auto;
+  }
+}
+
+#connectionTermHost .modalWidth .modals {
+  width: 30%;
+}
+
+@media (max-width: 1183px) {
+  #connectionTermHost .modalWidth .modals {
+    width: auto;
+  }
 }

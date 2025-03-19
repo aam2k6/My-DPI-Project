@@ -227,6 +227,11 @@ export const ConnectionTermsHost = () => {
     }
   };
 
+  const handleGlobalModal = () => {
+    setIsTemplateModalOpen(false);
+    setSelectedTemplateIds([])
+  };
+
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
     setFormData({
@@ -879,11 +884,11 @@ export const ConnectionTermsHost = () => {
           </div>
         </div>
       </div>
-
+      <div className="modalWidth">
       {isTemplateModalOpen && (
         <Modal
           message="Select Global Templates"
-          onClose={() => setIsTemplateModalOpen(false)}
+           onClose={handleGlobalModal}
           type="info"
         >
           <div className="template-selection-container">
@@ -910,8 +915,7 @@ export const ConnectionTermsHost = () => {
                           handleTemplateSelection(template)
                         }
                       />
-                      {template.global_connection_type_name} (ID:{" "}
-                      {template.global_connection_type_template_id})
+                      {template.global_connection_type_name}
                       {/* <br />
               {template.global_connection_type_description} */}
                     </label>
@@ -927,6 +931,7 @@ export const ConnectionTermsHost = () => {
           </div>
         </Modal>
       )}
+      </div>
       {isModalOpen && (
         <Modal
           message={modalMessage.message}

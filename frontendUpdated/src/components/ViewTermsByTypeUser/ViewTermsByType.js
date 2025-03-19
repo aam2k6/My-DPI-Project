@@ -3569,7 +3569,7 @@ export const ViewTermsByType = () => {
                                                 </div>
                                                 <div>
                                                   <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                  {selectedRowData2.share}
+                                                  {selectedRowData2.typeOfSharing}
 
                                                 </div>
                                                 <div>

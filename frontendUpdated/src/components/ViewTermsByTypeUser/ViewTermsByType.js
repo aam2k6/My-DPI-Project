@@ -1373,10 +1373,10 @@ export const ViewTermsByType = () => {
   };
 
   const handleResourceSelection = (resource) => {
-    console.log("X_NODE Post_conditions", resource.post_conditions[typeofShare]);
-    console.log("Connection Post_conditions", postConditions[typeofShare])
-    console.log("User Post_conditions", curruser.user_id)
-    console.log("Creator Post_conditions", resource.creator)
+    // console.log("X_NODE Post_conditions", resource.post_conditions[typeofShare]);
+    // console.log("Connection Post_conditions", postConditions[typeofShare])
+    // console.log("User Post_conditions", curruser.user_id)
+    // console.log("Creator Post_conditions", resource.creator)
     // console.log("inside",resource);
     // initialResources[obligation.labelName] = {
     //                 document_name,

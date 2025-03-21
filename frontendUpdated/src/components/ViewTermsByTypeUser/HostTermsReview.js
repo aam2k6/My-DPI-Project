@@ -1156,7 +1156,7 @@ export const HostTermsReview = () => {
                   <td>{permission.share || "None"}</td>{" "}
                   <td><button onClick={() => openPopup1(permission)}>Open</button></td>
                   {showOpenPopup && selectedRowData1 && pdfData &&(
-                                <div className="terms-popup modal-overlay">
+                                <div className="terms-popup">
                                   <div className="terms-popup-content">
                                     <span className="close" onClick={closeOpenPopup}>
                                       &times;

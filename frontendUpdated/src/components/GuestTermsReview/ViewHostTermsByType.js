@@ -80,6 +80,8 @@ export const ViewHostTermsByType = () => {
   const [showOpenPopup, setShowOpenPopup] = useState(false);
   const [pdfData, setPdfData] = useState(null)
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [selectedRowData1, setSelectedRowData1] = useState(null);
+  const [selectedRowData2, setSelectedRowData2] = useState(null);
   const [typeofShare, setTypeofShare] = useState(null)
 
 
@@ -163,16 +165,55 @@ export const ViewHostTermsByType = () => {
     setShowOpenPopup(true);
   }
 
+  const openInfoPopup2 = () => {
+    console.log("selectedRowDatas2", selectedRowData2.enter_value?.split(";")[0].split("|")[1])
+    const extractedValue = selectedRowData2.enter_value?.split(";")[0].split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    // console.log("obligationss", extractedValue);
+    setShowOpenPopup(true);
+  }
+
+  const openInfoPopup1 = () => {
+    console.log("selectedRowDatas1", selectedRowData1.dataElement?.split("|")[1])
+    const extractedValue = selectedRowData1.dataElement.split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    console.log("obligationss", extractedValue);
+    setShowOpenPopup(true);
+  }
+
   useEffect(() => {
     if (selectedRowData) {
       openInfoPopup();
     }
   }, [selectedRowData]);
   console.log("pdfDatas", selectedRowData)
+
+  const openPopup1 = (rowData) => {
+      console.log("second one", rowData)
+      setSelectedRowData1(rowData)
+    }
+    useEffect(() => {
+      if (selectedRowData1) {
+        openInfoPopup1();
+      }
+    }, [selectedRowData1]);
+
+  const openPopup2 = (rowData) => {
+      console.log("Third one", rowData)
+      setSelectedRowData2(rowData)
+    }
+    useEffect(() => {
+      if (selectedRowData2) {
+        openInfoPopup2();
+      }
+    }, [selectedRowData2]);
+
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setPdfData(null);
     setSelectedRowData(null);
+    setSelectedRowData1(null);
+    setSelectedRowData2(null);
   };
   // console.log("start", guest_locker_id, host_locker_id, locker);
   useEffect(() => {
@@ -916,10 +957,11 @@ export const ViewHostTermsByType = () => {
 
 
   //********************************************************** */
-  const handleButtonClick2 = (labelName) => {
+  const handleButtonClick2 = (term) => {
     setSelectedLocker(guestLockerName);
     setShowResources2(true);
-    setCurrentLabelName(labelName);
+    setCurrentLabelName(term.labelName);
+    setTypeofShare(term.typeOfShare || term.typeOfSharing)
   };
 
   const handleResourceSelection2 = (resource) => {
@@ -1501,13 +1543,14 @@ export const ViewHostTermsByType = () => {
 
   // Function to handle form submission
   const handleMoreSubmit = async () => {
+
     // Build extraDataArray from moreDataTerms
     const extraDataArray = moreDataTerms.map((term) => ({
       labelName: term.labelName || "", // If labelName is not provided, use an empty string
       enter_value: term.enter_value || "", // If value is not provided, use an empty string
       purpose: term.purpose || "Purpose for the document", // Default purpose
       typeOfValue: term.type || "text", // Default to 'text' if no type is selected
-      typeOfShare: term.typeOfSharing || "",
+      typeOfShare: term.typeOfShare || "share",
       // status: statuses2[term.labelName]||"Pending",
     }));
 
@@ -2557,8 +2600,9 @@ export const ViewHostTermsByType = () => {
                               <th>Sno</th>
                               <th>Name</th>
                               <th>Purpose</th>
-                              <th>Type of Shares</th>
+                              <th>Type of Share</th>
                               <th>Enter Data</th>
+                              <th>Consent Artefact</th>
                               <th>Status</th>
                             </tr>
                           </thead>
@@ -2589,6 +2633,107 @@ export const ViewHostTermsByType = () => {
                                   {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
                                   {/* Display "None" if empty */}
                                 </td>
+                                <td><button onClick={() => openPopup1(permission)}>Open</button></td>
+                                {showOpenPopup && selectedRowData1 && pdfData && (
+                                  <div className="edit-modal" >
+                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                      {/* <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span> */}
+                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                                        Consent Artefact
+                                      </h3>
+                                      <>
+                                        {selectedRowData1.dataElement ? (
+                                          <div>
+                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                            {selectedRowData1.dataElement.split("|")[0]}
+                                            {pdfData ? (
+                                              <div>
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                  {new Date(pdfData.created_at).toLocaleString()}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                  {new Date(pdfData.validity_until).toLocaleString()}
+                                                </div>
+                                                {/* <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li> */}
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Type of Sharess: </label>
+                                                  {selectedRowData1.share}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                                {Object.keys(postConditionsKeys).length > 0 ? (
+                                                  <ul
+                                                    style={{
+                                                      display: "grid",
+                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                      gap: "20px",
+                                                      listStyleType: "none",
+                                                      padding: 0,
+                                                    }}
+                                                  >
+                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                        <input
+                                                          type="checkbox"
+                                                          id={key}
+                                                          name={key}
+                                                          checked={value} // Will be checked if true, unchecked if false
+                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                        />
+                                                        <label htmlFor={key}>{key}</label>
+                                                      </li>
+                                                    ))}
+                                                  </ul>
+                                                ) : (
+                                                  <p>No conditions found</p>
+                                                )}
+                                                <div className="modal-buttons mt-4">
+                                                  <button
+                                                  // onClick={() => handleCreateSubset(selectedResource)}
+                                                  >
+                                                    Submit
+                                                  </button>
+                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                                </div>
+                                              </div>
+                                            ) : (
+                                              <p>Loading...</p>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          "None"
+                                        )}
+                                      </>
+                                      {/* <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+                                    </div>
+                                  </div>
+                                )}
                                 <td>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
@@ -2645,11 +2790,112 @@ export const ViewHostTermsByType = () => {
                                       {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
                                     </a>
                                   )}
-                                  <button onClick={() => handleButtonClick2(term.labelName)}>
+                                  <button onClick={() => handleButtonClick2(term)}>
 
                                     Select Resources
                                   </button>
                                 </td>
+                                <td><button onClick={() => openPopup2(moreDataTerms[index])}>Open</button></td>
+                                {showOpenPopup && selectedRowData2 && pdfData && (
+                                  <div className="edit-modal" >
+                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                      {/* <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span> */}
+                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                                        Consent Artefact
+                                      </h3>
+                                      <>
+                                        {selectedRowData2.enter_value ? (
+                                          <div>
+                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                            {selectedRowData2.enter_value.split(";")[0].split("|")[0]}
+                                            {pdfData ? (
+                                              <div>
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                  {new Date(pdfData.created_at).toLocaleString()}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                  {new Date(pdfData.validity_until).toLocaleString()}
+                                                </div>
+                                                {/* <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li> */}
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                  {selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                                {Object.keys(postConditionsKeys).length > 0 ? (
+                                                  <ul
+                                                    style={{
+                                                      display: "grid",
+                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                      gap: "20px",
+                                                      listStyleType: "none",
+                                                      padding: 0,
+                                                    }}
+                                                  >
+                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                        <input
+                                                          type="checkbox"
+                                                          id={key}
+                                                          name={key}
+                                                          checked={value} // Will be checked if true, unchecked if false
+                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                        />
+                                                        <label htmlFor={key}>{key}</label>
+                                                      </li>
+                                                    ))}
+                                                  </ul>
+                                                ) : (
+                                                  <p>No conditions found</p>
+                                                )}
+                                                <div className="modal-buttons mt-4">
+                                                  <button
+                                                  // onClick={() => handleCreateSubset(selectedResource)}
+                                                  >
+                                                    Submit
+                                                  </button>
+                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                                </div>
+                                              </div>
+                                            ) : (
+                                              <p>Loading...</p>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          "None"
+                                        )}
+                                      </>
+                                      {/* <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+                                    </div>
+                                  </div>
+                                )}
                                 <td>Pending</td>
                               </tr>
                             ))}

@@ -49,7 +49,7 @@ export const HostTermsReview = () => {
   const [showOpenPopup, setShowOpenPopup] = useState(false);
   const [pdfData, setPdfData] = useState(null)
   const [selectedRowData, setSelectedRowData] = useState(null);
-
+  const [selectedRowData1, setSelectedRowData1] = useState(null);
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -429,10 +429,10 @@ export const HostTermsReview = () => {
     const pages = xnode_id_with_pages?.split(',')[1];
     const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
     const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
-    console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+    // console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -1133,7 +1133,8 @@ export const HostTermsReview = () => {
                 <th>Label Name</th>
                 <th>Data Element</th>
                 <th>Purpose</th>
-                <th>Type of Share</th> {/* New column for Type of Share */}
+                <th>Type of Share</th>
+                <th>Consent Artefact</th>
                 <th>Status</th> {/* New column for status dropdown */}
               </tr>
             </thead>
@@ -1153,6 +1154,84 @@ export const HostTermsReview = () => {
                   </a></td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
+                  <td><button onClick={() => openPopup1(permission)}>Open</button></td>
+                  {showOpenPopup && selectedRowData1 && pdfData &&(
+                                <div className="terms-popup modal-overlay">
+                                  <div className="terms-popup-content">
+                                    <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span>
+                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
+                                      Consent Artefact
+                                    </h3>
+                                    <p>
+                                    {selectedRowData1.dataElement ? (
+                                          <div>
+                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
+                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                                            {selectedRowData1.dataElement.split("|")[0]}
+                                            {pdfData ? (
+                                              <div>
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                                  {new Date(pdfData.created_at).toLocaleString()}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                                  {new Date(pdfData.validity_until).toLocaleString()}
+                                                </div>
+                                                {/* <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li> */}
+
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                                  {selectedRowData1.share}
+
+                                                </div>
+                                                <div>
+                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                                  {/* <div className="mt-2">Post Conditions:</div> */}
+                                              {postConditionsKeys.length > 0 ? (
+                                                <ul>
+                                                  {postConditionsKeys.map((key) => (
+                                                    <li key={key}>{key}</li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p>No conditions found</p>
+                                              )}
+                                               
+                                              </div>
+                                            ) : (
+                                              <p>Loading...</p>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          "None"
+                                        )}
+                                    </p> 
+                                    {/* <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+                                  </div>
+                                </div>
+                              )}
                   <td>
                     <select
                       value={statuses2[permission.labelName] || ""}
@@ -1324,9 +1403,17 @@ export const HostTermsReview = () => {
     setSelectedRowData(rowData);
     setShowOpenPopup(true);
   };
+  const openPopup1 = (rowData) => {
+    console.log("selectedRowDatas1", rowData?.dataElement?.split("|")[1])
+    const extractedValue = rowData?.dataElement?.split("|")[1]; // Extract the required value
+    handleClicks(extractedValue); // Pass the extracted value to handleClicks
+    setSelectedRowData1(rowData);
+    setShowOpenPopup(true);
+  }
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
     setSelectedRowData(null);
+    setSelectedRowData1(null);
     setPdfData(null);
   };
   const content = (

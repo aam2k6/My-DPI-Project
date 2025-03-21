@@ -1524,8 +1524,6 @@ export const Guesttermsreview = () => {
   };
 
   const navigateToConnectionDetails = (connection) => {
-    console.log("print", connection); // Log the connection object
-    console.log("print 2", conndetails);
     // Access connection_type_name safely
     const connectionTypeName = conndetails?.connection_name.split("-").shift().trim();
 

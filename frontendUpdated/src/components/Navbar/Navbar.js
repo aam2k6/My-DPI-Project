@@ -529,7 +529,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                       </a>
                     </li>
 
-                    {/* <li className="nav-item dropdown" ref={notificationsRef}>
+                    <li className="nav-item dropdown" ref={notificationsRef}>
                       <a className="nav-link dropdown-toggle" role="button" onClick={toggleNotifications}>
                         <div className="notification-icon">
                           <FontAwesomeIcon
@@ -560,11 +560,12 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                                       onClick={() => markNotificationAsRead(notification.id)}
                                     >
                                       <p>
-                                        <b>{notification.guest_user}</b> has requested for Lockers{" "}
-                                        <b>{notification.host_locker_name}</b> from the
-                                        connection <b>{notification.connection_type_name}</b>
-                                      </p>
+                
+                                        <p>{notification.message}</p>
                                       <p>{new Date(notification.created_at).toLocaleString()}</p>
+
+                                        
+                                      </p>
                                     </div>
                                   </li>
                                 ))
@@ -575,7 +576,7 @@ export default function Navbar({ content, lockerAdmin, lockerObj, breadcrumbs })
                           </div>
                         </ul>
                       )}
-                    </li> */}
+                    </li>
                     {/* <li className="nav-item" style={{ cursor: "pointer" }}>
                       <div className="nav-link qr-scanner-icons" onClick={handleQRScanner}>
                         <MdOutlineQrCodeScanner size={24} />

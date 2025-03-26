@@ -60,6 +60,8 @@ export const ViewLocker = () => {
     return storedLocker ? JSON.parse(storedLocker) : location.state || null;
   });
   const [showSubsetModal, setShowSubsetModal] = useState(false);
+  const [resourceViewModal, setResourceViewModal] = useState(false);
+  const [resourceData, setResourceData] = useState(null)
   const [totalPages, setTotalPages] = useState("Loading...")
   const [selectedResourceId, setSelectedResourceId] = useState(null)
   const [inodeName, setInodeName] = useState("");
@@ -806,6 +808,52 @@ export const ViewLocker = () => {
       // setLoading(false);
     }
   };
+  const handleViewDetails = async (xnode_id) => {
+
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to access the resource');
+      }
+
+      const data = await response.json();
+      console.log(data);
+      const { xnode } = data;
+      if (xnode) {
+        setResourceData(xnode)
+        setResourceViewModal(true)
+      } else {
+        // setError('Unable to retrieve the file link.');
+        console.log(error);
+      }
+    } catch (err) {
+      // setError(`Error: ${err.message}`);
+      console.log(err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+  console.log("setResourceData", resourceData)
+
+  const getTrueKeys = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+  const postConditionsKeys = getTrueKeys(resourceData?.post_conditions || {});
+
   console.log("doc", locker.name, curruser.username, xnodes.resource_name);
   xnodes.forEach((xnode) => {
     console.log("Full xnode object:", xnode);
@@ -1073,6 +1121,10 @@ export const ViewLocker = () => {
     setIsModalOpen(false);
     setPdfUrl(null);
   };
+  const handleViewClose = () => {
+    setResourceViewModal(false);
+    setResourceData(null);
+  };
 
   const handleFileChange = (e) => {
     setResourceFile(e.target.files[0]);
@@ -1289,7 +1341,7 @@ export const ViewLocker = () => {
     }
   };
 
-   const fetchResourcesForOutgoingConnection = async (connectionId) => {
+  const fetchResourcesForOutgoingConnection = async (connectionId) => {
     console.log("Parameters used for API call:");
     console.log("connectionTypeId:", connectionId);
     // console.log("username:", username);
@@ -1463,174 +1515,186 @@ export const ViewLocker = () => {
                   {isResourcesVisible && (
                     <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
                       {xnodes.length > 0 ? (
-                        xnodes.map((xnode) => (
-                          <div
-                            key={xnode.id}
-                            className="resource-item"
-                            style={{ paddingBottom: "0px" }}
-                          >
-                            <div className="resource-details">
-                              <Tooltips
-                                title={
-                                  <>
-                                    <div>
-                                      <strong>Created:</strong>{" "}
-                                      {new Date(xnode.created_at).toLocaleString()}
-                                    </div>
-                                    <div>
-                                      <strong>Validity:</strong>{" "}
-                                      {new Date(xnode.validity_until).toLocaleString()}
-                                    </div>
-                                    <div>
-                                      <strong>Node Type:</strong> {xnode.xnode_Type}
-                                    </div>
-                                    {/* <div>
+                        xnodes.filter((xnode) => xnode.connection === null).length > 0 ? (
+                          xnodes
+                            .filter((xnode) => xnode.connection === null)
+                            .map((xnode) => (
+                              <div
+                                key={xnode.id}
+                                className="resource-item"
+                                style={{ paddingBottom: "0px" }}
+                              >
+                                <div className="resource-details">
+                                  <Tooltips
+                                    title={
+                                      <>
+                                        <div>
+                                          <strong>Created:</strong>{" "}
+                                          {new Date(xnode.created_at).toLocaleString()}
+                                        </div>
+                                        <div>
+                                          <strong>Validity:</strong>{" "}
+                                          {new Date(xnode.validity_until).toLocaleString()}
+                                        </div>
+                                        <div>
+                                          <strong>Node Type:</strong> {xnode.xnode_Type}
+                                        </div>
+                                        {/* <div>
                                       <strong>Primary owner:</strong>{" "}
                                       {capitalizeFirstLetter(xnode.primary_owner_username) || "N/A"}
                                     </div> */}
-                                    <div>
-                                      <strong>Current owner:</strong>{" "}
-                                      {capitalizeFirstLetter(xnode.current_owner_username) || "N/A"}
-                                    </div>
-                                  </>
-                                }
-                              >
-                                <div className="resource-hover"
-                                  id={
-                                    xnode.xnode_Type === "INODE"
-                                      ? "documents"
-                                      : xnode.xnode_Type === "SNODE"
-                                        ? "documents-byConfer"
-                                        : "documents-byShare"
-                                  }
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                  onMouseEnter={() => setHovered(xnode.id)}
-                                  onMouseLeave={() => setHovered(null)}
-                                >
-                                  <div>
-                                    <span
-                                      onClick={() => handleClick(xnode.id)}
-                                      style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px" }}
-                                    >
-                                      {xnode.resource_name}
-                                    </span>
-
-
-
-                                    {/* {error && <div className="error-message">{error}</div>} */}
-                                  </div>
-                                  <span
-                                    className="resource-icons"
-                                    style={{
-                                      marginLeft: "auto",
-                                      display: "flex",
-                                      display: hovered === xnode.id ? "flex" : "none",
-                                      gap: "10px",
-                                    }}
+                                        <div>
+                                          <strong>Current owner:</strong>{" "}
+                                          {capitalizeFirstLetter(xnode.current_owner_username) || "N/A"}
+                                        </div>
+                                      </>
+                                    }
                                   >
-                                    {xnode.xnode_Type === "SNODE" && (
+                                    <div className="resource-hover"
+                                      id={
+                                        xnode.xnode_Type === "INODE"
+                                          ? "documents"
+                                          : xnode.xnode_Type === "SNODE"
+                                            ? "documents-byConfer"
+                                            : "documents-byShare"
+                                      }
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}
+                                      onMouseEnter={() => setHovered(xnode.id)}
+                                      onMouseLeave={() => setHovered(null)}
+                                    >
+                                      <div>
+                                        <span
+                                          onClick={() => handleClick(xnode.id)}
+                                          style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px" }}
+                                        >
+                                          {xnode.resource_name}
+                                        </span>
 
-                                      <>
+
+
+                                        {/* {error && <div className="error-message">{error}</div>} */}
+                                      </div>
+                                      <span
+                                        className="resource-icons"
+                                        style={{
+                                          marginLeft: "auto",
+                                          display: "flex",
+                                          display: hovered === xnode.id ? "flex" : "none",
+                                          gap: "10px",
+                                        }}
+                                      >
+                                        {xnode.xnode_Type === "SNODE" && (
+
+                                          <>
+                                            <i
+                                              className="subset-icon"
+                                              data-tooltip-id="tooltip" data-tooltip-content="Subset"
+                                              style={{
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => handleSubsetClick(xnode)}
+
+                                            />
+                                            <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+
+                                          </>
+
+                                        )}
+                                        {xnode.xnode_Type === "INODE" && (
+                                          <>
+                                            <i
+                                              className="subset-icon"
+                                              data-tooltip-id="tooltip" data-tooltip-content="Subset"
+
+                                              style={{
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => handleSubsetClick(xnode)}
+
+                                            />
+
+                                            <i
+                                              className="fa-regular fa-pen-to-square"
+                                              data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                              style={{
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => handleEditClick(xnode)}
+                                            />
+                                            <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px", backgroundColor: "grey" }} />
+
+                                          </>
+
+                                        )}
+                                        <i className="bi bi-info-square"
+                                          data-tooltip-id="tooltip"
+                                          data-tooltip-content="View Details"
+                                          style={{ marginTop: "-4px", cursor:"pointer" }}
+                                          onClick={() => handleViewDetails(xnode.id)}
+                                        />
                                         <i
-                                          className="subset-icon"
-                                          data-tooltip-id="tooltip" data-tooltip-content="Subset"
-                                          style={{
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => handleSubsetClick(xnode)}
-
+                                          className="fa-regular fa-trash-can"
+                                          data-tooltip-id="tooltip" data-tooltip-content="Delete"
+                                          style={{ cursor: "pointer" }}
+                                          onClick={() => handleDeleteClick(xnode)}
                                         />
                                         <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
-                                      </>
-
+                                      </span>
+                                    </div>
+                                  </Tooltips>
+                                  <ReactModal
+                                    isOpen={isModalOpen}
+                                    onRequestClose={handleClose}
+                                    contentLabel="PDF Viewer"
+                                    style={{
+                                      content: {
+                                        top: "59%",
+                                        left: "50%",
+                                        right: "auto",
+                                        bottom: "auto",
+                                        marginRight: "-50%",
+                                        transform: "translate(-50%, -50%)",
+                                        width: "95%",
+                                        height: "80%",
+                                        overflowY: "hidden",
+                                        maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                                        maxHeight: "90%", // Max height for larger screens
+                                      },
+                                    }}
+                                  >
+                                    <button
+                                      onClick={handleClose}
+                                      style={{
+                                        marginBottom: "10px",
+                                        cursor: "pointer",
+                                        position: "absolute",
+                                        top: "10px",
+                                        right: "10px", // Button positioned at the top right
+                                        zIndex: 100,
+                                      }}
+                                    >
+                                      Close
+                                    </button>
+                                    {pdfUrl ? (
+                                      <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                        <Viewer fileUrl={pdfUrl} />
+                                      </Worker>
+                                    ) : (
+                                      <p>Loading PDF...</p>
                                     )}
-                                    {xnode.xnode_Type === "INODE" && (
-                                      <>
-                                        <i
-                                          className="subset-icon"
-                                          data-tooltip-id="tooltip" data-tooltip-content="Subset"
+                                  </ReactModal>
 
-                                          style={{
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => handleSubsetClick(xnode)}
-
-                                        />
-
-                                        <i
-                                          className="fa-regular fa-pen-to-square"
-                                          data-tooltip-id="tooltip" data-tooltip-content="Edit"
-                                          style={{
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => handleEditClick(xnode)}
-                                        />
-                                        <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px", backgroundColor: "grey" }} />
-
-                                      </>
-
-                                    )}
-
-                                    <i
-                                      className="fa-regular fa-trash-can"
-                                      data-tooltip-id="tooltip" data-tooltip-content="Delete"
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() => handleDeleteClick(xnode)}
-                                    />
-                                    <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
-
-                                  </span>
                                 </div>
-                              </Tooltips>
-                              <ReactModal
-                                isOpen={isModalOpen}
-                                onRequestClose={handleClose}
-                                contentLabel="PDF Viewer"
-                                style={{
-                                  content: {
-                                    top: "59%",
-                                    left: "50%",
-                                    right: "auto",
-                                    bottom: "auto",
-                                    marginRight: "-50%",
-                                    transform: "translate(-50%, -50%)",
-                                    width: "95%",
-                                    height: "80%",
-                                    overflowY: "hidden",
-                                    maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
-                                    maxHeight: "90%", // Max height for larger screens
-                                  },
-                                }}
-                              >
-                                <button
-                                  onClick={handleClose}
-                                  style={{
-                                    marginBottom: "10px",
-                                    cursor: "pointer",
-                                    position: "absolute",
-                                    top: "10px",
-                                    right: "10px", // Button positioned at the top right
-                                    zIndex: 100,
-                                  }}
-                                >
-                                  Close
-                                </button>
-                                {pdfUrl ? (
-                                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                                    <Viewer fileUrl={pdfUrl} />
-                                  </Worker>
-                                ) : (
-                                  <p>Loading PDF...</p>
-                                )}
-                              </ReactModal>
-
-                            </div>
-                          </div>
-                        ))
+                              </div>
+                            )
+                            )
+                        ) : (
+                          <p className="not-found">No Resources found.</p>
+                        )
                       ) : (
                         <p className="not-found">No Resources found.</p>
                       )}
@@ -1839,6 +1903,13 @@ export const ViewLocker = () => {
 
                                                               )}
 
+                                                              <i className="bi bi-info-square"
+                                                                data-tooltip-id="tooltip"
+                                                                data-tooltip-content="View Details"
+                                                                style={{ marginTop: "-4px", cursor:"pointer"}}
+                                                                onClick={() => handleViewDetails(xnode.id)}
+                                                              />
+
                                                               <i
                                                                 className="fa-regular fa-trash-can"
                                                                 data-tooltip-id="tooltip" data-tooltip-content="Delete"
@@ -1932,205 +2003,212 @@ export const ViewLocker = () => {
                         Outgoing Connections
                       </li>
                       {isOutgoingVisible && (
-        <ul style={{ paddingLeft: "20px", listStyleType:"none"}}>
-          {connections.outgoing_connections.length > 0 ? (
-            connections.outgoing_connections.map((connection) => (
-              <li key={connection.connection_id} style={{ marginTop: "5px", fontSize:"18px" }}>
-                <div
-                  style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-                  onClick={() => toggleOutgoingConnection(connection)}
-                >
-                  <i
-                    className={`fa-solid fa-folder${expandedConnections.includes(connection.connection_id) ? "-open" : ""}`}
-                    style={{ marginRight: "10px", fontSize: "18px" }}
-                  />
-                  {connection.connection_type_name}
-                </div>
+                        <ul style={{ paddingLeft: "20px", listStyleType: "none" }}>
+                          {connections.outgoing_connections.length > 0 ? (
+                            connections.outgoing_connections.map((connection) => (
+                              <li key={connection.connection_id} style={{ marginTop: "5px", fontSize: "18px" }}>
+                                <div
+                                  style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+                                  onClick={() => toggleOutgoingConnection(connection)}
+                                >
+                                  <i
+                                    className={`fa-solid fa-folder${expandedConnections.includes(connection.connection_id) ? "-open" : ""}`}
+                                    style={{ marginRight: "10px", fontSize: "18px" }}
+                                  />
+                                  {connection.connection_type_name}
+                                </div>
 
-                {/* If connection is expanded, show resources */}
-                {expandedConnections.includes(connection.connection_id) && (
-                  <ul style={{ paddingLeft: "40px", marginTop: "5px" }}>
-                    {userResources[connection.connection_id]?.length > 0 ? (
-                      userResources[connection.connection_id].map((xnode) => (
-                        <div
-                                                      key={xnode.id}
-                                                      className="resource-item"
-                                                      style={{ paddingBottom: "0px" }}
-                                                    >
-                                                      <div className="resource-details">
-                                                        <Tooltips
-                                                          title={
-                                                            <>
-                                                              <div>
-                                                                <strong>Created:</strong>{" "}
-                                                                {new Date(xnode.created_at).toLocaleString()}
-                                                              </div>
-                                                              <div>
-                                                                <strong>Validity:</strong>{" "}
-                                                                {new Date(xnode.validity_until).toLocaleString()}
-                                                              </div>
-                                                              <div>
-                                                                <strong>Node Type:</strong> {xnode.xnode_Type}
-                                                              </div>
-                                                              {/* <div>
+                                {/* If connection is expanded, show resources */}
+                                {expandedConnections.includes(connection.connection_id) && (
+                                  <ul style={{ paddingLeft: "40px", marginTop: "5px" }}>
+                                    {userResources[connection.connection_id]?.length > 0 ? (
+                                      userResources[connection.connection_id].map((xnode) => (
+                                        <div
+                                          key={xnode.id}
+                                          className="resource-item"
+                                          style={{ paddingBottom: "0px" }}
+                                        >
+                                          <div className="resource-details">
+                                            <Tooltips
+                                              title={
+                                                <>
+                                                  <div>
+                                                    <strong>Created:</strong>{" "}
+                                                    {new Date(xnode.created_at).toLocaleString()}
+                                                  </div>
+                                                  <div>
+                                                    <strong>Validity:</strong>{" "}
+                                                    {new Date(xnode.validity_until).toLocaleString()}
+                                                  </div>
+                                                  <div>
+                                                    <strong>Node Type:</strong> {xnode.xnode_Type}
+                                                  </div>
+                                                  {/* <div>
                                                                 <strong>Primary owner:</strong>{" "}
                                                                 {capitalizeFirstLetter(xnode.primary_owner_username) || "N/A"}
                                                               </div> */}
-                                                              <div>
-                                                                <strong>Current owner:</strong>{" "}
-                                                                {capitalizeFirstLetter(xnode.current_owner_username) || "N/A"}
-                                                              </div>
-                                                            </>
-                                                          }
-                                                        >
-                                                          <div className="resource-hover"
-                                                            id={
-                                                              xnode.xnode_Type === "INODE"
-                                                                ? "documents"
-                                                                : xnode.xnode_Type === "SNODE"
-                                                                  ? "documents-byConfer"
-                                                                  : "documents-byShare"
-                                                            }
-                                                            style={{
-                                                              display: "flex",
-                                                              alignItems: "center",
-                                                            }}
-                                                            onMouseEnter={() => setHovered(xnode.id)}
-                                                            onMouseLeave={() => setHovered(null)}
-                                                          >
-                                                            <div>
-                                                              <span
-                                                                onClick={() => handleClick(xnode.id)}
-                                                                style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px" }}
-                                                              >
-                                                                {xnode.resource_name}
-                                                              </span>
+                                                  <div>
+                                                    <strong>Current owner:</strong>{" "}
+                                                    {capitalizeFirstLetter(xnode.current_owner_username) || "N/A"}
+                                                  </div>
+                                                </>
+                                              }
+                                            >
+                                              <div className="resource-hover"
+                                                id={
+                                                  xnode.xnode_Type === "INODE"
+                                                    ? "documents"
+                                                    : xnode.xnode_Type === "SNODE"
+                                                      ? "documents-byConfer"
+                                                      : "documents-byShare"
+                                                }
+                                                style={{
+                                                  display: "flex",
+                                                  alignItems: "center",
+                                                }}
+                                                onMouseEnter={() => setHovered(xnode.id)}
+                                                onMouseLeave={() => setHovered(null)}
+                                              >
+                                                <div>
+                                                  <span
+                                                    onClick={() => handleClick(xnode.id)}
+                                                    style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px" }}
+                                                  >
+                                                    {xnode.resource_name}
+                                                  </span>
 
 
 
-                                                              {/* {error && <div className="error-message">{error}</div>} */}
-                                                            </div>
-                                                            <span
-                                                              className="resource-icons"
-                                                              style={{
-                                                                marginLeft: "auto",
-                                                                display: "flex",
-                                                                display: hovered === xnode.id ? "flex" : "none",
-                                                                gap: "10px",
-                                                              }}
-                                                            >
-                                                              {xnode.xnode_Type === "SNODE" && (
+                                                  {/* {error && <div className="error-message">{error}</div>} */}
+                                                </div>
+                                                <span
+                                                  className="resource-icons"
+                                                  style={{
+                                                    marginLeft: "auto",
+                                                    display: "flex",
+                                                    display: hovered === xnode.id ? "flex" : "none",
+                                                    gap: "10px",
+                                                  }}
+                                                >
+                                                  {xnode.xnode_Type === "SNODE" && (
 
-                                                                <>
-                                                                  <i
-                                                                    className="subset-icon"
-                                                                    data-tooltip-id="tooltip" data-tooltip-content="Subset"
-                                                                    style={{
-                                                                      cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => handleSubsetClick(xnode)}
+                                                    <>
+                                                      <i
+                                                        className="subset-icon"
+                                                        data-tooltip-id="tooltip" data-tooltip-content="Subset"
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={() => handleSubsetClick(xnode)}
 
-                                                                  />
-                                                                  <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+                                                      />
+                                                      <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
-                                                                </>
+                                                    </>
 
-                                                              )}
-                                                              {xnode.xnode_Type === "INODE" && (
-                                                                <>
-                                                                  <i
-                                                                    className="subset-icon"
-                                                                    data-tooltip-id="tooltip" data-tooltip-content="Subset"
+                                                  )}
+                                                  {xnode.xnode_Type === "INODE" && (
+                                                    <>
+                                                      <i
+                                                        className="subset-icon"
+                                                        data-tooltip-id="tooltip" data-tooltip-content="Subset"
 
-                                                                    style={{
-                                                                      cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => handleSubsetClick(xnode)}
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={() => handleSubsetClick(xnode)}
 
-                                                                  />
+                                                      />
 
-                                                                  <i
-                                                                    className="fa-regular fa-pen-to-square"
-                                                                    data-tooltip-id="tooltip" data-tooltip-content="Edit"
-                                                                    style={{
-                                                                      cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => handleEditClick(xnode)}
-                                                                  />
-                                                                  <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px", backgroundColor: "grey" }} />
+                                                      <i
+                                                        className="fa-regular fa-pen-to-square"
+                                                        data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={() => handleEditClick(xnode)}
+                                                      />
+                                                      <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px", backgroundColor: "grey" }} />
 
-                                                                </>
+                                                    </>
 
-                                                              )}
+                                                  )}
 
-                                                              <i
-                                                                className="fa-regular fa-trash-can"
-                                                                data-tooltip-id="tooltip" data-tooltip-content="Delete"
-                                                                style={{ cursor: "pointer" }}
-                                                                onClick={() => handleDeleteClick(xnode)}
-                                                              />
-                                                              <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+                                                  <i className="bi bi-info-square"
+                                                    data-tooltip-id="tooltip"
+                                                    data-tooltip-content="View Details"
+                                                    style={{ marginTop: "-4px", cursor:"pointer" }}
+                                                    onClick={() => handleViewDetails(xnode.id)}
+                                                  />
 
-                                                            </span>
-                                                          </div>
-                                                        </Tooltips>
-                                                        <ReactModal
-                                                          isOpen={isModalOpen}
-                                                          onRequestClose={handleClose}
-                                                          contentLabel="PDF Viewer"
-                                                          style={{
-                                                            content: {
-                                                              top: "59%",
-                                                              left: "50%",
-                                                              right: "auto",
-                                                              bottom: "auto",
-                                                              marginRight: "-50%",
-                                                              transform: "translate(-50%, -50%)",
-                                                              width: "95%",
-                                                              height: "80%",
-                                                              overflowY: "hidden",
-                                                              maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
-                                                              maxHeight: "90%", // Max height for larger screens
-                                                            },
-                                                          }}
-                                                        >
-                                                          <button
-                                                            onClick={handleClose}
-                                                            style={{
-                                                              marginBottom: "10px",
-                                                              cursor: "pointer",
-                                                              position: "absolute",
-                                                              top: "10px",
-                                                              right: "10px", // Button positioned at the top right
-                                                              zIndex: 100,
-                                                            }}
-                                                          >
-                                                            Close
-                                                          </button>
-                                                          {pdfUrl ? (
-                                                            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                                                              <Viewer fileUrl={pdfUrl} />
-                                                            </Worker>
-                                                          ) : (
-                                                            <p>Loading PDF...</p>
-                                                          )}
-                                                        </ReactModal>
+                                                  <i
+                                                    className="fa-regular fa-trash-can"
+                                                    data-tooltip-id="tooltip" data-tooltip-content="Delete"
+                                                    style={{ cursor: "pointer" }}
+                                                    onClick={() => handleDeleteClick(xnode)}
+                                                  />
+                                                  <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
-                                                      </div>
-                                                    </div>
-                      ))
-                    ) : (
-                      <p style={{ fontSize: "14px", color: "#888" }}>No Resources found.</p>
-                    )}
-                  </ul>
-                )}
-              </li>
-            ))
-          ) : (
-            <p style={{ fontSize: "14px", color: "#888" }}>No outgoing connections found.</p>
-          )}
-        </ul>
-      )}
+                                                </span>
+                                              </div>
+                                            </Tooltips>
+                                            <ReactModal
+                                              isOpen={isModalOpen}
+                                              onRequestClose={handleClose}
+                                              contentLabel="PDF Viewer"
+                                              style={{
+                                                content: {
+                                                  top: "59%",
+                                                  left: "50%",
+                                                  right: "auto",
+                                                  bottom: "auto",
+                                                  marginRight: "-50%",
+                                                  transform: "translate(-50%, -50%)",
+                                                  width: "95%",
+                                                  height: "80%",
+                                                  overflowY: "hidden",
+                                                  maxWidth: "100%", // Ensure it doesn't overflow on smaller screens
+                                                  maxHeight: "90%", // Max height for larger screens
+                                                },
+                                              }}
+                                            >
+                                              <button
+                                                onClick={handleClose}
+                                                style={{
+                                                  marginBottom: "10px",
+                                                  cursor: "pointer",
+                                                  position: "absolute",
+                                                  top: "10px",
+                                                  right: "10px", // Button positioned at the top right
+                                                  zIndex: 100,
+                                                }}
+                                              >
+                                                Close
+                                              </button>
+                                              {pdfUrl ? (
+                                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                                  <Viewer fileUrl={pdfUrl} />
+                                                </Worker>
+                                              ) : (
+                                                <p>Loading PDF...</p>
+                                              )}
+                                            </ReactModal>
+
+                                          </div>
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <p style={{ fontSize: "14px", color: "#888" }}>No Resources found.</p>
+                                    )}
+                                  </ul>
+                                )}
+                              </li>
+                            ))
+                          ) : (
+                            <p style={{ fontSize: "14px", color: "#888" }}>No outgoing connections found.</p>
+                          )}
+                        </ul>
+                      )}
                     </ul>
                   )}
 
@@ -2372,6 +2450,7 @@ export const ViewLocker = () => {
               )}
 
 
+
               {/* Success/Failure Modal */}
               {modalMessage && (
                 <Modal
@@ -2519,7 +2598,65 @@ export const ViewLocker = () => {
 
       </div>
       {/* {pdfUrl && <PDFViewer pdfUrl={pdfUrl} />} */}
+      {resourceViewModal && (
+        <div className="edit-modal ">
+          <div className="modal-content">
+            {/* Close Button */}
+            <div className="close-detail">
+              <button
+                type="button"
+                className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                onClick={handleViewClose}
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  backgroundColor: "#f8d7da", // Light red for a subtle look
+                  color: "#721c24", // Darker red for contrast
+                  boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                  cursor: "pointer",
+                  transition: "0.3s ease-in-out",
+                }}
+                aria-label="Close"
+              >
+                <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+              </button>
+            </div>
+            <h5 className="fw-bold  mb-1">Resource Details</h5>
 
+            <div className="card p-3 shadow-lg border-0">
+              <div className="d-flex justify-content-between border-bottom pb-2">
+                <span className="fw-bold">Resource Name:</span>
+                <span>{resourceData.resource_name}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Created at:</span>
+                <span>{new Date(resourceData.created_at).toLocaleString()}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Validity until:</span>
+                <span>{new Date(resourceData.validity_until).toLocaleString()}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Current owner:</span>
+                <span>{resourceData.current_owner_username}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Connection Type:</span>
+                <span>{resourceData?.connection?.connection_type_name ? resourceData.connection.connection_type_name : "N/A"}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                <span className="fw-bold">Post Conditions:</span>
+                <span className=" text-end">
+                  {postConditionsKeys.length > 0 ? postConditionsKeys.join(", ") : "No conditions found"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      )}
     </div>
 
   );

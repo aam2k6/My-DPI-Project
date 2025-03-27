@@ -109,10 +109,7 @@ export const HostTermsReview = () => {
       // console.log("Inside fetch terms");
       try {
         const token = Cookies.get("authToken");
-        const connectionTypeName = connection?.connection_name
-          .split("-")
-          .shift()
-          .trim();
+        const connectionTypeName = connection?.connection_type_name
         let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${connection.host_user.username}&host_locker_name=${connection.host_locker.name}`;
         //   console.log("Final API URL:", apiUrl);
 
@@ -236,7 +233,7 @@ export const HostTermsReview = () => {
 
     const fetchConnectionDetails = async () => {
       console.log("error chck", connection);
-      const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+      const connectionTypeName = connection?.connection_type_name;
 
       try {
         const token = Cookies.get("authToken");
@@ -1261,7 +1258,7 @@ export const HostTermsReview = () => {
     console.log("Connection Object:", connection);
 
     // Safely access properties with optional chaining
-    const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+    const connectionTypeName = connection?.connection_type_name;
     const connectionDescription = connection?.connection_description;
     const hostLockerName = connection?.host_locker?.name;
     const hostLockerDescription = connection?.host_locker?.description;  // Add specific properties
@@ -1305,7 +1302,7 @@ export const HostTermsReview = () => {
   };
 
   const navigateToConnectionTerms = (connection) => {
-    const connectionTypeName = connection?.connection_name?.split("-").shift().trim();
+    const connectionTypeName = connection?.connection_type_name;
     const connectionDescription = connection?.connection_description;
     const hostLockerName = connection?.host_locker?.name;
     const hostLockerDescription = connection?.host_locker?.description;  // Add specific properties
@@ -1741,7 +1738,7 @@ export const HostTermsReview = () => {
                   },
                 })}
               >
-                Guest Data
+                Shared by me
               </div>
               <div
                 className={`tab-header ${activeTab === "host" ? "active" : ""
@@ -1781,11 +1778,11 @@ export const HostTermsReview = () => {
                         <Grid item md={10} xs={12}>
                           <h3>Host Obligations</h3>
                         </Grid>
-                        <Grid item md={2} xs={12}>
+                        {/* <Grid item md={2} xs={12}>
                           <button onClick={openTermsPopup}>
                             View Terms
                           </button>
-                        </Grid>
+                        </Grid> */}
                       </Grid>
 
                       {/* <button onClick={openTermsPopup} className="view-terms-link">

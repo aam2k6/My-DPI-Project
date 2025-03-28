@@ -275,3 +275,39 @@
         width: 90%; /* Full width on smaller screens */
     }
 }
+
+.guestuser-icon{
+    display: inline-block;
+    margin-top: 2px;
+    width: 24px;  /* Set width */
+    height: 24px; /* Set height */
+    background-image: url('../../../public/circle-g.png');
+    background-size: cover;
+}
+
+.hostuser-icon{
+    display: inline-block;
+    margin-top: 2px;
+    width: 24px;  /* Set width */
+    height: 24px; /* Set height */
+    background-image: url('../../../public/circle-h.png');
+    background-size: cover;
+}
+
+.guestLocker-icon{
+    display: inline-block;
+    /* margin-top: 2px; */
+    width: 28px;  /* Set width */
+    height: 28px; /* Set height */
+    background-image: url('../../../public/LockG.png');
+    background-size: cover;
+}
+
+.hostLocker-icon{
+    display: inline-block;
+    /* margin-top: 2px; */
+    width: 28px;  /* Set width */
+    height: 28px; /* Set height */
+    background-image: url('../../../public/LockH.png');
+    background-size: cover;
+}

@@ -525,6 +525,7 @@ import Modal from "../Modal/Modal.jsx";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
+import { Tooltip } from 'react-tooltip';
 
 export const ViewTermsByType = () => {
 
@@ -1196,6 +1197,14 @@ export const ViewTermsByType = () => {
 
   const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
   console.log("postConditionsKeys", postConditionsKeys)
+
+  const getTrueKeysView = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+  const postConditionsKeysView = getTrueKeysView(pdfData?.post_conditions || {});
+
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
@@ -1456,108 +1465,108 @@ export const ViewTermsByType = () => {
   const handlePageSubmit2 = async () => {
     const resource = selection2[currentLabelName];
     const token = Cookies.get("authToken");
-    if(resource){
-    const data = {
-      connection_name: connectionName,
-      guest_locker_name: guestLockerName,
-      guest_user_username: guestUserUsername,
-      xnode_id: resource.id,
-      share_Type: typeofShare,
-    };
-    console.log("typesss", typeofShare)
-    console.log("typesss", data)
-    try {
-      const response = await fetch('host/share_confer_resource_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+    if (resource) {
+      const data = {
+        connection_name: connectionName,
+        guest_locker_name: guestLockerName,
+        guest_user_username: guestUserUsername,
+        xnode_id: resource.id,
+        share_Type: typeofShare,
+      };
+      console.log("typesss", typeofShare)
+      console.log("typesss", data)
+      try {
+        const response = await fetch('host/share_confer_resource_v2/'.replace(
+          /host/,
+          frontend_host
+        ), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        // alert(result.message);
-        console.log("New Xnode ID:", result.new_xnode_id);
-        const new_xnode_id = result.new_xnode_id
-        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
-        appendPagesToTerms2(termValue);
-
-
-        setShowPageInput2(false);
-        setErrorMessage(null);
-        setShowResources2(false)
-        setIsCompletePages(false)
-      } else {
-        const errorMsg = result.error
-        setError(`You are not allowed to ${typeofShare} the resource`)
-        setModalMessage({
-          message: errorMsg,
-          type: "error",
+          },
+          body: JSON.stringify(data)
         });
-        setPostModal(true);
-        // alert(result.error);
+
+        const result = await response.json();
+        if (response.ok) {
+          // alert(result.message);
+          console.log("New Xnode ID:", result.new_xnode_id);
+          const new_xnode_id = result.new_xnode_id
+          const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
+          appendPagesToTerms2(termValue);
+
+
+          setShowPageInput2(false);
+          setErrorMessage(null);
+          setShowResources2(false)
+          setIsCompletePages(false)
+        } else {
+          const errorMsg = result.error
+          setError(`You are not allowed to ${typeofShare} the resource`)
+          setModalMessage({
+            message: errorMsg,
+            type: "error",
+          });
+          setPostModal(true);
+          // alert(result.error);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong!");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong!");
+      // try {
+      //   // const response = await fetch('host/get_total_pages_v2/'.replace(
+      //   //   /host/,
+      //   //   frontend_host
+      //   // ), {
+      //   //   method: 'POST',
+      //   //   headers: {
+      //   //     'Content-Type': 'application/json',
+      //   //     Authorization: `Basic ${token}`,
+
+      //   //   },
+      //   //   body: JSON.stringify({
+      //   //     xnode_id: selectedResourceId2,
+      //   //     from_page: parseInt(fromPage, 10),
+      //   //     to_page: parseInt(toPage, 10)
+      //   //   })
+      //   // });
+
+      //   // const data = await response.json();
+
+      //   if (true) {
+
+      //     const resource = selection2[currentLabelName]; // Current selected resource
+      //     // console.log("in page res", resource);
+      //     const termValue = `${resource.resource_name}|${resource.id}; F`;
+      //     // console.log(termValue, "termValue");
+
+
+      //     appendPagesToTerms2(termValue);
+
+
+      //     setShowPageInput2(false);
+      //     setErrorMessage(null);
+      //     setShowResources2(false)
+      //     setFromPage('');
+      //     setToPage('');
+      //   } else {
+
+      //     setErrorMessage("Error occured");
+      //   }
+      // } catch (error) {
+      //   setErrorMessage("An error occurred while validating pages.");
+      // }
+    } else {
+      setModalMessage({
+        message: "Please choose a resource.",
+        type: "error",
+      });
+      setPostModal(true);
     }
-    // try {
-    //   // const response = await fetch('host/get_total_pages_v2/'.replace(
-    //   //   /host/,
-    //   //   frontend_host
-    //   // ), {
-    //   //   method: 'POST',
-    //   //   headers: {
-    //   //     'Content-Type': 'application/json',
-    //   //     Authorization: `Basic ${token}`,
-
-    //   //   },
-    //   //   body: JSON.stringify({
-    //   //     xnode_id: selectedResourceId2,
-    //   //     from_page: parseInt(fromPage, 10),
-    //   //     to_page: parseInt(toPage, 10)
-    //   //   })
-    //   // });
-
-    //   // const data = await response.json();
-
-    //   if (true) {
-
-    //     const resource = selection2[currentLabelName]; // Current selected resource
-    //     // console.log("in page res", resource);
-    //     const termValue = `${resource.resource_name}|${resource.id}; F`;
-    //     // console.log(termValue, "termValue");
-
-
-    //     appendPagesToTerms2(termValue);
-
-
-    //     setShowPageInput2(false);
-    //     setErrorMessage(null);
-    //     setShowResources2(false)
-    //     setFromPage('');
-    //     setToPage('');
-    //   } else {
-
-    //     setErrorMessage("Error occured");
-    //   }
-    // } catch (error) {
-    //   setErrorMessage("An error occurred while validating pages.");
-    // }
-  } else {
-    setModalMessage({
-      message: "Please choose a resource.",
-      type: "error",
-    });
-    setPostModal(true);
   }
-}
 
   // const appendPagesToTerms2 = (termValue) => {
   // console.log("more", currentLabelName, termValue)
@@ -1656,82 +1665,82 @@ export const ViewTermsByType = () => {
   const handlePageSubmit = async () => {
     const token = Cookies.get("authToken");
     const resource = selection[currentLabelName];
-    if(resource){
-    const data = {
-      connection_name: connectionName,
-      guest_locker_name: guestLockerName,
-      guest_user_username: guestUserUsername,
-      xnode_id: resource.id,
-      share_Type: typeofShare,
-    };
-    console.log("payload for post", data)
+    if (resource) {
+      const data = {
+        connection_name: connectionName,
+        guest_locker_name: guestLockerName,
+        guest_user_username: guestUserUsername,
+        xnode_id: resource.id,
+        share_Type: typeofShare,
+      };
+      console.log("payload for post", data)
 
-    try {
-      const response = await fetch('host/share_confer_resource_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+      try {
+        const response = await fetch('host/share_confer_resource_v2/'.replace(
+          /host/,
+          frontend_host
+        ), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        // alert(result.message);
-        console.log("New Xnode ID:", result.new_xnode_id);
-        const new_xnode_id = result.new_xnode_id
-        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
-        appendPagesToTerms(termValue);
-
-
-        setShowPageInput(false);
-        setErrorMessage(null);
-        setShowResources(false)
-        setIsCompletePages(false)
-      } else {
-        const errorMsg = result.error
-        setError(`You are not allowed to ${typeofShare} the resource`)
-        setModalMessage({
-          message: errorMsg,
-          type: "error",
+          },
+          body: JSON.stringify(data)
         });
-        setPostModal(true);
-        // alert(result.error);
+
+        const result = await response.json();
+        if (response.ok) {
+          // alert(result.message);
+          console.log("New Xnode ID:", result.new_xnode_id);
+          const new_xnode_id = result.new_xnode_id
+          const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
+          appendPagesToTerms(termValue);
+
+
+          setShowPageInput(false);
+          setErrorMessage(null);
+          setShowResources(false)
+          setIsCompletePages(false)
+        } else {
+          const errorMsg = result.error
+          setError(`You are not allowed to ${typeofShare} the resource`)
+          setModalMessage({
+            message: errorMsg,
+            type: "error",
+          });
+          setPostModal(true);
+          // alert(result.error);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong!");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong!");
+      // if (typeofShare == 'share' || typeofShare == 'confer') {
+
+      // } else if (typeofShare == 'transfer' || typeofShare == 'collateral') {
+      //   const termValue = `${resource.resource_name}|${resource.id}; F`;
+      //   // console.log(termValue, "termValue");
+
+
+      //   appendPagesToTerms(termValue);
+
+
+      //   setShowPageInput(false);
+      //   setErrorMessage(null);
+      //   setShowResources(false)
+      //   setIsCompletePages(false)
+      // } else {
+      //   console.log("error")
+      // }
+    } else {
+      setModalMessage({
+        message: "Please choose a resource.",
+        type: "error",
+      });
+      setPostModal(true);
     }
-    // if (typeofShare == 'share' || typeofShare == 'confer') {
-
-    // } else if (typeofShare == 'transfer' || typeofShare == 'collateral') {
-    //   const termValue = `${resource.resource_name}|${resource.id}; F`;
-    //   // console.log(termValue, "termValue");
-
-
-    //   appendPagesToTerms(termValue);
-
-
-    //   setShowPageInput(false);
-    //   setErrorMessage(null);
-    //   setShowResources(false)
-    //   setIsCompletePages(false)
-    // } else {
-    //   console.log("error")
-    // }
-  } else {
-    setModalMessage({
-      message: "Please choose a resource.",
-      type: "error",
-    });
-    setPostModal(true);
   }
-}
 
   const appendPagesToTerms = (termValue) => {
     // console.log("in append", termValue);
@@ -2665,10 +2674,13 @@ export const ViewTermsByType = () => {
             <i className="fa fa-info-circle" style={{ fontSize: "16px" }}></i>
           </button>
           <button
+          data-tooltip-id="tooltip" data-tooltip-content="View connection terms & Manage consent"
             onClick={() => handleConsentAndInfo(connectionName)} // Trigger confirmation modal
           >
             Manage Consent
           </button>
+            <Tooltip id="tooltip"  place="bottom" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "14px"}} />
+          
           <br></br>
           <>
             <div className="longconnectionDescription" style={{ paddingBottom: "4px" }}>
@@ -2691,24 +2703,24 @@ export const ViewTermsByType = () => {
             </div></>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
-              <FaUserCircle className="userIcon" /> &nbsp;
-              <span className="userName">{renderUserTooltip('guest')} : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
+              <i className="guestuser-icon"/> &nbsp;
+              <span className="userName">: {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
             </div>
-            <i class="fa-solid fa-right-long"></i> &nbsp;
+            <i className="fa-solid fa-right-long mt-1"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
-              <FaRegUserCircle className="userIcon" />&nbsp;
-              <span className="userName">{renderUserTooltip('host')} : {capitalizeFirstLetter(hostUserUsername)}</span>
+              <i className="hostuser-icon"/> &nbsp;
+              <span className="userName">: {capitalizeFirstLetter(hostUserUsername)}</span>
             </div>
           </div>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
-              <i class="bi bi-person-fill-lock"></i> &nbsp;
-              <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
+            <i className="guestLocker-icon"/>
+              <span className="userName">: {guestLockerName} &nbsp;</span>
             </div>
-            <i class="fa-solid fa-right-long"></i> &nbsp;
+            <i class="fa-solid fa-right-long mt-1"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostClick()}>
-              <i class="bi bi-person-lock"></i>&nbsp;
-              <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+            <i className="hostLocker-icon"/>
+              <span className="userName"> : {hostLockerName}</span>
             </div>
           </div>
         </div>
@@ -2747,7 +2759,7 @@ export const ViewTermsByType = () => {
                   }`}
                 onClick={() => setActiveTab("guest")}
               >
-                Guest Data
+                Shared by me
               </div>
               <div
                 className={`tab-header ${activeTab === "host" ? "active" : ""
@@ -2823,45 +2835,33 @@ export const ViewTermsByType = () => {
                               </td> */}
                               <td><button onClick={() => openPopup(obligation)}>Open</button></td>
                               {showOpenPopup && selectedRowData && pdfData && (
-                                <div className="edit-modal" >
-                                  <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                    {/* <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span> */}
-                                    <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                      Consent Artefact
-                                    </h3>
-                                    <>
+                                !selectedRowData.value.endsWith("T") ? (
+                                  <div className="edit-modal">
+                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
+                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                                        Consent Artefact
+                                      </h3>
                                       {termValues[selectedRowData.labelName]?.split(";")[0] ? (
                                         <div>
                                           <label className="form-label fw-bold mt-1">File:{" "}</label>
                                           {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
                                           {pdfData ? (
                                             <div>
-
                                               <div>
                                                 <label className="form-label fw-bold mt-1">Created on:{" "}</label>
                                                 {new Date(pdfData.created_at).toLocaleString()}
-
                                               </div>
                                               <div>
                                                 <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                                                 {new Date(pdfData.validity_until).toLocaleString()}
                                               </div>
-                                              {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-
                                               <div>
                                                 <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
                                                 {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-
                                               </div>
                                               <div>
                                                 <label className="form-label fw-bold mt-1">Type of Share: </label>
                                                 {selectedRowData.typeOfSharing}
-
                                               </div>
                                               <div>
                                                 <label className="form-label fw-bold mt-1">Post Conditions:</label>
@@ -2870,7 +2870,7 @@ export const ViewTermsByType = () => {
                                                 <ul
                                                   style={{
                                                     display: "grid",
-                                                    gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                                    gridTemplateColumns: "repeat(3, auto)",
                                                     gap: "20px",
                                                     listStyleType: "none",
                                                     padding: 0,
@@ -2882,8 +2882,8 @@ export const ViewTermsByType = () => {
                                                         type="checkbox"
                                                         id={key}
                                                         name={key}
-                                                        checked={value} // Will be checked if true, unchecked if false
-                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                                        checked={value}
+                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)}
                                                       />
                                                       <label htmlFor={key}>{key}</label>
                                                     </li>
@@ -2893,11 +2893,7 @@ export const ViewTermsByType = () => {
                                                 <p>No conditions found</p>
                                               )}
                                               <div className="modal-buttons mt-4">
-                                                <button
-                                                // onClick={() => handleCreateSubset(selectedResource)}
-                                                >
-                                                  Submit
-                                                </button>
+                                                <button>Submit</button>
                                                 <button onClick={() => closeOpenPopup()}>Cancel</button>
                                               </div>
                                             </div>
@@ -2908,20 +2904,80 @@ export const ViewTermsByType = () => {
                                       ) : (
                                         "None"
                                       )}
-                                    </>
-                                    {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
+                                    </div>
                                   </div>
-                                </div>
+                                ) : (
+                                  <div className="edit-modal ">
+                                    <div className="modal-content">
+                                      {/* Close Button */}
+                                      <div className="close-detail">
+                                        <button
+                                          type="button"
+                                          className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                                          onClick={() => closeOpenPopup()}
+                                          style={{
+                                            width: "32px",
+                                            height: "32px",
+                                            borderRadius: "50%",
+                                            backgroundColor: "#f8d7da", // Light red for a subtle look
+                                            color: "#721c24", // Darker red for contrast
+                                            boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                                            cursor: "pointer",
+                                            transition: "0.3s ease-in-out",
+                                          }}
+                                          aria-label="Close"
+                                        >
+                                          <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                                        </button>
+                                      </div>
+                                      <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                                      <div className="card p-3 shadow-lg border-0">
+                                        {termValues[selectedRowData.labelName]?.split(";")[0] ? (
+                                          <>
+                                            <div className="d-flex justify-content-between border-bottom pb-2">
+                                              <span className="fw-bold">File Name:</span>
+                                              <span> {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}</span>
+                                            </div>
+                                            {pdfData ? (
+                                              <>
+                                                <div className="d-flex justify-content-between border-bottom py-2">
+                                                  <span className="fw-bold">Created on:</span>
+                                                  <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                                                </div>
+                                                <div className="d-flex justify-content-between border-bottom py-2">
+                                                  <span className="fw-bold">Validity until:</span>
+                                                  <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                                                </div>
+                                                <div className="d-flex justify-content-between border-bottom py-2">
+                                                  <span className="fw-bold">Current owner:</span>
+                                                  <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                                                </div>
+                                                <div className="d-flex justify-content-between border-bottom py-2">
+                                                  <span className="fw-bold">Type of Share:</span>
+                                                  <span>{selectedRowData.typeOfSharing}
+                                                  </span>
+                                                </div>
+                                                <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                                                  <span className="fw-bold">Post Conditions:</span>
+                                                  <span className=" text-end">
+                                                    {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                                                  </span>
+                                                </div>
+                                              </>
+                                            ) : (
+                                              <p>Loading...</p>
+                                            )}
+                                          </>
+                                        ) : (
+                                          "None"
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
                               )}
+
                               <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
                               {/* <td>{obligation.labelDescription}</td> */}

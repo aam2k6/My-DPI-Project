@@ -532,7 +532,7 @@ export const Home = () => {
       </div>
 
 
-      <div style={{ marginTop: "120px" }}>
+      <div style={{ marginTop: "130px" }}>
         <div className="heroContainer">
           {/* <div> */}
 
@@ -662,10 +662,10 @@ export const Home = () => {
               )}
             </div>
           ) : (
-            <div className="allLockers">
+            <div className="allLockers" style={{border:"none"}}>
               {lockers.length > 0 ? (
                 lockers.map(locker => (
-                  <div key={locker.locker_id} className="page1-locker">
+                  <div key={locker.locker_id} className="page1-locker" style={{borderRadius:"5px"}}>
                     <h4>{locker.name}</h4>
                     {locker.is_frozen === false ? (
                       <Button className="subbutton" id="openLockerBtn" onClick={() => handleClick(locker)}>

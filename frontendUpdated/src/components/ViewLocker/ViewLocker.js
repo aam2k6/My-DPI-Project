@@ -15,7 +15,7 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { ConnectionContext } from "../../ConnectionContext";
-import { use } from "react";
+
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
   const location = useLocation();
@@ -82,8 +82,8 @@ export const ViewLocker = () => {
     if (locker) {
       fetchConnectionsAndOtherConnections(); // Combine the two fetches
       fetchResources(); // Keep resources fetch separate
-      fetchVnodeResources();
-      fetchSnodeResources();
+      // fetchVnodeResources();
+      // fetchSnodeResources();
       fetchXnodes();
     }
     if (location.state) {
@@ -112,7 +112,7 @@ export const ViewLocker = () => {
   const legendItems = [
     { color: "blue", label: "Your resource" },
     { color: "rgb(255, 38, 0)", label: "Shared resource" },
-    { color: "green", label: "Conferred/Pledged resource" },
+    { color: "green", label: "Conferred / Pledged resource" },
   ];
 
   const fetchXnodes = async () => {
@@ -298,75 +298,75 @@ export const ViewLocker = () => {
     }
   };
   // console.log(locker);
-  const fetchVnodeResources = async () => {
-    try {
-      const token = Cookies.get("authToken");
-      const params = new URLSearchParams({ host_locker_id: locker.locker_id });
+  // const fetchVnodeResources = async () => {
+  //   try {
+  //     const token = Cookies.get("authToken");
+  //     const params = new URLSearchParams({ host_locker_id: locker.locker_id });
 
-      const response = await fetch(
-        `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch resources");
-      }
+  //     const response = await fetch(
+  //       `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Basic ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch resources");
+  //     }
 
-      const data = await response.json();
-      // console.log("data", data);
-      // console.log("vnodes", data.data);
+  //     const data = await response.json();
+  //     // console.log("data", data);
+  //     // console.log("vnodes", data.data);
 
-      //if (data.success) {
-      setVnodeResources(data.data);
-      //} else {
-      //setError(data.message || "Failed to fetch resources");
-      //}
-      //}
-    } catch (error) {
-      console.error("Error fetching resources:", error);
-      // setError("An error occurred while fetching resources");
-    }
-  };
+  //     //if (data.success) {
+  //     setVnodeResources(data.data);
+  //     //} else {
+  //     //setError(data.message || "Failed to fetch resources");
+  //     //}
+  //     //}
+  //   } catch (error) {
+  //     console.error("Error fetching resources:", error);
+  //     // setError("An error occurred while fetching resources");
+  //   }
+  // };
 
-  const fetchSnodeResources = async () => {
-    try {
-      const token = Cookies.get("authToken");
-      const params = new URLSearchParams({ host_locker_id: locker.locker_id });
+  // const fetchSnodeResources = async () => {
+  //   try {
+  //     const token = Cookies.get("authToken");
+  //     const params = new URLSearchParams({ host_locker_id: locker.locker_id });
 
-      const response = await fetch(
-        `host/get-snodes/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch resources");
-      }
+  //     const response = await fetch(
+  //       `host/get-snodes/?${params}`.replace(/host/, frontend_host),
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Basic ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch resources");
+  //     }
 
-      const data = await response.json();
-      console.log("data", data);
-      console.log("vnodes", data.data);
+  //     const data = await response.json();
+  //     console.log("data", data);
+  //     console.log("vnodes", data.data);
 
-      //if (data.success) {
-      setSnodeResources(data.data);
-      //} else {
-      //setError(data.message || "Failed to fetch resources");
-      //}
-      //}
-    } catch (error) {
-      console.error("Error fetching resources:", error);
-      // setError("An error occurred while fetching resources");
-    }
-  };
+  //     //if (data.success) {
+  //     setSnodeResources(data.data);
+  //     //} else {
+  //     //setError(data.message || "Failed to fetch resources");
+  //     //}
+  //     //}
+  //   } catch (error) {
+  //     console.error("Error fetching resources:", error);
+  //     // setError("An error occurred while fetching resources");
+  //   }
+  // };
 
   const fetchAllTrackerData = (outgoingConnections) => {
     outgoingConnections.forEach((connection) => {
@@ -1461,8 +1461,8 @@ export const ViewLocker = () => {
         <Grid container padding={{ md: "50px", xs: "20px" }}>
           <Grid item md={5.5} xs={12} className="a">
             <div className="res">
-              <div>
-                <h3 className="mt-1">Resources</h3>
+              <div  style={{marginLeft:"-10px"}}>
+                <h4 className="mt-2">Locker resources</h4>
                 <Grid container>
                   {legendItems.map((item, index) => (
                     <Grid item xs={12} md={12}
@@ -1472,7 +1472,7 @@ export const ViewLocker = () => {
                         alignItems: "center",
                       }}
                     >
-                      <span
+                      <span className="mt-1"
                         style={{
                           width: "10px",
                           height: "10px",
@@ -1483,7 +1483,7 @@ export const ViewLocker = () => {
                           marginLeft: "10px",
                         }}
                       ></span>
-                      <span style={{ fontSize: "14px", color: "#333" }}>{item.label}</span>
+                      <span className="mt-1" style={{ fontSize: "16px", color: "#333" }}><b>{item.label}</b></span>
                     </Grid>
                   ))}
                 </Grid>
@@ -1498,6 +1498,7 @@ export const ViewLocker = () => {
                       display: "flex",
                       alignItems: "center",
                       marginBottom: "10px",
+                      marginTop:"20px"
                     }}
                     onClick={() => setResourcesVisible(!isResourcesVisible)}
                   >
@@ -1714,7 +1715,7 @@ export const ViewLocker = () => {
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
-                      marginTop: "20px",
+                      marginTop: "30px",
                     }}
                     onClick={() => setConnectionsVisible(!isConnectionsVisible)}
                   >
@@ -2225,8 +2226,8 @@ export const ViewLocker = () => {
           <Grid item md={1} xs={12} marginBottom={{ md: "", xs: "50px" }}></Grid>
           <Grid item md={5.5} xs={12} className="b">
             <Grid container paddingBottom={"10px"}>
-              <Grid item md={4} xs={12}><h3 id="mycon">My Connections:</h3></Grid>
-              <Grid item md={3} xs={12}></Grid>
+              <Grid item md={7} xs={12}><h3 id="mycon">Connections for this locker </h3></Grid>
+              {/* <Grid item md={1} xs={12}></Grid> */}
               <Grid item md={5} xs={12}>
                 <Button onClick={gotopage12createconnection} className="btn-color" style={{ fontSize: "13px" }}>
                   Create New Connection Type
@@ -2237,6 +2238,7 @@ export const ViewLocker = () => {
               <div
                 className={`tab-header ${activeTab === "incoming" ? "active" : ""
                   }`}
+                  data-tooltip-id="tooltip" data-tooltip-content=""
                 onClick={() => setActiveTab("incoming")}
               >
                 Incoming Connections
@@ -2244,10 +2246,12 @@ export const ViewLocker = () => {
               <div
                 className={`tab-header ${activeTab === "outgoing" ? "active" : ""
                   }`}
+                  data-tooltip-id="tooltip" data-tooltip-content=""
                 onClick={() => setActiveTab("outgoing")}
               >
                 Outgoing Connections
               </div>
+              {/* <Tooltip id="tooltip" style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: "13px" }} /> */}
             </div>
             <div className="tab-content">
               {activeTab === "incoming" && (
@@ -2304,7 +2308,7 @@ export const ViewLocker = () => {
                 // </div>
 
                 <div className="tab-panel">
-                  <h4 id="headingconnection">Incoming Connection types</h4>
+                  <h4 id="headingconnection">Incoming connection types</h4>
                   <div className="conn">
                     {otherConnections.length > 0 ? (
                       otherConnections.map((connection) => (
@@ -2334,7 +2338,6 @@ export const ViewLocker = () => {
 
                           <Grid item md={1} xs={1}>
                             <i class="bi bi-info-circle info-icon " data-tooltip-id="tooltip" data-tooltip-content="Connection Terms" style={{ fontSize: "20px", fontWeight: "bold", cursor: "pointer" }} onClick={() => handleIncomingInfo(connection)}></i>
-                            <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
                             {/* <button
                               className="info-button2"
                               onClick={() => handleIncomingInfo(connection)}
@@ -2505,16 +2508,16 @@ export const ViewLocker = () => {
                                     {connection.connection_name}
                                   </button>
                                 </div>
-                                <div id="conntent">
+                                {/* <div id="conntent">
                                   {connection.guest_locker.name} <i class="bi bi-arrows me-1" style={{ fontSize: "16px" }}></i>
                                   {connection.host_locker.name}
-                                </div>
-                                <div id="conntent">
+                                </div> */}
+                                {/* <div id="conntent">
                                   Created On:{" "}
                                   {new Date(
                                     connection.created_time
                                   ).toLocaleString()}
-                                </div>
+                                </div> */}
                                 <div id="conntent">
                                   Valid Until:{" "}
                                   {new Date(
@@ -2523,7 +2526,7 @@ export const ViewLocker = () => {
                                 </div>
                               </Grid>
                               <Grid item paddingTop={{ md: "10px", xs: "" }} md={4} xs={12}>
-                                <div>
+                                {/* <div>
                                   <button data-tooltip-id="tooltip" data-tooltip-content="Terms of connection"
                                     className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
                                     onClick={() =>
@@ -2534,7 +2537,7 @@ export const ViewLocker = () => {
                                   </button>
                                   <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
-                                </div>
+                                </div> */}
 
                                 {/* <button
                                   className="info-button"
@@ -2542,7 +2545,7 @@ export const ViewLocker = () => {
                                 >
                                   i{" "}
                                 </button> */}
-                                <div className="d-flex align-items-center mt-2">
+                                <div className="d-flex align-items-center">
 
                                   <h6 className="mt-2 me-2">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
                                   <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
@@ -2657,6 +2660,8 @@ export const ViewLocker = () => {
         </div>
 
       )}
+    <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+
     </div>
 
   );

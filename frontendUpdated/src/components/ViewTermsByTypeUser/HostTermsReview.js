@@ -1671,8 +1671,8 @@ export const HostTermsReview = () => {
 
       <div style={{ marginTop: "140px" }}>
         <div className="connection-details">
-          Connection Name: {conndetails?.connection_name || "Loading..."}
-          <button
+        <span style={{fontSize:"19px"}}> <b>Connection Name:</b> {conndetails?.connection_name || "Loading..."}
+        <button
             className="info-button info"
             onClick={() => navigateToConnectionTerms(connection)}
             title="Show Connection Terms"
@@ -1686,29 +1686,31 @@ export const HostTermsReview = () => {
           >
             <i className="fa fa-info-circle userIcon"></i>
           </button>
-          <br></br>
+          </span>
           <div className="longconnectionDescription">{conndetails?.connection_description}</div>
-          <br></br>
+          {/* <br></br> */}
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
-              <FaUserCircle className="userIcon" /> &nbsp;
-              <span className="userName">{renderUserTooltip('guest', conndetails.guest_user?.username)} : {capitalizeFirstLetter(conndetails.guest_user?.username) || "Loading..."} &nbsp;</span>
+              {/* <FaUserCircle className="userIcon" /> &nbsp; */}
+              <i className="guestuser-icon"/> &nbsp;
+              <span className="userName">: {capitalizeFirstLetter(conndetails.guest_user?.username) || "Loading..."} &nbsp;</span>
             </div>
-            <i class="fa-solid fa-right-long"></i> &nbsp;
+            <i className="fa-solid fa-right-long mt-1"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
-              <FaRegUserCircle className="userIcon" />&nbsp;
-              <span className="userName">{renderUserTooltip('host', conndetails.host_user?.username)} : {capitalizeFirstLetter(conndetails?.host_user?.username) || "Loading..."}</span>
+              {/* <FaRegUserCircle className="userIcon" />&nbsp; */}
+              <i className="hostuser-icon"/> &nbsp;
+              <span className="userName">: {capitalizeFirstLetter(conndetails?.host_user?.username) || "Loading..."}</span>
             </div>
           </div>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
-              <i class="bi bi-person-fill-lock"></i> &nbsp;
-              <span className="userName">{renderUserTooltip('guest', conndetails.guest_locker?.name)} : {conndetails.guest_locker?.name || "Loading..."} &nbsp;</span>
+            <i className="guestLocker-icon"/>
+              <span className="userName">: {conndetails.guest_locker?.name || "Loading..."} &nbsp;</span>
             </div>
             <i class="fa-solid fa-right-long"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostClick()}>
-              <i class="bi bi-person-lock"></i>&nbsp;
-              <span className="userName">{renderUserTooltip('host', conndetails.host_locker?.name)} : {conndetails.host_locker?.name || "Loading..."}</span>
+            <i className="hostLocker-icon"/>
+              <span className="userName">: {conndetails.host_locker?.name || "Loading..."}</span>
             </div>
           </div>
         </div>

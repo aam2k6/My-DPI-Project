@@ -41,6 +41,8 @@ export const HostTermsReview = () => {
   const [loading, setLoading] = useState(true);
   const [revokeState, setRevokeState] = useState(true);
   const [resourceModal, setResourceModal] = useState(false);
+  const [trackerData, setTrackerData] = useState({});
+  const [trackerDataReverse, setTrackerDataReverse] = useState({});
 
 
   const [statuses2, setStatuses2] = useState({});
@@ -308,6 +310,8 @@ export const HostTermsReview = () => {
         });
         setIsModalOpen(true);
       }
+      fetchTrackerData(connectionDetails)
+      fetchTrackerDataReverse(connectionDetails);
     }
   }, [connectionDetails]);
 
@@ -352,6 +356,138 @@ export const HostTermsReview = () => {
   //         alert("Value required in Enter Value field to either Approve or Reject");
   //     }
   // };
+
+  const fetchTrackerData = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerData((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+  const fetchTrackerDataReverse = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerDataReverse((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+
+  const getStatusColor = (tracker) => {
+    const totalObligations =
+      tracker.count_T + tracker.count_F + tracker.count_R;
+    if (tracker.count_T === totalObligations && tracker.count_R === 0) {
+      return "green";
+    } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  console.log("trackerData", trackerData)
+  console.log("trackerDataReverse", trackerDataReverse)
+
+  const getStatusColorReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
+      return "green";
+    } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  const calculateRatio = (tracker) => {
+    const totalObligations =
+      tracker.count_T + tracker.count_F + tracker.count_R;
+    return totalObligations > 0
+      ? `${tracker.filled}/${totalObligations}`
+      : "0/0";
+  };
+
+  const calculateRatioReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    return totalObligations > 0
+      ? `${trackerReverse.filled}/${totalObligations}`
+      : "0/0";
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -1152,71 +1288,71 @@ export const HostTermsReview = () => {
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
                   <td><button onClick={() => openPopup1(permission)}>Open</button></td>
-                  {showOpenPopup && selectedRowData1 && pdfData &&(
-                                <div className="terms-popup">
-                                  <div className="terms-popup-content">
-                                    <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span>
-                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
-                                      Consent Artefact
-                                    </h3>
-                                    <p>
-                                    {selectedRowData1.dataElement ? (
-                                          <div>
-                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                                            {selectedRowData1.dataElement.split("|")[0]}
-                                            {pdfData ? (
-                                              <div>
+                  {showOpenPopup && selectedRowData1 && pdfData && (
+                    <div className="terms-popup">
+                      <div className="terms-popup-content">
+                        <span className="close" onClick={closeOpenPopup}>
+                          &times;
+                        </span>
+                        <h3 style={{ display: "flex", justifyContent: "center" }}>
+                          Consent Artefact
+                        </h3>
+                        <p>
+                          {selectedRowData1.dataElement ? (
+                            <div>
+                              <label className="form-label fw-bold mt-1">File:{" "}</label>
+                              {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                              {selectedRowData1.dataElement.split("|")[0]}
+                              {pdfData ? (
+                                <div>
 
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                  {new Date(pdfData.created_at).toLocaleString()}
+                                  <div>
+                                    <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                    {new Date(pdfData.created_at).toLocaleString()}
 
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                  {new Date(pdfData.validity_until).toLocaleString()}
-                                                </div>
-                                                {/* <li>
+                                  </div>
+                                  <div>
+                                    <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                    {new Date(pdfData.validity_until).toLocaleString()}
+                                  </div>
+                                  {/* <li>
                                                 Primary owner: {" "}
                                                 {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
                                               </li> */}
 
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                  <div>
+                                    <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                    {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
 
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                  {selectedRowData1.share}
+                                  </div>
+                                  <div>
+                                    <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                    {selectedRowData1.share}
 
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                                  {/* <div className="mt-2">Post Conditions:</div> */}
-                                              {postConditionsKeys.length > 0 ? (
-                                                <ul>
-                                                  {postConditionsKeys.map((key) => (
-                                                    <li key={key}>{key}</li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p>No conditions found</p>
-                                              )}
-                                               
-                                              </div>
-                                            ) : (
-                                              <p>Loading...</p>
-                                            )}
-                                          </div>
-                                        ) : (
-                                          "None"
-                                        )}
-                                    </p> 
-                                    {/* <p>
+                                  </div>
+                                  <div>
+                                    <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                  {/* <div className="mt-2">Post Conditions:</div> */}
+                                  {postConditionsKeys.length > 0 ? (
+                                    <ul>
+                                      {postConditionsKeys.map((key) => (
+                                        <li key={key}>{key}</li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p>No conditions found</p>
+                                  )}
+
+                                </div>
+                              ) : (
+                                <p>Loading...</p>
+                              )}
+                            </div>
+                          ) : (
+                            "None"
+                          )}
+                        </p>
+                        {/* <p>
                                       Host Privileges:{" "}
                                       {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
                                         selectedRowData.hostPermissions.map((permission, index) => (
@@ -1226,9 +1362,9 @@ export const HostTermsReview = () => {
                                         "None"
                                       )}
                                     </p> */}
-                                  </div>
-                                </div>
-                              )}
+                      </div>
+                    </div>
+                  )}
                   <td>
                     <select
                       value={statuses2[permission.labelName] || ""}
@@ -1415,10 +1551,13 @@ export const HostTermsReview = () => {
   };
   const content = (
     <>
-      <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
+    <div className="navbarBrands">
+        {connection.connection_name}
+      </div>
+      {/* <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
       <div>
         {curruser ? curruser.description : "None"}
-      </div>
+      </div> */}
       {/* <div className="description">
         {curruser ? curruser.description : "None"}
       </div>
@@ -1671,48 +1810,109 @@ export const HostTermsReview = () => {
 
       <div style={{ marginTop: "140px" }}>
         <div className="connection-details">
-        <span style={{fontSize:"19px"}}> <b>Connection Name:</b> {conndetails?.connection_name || "Loading..."}
-        <button
-            className="info-button info"
-            onClick={() => navigateToConnectionTerms(connection)}
-            title="Show Connection Terms"
-            style={{
-              marginLeft: "10px",
-              cursor: "pointer",
-              background: "transparent",
-              border: "none",
-              marginBottom: "6px"
-            }}
-          >
-            <i className="fa fa-info-circle userIcon"></i>
-          </button>
+          <span style={{ fontSize: "19px" }}> <b>Connection Name:</b> {conndetails?.connection_name || "Loading..."}
+            <button
+              className="info-button info"
+              onClick={() => navigateToConnectionTerms(connection)}
+              title="Show Connection Terms"
+              style={{
+                marginLeft: "10px",
+                cursor: "pointer",
+                background: "transparent",
+                border: "none",
+                marginBottom: "6px"
+              }}
+            >
+              <i className="fa fa-info-circle userIcon"></i>
+            </button>
           </span>
           <div className="longconnectionDescription">{conndetails?.connection_description}</div>
           {/* <br></br> */}
-          <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
-              {/* <FaUserCircle className="userIcon" /> &nbsp; */}
-              <i className="guestuser-icon"/> &nbsp;
-              <span className="userName">: {capitalizeFirstLetter(conndetails.guest_user?.username) || "Loading..."} &nbsp;</span>
-            </div>
-            <i className="fa-solid fa-right-long mt-1"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
-              {/* <FaRegUserCircle className="userIcon" />&nbsp; */}
-              <i className="hostuser-icon"/> &nbsp;
-              <span className="userName">: {capitalizeFirstLetter(conndetails?.host_user?.username) || "Loading..."}</span>
-            </div>
-          </div>
-          <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
-            <i className="guestLocker-icon"/>
-              <span className="userName">: {conndetails.guest_locker?.name || "Loading..."} &nbsp;</span>
-            </div>
-            <i class="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleHostClick()}>
-            <i className="hostLocker-icon"/>
-              <span className="userName">: {conndetails.host_locker?.name || "Loading..."}</span>
-            </div>
-          </div>
+          <Grid container>
+            <Grid item xs={12} md={10}>
+              <div className="tooltip-container user-container">
+                <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
+                  {/* <FaUserCircle className="userIcon" /> &nbsp; */}
+                  <i className="guestuser-icon" /> &nbsp;
+                  <span className="userName">: {capitalizeFirstLetter(conndetails.guest_user?.username) || "Loading..."} &nbsp;</span>
+                </div>
+                <i className="fa-solid fa-right-long mt-1"></i> &nbsp;
+                <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
+                  {/* <FaRegUserCircle className="userIcon" />&nbsp; */}
+                  <i className="hostuser-icon" /> &nbsp;
+                  <span className="userName">: {capitalizeFirstLetter(conndetails?.host_user?.username) || "Loading..."}</span>
+                </div>
+              </div>
+              <div className="tooltip-container user-container">
+                <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
+                  <i className="guestLocker-icon" />
+                  <span className="userName">: {conndetails.guest_locker?.name || "Loading..."} &nbsp;</span>
+                </div>
+                <i class="fa-solid fa-right-long "></i> &nbsp;
+                <div className="tooltips user-container" onClick={() => handleHostClick()}>
+                  <i className="hostLocker-icon" />
+                  <span className="userName">: {conndetails.host_locker?.name || "Loading..."}</span>
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={12} md={1.5}>
+              {connection && (() => {
+                const tracker = trackerData[connection.connection_id];
+                const color = tracker ? getStatusColor(tracker) : "gray";
+                const ratio = tracker ? calculateRatio(tracker) : "Loading...";
+
+                const trackerReverse = trackerDataReverse[connection.connection_id];
+                const colorReverse = trackerReverse ? getStatusColorReverse(trackerReverse) : "gray";
+                const ratioReverse = trackerReverse ? calculateRatioReverse(trackerReverse) : "Loading...";
+
+                return (
+                  <Grid container key={connection.connection_id}>
+
+                    <Grid item xs={12} style={{ paddingTop: "10px" }}>
+                      <div className="d-flex align-items-center">
+                        <h6 className="mt-2 me-2">
+                          {capitalizeFirstLetter(connection.guest_user.username)}
+                        </h6>
+                        <i className="bi bi-arrow-right me-2" style={{ fontSize: "1.2rem" }}></i>
+                        <button
+                          // onClick={() => handleTracker(connection)}
+                          style={{
+                            backgroundColor: color,
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                            color: "#fff",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {ratio}
+                        </button>
+                      </div>
+
+                      <div className="d-flex align-items-center mt-1">
+                        <button
+                          className="me-2"
+                          // onClick={() => handleTrackerHost(connection)}
+                          style={{
+                            backgroundColor: colorReverse,
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                            color: "#fff",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {ratioReverse}
+                        </button>
+                        <i className="bi bi-arrow-left me-2" style={{ fontSize: "1.2rem" }}></i>
+                        <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
+                      </div>
+                    </Grid>
+                  </Grid>
+                );
+              })()}
+            </Grid>
+          </Grid>
         </div>
 
         <div className="view-container" style={{ marginLeft: "120px" }}>
@@ -1903,7 +2103,7 @@ export const HostTermsReview = () => {
                                   ? obligation.hostPermissions.join(", ")
                                   : "None"}
                               </td> */}
-                              <td><button onClick={() => openPopup(obligation)}>Open</button></td>
+                              <td><button onClick={() => openPopup(obligation)}>View</button></td>
                               {showOpenPopup && selectedRowData && pdfData && (
                                 <div className="terms-popup">
                                   <div className="terms-popup-content">

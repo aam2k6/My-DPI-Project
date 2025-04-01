@@ -11,6 +11,8 @@ import Modal from "../Modal/Modal.jsx";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
+import { Tooltip } from 'react-tooltip';
+import { Grid } from "@mui/material"
 
 export const ViewHostTermsByType = () => {
 
@@ -83,6 +85,8 @@ export const ViewHostTermsByType = () => {
   const [selectedRowData1, setSelectedRowData1] = useState(null);
   const [selectedRowData2, setSelectedRowData2] = useState(null);
   const [typeofShare, setTypeofShare] = useState(null)
+  const [trackerData, setTrackerData] = useState({});
+  const [trackerDataReverse, setTrackerDataReverse] = useState({});
 
 
 
@@ -135,6 +139,144 @@ export const ViewHostTermsByType = () => {
   //   if (selectedResourceId) fetchData();
   // }, [selectedResourceId]);
 
+  useEffect(() => {
+    if(connectionDetails){
+      fetchTrackerData(connectionDetails)
+      fetchTrackerDataReverse(connectionDetails);
+    }
+  }, [connectionDetails]);
+
+const fetchTrackerData = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerData((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+  const fetchTrackerDataReverse = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerDataReverse((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
+      } else {
+        setError(data.message || "Failed to fetch tracker data");
+      }
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+
+  const getStatusColor = (tracker) => {
+    const totalObligations =
+      tracker.count_T + tracker.count_F + tracker.count_R;
+    if (tracker.count_T === totalObligations && tracker.count_R === 0) {
+      return "green";
+    } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  console.log("trackerData", trackerData)
+  console.log("trackerDataReverse", trackerDataReverse)
+
+  const getStatusColorReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
+      return "green";
+    } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  const calculateRatio = (tracker) => {
+    const totalObligations =
+      tracker.count_T + tracker.count_F + tracker.count_R;
+    return totalObligations > 0
+      ? `${tracker.filled}/${totalObligations}`
+      : "0/0";
+  };
+
+  const calculateRatioReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    return totalObligations > 0
+      ? `${trackerReverse.filled}/${totalObligations}`
+      : "0/0";
+  };
   const handleCloseModal = () => {
     setPostModal(false);
     setModalMessage({ message: "", type: "" });
@@ -2066,7 +2208,7 @@ export const ViewHostTermsByType = () => {
 
       <div style={{ marginTop: "140px" }}>
         <div className="connection-details">
-          Connection Name: {connectionName}
+        <b>Connection Name:</b> {connectionName}
           <button
             className="info-button"
             onClick={() => navigateToConnectionTerms(connectionName)}
@@ -2082,10 +2224,13 @@ export const ViewHostTermsByType = () => {
           </button>
           <button
             //   className="info-button"
+             data-tooltip-id="tooltip" data-tooltip-content="View connection terms & Manage consent"
             onClick={() => handleConsentAndInfo(connectionName)}
           >
             Manage Consent
           </button>
+          <Tooltip id="tooltip" place="bottom" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "14px" }} />
+          
           <br></br>
           <>
             <div style={{ paddingBottom: "8px" }}>
@@ -2106,28 +2251,93 @@ export const ViewHostTermsByType = () => {
               </span></div></>
           {connectionDescription}
           <br></br>
-          <div className="tooltip-container user-container">
+          <Grid container>
+            <Grid item xs={12} md={10}>
+            <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
-              <FaUserCircle className="userIcon" /> &nbsp;
-              <span className="userName">{renderUserTooltip('guest')} : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
+              {/* <FaUserCircle className="userIcon" /> &nbsp; */}
+              <i className="guestuser-icon" /> &nbsp;
+              <span className="userName"> : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
             </div>
-            <i class="fa-solid fa-right-long"></i> &nbsp;
+            <i class="fa-solid fa-right-long mt-1"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
-              <FaRegUserCircle className="userIcon" />&nbsp;
-              <span className="userName">{renderUserTooltip('host')} : {capitalizeFirstLetter(hostUserUsername)}</span>
+              {/* <FaRegUserCircle className="userIcon" />&nbsp; */}
+              <i className="hostuser-icon" /> &nbsp;
+              <span className="userName"> : {capitalizeFirstLetter(hostUserUsername)}</span>
             </div>
           </div>
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" onClick={() => handleGuestClick(locker)} style={{ cursor: 'pointer' }}>
-              <i class="bi bi-person-fill-lock"></i> &nbsp;
-              <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
+              {/* <i class="bi bi-person-fill-lock"></i> &nbsp; */}
+              <i className="guestLocker-icon" />
+              <span className="userName"> : {guestLockerName} &nbsp;</span>
             </div>
-            <i class="fa-solid fa-right-long"></i> &nbsp;
+            <i class="fa-solid fa-right-long mt-1"></i> &nbsp;
             <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername, hostLockerName)}>
-              <i class="bi bi-person-lock"></i>&nbsp;
-              <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+              {/* <i class="bi bi-person-lock"></i>&nbsp; */}
+              <i className="hostLocker-icon" />
+              <span className="userName"> : {hostLockerName}</span>
             </div>
           </div>
+            </Grid>
+            <Grid item xs={12} md={1.5}>
+              {connection && (() => {
+                              const tracker = trackerData[connection.connection_id];
+                              const color = tracker ? getStatusColor(tracker) : "gray";
+                              const ratio = tracker ? calculateRatio(tracker) : "Loading...";
+              
+                              const trackerReverse = trackerDataReverse[connection.connection_id];
+                              const colorReverse = trackerReverse ? getStatusColorReverse(trackerReverse) : "gray";
+                              const ratioReverse = trackerReverse ? calculateRatioReverse(trackerReverse) : "Loading...";
+              
+                              return (
+                                <Grid container key={connection.connection_id}>
+              
+                                  <Grid item xs={12} style={{ paddingTop: "10px" }}>
+                                    <div className="d-flex align-items-center">
+                                      <h6 className="mt-2 me-2">
+                                        {capitalizeFirstLetter(connection.guest_user.username)}
+                                      </h6>
+                                      <i className="bi bi-arrow-right me-2" style={{ fontSize: "1.2rem" }}></i>
+                                      <button
+                                        // onClick={() => handleTracker(connection)}
+                                        style={{
+                                          backgroundColor: color,
+                                          border: "none",
+                                          padding: "5px 10px",
+                                          borderRadius: "5px",
+                                          color: "#fff",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        {ratio}
+                                      </button>
+                                    </div>
+              
+                                    <div className="d-flex align-items-center mt-1">
+                                      <button
+                                        className="me-2"
+                                        // onClick={() => handleTrackerHost(connection)}
+                                        style={{
+                                          backgroundColor: colorReverse,
+                                          border: "none",
+                                          padding: "5px 10px",
+                                          borderRadius: "5px",
+                                          color: "#fff",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        {ratioReverse}
+                                      </button>
+                                      <i className="bi bi-arrow-left me-2" style={{ fontSize: "1.2rem" }}></i>
+                                      <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
+                                    </div>
+                                  </Grid>
+                                </Grid>
+                              );
+                            })()}
+            </Grid>
+          </Grid>
         </div>
         <div className="view-container">
           <div className="b">
@@ -2149,7 +2359,7 @@ export const ViewHostTermsByType = () => {
                   }`}
                 onClick={() => setActiveTab("host")}
               >
-                Host Data
+                Shared by me
               </div>
             </div>
             <div className="tab-content">
@@ -2211,7 +2421,7 @@ export const ViewHostTermsByType = () => {
                                   : "None"}
                               </td> */}
 
-                              <td> <button onClick={() => openPopup(obligation)}>Open</button></td>
+                              <td> <button onClick={() => openPopup(obligation)}>View</button></td>
                               {showOpenPopup && selectedRowData && pdfData && (
                                 <div className="terms-popup">
                                   <div className="terms-popup-content">

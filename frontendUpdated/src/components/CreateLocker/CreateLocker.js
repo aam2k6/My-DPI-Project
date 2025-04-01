@@ -20,7 +20,7 @@ export const CreateLocker = () => {
 
     // Prepare data to send
     const data = new FormData()
-    data.append("name", lockerName)
+    data.append("name", lockerName.trim())
     data.append("description", description)
 
     // Send data to the backend

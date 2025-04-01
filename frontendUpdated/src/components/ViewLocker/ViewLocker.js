@@ -2466,7 +2466,7 @@ export const ViewLocker = () => {
 
               {activeTab === "outgoing" && (
                 <div className="tab-panel">
-                  <h4 id="headingconnection">Outgoing Connections</h4>
+                  <h4 id="headingconnection">Outgoing connections</h4>
                   <div className="conn">
                     {connections.outgoing_connections.length > 0 ? (
                       connections.outgoing_connections.map(

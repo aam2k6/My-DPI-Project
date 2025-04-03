@@ -140,13 +140,13 @@ export const ViewHostTermsByType = () => {
   // }, [selectedResourceId]);
 
   useEffect(() => {
-    if(connectionDetails){
+    if (connectionDetails) {
       fetchTrackerData(connectionDetails)
       fetchTrackerDataReverse(connectionDetails);
     }
   }, [connectionDetails]);
 
-const fetchTrackerData = async (connection) => {
+  const fetchTrackerData = async (connection) => {
     try {
       const token = Cookies.get("authToken");
       const params = new URLSearchParams({
@@ -316,8 +316,8 @@ const fetchTrackerData = async (connection) => {
   }
 
   const openInfoPopup1 = () => {
-    console.log("selectedRowDatas1", selectedRowData1.dataElement?.split("|")[1])
-    const extractedValue = selectedRowData1.dataElement.split("|")[1]; // Extract the required value
+    console.log("selectedRowDatas1", selectedRowData1.dataElement?.split(";")[0].split("|")[1])
+    const extractedValue = selectedRowData1.dataElement.split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
     console.log("obligationss", extractedValue);
     setShowOpenPopup(true);
@@ -331,24 +331,24 @@ const fetchTrackerData = async (connection) => {
   console.log("pdfDatas", selectedRowData)
 
   const openPopup1 = (rowData) => {
-      console.log("second one", rowData)
-      setSelectedRowData1(rowData)
+    console.log("second one", rowData)
+    setSelectedRowData1(rowData)
+  }
+  useEffect(() => {
+    if (selectedRowData1) {
+      openInfoPopup1();
     }
-    useEffect(() => {
-      if (selectedRowData1) {
-        openInfoPopup1();
-      }
-    }, [selectedRowData1]);
+  }, [selectedRowData1]);
 
   const openPopup2 = (rowData) => {
-      console.log("Third one", rowData)
-      setSelectedRowData2(rowData)
+    console.log("Third one", rowData)
+    setSelectedRowData2(rowData)
+  }
+  useEffect(() => {
+    if (selectedRowData2) {
+      openInfoPopup2();
     }
-    useEffect(() => {
-      if (selectedRowData2) {
-        openInfoPopup2();
-      }
-    }, [selectedRowData2]);
+  }, [selectedRowData2]);
 
   const closeOpenPopup = () => {
     setShowOpenPopup(false);
@@ -827,9 +827,16 @@ const fetchTrackerData = async (connection) => {
   //     .map(([key]) => key);
   // };
 
- 
+
 
   const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
+
+  const getTrueKeysView = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+  const postConditionsKeysView = getTrueKeysView(pdfData?.post_conditions || {});
 
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
@@ -929,10 +936,10 @@ const fetchTrackerData = async (connection) => {
                 {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
               </a>
             )}
-<button onClick={() => handleButtonClick(obligation)}>
-                {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
-                Select Resource
-              </button>
+            <button onClick={() => handleButtonClick(obligation)}>
+              {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
+              Select Resource
+            </button>
 
             {/* {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
               <button onClick={() => handleButtonClick(obligation)}>
@@ -1183,63 +1190,63 @@ const fetchTrackerData = async (connection) => {
   const handlePageSubmit2 = async () => {
     const token = Cookies.get("authToken");
     const resource = selection2[currentLabelName];
-    if(resource){
-    const data = {
-      connection_name: connectionName,
-      host_locker_name: hostLockerName,
-      host_user_username: hostUserUsername,
-      xnode_id: resource.id,
-      share_Type: typeofShare,
-    };
-    console.log("payload for post", data)
-    try {
-      const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+    if (resource) {
+      const data = {
+        connection_name: connectionName,
+        host_locker_name: hostLockerName,
+        host_user_username: hostUserUsername,
+        xnode_id: resource.id,
+        share_Type: typeofShare,
+      };
+      console.log("payload for post", data)
+      try {
+        const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
+          /host/,
+          frontend_host
+        ), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        // alert(result.message);
-        console.log("New Xnode ID:", result.new_xnode_id);
-        const new_xnode_id = result.new_xnode_id
-        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
-        appendPagesToTerms2(termValue);
-
-
-        setShowPageInput2(false);
-        setShowResources2(false)
-        setErrorMessage(null);
-      } else {
-        const errorMsg = result.error
-        setError(`You are not allowed to ${typeofShare} the resource`)
-        setModalMessage({
-          message: errorMsg,
-          type: "error",
+          },
+          body: JSON.stringify(data)
         });
-        setPostModal(true);
-        // alert(result.error);
+
+        const result = await response.json();
+        if (response.ok) {
+          // alert(result.message);
+          console.log("New Xnode ID:", result.new_xnode_id);
+          const new_xnode_id = result.new_xnode_id
+          const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
+          appendPagesToTerms2(termValue);
+
+
+          setShowPageInput2(false);
+          setShowResources2(false)
+          setErrorMessage(null);
+        } else {
+          const errorMsg = result.error
+          setError(`You are not allowed to ${typeofShare} the resource`)
+          setModalMessage({
+            message: errorMsg,
+            type: "error",
+          });
+          setPostModal(true);
+          // alert(result.error);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong!");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong!");
+    } else {
+      setModalMessage({
+        message: "Please choose a resource.",
+        type: "error",
+      });
+      setPostModal(true);
     }
-  } else {
-    setModalMessage({
-      message: "Please choose a resource.",
-      type: "error",
-    });
-    setPostModal(true);
   }
-}
 
   const handleRevokeConsentConfirm = () => {
     setShowRevokeConsentModal(false); // Close the modal
@@ -1344,64 +1351,64 @@ const fetchTrackerData = async (connection) => {
     const token = Cookies.get("authToken");
     const resource = selection[currentLabelName];
     console.log("resourcess", resource)
-    if(resource){
-    const data = {
-      connection_name: connectionName,
-      host_locker_name: hostLockerName,
-      host_user_username: hostUserUsername,
-      xnode_id: resource.id,
-      share_Type: typeofShare,
-    };
-    console.log("payload for post", data)
-    try {
-      const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
+    if (resource) {
+      const data = {
+        connection_name: connectionName,
+        host_locker_name: hostLockerName,
+        host_user_username: hostUserUsername,
+        xnode_id: resource.id,
+        share_Type: typeofShare,
+      };
+      console.log("payload for post", data)
+      try {
+        const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
+          /host/,
+          frontend_host
+        ), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${token}`,
 
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        // alert(result.message);
-        console.log("New Xnode ID:", result.new_xnode_id);
-        const new_xnode_id = result.new_xnode_id
-        const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
-        appendPagesToTerms(termValue);
-
-
-        setShowPageInput(false);
-        setErrorMessage(null);
-        setShowResources(false)
-        setIsCompletePages(false)
-      } else {
-        const errorMsg = result.error
-        // setError(`You are not allowed to ${typeofShare} the resource`)
-        setModalMessage({
-          message: errorMsg,
-          type: "error",
+          },
+          body: JSON.stringify(data)
         });
-        setPostModal(true);
-        // alert(result.error);
+
+        const result = await response.json();
+        if (response.ok) {
+          // alert(result.message);
+          console.log("New Xnode ID:", result.new_xnode_id);
+          const new_xnode_id = result.new_xnode_id
+          const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
+          appendPagesToTerms(termValue);
+
+
+          setShowPageInput(false);
+          setErrorMessage(null);
+          setShowResources(false)
+          setIsCompletePages(false)
+        } else {
+          const errorMsg = result.error
+          // setError(`You are not allowed to ${typeofShare} the resource`)
+          setModalMessage({
+            message: errorMsg,
+            type: "error",
+          });
+          setPostModal(true);
+          // alert(result.error);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong!");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong!");
+    } else {
+      // setError(`You are not allowed to ${typeofShare} the resource`)
+      setModalMessage({
+        message: "Please choose a resource.",
+        type: "error",
+      });
+      setPostModal(true);
     }
-  } else{
-    // setError(`You are not allowed to ${typeofShare} the resource`)
-        setModalMessage({
-          message: "Please choose a resource.",
-          type: "error",
-        });
-        setPostModal(true);
-  }
   }
 
   // const fetchTotalPages = async (selectedResourceId, token) => {
@@ -2208,7 +2215,7 @@ const fetchTrackerData = async (connection) => {
 
       <div style={{ marginTop: "140px" }}>
         <div className="connection-details">
-        <b>Connection Name:</b> {connectionName}
+          <b>Connection Name:</b> {connectionName}
           <button
             className="info-button"
             onClick={() => navigateToConnectionTerms(connectionName)}
@@ -2224,13 +2231,13 @@ const fetchTrackerData = async (connection) => {
           </button>
           <button
             //   className="info-button"
-             data-tooltip-id="tooltip" data-tooltip-content="View connection terms & Manage consent"
+            data-tooltip-id="tooltip" data-tooltip-content="View connection terms & Manage consent"
             onClick={() => handleConsentAndInfo(connectionName)}
           >
             Manage Consent
           </button>
           <Tooltip id="tooltip" place="bottom" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "14px" }} />
-          
+
           <br></br>
           <>
             <div style={{ paddingBottom: "8px" }}>
@@ -2253,89 +2260,89 @@ const fetchTrackerData = async (connection) => {
           <br></br>
           <Grid container>
             <Grid item xs={12} md={10}>
-            <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
-              {/* <FaUserCircle className="userIcon" /> &nbsp; */}
-              <i className="guestuser-icon" /> &nbsp;
-              <span className="userName"> : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
-            </div>
-            <i class="fa-solid fa-right-long mt-1"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
-              {/* <FaRegUserCircle className="userIcon" />&nbsp; */}
-              <i className="hostuser-icon" /> &nbsp;
-              <span className="userName"> : {capitalizeFirstLetter(hostUserUsername)}</span>
-            </div>
-          </div>
-          <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => handleGuestClick(locker)} style={{ cursor: 'pointer' }}>
-              {/* <i class="bi bi-person-fill-lock"></i> &nbsp; */}
-              <i className="guestLocker-icon" />
-              <span className="userName"> : {guestLockerName} &nbsp;</span>
-            </div>
-            <i class="fa-solid fa-right-long mt-1"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername, hostLockerName)}>
-              {/* <i class="bi bi-person-lock"></i>&nbsp; */}
-              <i className="hostLocker-icon" />
-              <span className="userName"> : {hostLockerName}</span>
-            </div>
-          </div>
+              <div className="tooltip-container user-container">
+                <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
+                  {/* <FaUserCircle className="userIcon" /> &nbsp; */}
+                  <i className="guestuser-icon" /> &nbsp;
+                  <span className="userName"> : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
+                </div>
+                <i class="fa-solid fa-right-long mt-1"></i> &nbsp;
+                <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
+                  {/* <FaRegUserCircle className="userIcon" />&nbsp; */}
+                  <i className="hostuser-icon" /> &nbsp;
+                  <span className="userName"> : {capitalizeFirstLetter(hostUserUsername)}</span>
+                </div>
+              </div>
+              <div className="tooltip-container user-container">
+                <div className="tooltips user-container" onClick={() => handleGuestClick(locker)} style={{ cursor: 'pointer' }}>
+                  {/* <i class="bi bi-person-fill-lock"></i> &nbsp; */}
+                  <i className="guestLocker-icon" />
+                  <span className="userName"> : {guestLockerName} &nbsp;</span>
+                </div>
+                <i class="fa-solid fa-right-long mt-1"></i> &nbsp;
+                <div className="tooltips user-container" onClick={() => handleHostClick(hostUserUsername, hostLockerName)}>
+                  {/* <i class="bi bi-person-lock"></i>&nbsp; */}
+                  <i className="hostLocker-icon" />
+                  <span className="userName"> : {hostLockerName}</span>
+                </div>
+              </div>
             </Grid>
             <Grid item xs={12} md={1.5}>
               {connection && (() => {
-                              const tracker = trackerData[connection.connection_id];
-                              const color = tracker ? getStatusColor(tracker) : "gray";
-                              const ratio = tracker ? calculateRatio(tracker) : "Loading...";
-              
-                              const trackerReverse = trackerDataReverse[connection.connection_id];
-                              const colorReverse = trackerReverse ? getStatusColorReverse(trackerReverse) : "gray";
-                              const ratioReverse = trackerReverse ? calculateRatioReverse(trackerReverse) : "Loading...";
-              
-                              return (
-                                <Grid container key={connection.connection_id}>
-              
-                                  <Grid item xs={12} style={{ paddingTop: "10px" }}>
-                                    <div className="d-flex align-items-center">
-                                      <h6 className="mt-2 me-2">
-                                        {capitalizeFirstLetter(connection.guest_user.username)}
-                                      </h6>
-                                      <i className="bi bi-arrow-right me-2" style={{ fontSize: "1.2rem" }}></i>
-                                      <button
-                                        // onClick={() => handleTracker(connection)}
-                                        style={{
-                                          backgroundColor: color,
-                                          border: "none",
-                                          padding: "5px 10px",
-                                          borderRadius: "5px",
-                                          color: "#fff",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        {ratio}
-                                      </button>
-                                    </div>
-              
-                                    <div className="d-flex align-items-center mt-1">
-                                      <button
-                                        className="me-2"
-                                        // onClick={() => handleTrackerHost(connection)}
-                                        style={{
-                                          backgroundColor: colorReverse,
-                                          border: "none",
-                                          padding: "5px 10px",
-                                          borderRadius: "5px",
-                                          color: "#fff",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        {ratioReverse}
-                                      </button>
-                                      <i className="bi bi-arrow-left me-2" style={{ fontSize: "1.2rem" }}></i>
-                                      <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
-                                    </div>
-                                  </Grid>
-                                </Grid>
-                              );
-                            })()}
+                const tracker = trackerData[connection.connection_id];
+                const color = tracker ? getStatusColor(tracker) : "gray";
+                const ratio = tracker ? calculateRatio(tracker) : "Loading...";
+
+                const trackerReverse = trackerDataReverse[connection.connection_id];
+                const colorReverse = trackerReverse ? getStatusColorReverse(trackerReverse) : "gray";
+                const ratioReverse = trackerReverse ? calculateRatioReverse(trackerReverse) : "Loading...";
+
+                return (
+                  <Grid container key={connection.connection_id}>
+
+                    <Grid item xs={12} style={{ paddingTop: "10px" }}>
+                      <div className="d-flex align-items-center">
+                        <h6 className="mt-2 me-2">
+                          {capitalizeFirstLetter(connection.guest_user.username)}
+                        </h6>
+                        <i className="bi bi-arrow-right me-2" style={{ fontSize: "1.2rem" }}></i>
+                        <button
+                          // onClick={() => handleTracker(connection)}
+                          style={{
+                            backgroundColor: color,
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                            color: "#fff",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {ratio}
+                        </button>
+                      </div>
+
+                      <div className="d-flex align-items-center mt-1">
+                        <button
+                          className="me-2"
+                          // onClick={() => handleTrackerHost(connection)}
+                          style={{
+                            backgroundColor: colorReverse,
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                            color: "#fff",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {ratioReverse}
+                        </button>
+                        <i className="bi bi-arrow-left me-2" style={{ fontSize: "1.2rem" }}></i>
+                        <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
+                      </div>
+                    </Grid>
+                  </Grid>
+                );
+              })()}
             </Grid>
           </Grid>
         </div>
@@ -2422,102 +2429,6 @@ const fetchTrackerData = async (connection) => {
                               </td> */}
 
                               <td> <button onClick={() => openPopup(obligation)}>View</button></td>
-                              {showOpenPopup && selectedRowData && pdfData && (
-                                <div className="terms-popup">
-                                  <div className="terms-popup-content">
-                                    <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span>
-                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
-                                      Consent Artefact
-                                    </h3>
-                                    <p>
-                                      {termValues[selectedRowData.labelName]?.split(";")[0] ? (
-                                        <div>
-                                          File:{" "}
-                                          {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
-                                          {pdfData ? (
-                                            <div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                {new Date(pdfData.created_at).toLocaleString()}
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                {new Date(pdfData.validity_until).toLocaleString()}
-                                              </div>
-                                              {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                {selectedRowData.typeOfSharing}
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Post Conditions:</label>
-                                              </div>
-                                              {Object.keys(postConditionsKeys).length > 0 ? (
-                                                  <ul
-                                                    style={{
-                                                      display: "grid",
-                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
-                                                      gap: "20px",
-                                                      listStyleType: "none",
-                                                      padding: 0,
-                                                    }}
-                                                  >
-                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                        <input
-                                                          type="checkbox"
-                                                          id={key}
-                                                          name={key}
-                                                          checked={value} // Will be checked if true, unchecked if false
-                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
-                                                        />
-                                                        <label htmlFor={key}>{key}</label>
-                                                      </li>
-                                                    ))}
-                                                  </ul>
-                                                ) : (
-                                                  <p>No conditions found</p>
-                                                )}
-                                                <div className="modal-buttons mt-4">
-                                                  <button
-                                                  // onClick={() => handleCreateSubset(selectedResource)}
-                                                  >
-                                                    Submit
-                                                  </button>
-                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                                </div>
-                                            </div>  
-                                          ) : (
-                                            <p>Loading...</p>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        ""
-                                      )}
-                                    </p>
-
-                                    {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-                                  </div>
-                                </div>
-                              )}
                               <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
                               {/* <td>{obligation.labelDescription}</td> */}
@@ -2843,107 +2754,7 @@ const fetchTrackerData = async (connection) => {
                                   {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
                                   {/* Display "None" if empty */}
                                 </td>
-                                <td><button onClick={() => openPopup1(permission)}>Open</button></td>
-                                {showOpenPopup && selectedRowData1 && pdfData && (
-                                  <div className="edit-modal" >
-                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                      {/* <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span> */}
-                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                        Consent Artefact
-                                      </h3>
-                                      <>
-                                        {selectedRowData1.dataElement ? (
-                                          <div>
-                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                                            {selectedRowData1.dataElement.split("|")[0]}
-                                            {pdfData ? (
-                                              <div>
-
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                  {new Date(pdfData.created_at).toLocaleString()}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                  {new Date(pdfData.validity_until).toLocaleString()}
-                                                </div>
-                                                {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Type of Sharess: </label>
-                                                  {selectedRowData1.share}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                                {Object.keys(postConditionsKeys).length > 0 ? (
-                                                  <ul
-                                                    style={{
-                                                      display: "grid",
-                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
-                                                      gap: "20px",
-                                                      listStyleType: "none",
-                                                      padding: 0,
-                                                    }}
-                                                  >
-                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                        <input
-                                                          type="checkbox"
-                                                          id={key}
-                                                          name={key}
-                                                          checked={value} // Will be checked if true, unchecked if false
-                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
-                                                        />
-                                                        <label htmlFor={key}>{key}</label>
-                                                      </li>
-                                                    ))}
-                                                  </ul>
-                                                ) : (
-                                                  <p>No conditions found</p>
-                                                )}
-                                                <div className="modal-buttons mt-4">
-                                                  <button
-                                                  // onClick={() => handleCreateSubset(selectedResource)}
-                                                  >
-                                                    Submit
-                                                  </button>
-                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <p>Loading...</p>
-                                            )}
-                                          </div>
-                                        ) : (
-                                          "None"
-                                        )}
-                                      </>
-                                      {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-                                    </div>
-                                  </div>
-                                )}
+                                <td><button onClick={() => openPopup1(permission)}>View</button></td>
                                 <td>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
@@ -3005,7 +2816,7 @@ const fetchTrackerData = async (connection) => {
                                     Select Resources
                                   </button>
                                 </td>
-                                <td><button onClick={() => openPopup2(moreDataTerms[index])}>Open</button></td>
+                                <td><button onClick={() => openPopup2(moreDataTerms[index])}>View</button></td>
                                 {showOpenPopup && selectedRowData2 && pdfData && (
                                   <div className="edit-modal" >
                                     <div className="modal-content" style={{ border: "2px solid blue" }}>
@@ -3406,6 +3217,320 @@ const fetchTrackerData = async (connection) => {
                   onClose={handleCloseResourceModal}
                   type={modalMessage.type}
                 />
+              )}
+              {showOpenPopup && selectedRowData && pdfData && (
+                !selectedRowData.value.endsWith("T") ? (
+                  <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+                    <div className="modal-content" style={{ border: "2px solid blue" }}>
+                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                        Consent Artefact
+                      </h3>
+                      {termValues[selectedRowData.labelName]?.split(";")[0] ? (
+                        <div>
+                          <label className="form-label fw-bold mt-1">File:{" "}</label>
+                          {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
+                          {pdfData ? (
+                            <div>
+                              <div>
+                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                {new Date(pdfData.created_at).toLocaleString()}
+                              </div>
+                              <div>
+                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                {new Date(pdfData.validity_until).toLocaleString()}
+                              </div>
+                              <div>
+                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
+                              </div>
+                              <div>
+                                <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                {selectedRowData.typeOfSharing}
+                              </div>
+                              <div>
+                                <label className="form-label fw-bold mt-1">Post Conditions:</label>
+                              </div>
+                              {Object.keys(postConditionsKeys).length > 0 ? (
+                                <ul
+                                  style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(3, auto)",
+                                    gap: "20px",
+                                    listStyleType: "none",
+                                    padding: 0,
+                                  }}
+                                >
+                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                      <input
+                                        type="checkbox"
+                                        id={key}
+                                        name={key}
+                                        checked={value}
+                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)}
+                                      />
+                                      <label htmlFor={key}>{key}</label>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p>No conditions found</p>
+                              )}
+                              <div className="modal-buttons mt-4">
+                                <button>Submit</button>
+                                <button onClick={() => closeOpenPopup()}>Cancel</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p>Loading...</p>
+                          )}
+                        </div>
+                      ) : (
+                        "None"
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+                    <div className="modal-content">
+                      {/* Close Button */}
+                      <div className="close-detail">
+                        <button
+                          type="button"
+                          className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                          onClick={() => closeOpenPopup()}
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            backgroundColor: "#f8d7da", // Light red for a subtle look
+                            color: "#721c24", // Darker red for contrast
+                            boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                            cursor: "pointer",
+                            transition: "0.3s ease-in-out",
+                          }}
+                          aria-label="Close"
+                        >
+                          <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                        </button>
+                      </div>
+                      <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                      <div className="card p-3 shadow-lg border-0">
+                        {termValues[selectedRowData.labelName]?.split(";")[0] ? (
+                          <>
+                            <div className="d-flex justify-content-between border-bottom pb-2">
+                              <span className="fw-bold">File Name:</span>
+                              <span> {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}</span>
+                            </div>
+                            {pdfData ? (
+                              <>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Created on:</span>
+                                  <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Validity until:</span>
+                                  <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Current owner:</span>
+                                  <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Type of Share:</span>
+                                  <span>{selectedRowData.typeOfSharing}
+                                  </span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                                  <span className="fw-bold">Post Conditions:</span>
+                                  <span className=" text-end">
+                                    {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <p>Loading...</p>
+                            )}
+                          </>
+                        ) : (
+                          "None"
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
+              {showOpenPopup && selectedRowData1 && pdfData && (
+                !selectedRowData1.dataElement.endsWith("T") ? (
+                  <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+                    <div className="modal-content" style={{ border: "2px solid blue" }}>
+                      {/* <span className="close" onClick={closeOpenPopup}>
+                                      &times;
+                                    </span> */}
+                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                        Consent Artefact
+                      </h3>
+                      <>
+                        {selectedRowData1.dataElement ? (
+                          <div>
+                            <label className="form-label fw-bold mt-1">File:{" "}</label>
+                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                            {selectedRowData1.dataElement.split("|")[0]}
+                            {pdfData ? (
+                              <div>
+
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                                  {new Date(pdfData.created_at).toLocaleString()}
+
+                                </div>
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                                  {new Date(pdfData.validity_until).toLocaleString()}
+                                </div>
+                                {/* <li>
+                                                Primary owner: {" "}
+                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                                              </li> */}
+
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                                  {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
+
+                                </div>
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                  {selectedRowData1.share}
+
+                                </div>
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                                {Object.keys(postConditionsKeys).length > 0 ? (
+                                  <ul
+                                    style={{
+                                      display: "grid",
+                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
+                                      gap: "20px",
+                                      listStyleType: "none",
+                                      padding: 0,
+                                    }}
+                                  >
+                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
+                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                        <input
+                                          type="checkbox"
+                                          id={key}
+                                          name={key}
+                                          checked={value} // Will be checked if true, unchecked if false
+                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                        />
+                                        <label htmlFor={key}>{key}</label>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <p>No conditions found</p>
+                                )}
+                                <div className="modal-buttons mt-4">
+                                  <button
+                                  // onClick={() => handleCreateSubset(selectedResource)}
+                                  >
+                                    Submit
+                                  </button>
+                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p>Loading...</p>
+                            )}
+                          </div>
+                        ) : (
+                          "None"
+                        )}
+                      </>
+                      {/* <p>
+                                      Host Privileges:{" "}
+                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                                        selectedRowData.hostPermissions.map((permission, index) => (
+                                          <li key={index}>Can {permission}</li>
+                                        ))
+                                      ) : (
+                                        "None"
+                                      )}
+                                    </p> */}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+                    <div className="modal-content">
+                      {/* Close Button */}
+                      <div className="close-detail">
+                        <button
+                          type="button"
+                          className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                          onClick={() => closeOpenPopup()}
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            backgroundColor: "#f8d7da", // Light red for a subtle look
+                            color: "#721c24", // Darker red for contrast
+                            boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                            cursor: "pointer",
+                            transition: "0.3s ease-in-out",
+                          }}
+                          aria-label="Close"
+                        >
+                          <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                        </button>
+                      </div>
+                      <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                      <div className="card p-3 shadow-lg border-0">
+                        {selectedRowData1.dataElement ? (
+                          <>
+                            <div className="d-flex justify-content-between border-bottom pb-2">
+                              <span className="fw-bold">File Name:</span>
+                              <span> {selectedRowData1.dataElement?.split(";")[0]?.split("|")[0]}</span>
+                            </div>
+                            {pdfData ? (
+                              <>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Created on:</span>
+                                  <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Validity until:</span>
+                                  <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Current owner:</span>
+                                  <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Type of Share:</span>
+                                  <span>{selectedRowData1.share}
+                                  </span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                                  <span className="fw-bold">Post Conditions:</span>
+                                  <span className=" text-end">
+                                    {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <p>Loading...</p>
+                            )}
+                          </>
+                        ) : (
+                          "None"
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
             </div>
           </div>

@@ -2601,8 +2601,8 @@ export const ViewTermsByType = () => {
     setShowOpenPopup(true);
   }
   const openInfoPopup1 = () => {
-    console.log("selectedRowDatas1", selectedRowData1.dataElement?.split("|")[1])
-    const extractedValue = selectedRowData1.dataElement.split("|")[1]; // Extract the required value
+    console.log("selectedRowDatas1", selectedRowData1.dataElement?.split(";")[0].split("|")[1])
+    const extractedValue = selectedRowData1.dataElement?.split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
     console.log("obligationss", extractedValue);
     setShowOpenPopup(true);
@@ -3627,107 +3627,8 @@ export const ViewTermsByType = () => {
                                   {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
                                   {/* Display "None" if empty */}
                                 </td>
-                                <td><button onClick={() => openPopup1(permission)}>Open</button></td>
-                                {showOpenPopup && selectedRowData1 && pdfData && (
-                                  <div className="edit-modal" >
-                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                      {/* <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span> */}
-                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                        Consent Artefact
-                                      </h3>
-                                      <>
-                                        {selectedRowData1.dataElement ? (
-                                          <div>
-                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                                            {selectedRowData1.dataElement.split("|")[0]}
-                                            {pdfData ? (
-                                              <div>
-
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                  {new Date(pdfData.created_at).toLocaleString()}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                  {new Date(pdfData.validity_until).toLocaleString()}
-                                                </div>
-                                                {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                  {selectedRowData1.share}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                                {Object.keys(postConditionsKeys).length > 0 ? (
-                                                  <ul
-                                                    style={{
-                                                      display: "grid",
-                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
-                                                      gap: "20px",
-                                                      listStyleType: "none",
-                                                      padding: 0,
-                                                    }}
-                                                  >
-                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                        <input
-                                                          type="checkbox"
-                                                          id={key}
-                                                          name={key}
-                                                          checked={value} // Will be checked if true, unchecked if false
-                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
-                                                        />
-                                                        <label htmlFor={key}>{key}</label>
-                                                      </li>
-                                                    ))}
-                                                  </ul>
-                                                ) : (
-                                                  <p>No conditions found</p>
-                                                )}
-                                                <div className="modal-buttons mt-4">
-                                                  <button
-                                                  // onClick={() => handleCreateSubset(selectedResource)}
-                                                  >
-                                                    Submit
-                                                  </button>
-                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <p>Loading...</p>
-                                            )}
-                                          </div>
-                                        ) : (
-                                          "None"
-                                        )}
-                                      </>
-                                      {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-                                    </div>
-                                  </div>
-                                )}
+                                <td><button onClick={() => openPopup1(permission)}>View</button></td>
+                                
                                 <td>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
@@ -3796,7 +3697,7 @@ export const ViewTermsByType = () => {
                                     Select Resource
                                   </button>
                                 </td>
-                                <td><button onClick={() => openPopup2(moreDataTerms[index])}>Open</button></td>
+                                <td><button onClick={() => openPopup2(moreDataTerms[index])}>View</button></td>
                                 {showOpenPopup && selectedRowData2 && pdfData && (
                                   <div className="edit-modal" >
                                     <div className="modal-content" style={{ border: "2px solid blue" }}>
@@ -4092,13 +3993,298 @@ export const ViewTermsByType = () => {
             type={modalMessage.type}
           />
         )}
+
+        {showOpenPopup && selectedRowData && pdfData && (
+          !selectedRowData.value.endsWith("T") ? (
+            <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content" style={{ border: "2px solid blue" }}>
+                <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                  Consent Artefact
+                </h3>
+                {termValues[selectedRowData.labelName]?.split(";")[0] ? (
+                  <div>
+                    <label className="form-label fw-bold mt-1">File name:{" "}</label>
+                    {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
+                    {pdfData ? (
+                      <div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                          {new Date(pdfData.created_at).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                          {new Date(pdfData.validity_until).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                          {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Type of Share: </label>
+                          {selectedRowData.typeOfSharing}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Post Conditions:</label>
+                        </div>
+                        {Object.keys(postConditionsKeys).length > 0 ? (
+                          <ul
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(3, auto)",
+                              gap: "20px",
+                              listStyleType: "none",
+                              padding: 0,
+                            }}
+                          >
+                            {Object.entries(postConditionsKeys).map(([key, value]) => (
+                              <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                <input
+                                  type="checkbox"
+                                  id={key}
+                                  name={key}
+                                  checked={value}
+                                  onChange={(e) => console.log(`${key}: ${e.target.checked}`)}
+                                />
+                                <label htmlFor={key}>{key}</label>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No conditions found</p>
+                        )}
+                        <div className="modal-buttons mt-4">
+                          <button>Submit</button>
+                          <button onClick={() => closeOpenPopup()}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p>Loading...</p>
+                    )}
+                  </div>
+                ) : (
+                  "None"
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content">
+                {/* Close Button */}
+                <div className="close-detail">
+                  <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                    onClick={() => closeOpenPopup()}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8d7da", // Light red for a subtle look
+                      color: "#721c24", // Darker red for contrast
+                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      transition: "0.3s ease-in-out",
+                    }}
+                    aria-label="Close"
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                  </button>
+                </div>
+                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                <div className="card p-3 shadow-lg border-0">
+                  {termValues[selectedRowData.labelName]?.split(";")[0] ? (
+                    <>
+                      <div className="d-flex justify-content-between border-bottom pb-2">
+                        <span className="fw-bold">File Name:</span>
+                        <span> {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}</span>
+                      </div>
+                      {pdfData ? (
+                        <>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Created on:</span>
+                            <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Validity until:</span>
+                            <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Current owner:</span>
+                            <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Type of Share:</span>
+                            <span>{selectedRowData.typeOfSharing}
+                            </span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                            <span className="fw-bold">Post Conditions:</span>
+                            <span className=" text-end">
+                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p>Loading...</p>
+                      )}
+                    </>
+                  ) : (
+                    "None"
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        )}
+{showOpenPopup && selectedRowData1 && pdfData && (
+          !selectedRowData1.dataElement.endsWith("T") ? (
+            <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content" style={{ border: "2px solid blue" }}>
+                <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                  Consent Artefact
+                </h3>
+                {selectedRowData1.dataElement ? (
+                  <div>
+                    <label className="form-label fw-bold mt-1">File name:{" "}</label>
+                    {selectedRowData1.dataElement?.split(";")[0]?.split("|")[0]}
+                    {pdfData ? (
+                      <div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                          {new Date(pdfData.created_at).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                          {new Date(pdfData.validity_until).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                          {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Type of Share: </label>
+                          {selectedRowData1.share}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Post Conditions:</label>
+                        </div>
+                        {Object.keys(postConditionsKeys).length > 0 ? (
+                          <ul
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(3, auto)",
+                              gap: "20px",
+                              listStyleType: "none",
+                              padding: 0,
+                            }}
+                          >
+                            {Object.entries(postConditionsKeys).map(([key, value]) => (
+                              <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                <input
+                                  type="checkbox"
+                                  id={key}
+                                  name={key}
+                                  checked={value}
+                                  onChange={(e) => console.log(`${key}: ${e.target.checked}`)}
+                                />
+                                <label htmlFor={key}>{key}</label>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No conditions found</p>
+                        )}
+                        <div className="modal-buttons mt-4">
+                          <button>Submit</button>
+                          <button onClick={() => closeOpenPopup()}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p>Loading...</p>
+                    )}
+                  </div>
+                ) : (
+                  "None"
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content">
+                {/* Close Button */}
+                <div className="close-detail">
+                  <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                    onClick={() => closeOpenPopup()}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8d7da", // Light red for a subtle look
+                      color: "#721c24", // Darker red for contrast
+                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      transition: "0.3s ease-in-out",
+                    }}
+                    aria-label="Close"
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                  </button>
+                </div>
+                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                <div className="card p-3 shadow-lg border-0">
+                  {selectedRowData1.dataElement?.split(";")[0] ? (
+                    <>
+                      <div className="d-flex justify-content-between border-bottom pb-2">
+                        <span className="fw-bold">File Name:</span>
+                        <span> {selectedRowData1.dataElement?.split(";")[0]?.split("|")[0]}</span>
+                      </div>
+                      {pdfData ? (
+                        <>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Created on:</span>
+                            <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Validity until:</span>
+                            <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Current owner:</span>
+                            <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Type of Share:</span>
+                            <span>{selectedRowData1.share}
+                            </span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                            <span className="fw-bold">Post Conditions:</span>
+                            <span className=" text-end">
+                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p>Loading...</p>
+                      )}
+                    </>
+                  ) : (
+                    "None"
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        )}
       </div>
     </div>
 
   );
 
 };
-
-
 
 

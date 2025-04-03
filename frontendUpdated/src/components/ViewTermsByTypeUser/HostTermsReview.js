@@ -1287,78 +1287,7 @@ export const HostTermsReview = () => {
                   </a></td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
-                  <td><button onClick={() => openPopup1(permission)}>Open</button></td>
-                  {showOpenPopup && selectedRowData1 && pdfData && (
-                    <>
-                      <div className="edit-modal ">
-                        <div className="modal-content">
-                          {/* Close Button */}
-                          <div className="close-detail">
-                            <button
-                              type="button"
-                              className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
-                              onClick={() => closeOpenPopup()}
-                              style={{
-                                width: "32px",
-                                height: "32px",
-                                borderRadius: "50%",
-                                backgroundColor: "#f8d7da", // Light red for a subtle look
-                                color: "#721c24", // Darker red for contrast
-                                boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
-                                cursor: "pointer",
-                                transition: "0.3s ease-in-out",
-                              }}
-                              aria-label="Close"
-                            >
-                              <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
-                            </button>
-                          </div>
-                          <h5 className="fw-bold  mb-1">Consent Artefact</h5>
-
-                          <div className="card p-3 shadow-lg border-0">
-                            {selectedRowData1.dataElement?.split(";")[0] ? (
-                              <>
-                                <div className="d-flex justify-content-between border-bottom pb-2">
-                                  <span className="fw-bold">File Name:</span>
-                                  <span>{selectedRowData1.dataElement.split("|")[0]}</span>
-                                </div>
-                                {pdfData ? (
-                                  <>
-                                    <div className="d-flex justify-content-between border-bottom py-2">
-                                      <span className="fw-bold">Created on:</span>
-                                      <span>{new Date(pdfData.created_at).toLocaleString()}</span>
-                                    </div>
-                                    <div className="d-flex justify-content-between border-bottom py-2">
-                                      <span className="fw-bold">Validity until:</span>
-                                      <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
-                                    </div>
-                                    <div className="d-flex justify-content-between border-bottom py-2">
-                                      <span className="fw-bold">Current owner:</span>
-                                      <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
-                                    </div>
-                                    <div className="d-flex justify-content-between border-bottom py-2">
-                                      <span className="fw-bold">Type of Share:</span>
-                                      <span>{selectedRowData1.share}</span>
-                                    </div>
-                                    <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
-                                      <span className="fw-bold">Post Conditions:</span>
-                                      <span className=" text-end">
-                                        {postConditionsKeys.length > 0 ? postConditionsKeys.join(", ") : "No conditions found"}
-                                      </span>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <p>Loading...</p>
-                                )}
-                              </>
-                            ) : (
-                              "None"
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <td><button onClick={() => openPopup1(permission)}>View</button></td>
                   <td>
                     <select
                       value={statuses2[permission.labelName] || ""}
@@ -1531,8 +1460,8 @@ export const HostTermsReview = () => {
     setShowOpenPopup(true);
   };
   const openPopup1 = (rowData) => {
-    console.log("selectedRowDatas1", rowData?.dataElement?.split("|")[1])
-    const extractedValue = rowData?.dataElement?.split("|")[1]; // Extract the required value
+    console.log("selectedRowDatas1", rowData?.dataElement?.split(";")[0].split("|")[1])
+    const extractedValue = rowData?.dataElement?.split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
     setSelectedRowData1(rowData);
     setShowOpenPopup(true);
@@ -2228,8 +2157,8 @@ export const HostTermsReview = () => {
         )}
         {showOpenPopup && selectedRowData && pdfData && (
           <>
-            <div className="edit-modal " style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
-              >
+            <div className="edit-modal " style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+            >
               <div className="modal-content">
                 {/* Close Button */}
                 <div className="close-detail">
@@ -2279,6 +2208,79 @@ export const HostTermsReview = () => {
                             <span className="fw-bold">Type of Share:</span>
                             <span>{selectedRowData.typeOfSharing}
                             </span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                            <span className="fw-bold">Post Conditions:</span>
+                            <span className=" text-end">
+                              {postConditionsKeys.length > 0 ? postConditionsKeys.join(", ") : "No conditions found"}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p>Loading...</p>
+                      )}
+                    </>
+                  ) : (
+                    "None"
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+
+        {showOpenPopup && selectedRowData1 && pdfData && (
+          <>
+            <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content">
+                {/* Close Button */}
+                <div className="close-detail">
+                  <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                    onClick={() => closeOpenPopup()}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8d7da", // Light red for a subtle look
+                      color: "#721c24", // Darker red for contrast
+                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      transition: "0.3s ease-in-out",
+                    }}
+                    aria-label="Close"
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                  </button>
+                </div>
+                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                <div className="card p-3 shadow-lg border-0">
+                  {selectedRowData1.dataElement?.split(";")[0] ? (
+                    <>
+                      <div className="d-flex justify-content-between border-bottom pb-2">
+                        <span className="fw-bold">File Name:</span>
+                        <span>{selectedRowData1.dataElement.split("|")[0]}</span>
+                      </div>
+                      {pdfData ? (
+                        <>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Created on:</span>
+                            <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Validity until:</span>
+                            <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Current owner:</span>
+                            <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Type of Share:</span>
+                            <span>{selectedRowData1.share}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
                             <span className="fw-bold">Post Conditions:</span>

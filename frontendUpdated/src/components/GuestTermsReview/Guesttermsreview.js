@@ -378,144 +378,144 @@ export const Guesttermsreview = () => {
     }
   }, [connectionDetails]);
 
- useEffect(() => {
-    if(connectionDetails){
+  useEffect(() => {
+    if (connectionDetails) {
       fetchTrackerData(connectionDetails)
       fetchTrackerDataReverse(connectionDetails);
     }
   }, [connectionDetails]);
 
   const fetchTrackerData = async (connection) => {
-      try {
-        const token = Cookies.get("authToken");
-        const params = new URLSearchParams({
-          connection_name: connection.connection_name,
-          host_locker_name: connection.host_locker.name,
-          guest_locker_name: connection.guest_locker.name,
-          host_user_username: connection.host_user.username,
-          guest_user_username: connection.guest_user.username,
-        });
-        const response = await fetch(
-          `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch tracker data");
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-        const data = await response.json();
-        if (data.success) {
-          console.log("view locker", data);
-          setTrackerData((prevState) => ({
-            ...prevState,
-            [connection.connection_id]: {
-              count_T: data.count_T,
-              count_F: data.count_F,
-              count_R: data.count_R,
-              filled: data.filled,
-              empty: data.empty,
-            },
-          }));
-        } else {
-          setError(data.message || "Failed to fetch tracker data");
-        }
-      } catch (error) {
-        console.error("Error fetching tracker data:", error);
-        setError("An error occurred while fetching tracker data");
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
       }
-    };
-    const fetchTrackerDataReverse = async (connection) => {
-      try {
-        const token = Cookies.get("authToken");
-        const params = new URLSearchParams({
-          connection_name: connection.connection_name,
-          host_locker_name: connection.host_locker.name,
-          guest_locker_name: connection.guest_locker.name,
-          host_user_username: connection.host_user.username,
-          guest_user_username: connection.guest_user.username,
-        });
-        const response = await fetch(
-          `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch tracker data");
-        }
-        const data = await response.json();
-        if (data.success) {
-          console.log("view locker", data);
-          setTrackerDataReverse((prevState) => ({
-            ...prevState,
-            [connection.connection_id]: {
-              count_T: data.count_T,
-              count_F: data.count_F,
-              count_R: data.count_R,
-              filled: data.filled,
-              empty: data.empty,
-            },
-          }));
-        } else {
-          setError(data.message || "Failed to fetch tracker data");
-        }
-      } catch (error) {
-        console.error("Error fetching tracker data:", error);
-        setError("An error occurred while fetching tracker data");
-      }
-    };
-  
-    const getStatusColor = (tracker) => {
-      const totalObligations =
-        tracker.count_T + tracker.count_F + tracker.count_R;
-      if (tracker.count_T === totalObligations && tracker.count_R === 0) {
-        return "green";
-      } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
-        return "red";
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerData((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
       } else {
-        return "orange";
+        setError(data.message || "Failed to fetch tracker data");
       }
-    };
-  
-    console.log("trackerData", trackerData)
-    console.log("trackerDataReverse", trackerDataReverse)
-  
-    const getStatusColorReverse = (trackerReverse) => {
-      const totalObligations =
-        trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
-      if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
-        return "green";
-      } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
-        return "red";
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+  const fetchTrackerDataReverse = async (connection) => {
+    try {
+      const token = Cookies.get("authToken");
+      const params = new URLSearchParams({
+        connection_name: connection.connection_name,
+        host_locker_name: connection.host_locker.name,
+        guest_locker_name: connection.guest_locker.name,
+        host_user_username: connection.host_user.username,
+        guest_user_username: connection.guest_user.username,
+      });
+      const response = await fetch(
+        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch tracker data");
+      }
+      const data = await response.json();
+      if (data.success) {
+        console.log("view locker", data);
+        setTrackerDataReverse((prevState) => ({
+          ...prevState,
+          [connection.connection_id]: {
+            count_T: data.count_T,
+            count_F: data.count_F,
+            count_R: data.count_R,
+            filled: data.filled,
+            empty: data.empty,
+          },
+        }));
       } else {
-        return "orange";
+        setError(data.message || "Failed to fetch tracker data");
       }
-    };
-  
-    const calculateRatio = (tracker) => {
-      const totalObligations =
-        tracker.count_T + tracker.count_F + tracker.count_R;
-      return totalObligations > 0
-        ? `${tracker.filled}/${totalObligations}`
-        : "0/0";
-    };
-  
-    const calculateRatioReverse = (trackerReverse) => {
-      const totalObligations =
-        trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
-      return totalObligations > 0
-        ? `${trackerReverse.filled}/${totalObligations}`
-        : "0/0";
-    };
+    } catch (error) {
+      console.error("Error fetching tracker data:", error);
+      setError("An error occurred while fetching tracker data");
+    }
+  };
+
+  const getStatusColor = (tracker) => {
+    const totalObligations =
+      tracker.count_T + tracker.count_F + tracker.count_R;
+    if (tracker.count_T === totalObligations && tracker.count_R === 0) {
+      return "green";
+    } else if (tracker.filled === 0 || tracker.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  console.log("trackerData", trackerData)
+  console.log("trackerDataReverse", trackerDataReverse)
+
+  const getStatusColorReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    if (trackerReverse.count_T === totalObligations && trackerReverse.count_R === 0) {
+      return "green";
+    } else if (trackerReverse.filled === 0 || trackerReverse.count_R === totalObligations) {
+      return "red";
+    } else {
+      return "orange";
+    }
+  };
+
+  const calculateRatio = (tracker) => {
+    const totalObligations =
+      tracker.count_T + tracker.count_F + tracker.count_R;
+    return totalObligations > 0
+      ? `${tracker.filled}/${totalObligations}`
+      : "0/0";
+  };
+
+  const calculateRatioReverse = (trackerReverse) => {
+    const totalObligations =
+      trackerReverse.count_T + trackerReverse.count_F + trackerReverse.count_R;
+    return totalObligations > 0
+      ? `${trackerReverse.filled}/${totalObligations}`
+      : "0/0";
+  };
 
   // const handleStatusChange = (index, status, value, type, isFile) => {
   //     if (value !== "") {
@@ -1560,84 +1560,7 @@ export const Guesttermsreview = () => {
                   </a></td>{" "}
                   <td>{permission.purpose || "None"}</td>{" "}
                   <td>{permission.share || "None"}</td>{" "}
-                  <td><button onClick={() => openPopup1(permission)}>Open</button></td>
-                  {showOpenPopup && selectedRowData1 && pdfData && (
-                    <div className="terms-popup">
-                      <div className="terms-popup-content">
-                        <span className="close" onClick={closeOpenPopup}>
-                          &times;
-                        </span>
-                        <h3 style={{ display: "flex", justifyContent: "center" }}>
-                          Consent Artefact
-                        </h3>
-                        <p>
-                          {selectedRowData1.dataElement ? (
-                            <div>
-                              <label className="form-label fw-bold mt-1">File:{" "}</label>
-                              {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                              {selectedRowData1.dataElement.split("|")[0]}
-                              {pdfData ? (
-                                <div>
-
-                                  <div>
-                                    <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                    {new Date(pdfData.created_at).toLocaleString()}
-
-                                  </div>
-                                  <div>
-                                    <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                    {new Date(pdfData.validity_until).toLocaleString()}
-                                  </div>
-                                  {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-
-                                  <div>
-                                    <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                    {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-
-                                  </div>
-                                  <div>
-                                    <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                    {selectedRowData1.share}
-
-                                  </div>
-                                  <div>
-                                    <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                  {/* <div className="mt-2">Post Conditions:</div> */}
-                                  {postConditionsKeys.length > 0 ? (
-                                    <ul>
-                                      {postConditionsKeys.map((key) => (
-                                        <li key={key}>{key}</li>
-                                      ))}
-                                    </ul>
-                                  ) : (
-                                    <p>No conditions found</p>
-                                  )}
-
-                                </div>
-                              ) : (
-                                <p>Loading...</p>
-                              )}
-                            </div>
-                          ) : (
-                            "None"
-                          )}
-                        </p>
-                        {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-                      </div>
-                    </div>
-                  )}
+                  <td><button onClick={() => openPopup1(permission)}>View</button></td>
                   <td>
                     <select
                       value={statuses2[permission.labelName] || ""}
@@ -2202,73 +2125,6 @@ export const Guesttermsreview = () => {
                                   : "None"}
                               </td> */}
                               <td> <button onClick={() => openPopup(obligation)}>View</button></td>
-                              {showOpenPopup && selectedRowData && pdfData && (
-                                <div className="terms-popup">
-                                  <div className="terms-popup-content">
-                                    <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span>
-                                    <h3 style={{ display: "flex", justifyContent: "center" }}>
-                                      Consent Artefact
-                                    </h3>
-                                    <p>
-                                      {termsValue[selectedRowData.labelName]?.split(";")[0] ? (
-                                        <div>
-                                          File:{" "}
-                                          {termsValue[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
-                                          {pdfData ? (
-                                            <div>
-                                              <li>
-                                                Created on:{" "}
-                                                {new Date(pdfData.created_at).toLocaleString()}
-                                              </li>
-                                              <li>
-                                                Valid until:{" "}
-                                                {new Date(pdfData.validity_until).toLocaleString()}
-                                              </li>
-                                              <li>
-                                                Current owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-                                              </li>
-                                              <p className="mt-2">Type of Share: {selectedRowData.typeOfSharing}</p>
-
-                                              {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-                                              <div className="mt-2">Post Conditions:</div>
-                                              {postConditionsKeys.length > 0 ? (
-                                                <ul>
-                                                  {postConditionsKeys.map((key) => (
-                                                    <li key={key}>{key}</li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p>No conditions found</p>
-                                              )}
-
-                                            </div>
-                                          ) : (
-                                            <p>Loading...</p>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        ""
-                                      )}
-                                    </p>
-                                    {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-                                  </div>
-                                </div>
-                              )}
                               <td>
                                 <select
                                   value={statuses[obligation.labelName] || ""}
@@ -2414,6 +2270,154 @@ export const Guesttermsreview = () => {
             onClose={handleCloseResourceModal}
             type={modalMessage.type}
           />
+        )}
+
+        {showOpenPopup && selectedRowData && pdfData && (
+          <>
+            <div className="edit-modal " style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+            >
+              <div className="modal-content">
+                {/* Close Button */}
+                <div className="close-detail">
+                  <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                    onClick={() => closeOpenPopup()}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8d7da", // Light red for a subtle look
+                      color: "#721c24", // Darker red for contrast
+                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      transition: "0.3s ease-in-out",
+                    }}
+                    aria-label="Close"
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                  </button>
+                </div>
+                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                <div className="card p-3 shadow-lg border-0">
+                  {termsValue[selectedRowData.labelName]?.split(";")[0] ? (
+                    <>
+                      <div className="d-flex justify-content-between border-bottom pb-2">
+                        <span className="fw-bold">File Name:</span>
+                        <span> {termsValue[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}</span>
+                      </div>
+                      {pdfData ? (
+                        <>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Created on:</span>
+                            <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Validity until:</span>
+                            <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Current owner:</span>
+                            <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Type of Share:</span>
+                            <span>{selectedRowData.typeOfSharing}
+                            </span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                            <span className="fw-bold">Post Conditions:</span>
+                            <span className=" text-end">
+                              {postConditionsKeys.length > 0 ? postConditionsKeys.join(", ") : "No conditions found"}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p>Loading...</p>
+                      )}
+                    </>
+                  ) : (
+                    "None"
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {showOpenPopup && selectedRowData1 && pdfData && (
+          <>
+            <div className="edit-modal " style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+            >
+              <div className="modal-content">
+                {/* Close Button */}
+                <div className="close-detail">
+                  <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                    onClick={() => closeOpenPopup()}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8d7da", // Light red for a subtle look
+                      color: "#721c24", // Darker red for contrast
+                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      transition: "0.3s ease-in-out",
+                    }}
+                    aria-label="Close"
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                  </button>
+                </div>
+                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                <div className="card p-3 shadow-lg border-0">
+                  {selectedRowData1.dataElement ? (
+                    <>
+                      <div className="d-flex justify-content-between border-bottom pb-2">
+                        <span className="fw-bold">File Name:</span>
+                        <span> {selectedRowData1.dataElement?.split(";")[0]?.split("|")[0]}</span>
+                      </div>
+                      {pdfData ? (
+                        <>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Created on:</span>
+                            <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Validity until:</span>
+                            <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Current owner:</span>
+                            <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Type of Share:</span>
+                            <span>{selectedRowData1.share}
+                            </span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                            <span className="fw-bold">Post Conditions:</span>
+                            <span className=" text-end">
+                              {postConditionsKeys.length > 0 ? postConditionsKeys.join(", ") : "No conditions found"}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p>Loading...</p>
+                      )}
+                    </>
+                  ) : (
+                    "None"
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
       </div>

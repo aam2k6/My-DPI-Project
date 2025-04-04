@@ -2711,392 +2711,390 @@ export const ViewHostTermsByType = () => {
           }}>Cancel</button>
           </div>
         <div> */}
-                    {permissions?.canShareMoreData && (
-                      <div className="table-container">
+                    <div className="table-container">
 
-                        <h3>Share more data</h3>
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>Sno</th>
-                              <th>Name</th>
-                              <th>Purpose</th>
-                              <th>Type of Share</th>
-                              <th>Enter Data</th>
-                              <th>Consent Artefact</th>
-                              <th>Status</th>
-                            </tr>
-                          </thead>
-                          <tbody>
+<h3>Share more data</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Sno</th>
+      <th>Name</th>
+      <th>Purpose</th>
+      <th>Type of Share</th>
+      <th>Enter Data</th>
+      <th>Consent Artefact</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
 
-                            {permissionsData.map((permission) => (
-                              <tr key={permission.sno}>
-                                <td>{permission.sno}</td>
-                                <td>{permission.labelName}</td>
-                                <td>{permission.purpose || "None"}</td>
+    {permissionsData.map((permission) => (
+      <tr key={permission.sno}>
+        <td>{permission.sno}</td>
+        <td>{permission.labelName}</td>
+        <td>{permission.purpose || "None"}</td>
 
-                                <td>{permission.share}</td>
-                                {/* <td>
-                                  {permission.dataElement || "None"}
+        <td>{permission.share}</td>
+        {/* <td>
+          {permission.dataElement || "None"}
 
-                                </td> */}
-                                <td>
+        </td> */}
+        <td>
 
-                                  <a className="mb-1"
-                                    style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
-                                    onClick={() =>
-                                      fetchAndOpenResource(
-                                        permission.dataElement?.split(";")[0]?.split("|")[1]
-                                      )
-                                    }>
-                                    {permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}
-                                  </a>
-                                  {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
-                                  {/* Display "None" if empty */}
-                                </td>
-                                <td><button onClick={() => openPopup1(permission)}>View</button></td>
-                                <td>{statuses2[permission.labelName]}</td>
-                              </tr>
-                            ))}
-                            {moreDataTerms.map((term, index) => (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    value={term.labelName}
-                                    onChange={(e) =>
-                                      updateTerm(index, "labelName", e.target.value)
-                                    }
-                                    placeholder="Label Name"
-                                    required
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    value={term.purpose}
-                                    onChange={(e) =>
-                                      updateTerm(index, "purpose", e.target.value)
-                                    }
-                                    placeholder="Purpose"
-                                    required
-                                  />
-                                </td>
-                                <td>
-                                  <select
-                                    value={term.typeOfShare}
-                                    onChange={(e) =>
-                                      updateTerm(index, "typeOfShare", e.target.value)
-                                    }
-                                  >
-                                    <option value="share">Share</option>
-                                    <option value="transfer">Transfer</option>
-                                    <option value="confer">Confer</option>
-                                    <option value="collateral">Collateral</option>
-                                  </select>
-                                </td>
-                                <td>
-
-
-                                  {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] && (
-                                    <a className="mb-1"
-                                      style={{ display: "block", textDecoration: "underline", cursor: "pointer" }}
-                                      onClick={() =>
-                                        fetchAndOpenResource(
-                                          moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[1]
-                                        )
-                                      }
-                                    >
-                                      {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
-                                    </a>
-                                  )}
-                                  <button onClick={() => handleButtonClick2(term)}>
-
-                                    Select Resources
-                                  </button>
-                                </td>
-                                <td><button onClick={() => openPopup2(moreDataTerms[index])}>View</button></td>
-                                {showOpenPopup && selectedRowData2 && pdfData && (
-                                  <div className="edit-modal" >
-                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                      {/* <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span> */}
-                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                        Consent Artefact
-                                      </h3>
-                                      <>
-                                        {selectedRowData2.enter_value ? (
-                                          <div>
-                                            <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                            {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                                            {selectedRowData2.enter_value.split(";")[0].split("|")[0]}
-                                            {pdfData ? (
-                                              <div>
-
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                  {new Date(pdfData.created_at).toLocaleString()}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                  {new Date(pdfData.validity_until).toLocaleString()}
-                                                </div>
-                                                {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                  {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                  {selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
-
-                                                </div>
-                                                <div>
-                                                  <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                                {Object.keys(postConditionsKeys).length > 0 ? (
-                                                  <ul
-                                                    style={{
-                                                      display: "grid",
-                                                      gridTemplateColumns: "repeat(3, auto)", // Three columns
-                                                      gap: "20px",
-                                                      listStyleType: "none",
-                                                      padding: 0,
-                                                    }}
-                                                  >
-                                                    {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                      <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                        <input
-                                                          type="checkbox"
-                                                          id={key}
-                                                          name={key}
-                                                          checked={value} // Will be checked if true, unchecked if false
-                                                          onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
-                                                        />
-                                                        <label htmlFor={key}>{key}</label>
-                                                      </li>
-                                                    ))}
-                                                  </ul>
-                                                ) : (
-                                                  <p>No conditions found</p>
-                                                )}
-                                                <div className="modal-buttons mt-4">
-                                                  <button
-                                                  // onClick={() => handleCreateSubset(selectedResource)}
-                                                  >
-                                                    Submit
-                                                  </button>
-                                                  <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <p>Loading...</p>
-                                            )}
-                                          </div>
-                                        ) : (
-                                          "None"
-                                        )}
-                                      </>
-                                      {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-                                    </div>
-                                  </div>
-                                )}
-                                <td>Pending</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                        <div style={{ margin: "20px 0" }}>
-                          <div>
-                            <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
-                              Add New Term
-                            </button>
-                            <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-                              Remove Last Term
-                            </button>
-                            <button onClick={handleMoreSubmit}>Submit</button>
-                          </div>
-
-                          {allObligationsApproved() && (
-                            <div>
-                              <h3 style={{ textAlign: "left", marginTop: "20px" }}>
-                                Host Obligations
-                              </h3>
-                              <p>You will receive a receipt from the host</p>
-                            </div>
-                          )}
-
-                          {hostObligationMessage && (
-                            <h3 style={{ textAlign: "center", marginTop: "20px" }}>
-                              Host Obligation: {hostObligationMessage}
-                            </h3>
-                          )}
-
-                          {isModalOpen && (
-                            <Modal
-                              message={modalMessage.message}
-                              onClose={handleCloseModal}
-                              type={modalMessage.type}
-                            />
-                          )}
+          <a className="mb-1"
+            style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+            onClick={() =>
+              fetchAndOpenResource(
+                permission.dataElement?.split(";")[0]?.split("|")[1]
+              )
+            }>
+            {permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}
+          </a>
+          {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
+          {/* Display "None" if empty */}
+        </td>
+        <td><button onClick={() => openPopup1(permission)}>View</button></td>
+        <td>{statuses2[permission.labelName]}</td>
+      </tr>
+    ))}
+    {moreDataTerms.map((term, index) => (
+      <tr key={index}>
+        <td>{index + 1}</td>
+        <td>
+          <input
+            type="text"
+            value={term.labelName}
+            onChange={(e) =>
+              updateTerm(index, "labelName", e.target.value)
+            }
+            placeholder="Label Name"
+            required
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            value={term.purpose}
+            onChange={(e) =>
+              updateTerm(index, "purpose", e.target.value)
+            }
+            placeholder="Purpose"
+            required
+          />
+        </td>
+        <td>
+          <select
+            value={term.typeOfShare}
+            onChange={(e) =>
+              updateTerm(index, "typeOfShare", e.target.value)
+            }
+          >
+            <option value="share">Share</option>
+            <option value="transfer">Transfer</option>
+            <option value="confer">Confer</option>
+            <option value="collateral">Collateral</option>
+          </select>
+        </td>
+        <td>
 
 
+          {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] && (
+            <a className="mb-1"
+              style={{ display: "block", textDecoration: "underline", cursor: "pointer" }}
+              onClick={() =>
+                fetchAndOpenResource(
+                  moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[1]
+                )
+              }
+            >
+              {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
+            </a>
+          )}
+          <button onClick={() => handleButtonClick2(term)}>
 
-                          {/* {showPageInput && (
-          <div className="page-input-modal">
-          <div>
-            <h3>Enter Page Range for {currentLabelName}</h3>
-            {errorMessage && <p className="error">{errorMessage}</p>}
-        
-            <label>
-              From Page:
-              <input
-                type="number"
-                value={fromPage}
-                onChange={(e) => setFromPage(e.target.value)}
-                min="1"
-              />
-            </label>
-            <br></br>
-        
-            <label>
-              To Page:
-              <input
-                type="number"
-                value={toPage}
-                onChange={(e) => setToPage(e.target.value)}
-                min="1"
-              />
-            </label>
-        
-            
+            Select Resources
+          </button>
+        </td>
+        <td><button onClick={() => openPopup2(moreDataTerms[index])}>View</button></td>
+        {showOpenPopup && selectedRowData2 && pdfData && (
+          <div className="edit-modal" >
+            <div className="modal-content" style={{ border: "2px solid blue" }}>
+              {/* <span className="close" onClick={closeOpenPopup}>
+              &times;
+            </span> */}
+              <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                Consent Artefact
+              </h3>
+              <>
+                {selectedRowData2.enter_value ? (
+                  <div>
+                    <label className="form-label fw-bold mt-1">File:{" "}</label>
+                    {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
+                    {selectedRowData2.enter_value.split(";")[0].split("|")[0]}
+                    {pdfData ? (
+                      <div>
 
-          </div>v
-          <div className="button-group">
-            <button onClick={handlePageSubmit}>Submit</button>
-            <button onClick={() =>{
-            setShowPageInput(false);
-            setErrorMessage(null);
-            setFromPage('');
-            setToPage('');
-          }}>Cancel</button>
-          </div>
-        <div> */}
-                          {showPageInput && (
-                            <div className="page-input-modal">
-                              <div>
-                                <h5 style={{ fontWeight: "bold" }}>Enter Page Range for {currentLabelName}</h5>
-                                {errorMessage && <p className="error">{errorMessage}</p>}
-
-                                <label>
-                                  From Page:
-                                  <input
-                                    type="number"
-                                    value={fromPage}
-                                    onChange={(e) => setFromPage(e.target.value)}
-                                    min="1"
-                                    disabled={isCompletePages} // Disable if "Complete Pages" is selected
-                                  />
-                                </label>
-
-                                <label>
-                                  To Page:
-                                  <input
-                                    type="number"
-                                    value={toPage}
-                                    onChange={(e) => setToPage(e.target.value)}
-                                    min="1"
-                                    disabled={isCompletePages} // Disable if "Complete Pages" is selected
-                                  />
-                                </label>
-
-                                <p className="or-text">OR</p>
-
-                                <label>
-                                  Select All Pages &nbsp; &nbsp;
-                                </label>
-                                <input
-                                  className="checkboxEntire"
-                                  type="checkbox"
-                                  checked={isCompletePages}
-                                  onChange={handleCompletePagesChange}
-                                />
-
-
-                              </div>
-                              <div className="button-group">
-                                <button onClick={handlePageSubmit}>Submit</button>
-                                <button onClick={() => {
-                                  setShowPageInput(false);
-                                  setErrorMessage(null);
-                                  setFromPage('');
-                                  setToPage('');
-                                  setIsCompletePages(false)
-                                }}>Cancel</button>
-                              </div>
-                            </div>
-                          )}
-
-                          {showPageInput2 && (
-                            <div className="page-input-modal">
-                              <div>
-                                <h3>Enter Page Range for {currentLabelName}</h3>
-                                {errorMessage && <p className="error">{errorMessage}</p>}
-
-                                <label>
-                                  From Page:
-                                  <input
-                                    type="number"
-                                    value={fromPage}
-                                    onChange={(e) => setFromPage(e.target.value)}
-                                    min="1"
-                                  />
-                                </label>
-
-                                <label>
-                                  To Page:
-                                  <input
-                                    type="number"
-                                    value={toPage}
-                                    onChange={(e) => setToPage(e.target.value)}
-                                    min="1"
-                                  />
-                                </label>
-
-
-                              </div>
-                              <div className="button-group">
-                                <button onClick={handlePageSubmit2}>Submit</button>
-                                <button onClick={() => {
-                                  setShowPageInput2(false);
-                                  setErrorMessage(null);
-                                  setFromPage('');
-                                  setToPage('');
-                                }}>Cancel</button>
-                              </div>
-                            </div>
-                          )}
-
+                        <div>
+                          <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                          {new Date(pdfData.created_at).toLocaleString()}
 
                         </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                          {new Date(pdfData.validity_until).toLocaleString()}
+                        </div>
+                        {/* <li>
+                        Primary owner: {" "}
+                        {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+                      </li> */}
+
+                        <div>
+                          <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                          {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
+
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Type of Share: </label>
+                          {selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
+
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
+                        {Object.keys(postConditionsKeys).length > 0 ? (
+                          <ul
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(3, auto)", // Three columns
+                              gap: "20px",
+                              listStyleType: "none",
+                              padding: 0,
+                            }}
+                          >
+                            {Object.entries(postConditionsKeys).map(([key, value]) => (
+                              <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                <input
+                                  type="checkbox"
+                                  id={key}
+                                  name={key}
+                                  checked={value} // Will be checked if true, unchecked if false
+                                  onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
+                                />
+                                <label htmlFor={key}>{key}</label>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No conditions found</p>
+                        )}
+                        <div className="modal-buttons mt-4">
+                          <button
+                          // onClick={() => handleCreateSubset(selectedResource)}
+                          >
+                            Submit
+                          </button>
+                          <button onClick={() => closeOpenPopup()}>Cancel</button>
+                        </div>
                       </div>
+                    ) : (
+                      <p>Loading...</p>
                     )}
+                  </div>
+                ) : (
+                  "None"
+                )}
+              </>
+              {/* <p>
+              Host Privileges:{" "}
+              {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
+                selectedRowData.hostPermissions.map((permission, index) => (
+                  <li key={index}>Can {permission}</li>
+                ))
+              ) : (
+                "None"
+              )}
+            </p> */}
+            </div>
+          </div>
+        )}
+        <td>Pending</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+<div style={{ margin: "20px 0" }}>
+  <div>
+    <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
+      Add New Data
+    </button>
+    <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
+      Remove Last Data
+    </button>
+    <button onClick={handleMoreSubmit}>Submit</button>
+  </div>
+
+  {allObligationsApproved() && (
+    <div>
+      <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+        Host Obligations
+      </h3>
+      <p>You will receive a receipt from the host</p>
+    </div>
+  )}
+
+  {hostObligationMessage && (
+    <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+      Host Obligation: {hostObligationMessage}
+    </h3>
+  )}
+
+  {isModalOpen && (
+    <Modal
+      message={modalMessage.message}
+      onClose={handleCloseModal}
+      type={modalMessage.type}
+    />
+  )}
+
+
+
+  {/* {showPageInput && (
+<div className="page-input-modal">
+<div>
+<h3>Enter Page Range for {currentLabelName}</h3>
+{errorMessage && <p className="error">{errorMessage}</p>}
+
+<label>
+From Page:
+<input
+type="number"
+value={fromPage}
+onChange={(e) => setFromPage(e.target.value)}
+min="1"
+/>
+</label>
+<br></br>
+
+<label>
+To Page:
+<input
+type="number"
+value={toPage}
+onChange={(e) => setToPage(e.target.value)}
+min="1"
+/>
+</label>
+
+
+
+</div>v
+<div className="button-group">
+<button onClick={handlePageSubmit}>Submit</button>
+<button onClick={() =>{
+setShowPageInput(false);
+setErrorMessage(null);
+setFromPage('');
+setToPage('');
+}}>Cancel</button>
+</div>
+<div> */}
+  {showPageInput && (
+    <div className="page-input-modal">
+      <div>
+        <h5 style={{ fontWeight: "bold" }}>Enter Page Range for {currentLabelName}</h5>
+        {errorMessage && <p className="error">{errorMessage}</p>}
+
+        <label>
+          From Page:
+          <input
+            type="number"
+            value={fromPage}
+            onChange={(e) => setFromPage(e.target.value)}
+            min="1"
+            disabled={isCompletePages} // Disable if "Complete Pages" is selected
+          />
+        </label>
+
+        <label>
+          To Page:
+          <input
+            type="number"
+            value={toPage}
+            onChange={(e) => setToPage(e.target.value)}
+            min="1"
+            disabled={isCompletePages} // Disable if "Complete Pages" is selected
+          />
+        </label>
+
+        <p className="or-text">OR</p>
+
+        <label>
+          Select All Pages &nbsp; &nbsp;
+        </label>
+        <input
+          className="checkboxEntire"
+          type="checkbox"
+          checked={isCompletePages}
+          onChange={handleCompletePagesChange}
+        />
+
+
+      </div>
+      <div className="button-group">
+        <button onClick={handlePageSubmit}>Submit</button>
+        <button onClick={() => {
+          setShowPageInput(false);
+          setErrorMessage(null);
+          setFromPage('');
+          setToPage('');
+          setIsCompletePages(false)
+        }}>Cancel</button>
+      </div>
+    </div>
+  )}
+
+  {showPageInput2 && (
+    <div className="page-input-modal">
+      <div>
+        <h3>Enter Page Range for {currentLabelName}</h3>
+        {errorMessage && <p className="error">{errorMessage}</p>}
+
+        <label>
+          From Page:
+          <input
+            type="number"
+            value={fromPage}
+            onChange={(e) => setFromPage(e.target.value)}
+            min="1"
+          />
+        </label>
+
+        <label>
+          To Page:
+          <input
+            type="number"
+            value={toPage}
+            onChange={(e) => setToPage(e.target.value)}
+            min="1"
+          />
+        </label>
+
+
+      </div>
+      <div className="button-group">
+        <button onClick={handlePageSubmit2}>Submit</button>
+        <button onClick={() => {
+          setShowPageInput2(false);
+          setErrorMessage(null);
+          setFromPage('');
+          setToPage('');
+        }}>Cancel</button>
+      </div>
+    </div>
+  )}
+
+
+</div>
+</div>
                     {showPageInput && (
                       <div className="page-input-modal">
                         <div>

@@ -781,11 +781,11 @@ export const ConnectionTermsHost = () => {
                       </Grid>
                     </Box>
 
-                    <div className="mb-1 row">
+                    {/* <div className="mb-1 row">
                       <h4><b>Permissions</b></h4>
-                    </div>
+                    </div> */}
 
-                    <div className="mb-3 row">
+                    {/* <div className="mb-3 row">
                       <div className="col-md-5 col-xs-12">
                         <label className="agreeLabel">
                           Can the host share more data
@@ -799,7 +799,7 @@ export const ConnectionTermsHost = () => {
                           onChange={handleCheckboxChange}
                         />
                       </div>
-                    </div>
+                    </div> */}
                     {/* <div className="mb-3 row">
                     <div className="col-md-6 col-xs-12">
                       <label className="col-md-6 col-xs-12  agreeLabel">

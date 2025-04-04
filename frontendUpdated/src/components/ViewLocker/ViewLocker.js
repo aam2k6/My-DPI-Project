@@ -1015,20 +1015,20 @@ export const ViewLocker = () => {
   const handleDeleteClick = async (xnode) => {
     console.log("Xnode to be deleted:", xnode);  // Log the entire xnode object
 
-    if (!xnode.resource_name) {
+    if (!xnode.id) {
       console.error("Document name is missing in xnode!");
       return;  // Exit the function if resource_name is missing
     }
 
     if (window.confirm("Do you want to delete this resource?")) {
       const lockerName = locker.name;
-      const documentName = xnode.resource_name;
+      const xnodeId = xnode.id;
       const ownerName = curruser.username;
 
       const payload = {
         locker_name: lockerName,
         owner_name: ownerName,
-        document_name: documentName,
+        xnode_id: xnodeId,
       };
 
       console.log("Payload to be sent:", payload);

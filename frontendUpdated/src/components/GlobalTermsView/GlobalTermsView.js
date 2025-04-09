@@ -280,8 +280,8 @@ const GlobalTermsView = () => {
                     <div>
                       <div className="page13headterms">Guest Obligations</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderObligations("guest")}</div>
-                      <div className="page13headterms">Guest Permissions</div>
-                      <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("guest")}</div>
+                      {/* <div className="page13headterms">Guest Permissions</div>
+                      <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("guest")}</div> */}
                       <div className="page13headterms">Guest Forbidden Terms</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("guest")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
@@ -292,8 +292,8 @@ const GlobalTermsView = () => {
                     <div>
                       <div className="page13headterms">Host Obligations</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderObligations("host")}</div>
-                      <div className="page13headterms">Host Permissions</div>
-                      <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("host")}</div>
+                      {/* <div className="page13headterms">Host Permissions</div>
+                      <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("host")}</div> */}
                       <div className="page13headterms">Host Forbidden Terms</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("host")}</div>
                       <div className="page13headterms">Default Host Privileges</div>

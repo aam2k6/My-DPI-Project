@@ -1031,7 +1031,7 @@ export const Guesttermsreview = () => {
         },
       };
 
-      console.log("Request Body:", requestBody);
+      console.log("Request Bodyr:", resourcesToShare);
 
       const updateResponse = await fetch(
         `host/update_connection_terms_v2/`.replace(/host/, frontend_host),
@@ -1071,7 +1071,9 @@ export const Guesttermsreview = () => {
 
       // Share resources
       if (resourcesToShare.length > 0) {
-        await handleShareResource();
+        for (const resource of resourcesToShare) {
+          await handleShareResource(resource);
+        }
       }
 
       // Confer resources
@@ -1267,14 +1269,14 @@ export const Guesttermsreview = () => {
 
   const handleConferResource = async () => {
     try {
-      console.log(JSON.stringify({
-        connection_name: conndetails.connection_name,
-        host_locker_name: conndetails.host_locker.name,
-        guest_locker_name: conndetails.guest_locker.name,
-        host_user_username: conndetails.host_user.username,
-        guest_user_username: conndetails.guest_user.username,
-        validity_until: conndetails.validity_time,
-      }));
+      // console.log(JSON.stringify({
+      //   connection_name: conndetails.connection_name,
+      //   host_locker_name: conndetails.host_locker.name,
+      //   guest_locker_name: conndetails.guest_locker.name,
+      //   host_user_username: conndetails.host_user.username,
+      //   guest_user_username: conndetails.guest_user.username,
+      //   validity_until: conndetails.validity_time,
+      // }));
 
       const token = Cookies.get("authToken");
       const response = await fetch(
@@ -1315,14 +1317,14 @@ export const Guesttermsreview = () => {
 
   const handleCollateralResource = async () => {
     try {
-      console.log(JSON.stringify({
-        connection_name: conndetails.connection_name,
-        host_locker_name: conndetails.host_locker.name,
-        guest_locker_name: conndetails.guest_locker.name,
-        host_user_username: conndetails.host_user.username,
-        guest_user_username: conndetails.guest_user.username,
-        validity_until: conndetails.validity_time,
-      }));
+      // console.log(JSON.stringify({
+      //   connection_name: conndetails.connection_name,
+      //   host_locker_name: conndetails.host_locker.name,
+      //   guest_locker_name: conndetails.guest_locker.name,
+      //   host_user_username: conndetails.host_user.username,
+      //   guest_user_username: conndetails.guest_user.username,
+      //   validity_until: conndetails.validity_time,
+      // }));
 
       const token = Cookies.get("authToken");
       const response = await fetch(

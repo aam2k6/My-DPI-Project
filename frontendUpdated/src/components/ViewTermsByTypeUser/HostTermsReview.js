@@ -167,7 +167,7 @@ export const HostTermsReview = () => {
           setResources(data.terms.resources || []);
 
           // Fetch permissions data if canShareMoreData is true
-          if (data.terms.permissions.canShareMoreData) {
+          if (data.terms) {
             await fetchPermissionsData();
           }
         } else {

@@ -801,12 +801,15 @@ export const ViewHostTermsByType = () => {
       if (xnode) {
         setPdfData(xnode)
       } else {
-        setError('Unable to retrieve the file link.');
-        console.log(error);
+        setModalMessage({
+          message:` ${data.message}`,
+          type: 'info',
+        });
+        setResourceModal(true);
       }
     } catch (err) {
       setModalMessage({
-        message: 'Please select a resource.',
+        message:` ${err.message}`,
         type: 'info',
       });
       setResourceModal(true);

@@ -684,12 +684,15 @@ export const Guesttermsreview = () => {
       if (xnode) {
         setPdfData(xnode)
       } else {
-        // setError('Unable to retrieve the file link.');
-        console.log(error);
+        setModalMessage({
+          message:` ${data.message}`,
+          type: 'info',
+        });
+        setResourceModal(true);
       }
     } catch (err) {
       setModalMessage({
-        message: 'Resource not found.',
+        message:` ${err.message}`,
         type: 'info',
       });
       setResourceModal(true);
@@ -1071,9 +1074,7 @@ export const Guesttermsreview = () => {
 
       // Share resources
       if (resourcesToShare.length > 0) {
-        for (const resource of resourcesToShare) {
-          await handleShareResource(resource);
-        }
+        await handleShareResource();
       }
 
       // Confer resources

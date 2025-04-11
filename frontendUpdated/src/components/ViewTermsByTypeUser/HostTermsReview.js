@@ -588,12 +588,15 @@ export const HostTermsReview = () => {
       if (xnode) {
         setPdfData(xnode)
       } else {
-        setError('Unable to retrieve the file link.');
-        console.log(error);
+        setModalMessage({
+          message:` ${data.message}`,
+          type: 'info',
+        });
+        setResourceModal(true);
       }
     } catch (err) {
       setModalMessage({
-        message: 'Resource not found.',
+        message:` ${err.message}`,
         type: 'info',
       });
       setResourceModal(true);

@@ -958,6 +958,12 @@ export const CreateConnectionTerms = () => {
 
   }, []);
 
+  const getTrueKeysView = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+  const postConditionsKeysView = getTrueKeysView(res?.post_conditions || {});
 
   const handleCloseConnection = async (connection_id) => {
     const formData = new FormData();
@@ -1820,26 +1826,28 @@ export const CreateConnectionTerms = () => {
           {connectionDescription}<br />
 
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => handleGuestNameClick()}>
-              <FaUserCircle className="userIcon" /> &nbsp;
-              <span className="userName">{renderUserTooltip('guest')} : {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
+            <div className="tooltips user-container">
+              {/* <FaUserCircle className="userIcon" /> &nbsp; */}
+              <i className="guestuser-icon" /> &nbsp;
+              <span className="userName">: {capitalizeFirstLetter(guestUserUsername)} &nbsp;</span>
             </div>
-            <i className="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleHostNameClick()}>
-              <FaRegUserCircle className="userIcon" /> &nbsp;
-              <span className="userName">{renderUserTooltip('host')} : {capitalizeFirstLetter(hostUserUsername)}</span>
+            <i className="fa-solid fa-right-long mt-1"></i> &nbsp;
+            <div className="tooltips user-container">
+              {/* <FaRegUserCircle className="userIcon" /> &nbsp; */}
+              <i className="hostuser-icon" /> &nbsp;
+              <span className="userName">: {capitalizeFirstLetter(hostUserUsername)}</span>
             </div>
           </div>
 
           <div className="tooltip-container user-container">
-            <div className="tooltips user-container" onClick={() => handleGuestClick()} style={{ cursor: 'pointer' }}>
-              <i className="bi bi-person-fill-lock"></i> &nbsp;
-              <span className="userName">{renderUserTooltip('guest')} : {guestLockerName} &nbsp;</span>
+            <div className="tooltips user-container" style={{ cursor: 'pointer' }}>
+            <i className="guestLocker-icon" />
+              <span className="userName">: {guestLockerName} &nbsp;</span>
             </div>
-            <i className="fa-solid fa-right-long"></i> &nbsp;
-            <div className="tooltips user-container" onClick={() => handleHostClick()}>
-              <i className="bi bi-person-lock"></i> &nbsp;
-              <span className="userName">{renderUserTooltip('host')} : {hostLockerName}</span>
+            <i className="fa-solid fa-right-long mt-1"></i> &nbsp;
+            <div className="tooltips user-container">
+            <i className="hostLocker-icon" />
+              <span className="userName">: {hostLockerName}</span>
             </div>
           </div>
         </div>
@@ -1871,7 +1879,9 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms">Your Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px", marginLeft:"14px" }}>By default <span className=" text-end">
+                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                            </span> are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -1883,7 +1893,9 @@ export const CreateConnectionTerms = () => {
                       <div className="page13headterms" >Host Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px", marginLeft:"14px" }}>By default <span className=" text-end">
+                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                            </span> are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                 </div>

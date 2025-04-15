@@ -105,11 +105,11 @@ export const TargetUserView = () => {
 
       <div style={{ marginTop: "140px" }}>
         <div className="heroContainers">
-          <div className="page6-allLockers">
+          <div className="page6-allLockers" style={{border:"none"}}>
             {error && <div className="error">{error}</div>}
             {Array.isArray(allLockers) && allLockers.length > 0 ? (
               allLockers.map(lockers => (
-                <div key={lockers.locker_id} className="page6-locker">
+                <div key={lockers.locker_id} className="page6-locker" style={{borderRadius:"5px"}}>
                   <h4>{lockers.name}</h4>
 
                   {lockers.is_frozen === false && <Button id="docsBtn" className="subbutton" variant="contained" onClick={() => handleLockersClick(lockers)}>

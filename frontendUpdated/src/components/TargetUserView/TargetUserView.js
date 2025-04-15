@@ -112,10 +112,10 @@ export const TargetUserView = () => {
                 <div key={lockers.locker_id} className="page6-locker" style={{borderRadius:"5px"}}>
                   <h4>{lockers.name}</h4>
 
-                  {lockers.is_frozen === false && <Button id="docsBtn" className="subbutton" variant="contained" onClick={() => handleLockersClick(lockers)}>
+                  {lockers.is_frozen === false && <Button id="docsBtn" className="subbutton" style={{padding:"6px 8px"}} variant="contained" onClick={() => handleLockersClick(lockers)}>
                     Open
                   </Button>}
-                  {lockers.is_frozen === true && <Button id="docsBtn" variant="contained">Frozen</Button>}
+                  {lockers.is_frozen === true && <Button id="docsBtn" className="subbutton" style={{padding:"6px 8px"}} variant="contained">Frozen</Button>}
 
                   <p className="description2">{lockers.description}</p>
                 </div>

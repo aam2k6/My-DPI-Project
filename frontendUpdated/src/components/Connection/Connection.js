@@ -169,7 +169,7 @@ export const Connection = () => {
                       placeholder="Connection Type Name"
                       onChange={(e) => {
                         const value = e.target.value;
-                        const filteredValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); // Allow only letters, numbers, and spaces
+                        const filteredValue = value.replace(/[^a-zA-Z0-9 ]/g, ' '); // Allow only letters, numbers, and spaces
                         setConnectionName(filteredValue);
                       }} />
                   </Grid>

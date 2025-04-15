@@ -167,7 +167,11 @@ export const Connection = () => {
                     <TextField required fullWidth variant="outlined" type="text"
                       name="connectionName"
                       placeholder="Connection Type Name"
-                      onChange={(e) => setConnectionName(e.target.value)} />
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const filteredValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); // Allow only letters, numbers, and spaces
+                        setConnectionName(filteredValue);
+                      }} />
                   </Grid>
                 </Grid>
 

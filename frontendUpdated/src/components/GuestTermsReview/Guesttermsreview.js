@@ -584,9 +584,8 @@ export const Guesttermsreview = () => {
   };
 
   const openPopup1 = (rowData) => {
-    console.log("selectedRowDatas1", rowData?.dataElement?.split("|")[1])
     // const labelName = rowData?.labelName
-    const extractedValue = rowData?.dataElement?.split("|")[1]; // Extract the required value
+    const extractedValue = rowData?.dataElement?.split(";")[0].split("|")[1]; // Extract the required value
     handleClicks(extractedValue); // Pass the extracted value to handleClicks
     setSelectedRowData1(rowData);
     setShowOpenPopup(true);

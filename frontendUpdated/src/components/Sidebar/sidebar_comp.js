@@ -83,7 +83,7 @@ const { curruser, setUser } = useContext(usercontext);
             </button>
             <ul className={`submenu ${openSubmenus.directory ? "show" : ""}`}>
               <li onClick={() => handleNavigate("DPI Directory", "/dpi-directory")}>• DPI Directory</li>
-              <li onClick={() => handleNavigate("Global Connection Directory", "/connectionTermsGlobal")}>• Global Connection Directory</li>
+              <li onClick={() => handleNavigate("Global Connection Directory", "/create-global-connection-type")}>• Global Connection Directory</li>
             </ul>
           </li>
 

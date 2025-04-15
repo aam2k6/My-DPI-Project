@@ -1152,7 +1152,7 @@ export const TargetLockerView = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showInfo, setShowInfo] = useState(null);
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
-
+console.log("pdfUrl", pdfUrl)
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -1800,7 +1800,7 @@ export const TargetLockerView = () => {
                       Close
                     </button>
                     {pdfUrl ? (
-                      <Worker workerUrl="/pdf.worker.min.js">
+                      <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                         <Viewer fileUrl={pdfUrl} />
                       </Worker>
                     ) : (

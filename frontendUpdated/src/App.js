@@ -85,8 +85,8 @@ function App() {
               path="/home"
               element={
                 <ProtectedRoute>
-                  <HomePage />
-                  <Scanner />
+                  <Home />
+                  {/* <Scanner /> */}
                 </ProtectedRoute>
               }
             />

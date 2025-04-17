@@ -218,10 +218,10 @@ export const ViewLocker = () => {
 
       if (connectionsData.success) {
         const filteredIncoming = connectionsData.connections.incoming_connections.filter(
-          (connection) => connection.closed === false
+          (connection) => connection.connection_status !== "closed"
         );
         const filteredOutgoing = connectionsData.connections.outgoing_connections.filter(
-          (connection) => connection.closed === false
+          (connection) => connection.connection_status !== "closed"
         );
         setConnections({
           incoming_connections: filteredIncoming,
@@ -1636,12 +1636,17 @@ export const ViewLocker = () => {
                                           style={{ marginTop: "-4px", cursor:"pointer" }}
                                           onClick={() => handleViewDetails(xnode.id)}
                                         />
-                                        <i
+                                        {xnode.xnode_Type === "INODE" &&  xnode.connection === null &&(
+                                          <>
+                                            <i
                                           className="fa-regular fa-trash-can"
                                           data-tooltip-id="tooltip" data-tooltip-content="Delete"
                                           style={{ cursor: "pointer" }}
                                           onClick={() => handleDeleteClick(xnode)}
                                         />
+                                          </>
+                                        )}
+                                        
                                         <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
                                       </span>
@@ -1911,12 +1916,12 @@ export const ViewLocker = () => {
                                                                 onClick={() => handleViewDetails(xnode.id)}
                                                               />
 
-                                                              <i
+                                                              {/* <i
                                                                 className="fa-regular fa-trash-can"
                                                                 data-tooltip-id="tooltip" data-tooltip-content="Delete"
                                                                 style={{ cursor: "pointer" }}
                                                                 onClick={() => handleDeleteClick(xnode)}
-                                                              />
+                                                              /> */}
                                                               <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
                                                             </span>
@@ -2142,12 +2147,12 @@ export const ViewLocker = () => {
                                                     onClick={() => handleViewDetails(xnode.id)}
                                                   />
 
-                                                  <i
+                                                  {/* <i
                                                     className="fa-regular fa-trash-can"
                                                     data-tooltip-id="tooltip" data-tooltip-content="Delete"
                                                     style={{ cursor: "pointer" }}
                                                     onClick={() => handleDeleteClick(xnode)}
-                                                  />
+                                                  /> */}
                                                   <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
                                                 </span>

@@ -604,6 +604,8 @@ export const ViewTermsByType = () => {
   const [typeofShare, setTypeofShare] = useState(null)
   const [trackerData, setTrackerData] = useState({});
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
+  const [initialPostConditions, setInitialPostConditions] = useState({});
+  const [editablePostConditions, setEditablePostConditions] = useState({});
 
   const {
     connectionName,
@@ -621,7 +623,35 @@ export const ViewTermsByType = () => {
     guestLocker
   } = location.state || {};
 
-  console.log("datass", connectionDetails)
+  console.log("datass", connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername)
+  useEffect(() => {
+    const token = Cookies.get("authToken");
+    const connectionLifeCycle = () => {
+      fetch("host/update_connection_status_tolive/".replace(/host/, frontend_host), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${token}`
+        },
+        body: JSON.stringify({
+          connection_name: connectionName,
+          host_locker_name: hostLockerName,
+          guest_locker_name: guestLockerName,
+          host_user_username: hostUserUsername,
+          guest_user_username: guestUserUsername
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Response:", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+    };
+    connectionLifeCycle();
+  })
   useEffect(() => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
@@ -677,6 +707,15 @@ export const ViewTermsByType = () => {
   //     // fetchTrackerDataReverse(connection);
   //   });
   // };
+
+  useEffect(() => {
+    if (pdfData?.post_conditions) {
+      const { creator_conditions, ...filteredConditions } = pdfData.post_conditions;
+      setInitialPostConditions(filteredConditions);
+      setEditablePostConditions(filteredConditions);
+    }
+  }, [pdfData]);
+
 
   const fetchTrackerData = async (connection) => {
     try {
@@ -1316,8 +1355,11 @@ export const ViewTermsByType = () => {
       if (xnode) {
         setPdfData(xnode)
       } else {
-        // setError('Unable to retrieve the file link.');
-        console.log(error);
+        setModalMessage({
+          message: ` ${data.message}`,
+          type: 'info',
+        });
+        setResourceModal(true);
       }
     } catch (err) {
       setModalMessage({
@@ -1329,6 +1371,49 @@ export const ViewTermsByType = () => {
       // setLoading(false);
     }
   };
+  console.log("pdfDatasse", pdfData)
+  const handleSubmitPostConditions = async () => {
+    if (!pdfData?.id) {
+      console.log("Missing xnode_id");
+      return;
+    }
+
+    const payload = {
+      xnode_id: pdfData.id,
+      post_conditions: editablePostConditions,
+    };
+
+    console.log("Sending PATCH request with:", payload);
+
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/consent-artefact-view-edit/`.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: "PATCH",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Updated successfully!");
+        closeOpenPopup();
+      } else {
+        alert(data.message || "Failed");
+      }
+    } catch (err) {
+      console.error("API error:", err);
+    }
+  };
+
+
+
   // const getTrueKeys = (obj) => {
   //   return Object.entries(obj)
   //     .filter(([key, value]) => value === true )
@@ -3045,149 +3130,7 @@ export const ViewTermsByType = () => {
                                   : "None"}
                               </td> */}
                               <td><button onClick={() => openPopup(obligation)}>View</button></td>
-                              {showOpenPopup && selectedRowData && pdfData && (
-                                !selectedRowData.value.endsWith("T") ? (
-                                  <div className="edit-modal">
-                                    <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                      <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                        Consent Artefact
-                                      </h3>
-                                      {termValues[selectedRowData.labelName]?.split(";")[0] ? (
-                                        <div>
-                                          <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                          {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
-                                          {pdfData ? (
-                                            <div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                {new Date(pdfData.created_at).toLocaleString()}
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                {new Date(pdfData.validity_until).toLocaleString()}
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                {selectedRowData.typeOfSharing}
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Post Conditions:</label>
-                                              </div>
-                                              {Object.keys(postConditionsKeys).length > 0 ? (
-                                                <ul
-                                                  style={{
-                                                    display: "grid",
-                                                    gridTemplateColumns: "repeat(3, auto)",
-                                                    gap: "20px",
-                                                    listStyleType: "none",
-                                                    padding: 0,
-                                                  }}
-                                                >
-                                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                      <input
-                                                        type="checkbox"
-                                                        id={key}
-                                                        name={key}
-                                                        checked={value}
-                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)}
-                                                      />
-                                                      <label htmlFor={key}>{key}</label>
-                                                    </li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p>No conditions found</p>
-                                              )}
-                                              <div className="modal-buttons mt-4">
-                                                <button>Submit</button>
-                                                <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <p>Loading...</p>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="edit-modal ">
-                                    <div className="modal-content">
-                                      {/* Close Button */}
-                                      <div className="close-detail">
-                                        <button
-                                          type="button"
-                                          className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
-                                          onClick={() => closeOpenPopup()}
-                                          style={{
-                                            width: "32px",
-                                            height: "32px",
-                                            borderRadius: "50%",
-                                            backgroundColor: "#f8d7da", // Light red for a subtle look
-                                            color: "#721c24", // Darker red for contrast
-                                            boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
-                                            cursor: "pointer",
-                                            transition: "0.3s ease-in-out",
-                                          }}
-                                          aria-label="Close"
-                                        >
-                                          <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
-                                        </button>
-                                      </div>
-                                      <h5 className="fw-bold  mb-1">Consent Artefact</h5>
 
-                                      <div className="card p-3 shadow-lg border-0">
-                                        {termValues[selectedRowData.labelName]?.split(";")[0] ? (
-                                          <>
-                                            <div className="d-flex justify-content-between border-bottom pb-2">
-                                              <span className="fw-bold">File Name:</span>
-                                              <span> {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}</span>
-                                            </div>
-                                            {pdfData ? (
-                                              <>
-                                                <div className="d-flex justify-content-between border-bottom py-2">
-                                                  <span className="fw-bold">Created on:</span>
-                                                  <span>{new Date(pdfData.created_at).toLocaleString()}</span>
-                                                </div>
-                                                <div className="d-flex justify-content-between border-bottom py-2">
-                                                  <span className="fw-bold">Validity until:</span>
-                                                  <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
-                                                </div>
-                                                <div className="d-flex justify-content-between border-bottom py-2">
-                                                  <span className="fw-bold">Current owner:</span>
-                                                  <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
-                                                </div>
-                                                <div className="d-flex justify-content-between border-bottom py-2">
-                                                  <span className="fw-bold">Type of Share:</span>
-                                                  <span>{selectedRowData.typeOfSharing}
-                                                  </span>
-                                                </div>
-                                                <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
-                                                  <span className="fw-bold">Post Conditions:</span>
-                                                  <span className=" text-end">
-                                                    {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
-                                                  </span>
-                                                </div>
-                                              </>
-                                            ) : (
-                                              <p>Loading...</p>
-                                            )}
-                                          </>
-                                        ) : (
-                                          "None"
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                )
-                              )}
 
                               <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
@@ -3587,90 +3530,91 @@ export const ViewTermsByType = () => {
                         </div>
                       </div>
                     )}
-
-                    <div className="table-container">
-                      {/* Add this div for styling */}
-                      <h3>Share more data</h3>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Sno</th>
-                            <th>Name</th>
-                            <th>Purpose</th>
-                            <th>Type of Share</th>
-                            <th>Enter Data</th>
-                            <th>Consent Artefact</th>
-                            <th>Status</th> {/* Changed "Remove" to "Status" */}
-                          </tr>
-                        </thead>
-                        <tbody>
-
-                          {permissionsData.map((permission) => (
-                            <tr key={permission.sno}>
-                              <td>{permission.sno}</td>
-                              <td>{permission.labelName}</td>
-                              <td>{permission.purpose || "None"}</td>
-                              {/* Display "None" if empty */}
-                              <td>{permission.share}</td>
-                              <td>
-
-                                <a className="mb-1"
-                                  style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
-                                  onClick={() =>
-                                    fetchAndOpenResource(
-                                      permission.dataElement?.split(";")[0]?.split("|")[1]
-                                    )
-                                  }>
-                                  {permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}
-                                </a>
-                                {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
-                                {/* Display "None" if empty */}
-                              </td>
-                              <td><button onClick={() => openPopup1(permission)}>View</button></td>
-
-                              <td>{statuses2[permission.labelName]}</td>
+                    {connectionDetails?.connection_status === "live" && (
+                      <div className="table-container">
+                        {/* Add this div for styling */}
+                        <h3>Share more data</h3>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Sno</th>
+                              <th>Name</th>
+                              <th>Purpose</th>
+                              <th>Type of Share</th>
+                              <th>Enter Data</th>
+                              <th>Consent Artefact</th>
+                              <th>Status</th> {/* Changed "Remove" to "Status" */}
                             </tr>
-                          ))}
-                          {moreDataTerms.map((term, index) => (
-                            <tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>
-                                <input
-                                  type="text"
-                                  value={term.labelName}
-                                  onChange={(e) =>
-                                    updateTerm(index, "labelName", e.target.value)
-                                  }
-                                  placeholder="Label Name"
-                                  required
-                                />
-                              </td>
-                              <td>
-                                <input
-                                  type="text"
-                                  value={term.purpose}
-                                  onChange={(e) =>
-                                    updateTerm(index, "purpose", e.target.value)
-                                  }
-                                  placeholder="Purpose"
-                                  required
-                                />
-                              </td>
-                              <td>
-                                <select
-                                  value={term.typeOfSharing}
-                                  onChange={(e) =>
-                                    updateTerm(index, "typeOfSharing", e.target.value)
-                                  }
-                                >
-                                  <option value="share">Share</option>
-                                  <option value="transfer">Transfer</option>
-                                  <option value="confer">Confer</option>
-                                  <option value="collateral">Collateral</option>
-                                </select>
-                              </td>
-                              <td>
-                                {/* <input
+                          </thead>
+                          <tbody>
+
+                            {permissionsData.map((permission) => (
+                              <tr key={permission.sno}>
+                                <td>{permission.sno}</td>
+                                <td>{permission.labelName}</td>
+                                <td>{permission.purpose || "None"}</td>
+                                {/* Display "None" if empty */}
+                                <td>{permission.share}</td>
+                                <td>
+
+                                  <a className="mb-1"
+                                    style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                    onClick={() =>
+                                      fetchAndOpenResource(
+                                        permission.dataElement?.split(";")[0]?.split("|")[1]
+                                      )
+                                    }>
+                                    {permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}
+                                  </a>
+                                  {/* <button>{permission.dataElement?.split(";")[0]?.split("|")[0] || "None"}</button> */}
+                                  {/* Display "None" if empty */}
+                                </td>
+                                <td><button onClick={() => openPopup1(permission)}>View</button></td>
+
+                                <td>{statuses2[permission.labelName]}</td>
+                              </tr>
+                            ))}
+                            {moreDataTerms.map((term, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    value={term.labelName}
+                                    onChange={(e) =>
+                                      updateTerm(index, "labelName", e.target.value)
+                                    }
+                                    placeholder="Label Name"
+                                    required
+                                  />
+                                </td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    value={term.purpose}
+                                    onChange={(e) =>
+                                      updateTerm(index, "purpose", e.target.value)
+                                    }
+                                    placeholder="Purpose"
+                                    required
+                                  />
+                                </td>
+                                <td>
+                                  <select
+                                    value={term.typeOfSharing}
+                                    onChange={(e) =>
+                                      updateTerm(index, "typeOfSharing", e.target.value)
+                                    }
+                                    disabled={moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
+                                  >
+                                    <option value="share">Share</option>
+                                    <option value="transfer">Transfer</option>
+                                    <option value="confer">Confer</option>
+                                    <option value="collateral">Collateral</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  {/* <input
                   {/* <input
                     type="file"
                     onChange={(e) =>
@@ -3679,165 +3623,66 @@ export const ViewTermsByType = () => {
                   
                     required
                   /> */}
-                                {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] && (
-                                  <a className="mb-1"
-                                    style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
-                                    onClick={() =>
-                                      fetchAndOpenResource(
-                                        moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[1]
-                                      )
-                                    }
-                                  >
-                                    {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
-                                  </a>
-                                )}
-                                <button onClick={() => handleButtonClick2(term)}>
+                                  {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0] && (
+                                    <a className="mb-1"
+                                      style={{ display: "block", color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                                      onClick={() =>
+                                        fetchAndOpenResource(
+                                          moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[1]
+                                        )
+                                      }
+                                    >
+                                      {moreDataTerms[index].enter_value?.split(";")[0]?.split("|")[0]}
+                                    </a>
+                                  )}
+                                  <button onClick={() => handleButtonClick2(term)}>
 
-                                  Select Resource
-                                </button>
-                              </td>
-                              <td><button onClick={() => openPopup2(moreDataTerms[index])}>View</button></td>
-                              {showOpenPopup && selectedRowData2 && pdfData && (
-                                <div className="edit-modal" >
-                                  <div className="modal-content" style={{ border: "2px solid blue" }}>
-                                    {/* <span className="close" onClick={closeOpenPopup}>
-                                      &times;
-                                    </span> */}
-                                    <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
-                                      Consent Artefact
-                                    </h3>
-                                    <>
-                                      {selectedRowData2.enter_value ? (
-                                        <div>
-                                          <label className="form-label fw-bold mt-1">File:{" "}</label>
-                                          {/* {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]} */}
-                                          {selectedRowData2.enter_value.split(";")[0].split("|")[0]}
-                                          {pdfData ? (
-                                            <div>
+                                    Select Resource
+                                  </button>
+                                </td>
+                                <td><button onClick={() => openPopup2(moreDataTerms[index])} >View</button></td>
 
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                                                {new Date(pdfData.created_at).toLocaleString()}
-
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                                                {new Date(pdfData.validity_until).toLocaleString()}
-                                              </div>
-                                              {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
-
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Type of Share: </label>
-                                                {selectedRowData2.typeOfSharing}
-
-                                              </div>
-                                              <div>
-                                                <label className="form-label fw-bold mt-1">Post Conditions:</label></div>
-                                              {Object.keys(postConditionsKeys).length > 0 ? (
-                                                <ul
-                                                  style={{
-                                                    display: "grid",
-                                                    gridTemplateColumns: "repeat(3, auto)", // Three columns
-                                                    gap: "20px",
-                                                    listStyleType: "none",
-                                                    padding: 0,
-                                                  }}
-                                                >
-                                                  {Object.entries(postConditionsKeys).map(([key, value]) => (
-                                                    <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                      <input
-                                                        type="checkbox"
-                                                        id={key}
-                                                        name={key}
-                                                        checked={value} // Will be checked if true, unchecked if false
-                                                        onChange={(e) => console.log(`${key}: ${e.target.checked}`)} // Replace with update logic
-                                                      />
-                                                      <label htmlFor={key}>{key}</label>
-                                                    </li>
-                                                  ))}
-                                                </ul>
-                                              ) : (
-                                                <p>No conditions found</p>
-                                              )}
-                                              <div className="modal-buttons mt-4">
-                                                <button
-                                                // onClick={() => handleCreateSubset(selectedResource)}
-                                                >
-                                                  Submit
-                                                </button>
-                                                <button onClick={() => closeOpenPopup()}>Cancel</button>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <p>Loading...</p>
-                                          )}
-                                        </div>
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </>
-                                    {/* <p>
-                                      Host Privileges:{" "}
-                                      {selectedRowData.hostPermissions && selectedRowData.hostPermissions.length > 0 ? (
-                                        selectedRowData.hostPermissions.map((permission, index) => (
-                                          <li key={index}>Can {permission}</li>
-                                        ))
-                                      ) : (
-                                        "None"
-                                      )}
-                                    </p> */}
-                                  </div>
-                                </div>
-                              )}
-                              <td>Pending</td> {/* Example status value */}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      <div style={{ margin: "20px 0" }}>
-                        <div>
-                          <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
-                            Add New Data
-                          </button>
-                          <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
-                            Remove Last Data {/* This removes the last term added */}
-                          </button>
-                          <button onClick={handleMoreSubmit}>Submit</button>
-                        </div>
-
-                        {allObligationsApproved() && (
+                                <td>Pending</td> {/* Example status value */}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        <div style={{ margin: "20px 0" }}>
                           <div>
-                            <h3 style={{ textAlign: "left", marginTop: "20px" }}>
-                              Host Obligations
-                            </h3>
-                            <p>You will receive a receipt from the host</p>
+                            <button style={{ marginRight: "10px" }} onClick={addMoreDataTerm}>
+                              Add New Data
+                            </button>
+                            <button style={{ marginRight: "10px" }} onClick={() => removeMoreDataTerm(moreDataTerms.length - 1)}>
+                              Remove Last Data {/* This removes the last term added */}
+                            </button>
+                            <button onClick={handleMoreSubmit}>Submit</button>
                           </div>
-                        )}
 
-                        {hostObligationMessage && (
-                          <h3 style={{ textAlign: "center", marginTop: "20px" }}>
-                            Host Obligation: {hostObligationMessage}
-                          </h3>
-                        )}
+                          {allObligationsApproved() && (
+                            <div>
+                              <h3 style={{ textAlign: "left", marginTop: "20px" }}>
+                                Host Obligations
+                              </h3>
+                              <p>You will receive a receipt from the host</p>
+                            </div>
+                          )}
 
-                        {isModalOpen && (
-                          <Modal
-                            message={modalMessage.message}
-                            onClose={handleCloseModal}
-                            type={modalMessage.type}
-                          />
-                        )}
+                          {hostObligationMessage && (
+                            <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+                              Host Obligation: {hostObligationMessage}
+                            </h3>
+                          )}
+
+                          {isModalOpen && (
+                            <Modal
+                              message={modalMessage.message}
+                              onClose={handleCloseModal}
+                              type={modalMessage.type}
+                            />
+                          )}
 
 
-                        {/* {showRevokeConsentModal && (
+                          {/* {showRevokeConsentModal && (
                             <Modal
                               message="Are you sure you want to revoke consent?"
                               type="confirmation"
@@ -3846,18 +3691,18 @@ export const ViewTermsByType = () => {
                             />
                           )} */}
 
-                        {isModalOpenClose && (
-                          <Modal
-                            message={modalMessage.message}
-                            onClose={handleCloseModalClose}
-                            type={modalMessage.type}
-                            closeConnection={closeState}
-                            onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
-                            viewTerms={() => navigateToConnectionTerms(connectionName)}
-                          />
-                        )}
+                          {isModalOpenClose && (
+                            <Modal
+                              message={modalMessage.message}
+                              onClose={handleCloseModalClose}
+                              type={modalMessage.type}
+                              closeConnection={closeState}
+                              onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
+                              viewTerms={() => navigateToConnectionTerms(connectionName)}
+                            />
+                          )}
 
-                        {/* {showPageInput && (
+                          {/* {showPageInput && (
       <div className="page-input-modal">
       <div>
         <h3>Enter Page Range for {currentLabelName}</h3>
@@ -3936,9 +3781,9 @@ export const ViewTermsByType = () => {
       </div>
       </div>
     )} */}
+                        </div>
                       </div>
-                    </div>
-
+                    )}
                   </div>
                 </div>
               )}
@@ -4034,24 +3879,35 @@ export const ViewTermsByType = () => {
                               padding: 0,
                             }}
                           >
-                            {Object.entries(postConditionsKeys).map(([key, value]) => (
-                              <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                <input
-                                  type="checkbox"
-                                  id={key}
-                                  name={key}
-                                  checked={value}
-                                  onChange={(e) => console.log(`${key}: ${e.target.checked}`)}
-                                />
-                                <label htmlFor={key}>{key}</label>
-                              </li>
-                            ))}
+                            <ul style={{ display: "grid", gridTemplateColumns: "repeat(3, auto)", gap: "20px", listStyleType: "none", padding: 0 }}>
+                              {Object.entries(editablePostConditions).map(([key, value]) => (
+                                <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                  <input
+                                    type="checkbox"
+                                    id={key}
+                                    name={key}
+                                    checked={value}
+                                    disabled={initialPostConditions[key] === false} // disable only if initially true
+                                    onChange={(e) =>
+                                      setEditablePostConditions((prev) => ({
+                                        ...prev,
+                                        [key]: e.target.checked,
+                                      }))
+                                    }
+                                  />
+                                  <label htmlFor={key}>{key}</label>
+                                </li>
+                              ))}
+
+                            </ul>
+
                           </ul>
                         ) : (
                           <p>No conditions found</p>
                         )}
                         <div className="modal-buttons mt-4">
-                          <button>Submit</button>
+                          <button type="button" onClick={handleSubmitPostConditions}>Submit</button>
+
                           <button onClick={() => closeOpenPopup()}>Cancel</button>
                         </div>
                       </div>
@@ -4177,24 +4033,34 @@ export const ViewTermsByType = () => {
                               padding: 0,
                             }}
                           >
-                            {Object.entries(postConditionsKeys).map(([key, value]) => (
-                              <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                <input
-                                  type="checkbox"
-                                  id={key}
-                                  name={key}
-                                  checked={value}
-                                  onChange={(e) => console.log(`${key}: ${e.target.checked}`)}
-                                />
-                                <label htmlFor={key}>{key}</label>
-                              </li>
-                            ))}
+                            <ul style={{ display: "grid", gridTemplateColumns: "repeat(3, auto)", gap: "20px", listStyleType: "none", padding: 0 }}>
+                              {Object.entries(editablePostConditions).map(([key, value]) => (
+                                <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                  <input
+                                    type="checkbox"
+                                    id={key}
+                                    name={key}
+                                    checked={value}
+                                    disabled={initialPostConditions[key] === false} // disable only if initially true
+                                    onChange={(e) =>
+                                      setEditablePostConditions((prev) => ({
+                                        ...prev,
+                                        [key]: e.target.checked,
+                                      }))
+                                    }
+                                  />
+                                  <label htmlFor={key}>{key}</label>
+                                </li>
+                              ))}
+
+                            </ul>
+
                           </ul>
                         ) : (
                           <p>No conditions found</p>
                         )}
                         <div className="modal-buttons mt-4">
-                          <button>Submit</button>
+                          <button type="button" onClick={handleSubmitPostConditions}>Submit</button>
                           <button onClick={() => closeOpenPopup()}>Cancel</button>
                         </div>
                       </div>
@@ -4278,11 +4144,164 @@ export const ViewTermsByType = () => {
             </div>
           )
         )}
+        {showOpenPopup && selectedRowData2 && pdfData && (
+          !selectedRowData2.enter_value.endsWith("T") ? (
+            <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content" style={{ border: "2px solid blue" }}>
+                <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                  Consent Artefact
+                </h3>
+                {selectedRowData2.enter_value?.split(";")[0] ? (
+                  <div>
+                    <label className="form-label fw-bold mt-1">File name:{" "}</label>
+                    {selectedRowData2.enter_value?.split(";")[0]?.split("|")[0]}
+                    {pdfData ? (
+                      <div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Created on:{" "}</label>
+                          {new Date(pdfData.created_at).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                          {new Date(pdfData.validity_until).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
+                          {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Type of Share: </label>
+                          {selectedRowData2.typeOfSharing}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Post Conditions:</label>
+                        </div>
+                        {Object.keys(postConditionsKeys).length > 0 ? (
+                          <ul
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(3, auto)",
+                              gap: "20px",
+                              listStyleType: "none",
+                              padding: 0,
+                            }}
+                          >
+                            <ul style={{ display: "grid", gridTemplateColumns: "repeat(3, auto)", gap: "20px", listStyleType: "none", padding: 0 }}>
+                              {Object.entries(editablePostConditions).map(([key, value]) => (
+                                <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                  <input
+                                    type="checkbox"
+                                    id={key}
+                                    name={key}
+                                    checked={value}
+                                    disabled={initialPostConditions[key] === false} // disable only if initially true
+                                    onChange={(e) =>
+                                      setEditablePostConditions((prev) => ({
+                                        ...prev,
+                                        [key]: e.target.checked,
+                                      }))
+                                    }
+                                  />
+                                  <label htmlFor={key}>{key}</label>
+                                </li>
+                              ))}
+
+                            </ul>
+
+                          </ul>
+                        ) : (
+                          <p>No conditions found</p>
+                        )}
+                        <div className="modal-buttons mt-4">
+                          <button type="button" onClick={handleSubmitPostConditions}>Submit</button>
+
+                          <button onClick={() => closeOpenPopup()}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p>Loading...</p>
+                    )}
+                  </div>
+                ) : (
+                  "None"
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content">
+                {/* Close Button */}
+                <div className="close-detail">
+                  <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                    onClick={() => closeOpenPopup()}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8d7da", // Light red for a subtle look
+                      color: "#721c24", // Darker red for contrast
+                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      transition: "0.3s ease-in-out",
+                    }}
+                    aria-label="Close"
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                  </button>
+                </div>
+                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+
+                <div className="card p-3 shadow-lg border-0">
+                  {selectedRowData2.enter_value?.split(";")[0] ? (
+                    <>
+                      <div className="d-flex justify-content-between border-bottom pb-2">
+                        <span className="fw-bold">File Name:</span>
+                        <span> {selectedRowData2.enter_value?.split(";")[0]?.split("|")[0]}</span>
+                      </div>
+                      {pdfData ? (
+                        <>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Created on:</span>
+                            <span>{new Date(pdfData.created_at).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Validity until:</span>
+                            <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Current owner:</span>
+                            <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Type of Share:</span>
+                            <span>{selectedRowData2.typeOfSharing}
+                            </span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                            <span className="fw-bold">Post Conditions:</span>
+                            <span className=" text-end">
+                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p>Loading...</p>
+                      )}
+                    </>
+                  ) : (
+                    "None"
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+
+        )}
       </div>
     </div>
 
   );
 
 };
-
-

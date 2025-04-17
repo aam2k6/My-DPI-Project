@@ -72,6 +72,35 @@ export const HostTermsReview = () => {
   //     </div>
   // );
   console.log("start", connection, connectionType);
+  useEffect(() => {
+    const token = Cookies.get("authToken");
+    const connectionLifeCycle = () => {
+      fetch("host/update_connection_status_tolive/".replace(/host/, frontend_host), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${token}`
+        },
+        body: JSON.stringify({
+          connection_name: connection?.connection_name,
+          host_locker_name: connection?.host_locker?.name,
+          guest_locker_name: connection?.guest_locker?.name,
+          host_user_username: connection?.host_user?.username,
+          guest_user_username: connection?.guest_user?.username
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Response:", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+    };
+    connectionLifeCycle();
+  })
+
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
     const message = await handleRevoke(connection_id);
@@ -589,14 +618,14 @@ export const HostTermsReview = () => {
         setPdfData(xnode)
       } else {
         setModalMessage({
-          message:` ${data.message}`,
+          message: ` ${data.message}`,
           type: 'info',
         });
         setResourceModal(true);
       }
     } catch (err) {
       setModalMessage({
-        message:` ${err.message}`,
+        message: ` ${err.message}`,
         type: 'info',
       });
       setResourceModal(true);
@@ -1478,8 +1507,20 @@ export const HostTermsReview = () => {
   const content = (
     <>
       <div className="navbarBrands">
-        {connection.connection_name}
+        <h5><b>{connection?.connection_name}</b> &nbsp;
+          <span
+            className={`badge ${connectionDetails?.connection_status === "established"
+                ? "text-bg-primary"
+                : connectionDetails?.connection_status === "live"
+                  ? "text-bg-success"
+                  : "text-bg-secondary"
+              }`}
+          >
+            {capitalizeFirstLetter(connectionDetails?.connection_status) || "Loading..."}
+          </span>
+        </h5>
       </div>
+      {/* <span className="badge text-bg-primary">{connectionDetails?.connection_status}</span> */}
       {/* <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
       <div>
         {curruser ? curruser.description : "None"}

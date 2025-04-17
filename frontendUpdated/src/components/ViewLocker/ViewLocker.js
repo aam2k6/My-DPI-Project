@@ -31,6 +31,8 @@ export const ViewLocker = () => {
     incoming_connections: [],
     outgoing_connections: [],
   });
+  const [allOutgoingConnections, setAllOutgoingConnections] = useState([]);
+  const [closedConnections, setClosedConnections] = useState([]);
   const [pdfUrl, setPdfUrl] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [otherConnections, setOtherConnections] = useState([]);
@@ -72,20 +74,55 @@ export const ViewLocker = () => {
 
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
-
+console.log("allOutgoingConnectionsr", allOutgoingConnections)
+console.log("closedConnectionsr", closedConnections)
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
   console.log("connections", connections.outgoing_connections)
   useEffect(() => {
+    const token = Cookies.get("authToken");
+    const checkAndUpdateConnectionStatus = async () => {
+      try {
+        const user_id = curruser?.user_id;
+        const lockerData = location.state || locker?.locker_id;
+        const locker_id = lockerData?.locker?.locker_id;
+        if (!user_id || !locker_id) {
+          console.warn("Missing user_id or locker_id");
+          return;
+        }
+  
+        const response = await fetch("host/update_connection_status/".replace(/host/, frontend_host), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`
+          },
+          body: JSON.stringify({ user_id, locker_id }),
+        });
+  
+        const result = await response.json();
+        if (result.success) {
+          console.log("Expired connections updated:", result.updated_connection_ids);
+        } else {
+          console.warn("API Error:", result.error);
+        }
+      } catch (error) {
+        console.error("Error calling update_connection_status_if_expired:", error);
+      }
+    };
+  
     if (locker) {
-      fetchConnectionsAndOtherConnections(); // Combine the two fetches
-      fetchResources(); // Keep resources fetch separate
-      // fetchVnodeResources();
-      // fetchSnodeResources();
-      fetchXnodes();
+      // First update expired connection statuses
+      checkAndUpdateConnectionStatus().then(() => {
+        // Then fetch other dependent data
+        fetchConnectionsAndOtherConnections(); 
+        fetchResources(); 
+        fetchXnodes();
+      });
     }
+  
     if (location.state) {
       setLockers(location.state);
       setLocker_conn(location.state.locker);
@@ -94,6 +131,7 @@ export const ViewLocker = () => {
       localStorage.setItem("locker", JSON.stringify(locker));
     }
   }, [locker]);
+  
   useEffect(() => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
@@ -217,6 +255,7 @@ export const ViewLocker = () => {
       const connectionsData = await connectionsResponse.json();
 
       if (connectionsData.success) {
+        setAllOutgoingConnections(connectionsData.connections.outgoing_connections)
         const filteredIncoming = connectionsData.connections.incoming_connections.filter(
           (connection) => connection.connection_status !== "closed"
         );
@@ -264,7 +303,14 @@ export const ViewLocker = () => {
   useEffect(() => {
     fetchConnectionsAndOtherConnections();
   }, [locker.name]);
-
+  useEffect(() => {
+    if (allOutgoingConnections && allOutgoingConnections.length > 0) {
+      const filtered = allOutgoingConnections.filter(
+        (connection) => connection.connection_status === "closed"
+      );
+      setClosedConnections(filtered);
+    }
+  }, [allOutgoingConnections]);
   const fetchResources = async () => {
     try {
       const token = Cookies.get("authToken");
@@ -2010,8 +2056,8 @@ export const ViewLocker = () => {
                       </li>
                       {isOutgoingVisible && (
                         <ul style={{ paddingLeft: "20px", listStyleType: "none" }}>
-                          {connections.outgoing_connections.length > 0 ? (
-                            connections.outgoing_connections.map((connection) => (
+                          {allOutgoingConnections.length > 0 ? (
+                            allOutgoingConnections.map((connection) => (
                               <li key={connection.connection_id} style={{ marginTop: "5px", fontSize: "18px" }}>
                                 <div
                                   style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
@@ -2255,6 +2301,14 @@ export const ViewLocker = () => {
                 onClick={() => setActiveTab("outgoing")}
               >
                 Outgoing Connections
+              </div>
+              <div
+                className={`tab-header ${activeTab === "archived" ? "active" : ""
+                  }`}
+                  data-tooltip-id="tooltip" data-tooltip-content=""
+                onClick={() => setActiveTab("archived")}
+              >
+                Archived
               </div>
               {/* <Tooltip id="tooltip" style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: "13px" }} /> */}
             </div>
@@ -2599,6 +2653,149 @@ export const ViewLocker = () => {
                     )}
                   </div>
                 </div>
+              )}
+
+              {activeTab === "archived" && (
+                <>
+                <div className="tab-panel">
+                  <h4 id="headingconnection">Closed connections</h4>
+                  <div className="conn">
+                    {closedConnections.length > 0 ? (
+                      closedConnections.map(
+                        (connection, index) => {
+                          const tracker = trackerData[connection.connection_id];
+                          const color = tracker
+                            ? "gray"
+                            : "gray";
+                          const ratio = tracker
+                            ? calculateRatio(tracker)
+                            : "Loading...";
+                          const trackerReverse = trackerDataReverse[connection.connection_id]
+                          const colorReverse = trackerReverse
+                            ? "gray"
+                            : "gray";
+                          const ratioReverse = trackerReverse
+                            ? calculateRatioReverse(trackerReverse)
+                            : "Loading...";
+                          return (
+                            <Grid container
+                              key={connection.connection_id}
+                              className="viewlockerconnections"
+                              style={{
+                                backgroundColor:"#f0f0f0",
+                                border:"1px solid #ccc",
+                                opacity:"0.85",
+                                color: "#555",
+                                padding: "1rem",
+                                borderRadius: "8px",
+                                marginBottom: "1rem",
+                              }}
+                            >
+
+                              <Grid item md={8} xs={12}>
+                                <div className="mb-2">
+                                  <button
+                                    className="connection-name-button"
+                                    // onClick={() => handleTracker(connection)}
+                                    style={{
+                                      textDecoration: "underline",
+                                      background: "none",
+                                      border: "none",
+                                      padding: 0,
+                                      cursor: "pointer",
+                                      color: "inherit",
+                                    }}
+                                  >
+                                    {connection.connection_name}
+                                  </button>
+                                </div>
+                                {/* <div id="conntent">
+                                  {connection.guest_locker.name} <i class="bi bi-arrows me-1" style={{ fontSize: "16px" }}></i>
+                                  {connection.host_locker.name}
+                                </div> */}
+                                {/* <div id="conntent">
+                                  Created On:{" "}
+                                  {new Date(
+                                    connection.created_time
+                                  ).toLocaleString()}
+                                </div> */}
+                                <div id="conntent">
+                                  Valid Until:{" "}
+                                  {new Date(
+                                    connection.validity_time
+                                  ).toLocaleString()}
+                                </div>
+                              </Grid>
+                              <Grid item paddingTop={{ md: "10px", xs: "" }} md={4} xs={12}>
+                                {/* <div>
+                                  <button data-tooltip-id="tooltip" data-tooltip-content="Terms of connection"
+                                    className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
+                                    onClick={() =>
+                                      handleConsentAndInfo(connection)
+                                    }
+                                  >
+                                    c
+                                  </button>
+                                  <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+
+                                </div> */}
+
+                                {/* <button
+                                  className="info-button"
+                                  onClick={() => handleInfo(connection)}
+                                >
+                                  i{" "}
+                                </button> */}
+                                <div className="d-flex align-items-center">
+
+                                  <h6 className="mt-2 me-2">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
+                                  <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                                  <button
+                                    // onClick={() => handleTracker(connection)}
+                                    style={{
+                                      backgroundColor: color,
+                                      border: 'none',
+                                      padding: '5px 10px',
+                                      borderRadius: '5px',
+                                      color: '#fff',
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    {ratio}
+                                  </button>
+                                </div>
+
+                                <div className="d-flex align-items-center mt-1">
+                                  <button className="me-2"
+                                    // onClick={() => handleTrackerHost(connection)}
+                                    style={{
+                                      backgroundColor: colorReverse,
+                                      border: 'none',
+                                      padding: '5px 10px',
+                                      borderRadius: '5px',
+                                      color: '#fff',
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    {ratioReverse}
+                                  </button>
+                                  <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
+
+                                  <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
+
+
+                                </div>
+                              </Grid>
+                            </Grid>
+                          );
+                        }
+                      )
+                    ) : (
+                      <p>No closed connections found.</p>
+                    )}
+                  </div>
+                </div>
+                </>
               )}
             </div>
           </Grid>

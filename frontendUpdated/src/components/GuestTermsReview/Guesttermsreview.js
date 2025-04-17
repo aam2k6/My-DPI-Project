@@ -76,8 +76,35 @@ export const Guesttermsreview = () => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+useEffect(() => {
+    const token = Cookies.get("authToken");
+    const connectionLifeCycle = () => {
+      fetch("host/update_connection_status_tolive/".replace(/host/, frontend_host), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${token}`
+        },
+        body: JSON.stringify({
+          connection_name: connection?.connection_name,
+          host_locker_name: connection?.host_locker?.name,
+          guest_locker_name: connection?.guest_locker?.name,
+          host_user_username: connection?.host_user?.username,
+          guest_user_username: connection?.guest_user?.username
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Response:", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
 
-  console.log(connection, connectionType);
+    };
+    connectionLifeCycle();
+  })
+
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
     const message = await handleRevoke(connection_id);
@@ -1688,7 +1715,21 @@ export const Guesttermsreview = () => {
   const content = (
     <>
       <div className="navbarBrands">
-        {conndetails?.connection_name || "Loading..."}
+        {/* {conndetails?.connection_name || "Loading..."} */}
+        <div className="navbarBrands">
+        <h5><b>{conndetails?.connection_name || connection.connection_name || "Loading..."}</b> &nbsp;
+          <span
+            className={`badge ${connectionDetails?.connection_status === "established"
+                ? "text-bg-primary"
+                : connectionDetails?.connection_status === "live"
+                  ? "text-bg-success"
+                  : "text-bg-secondary"
+              }`}
+          >
+            {capitalizeFirstLetter(connectionDetails?.connection_status) || "Loading..."}
+          </span>
+        </h5>
+      </div>
       </div>
       {/* <div className="navbarBrands"> {curruser ? capitalizeFirstLetter(curruser.username) : "None"}</div>
       <div>

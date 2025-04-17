@@ -2079,10 +2079,21 @@ useEffect(() => {
         {curruser ? curruser.description : "None"}
       </div> */}
 
-      <div className="navbarBrands">
+      {/* <div className="navbarBrands">
         {connectionName}
-      </div>
-
+      </div> */}
+      <h5><b>{connectionName || connection?.connection_name}</b> &nbsp;
+          <span
+            className={`badge ${connectionDetails?.connection_status === "established"
+                ? "text-bg-primary"
+                : connectionDetails?.connection_status === "live"
+                  ? "text-bg-success"
+                  : "text-bg-secondary"
+              }`}
+          >
+            {capitalizeFirstLetter(connectionDetails?.connection_status) || "Loading..."}
+          </span>
+        </h5>
       {/* <br></br>
       <div className="connection-details">
         Connection Name: {connectionName}

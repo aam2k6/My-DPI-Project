@@ -2085,7 +2085,7 @@ useEffect(() => {
       <h5><b>{connectionName || connection?.connection_name}</b> &nbsp;
           <span
             className={`badge ${connectionDetails?.connection_status === "established"
-                ? "text-bg-primary"
+                ? "text-bg-warning"
                 : connectionDetails?.connection_status === "live"
                   ? "text-bg-success"
                   : "text-bg-secondary"

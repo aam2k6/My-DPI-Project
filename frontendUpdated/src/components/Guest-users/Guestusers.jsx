@@ -78,7 +78,7 @@ export const Guestusers = () => {
       .then(data => {
         if (data.connections) {
           setConnections(data.connections);
-          const filteredConnections = data.connections.filter(connection => !connection.closed);
+          const filteredConnections = data.connections.filter(connection => connection.connection_status !== "closed");
           setFilteredConnections(filteredConnections);
           fetchAllTrackerData(data.connections);
         } else {

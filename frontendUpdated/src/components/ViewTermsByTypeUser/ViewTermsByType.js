@@ -701,6 +701,13 @@ export const ViewTermsByType = () => {
     }
   }, [connectionDetails]);
 
+  useEffect(() => {
+    if(connection){
+      fetchTrackerData(connection)
+      fetchTrackerDataReverse(connection);
+    }
+  },[connection]);
+ 
   // const fetchAllTrackerData = (outgoingConnections) => {
   //   outgoingConnections.forEach((connection) => {
   //     fetchTrackerData(connection);
@@ -2721,14 +2728,14 @@ export const ViewTermsByType = () => {
       <div className="navbarBrands">
         <h5><b>{connectionName || connection?.connection_name}</b> &nbsp;
           <span
-            className={`badge ${connectionDetails?.connection_status === "established"
-                ? "text-bg-primary"
-                : connectionDetails?.connection_status === "live"
+            className={`badge ${connection?.connection_status === "established"
+                ? "text-bg-warning"
+                : connection?.connection_status === "live"
                   ? "text-bg-success"
                   : "text-bg-secondary"
               }`}
           >
-            {capitalizeFirstLetter(connectionDetails?.connection_status) || "Loading..."}
+            {capitalizeFirstLetter(connection?.connection_status) || "Loading..."}
           </span>
         </h5>
       </div>
@@ -2870,6 +2877,14 @@ export const ViewTermsByType = () => {
       return;
     }
   };
+
+  // const handleclickuser = (user) => {
+  //   if (curruser && curruser.username && user === curruser.username) {
+  //     navigate('/home');
+  //   } else {
+  //     navigate(`/target-user-view`, { state: { user } });
+  //   }
+  // };
 
   const handleuserclick = (hostUserUsername) => {
     console.log(hostUserUsername);
@@ -3872,6 +3887,10 @@ export const ViewTermsByType = () => {
                           {new Date(pdfData.validity_until).toLocaleString()}
                         </div>
                         <div>
+                          <label className="form-label fw-bold mt-1">Creator: {" "}</label>
+                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                        </div>
+                        <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
                           {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
                         </div>
@@ -3977,6 +3996,10 @@ export const ViewTermsByType = () => {
                             <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
+                          <span className="fw-bold">Creator:</span>
+                          <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div>
@@ -4024,6 +4047,10 @@ export const ViewTermsByType = () => {
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                           {new Date(pdfData.validity_until).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Creator: {" "}</label>
+                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -4130,6 +4157,10 @@ export const ViewTermsByType = () => {
                             <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Creator:</span>
+                             <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div>
@@ -4177,6 +4208,10 @@ export const ViewTermsByType = () => {
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                           {new Date(pdfData.validity_until).toLocaleString()}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Creator: {" "}</label>
+                          {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -4282,6 +4317,10 @@ export const ViewTermsByType = () => {
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Validity until:</span>
                             <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Creator:</span>
+                             <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

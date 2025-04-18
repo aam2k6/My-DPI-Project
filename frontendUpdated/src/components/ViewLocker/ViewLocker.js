@@ -1273,7 +1273,13 @@ console.log("closedConnectionsr", closedConnections)
     }
   };
 
-
+  const handleuserclick = (user) => {
+    if (curruser && curruser.username && user === curruser.username) {
+      navigate('/home');
+    } else {
+      navigate(`/target-user-view`, { state: { user } });
+    }
+  };
 
 
 
@@ -2843,8 +2849,12 @@ console.log("closedConnectionsr", closedConnections)
                 <span>{new Date(resourceData.validity_until).toLocaleString()}</span>
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Creator:</span>
+                <span>{capitalizeFirstLetter(resourceData.creator_username)}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Current owner:</span>
-                <span>{resourceData.current_owner_username}</span>
+                <span>{capitalizeFirstLetter(resourceData.current_owner_username)}</span>
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Connection Type:</span>

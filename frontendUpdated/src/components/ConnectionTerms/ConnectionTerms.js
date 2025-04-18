@@ -1143,7 +1143,7 @@ console.log("connectionData", connectionData)
                             value={formData.typeOfAction}
                             onChange={handleInputChange} >
                             <option value="text">Add Value</option>
-                            <option value="file">Upload File</option>
+                            <option value="file">Share data from locker</option>
                             <option value="date">Add Date</option>
                           </select>
                           {!isTemplateModalOpen && <span className="tooltips">
@@ -1413,7 +1413,7 @@ console.log("connectionData", connectionData)
                       </div>
                     </div>
                     <div className="connectionTerms-btn">
-                      <button type="submit">Next</button>
+                      <button type="submit">Confirm & Proceed</button>
                     </div>
                   </form>
                 </div>

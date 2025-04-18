@@ -288,7 +288,7 @@ export const Connection = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <button type="submit">Next</button>
+                <button type="submit">Confirm & Proceed</button>
               </form>
             </Box>
           </div>

@@ -1510,7 +1510,7 @@ export const HostTermsReview = () => {
         <h5><b>{connection?.connection_name}</b> &nbsp;
           <span
             className={`badge ${connectionDetails?.connection_status === "established"
-                ? "text-bg-primary"
+                ? "text-bg-warning"
                 : connectionDetails?.connection_status === "live"
                   ? "text-bg-success"
                   : "text-bg-secondary"
@@ -2245,6 +2245,10 @@ export const HostTermsReview = () => {
                             <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Creator:</span>
+                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div>
@@ -2317,6 +2321,10 @@ export const HostTermsReview = () => {
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Validity until:</span>
                             <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Creator:</span>
+                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

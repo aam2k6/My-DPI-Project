@@ -567,7 +567,7 @@ export const ConnectionTermsHost = () => {
                             value={formData.typeOfAction}
                             onChange={handleInputChange} >
                             <option value="text">Add Value</option>
-                            <option value="file">Upload File</option>
+                            <option value="file">Share data from locker</option>
                             <option value="date">Add Date</option>
                           </select>
                           {!isTemplateModalOpen && !isModalOpen && <span className="tooltips">
@@ -838,7 +838,7 @@ export const ConnectionTermsHost = () => {
                       </div>
                     </div>
                     <div className="connectionTerms-btn">
-                      <button type="submit">Submit</button>
+                      <button type="submit">Confirm & Submit</button>
                     </div>
                   </form>
                 </div>

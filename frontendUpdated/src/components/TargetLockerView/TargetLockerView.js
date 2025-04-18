@@ -1300,9 +1300,10 @@ console.log("pdfUrl", pdfUrl)
 
       const data = await response.json();
       if (data.success) {
-        const filteredOutgoing = data.connections.filter(
-          (connection) => connection.closed === false
-        );
+        // const filteredOutgoing = data.connections.filter(
+        //   (connection) => connection.closed === false
+        // );
+        const filteredOutgoing = data.connections
         setOutgoingConnections(filteredOutgoing);
 
         data.connections.forEach((connection) => fetchTrackerData(connection));

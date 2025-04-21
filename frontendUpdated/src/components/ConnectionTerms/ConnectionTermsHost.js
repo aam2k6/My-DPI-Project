@@ -21,7 +21,7 @@ import Typography from "@mui/material/Typography";
 
 export const ConnectionTermsHost = () => {
   const navigate = useNavigate();
-  const { locker_conn, connectionData, setConnectionTermsData } =
+  const { locker_conn, connectionData, connectionTermsData } =
     useContext(ConnectionContext);
 
   const location = useLocation();
@@ -30,6 +30,7 @@ export const ConnectionTermsHost = () => {
   // const connectionData = location.state ? location.state.connectionData : null;
   // console.log("connection terms locker", locker);
   // console.log("connection terms connection data", connectionData);
+  const { hostGlobalObligationTerms } = location.state || {};
   const initialFormData = {
     labelName: "",
     typeOfAction: "text",
@@ -55,7 +56,7 @@ export const ConnectionTermsHost = () => {
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [navigateHome, setNavigateHome] = useState(false)
   const [selectedTemplateDetails, setSelectedTemplateDetails] = useState(null);
-
+console.log("connectionTermsData", connectionTermsData)
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -80,7 +81,21 @@ export const ConnectionTermsHost = () => {
         setError("Failed to fetch templates");
       });
   };
-
+ 
+  useEffect(() => {
+    if (hostGlobalObligationTerms) {
+      setObligations(() => [
+        ...hostGlobalObligationTerms,
+      ]);
+  
+      // // Handle permissions
+      // setFormData((prevFormData) => ({
+      //   ...prevFormData,
+      //   canShareMore: permissions.canShareMoreData,
+      //   canDownload: permissions.canDownloadData,
+      // }));
+    }
+  }, [hostGlobalObligationTerms]);
 
   // const handleTemplateSelection = (templateId) => {
   //   setSelectedTemplateIds((prev) => {
@@ -134,6 +149,7 @@ export const ConnectionTermsHost = () => {
     acc[template.global_connection_type_template_id] = template.global_connection_type_name;
     return acc;
   }, {});
+
 
   const handleFetchObligations = () => {
     const token = Cookies.get("authToken");
@@ -385,24 +401,36 @@ export const ConnectionTermsHost = () => {
     }
     const token = Cookies.get("authToken");
 
-    const finalData = {
-      ...connectionData,  // Contains lockerName, connectionName, connectionDescription, validity
+    const GuestData={
+      from: "GUEST",
+      to: "HOST",
+      ...connectionTermsData
+    }
+
+    const HostData = {
+      from: "HOST",
+      to: "GUEST",
       obligations: obligations.map(obligation => ({
         ...obligation,
+        hostPermissions: formData.hostPermissions,
         global_conn_type_id: obligation.global_conn_type_id || null,  // Optional field if needed by the API
       })),
       permissions: {
         canShareMoreData: formData.canShareMore,
         canDownloadData: formData.canDownload,
       },
-      hostPermissions: formData.hostPermissions,
-      forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
-      from: "HOST",
-      to: "GUEST"
+      // hostPermissions: formData.hostPermissions,
+      forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"]
+     
     };
 
-    console.log("Data to be posted:", finalData); // Verify the structure and values
-
+    const finalData = {
+      ...connectionData,
+      directions: [
+        GuestData,
+        HostData
+      ]
+}
 
     fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
       method: "POST",
@@ -517,7 +545,7 @@ export const ConnectionTermsHost = () => {
                       Add Obligations
                     </button> */}
                     </Grid>
-                    <Grid item md={5} xs={12}>
+                    {/* <Grid item md={5} xs={12}>
                       <button
                         className=""
                         onClick={() => {
@@ -527,7 +555,7 @@ export const ConnectionTermsHost = () => {
                       >
                         Import Global Connection Template
                       </button>
-                    </Grid>
+                    </Grid> */}
 
                   </Grid>
 

@@ -1542,15 +1542,15 @@ export const ViewTermsByType = () => {
             )}
 
 
-            {/* {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
+            {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
               <button onClick={() => handleButtonClick(obligation)}>
                 Select Resource
               </button>
-            )} */}
+            )}
 
-            <button onClick={() => handleButtonClick(obligation)}>
+            {/* <button onClick={() => handleButtonClick(obligation)}>
               Select Resource
-            </button>
+            </button> */}
 
             <ReactModal
               isOpen={isReactModalOpen}
@@ -3996,8 +3996,8 @@ export const ViewTermsByType = () => {
                             <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
-                          <span className="fw-bold">Creator:</span>
-                          <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span className="fw-bold">Creator:</span>
+                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

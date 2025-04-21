@@ -10,7 +10,7 @@ import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/f
 import { Grid } from '@mui/material'
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
-
+import { TextField } from "@mui/material";
 
 
 export const HostTermsReview = () => {
@@ -52,6 +52,9 @@ export const HostTermsReview = () => {
   const [pdfData, setPdfData] = useState(null)
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowData1, setSelectedRowData1] = useState(null);
+  const [rejectedStatuses, setRejectedStatuses] = useState({});
+  const [showRejectionPopup, setShowRejectionPopup] = useState(false);
+  const [rejectionComment, setRejectionComment] = useState("");
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -71,7 +74,7 @@ export const HostTermsReview = () => {
   //         </div>
   //     </div>
   // );
-  console.log("start", connection, connectionType);
+  console.log("resourcesDatass", rejectedStatuses)
   useEffect(() => {
     const token = Cookies.get("authToken");
     const connectionLifeCycle = () => {
@@ -706,6 +709,17 @@ export const HostTermsReview = () => {
           [index]: status,
         };
 
+        setRejectedStatuses((prevRejectedStatuses) => {
+          const updatedRejectedStatuses = { ...prevRejectedStatuses };
+          if (status === "rejected") {
+            updatedRejectedStatuses[index] = value;
+          } else if (updatedRejectedStatuses[index]) {
+            // If previously rejected and now changed, remove it
+            delete updatedRejectedStatuses[index];
+          }
+          return updatedRejectedStatuses;
+        });
+
         // Recalculate the resourcesData based on all statuses
         setResourcesData((prevResourcesData) => {
           // Initialize new arrays for transfer and share
@@ -826,6 +840,16 @@ export const HostTermsReview = () => {
 
   };
   console.log("res data", res);
+
+  const 
+  handleSaveRejection = () => {
+    if (Object.keys(rejectedStatuses).length > 0) {
+      setShowRejectionPopup(true); // Show the popup first
+    } else {
+      handleSave()
+    }
+  }
+
   const handleSave = async () => {
     try {
       const token = Cookies.get("authToken");
@@ -960,10 +984,63 @@ export const HostTermsReview = () => {
         await handleCollateralResource();
       }
 
-      navigate("/home");
+      window.location.reload();
     } catch (err) {
       console.error("Error:", err.message);
       setError(err.message);
+    }
+  };
+
+  const handleRejectionSubmit = async () => {
+    const token = Cookies.get("authToken");
+    const rejectionEntries = Object.entries(rejectedStatuses);
+
+    try {
+      for (const [key, value] of rejectionEntries) {
+        const [label, id] = value.split("|");
+        const comment = rejectionComment[key]?.trim();
+
+        if (!comment) {
+          alert(`Please enter a comment for ${key} - ${label}`);
+          return;
+        }
+
+        const rejectionBody = {
+          connection_name: conndetails.connection_name,
+          host_locker_name: conndetails.host_locker.name,
+          guest_locker_name: conndetails.guest_locker.name,
+          host_user_username: conndetails.host_user.username,
+          guest_user_username: conndetails.guest_user.username,
+          rejection_reason: comment,
+        };
+
+        const rejectionResponse = await fetch(
+          `${frontend_host}/reject_shared_resource_v2/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Basic ${token}`,
+            },
+            body: JSON.stringify(rejectionBody),
+          }
+        );
+
+        const rejectionData = await rejectionResponse.json();
+        if (!rejectionResponse.ok || !rejectionData.success) {
+          console.warn(`Rejection for ${key} failed:`, rejectionData.message || rejectionData.error);
+        } else {
+          console.log(`Rejection for ${key} sent:`, rejectionData.message);
+        }
+      }
+
+      // All rejections done
+      setShowRejectionPopup(false);
+      // setProceedWithSave(true);
+      await handleSave(); // Now call the save API
+
+    } catch (err) {
+      console.error("Rejection error:", err);
     }
   };
 
@@ -1510,10 +1587,10 @@ export const HostTermsReview = () => {
         <h5><b>{connection?.connection_name}</b> &nbsp;
           <span
             className={`badge ${connectionDetails?.connection_status === "established"
-                ? "text-bg-warning"
-                : connectionDetails?.connection_status === "live"
-                  ? "text-bg-success"
-                  : "text-bg-secondary"
+              ? "text-bg-warning"
+              : connectionDetails?.connection_status === "live"
+                ? "text-bg-success"
+                : "text-bg-secondary"
               }`}
           >
             {capitalizeFirstLetter(connectionDetails?.connection_status) || "Loading..."}
@@ -2122,7 +2199,7 @@ export const HostTermsReview = () => {
                   </div>
                   <br></br>
                   <div className="save-button-container">
-                    <button onClick={handleSave}>Save</button>
+                    <button onClick={handleSaveRejection}>Save</button>
                   </div>
 
                   {/* <div style={{ marginTop: '20px', marginLeft: '10px' }}>
@@ -2353,6 +2430,43 @@ export const HostTermsReview = () => {
             </div>
           </>
         )}
+
+        {showRejectionPopup && (
+          <div className="edit-modal ">
+            <div className="modal-content">
+              <h3>Enter Rejection Comments</h3>
+
+              {Object.entries(rejectedStatuses).map(([key, value]) => (
+                <div key={key} style={{ marginBottom: "1rem" }}>
+                  <label>
+                    <strong>{key}</strong> - {value.split("|")[0]}
+                  </label>
+                  <TextField
+                    fullWidth
+                    multiline
+                    type="text"
+                    rows={3}
+                    value={setRejectionComment[key]}
+                    onChange={(e) =>
+                      setRejectionComment((prev) => ({
+                        ...prev,
+                        [key]: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter reason for rejection"
+
+                    style={{ width: "100%", marginTop: "0.5rem", borderRadius: "5px" }}
+                  />
+                </div>
+              ))}
+
+              <button onClick={handleRejectionSubmit}>Submit</button>
+              {/* Optional Cancel Button */}
+              {/* <button onClick={handleRejectionCancel} style={{ marginLeft: "1rem" }}>Cancel</button> */}
+            </div>
+          </div>
+        )}
+
       </div>
 
 

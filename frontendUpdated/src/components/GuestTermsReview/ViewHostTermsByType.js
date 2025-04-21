@@ -975,17 +975,17 @@ useEffect(() => {
                 {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0]}
               </a>
             )}
-            <button onClick={() => handleButtonClick(obligation)}>
-              {/* {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] || */}
+            {/* <button onClick={() => handleButtonClick(obligation)}>
+              {termValues[obligation.labelName]?.split(";")[0]?.split("|")[0] ||
               Select Resource
-            </button>
+            </button> */}
 
-            {/* {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
+            {(obligation.value.endsWith("F") || obligation.value.endsWith("R")) && (
               <button onClick={() => handleButtonClick(obligation)}>
                 
                 Select Resource
               </button>
-            )} */}
+            )}
             <ReactModal
               isOpen={isModalOpen}
               onRequestClose={handleClose}
@@ -3229,6 +3229,10 @@ setToPage('');
                                 {new Date(pdfData.validity_until).toLocaleString()}
                               </div>
                               <div>
+                                <label className="form-label fw-bold mt-1">Creator: {" "}</label>
+                                {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                              </div>
+                              <div>
                                 <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
                                 {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
                               </div>
@@ -3322,6 +3326,10 @@ setToPage('');
                                   <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Creator:</span>
+                                  <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Current owner:</span>
                                   <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                                 </div>
@@ -3377,10 +3385,10 @@ setToPage('');
                                   <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                                   {new Date(pdfData.validity_until).toLocaleString()}
                                 </div>
-                                {/* <li>
-                                                Primary owner: {" "}
-                                                {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                              </li> */}
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Creator: {" "}</label>
+                                  {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                                </div>
 
                                 <div>
                                   <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -3499,6 +3507,10 @@ setToPage('');
                                   <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Creator:</span>
+                                  <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Current owner:</span>
                                   <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                                 </div>
@@ -3554,10 +3566,10 @@ setToPage('');
                                   <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                                   {new Date(pdfData.validity_until).toLocaleString()}
                                 </div>
-                                {/* <li>
-                                              Primary owner: {" "}
-                                              {capitalizeFirstLetter(pdfData.primary_owner_username) || "N/A"}
-                                            </li> */}
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Creator: {" "}</label>
+                                  {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                                </div>
 
                                 <div>
                                   <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -3674,6 +3686,10 @@ setToPage('');
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Validity until:</span>
                                   <span>{new Date(pdfData.validity_until).toLocaleString()}</span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Creator:</span>
+                                  <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Current owner:</span>

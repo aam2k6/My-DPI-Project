@@ -1215,6 +1215,7 @@ export const Guesttermsreview = () => {
           host_user_username: conndetails.host_user.username,
           guest_user_username: conndetails.guest_user.username,
           rejection_reason: comment,
+          resource_name: label
         };
 
         const rejectionResponse = await fetch(

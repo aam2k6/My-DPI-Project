@@ -86,7 +86,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Home />
-                  {/* <Scanner /> */}
+                  <Scanner />
                 </ProtectedRoute>
               }
             />

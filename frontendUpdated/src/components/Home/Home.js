@@ -373,7 +373,7 @@ export const Home = () => {
         const data = await response.json();
         if (data.success) {
           const filteredOutgoing = data.outgoing_connections.filter(
-            (connection) => connection.closed === false
+            (connection) => connection.connection_status !== "closed"
           );
           setOutgoingConnections(filteredOutgoing || []);
         } else {

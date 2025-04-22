@@ -939,6 +939,17 @@ export const Guesttermsreview = () => {
         [index]: status,
       };
 
+      setRejectedStatuses((prevRejectedStatuses) => {
+        const updatedRejectedStatuses = { ...prevRejectedStatuses };
+        if (status === "rejected") {
+          updatedRejectedStatuses[index] = value;
+        } else if (updatedRejectedStatuses[index]) {
+          // If previously rejected and now changed, remove it
+          delete updatedRejectedStatuses[index];
+        }
+        return updatedRejectedStatuses;
+      });
+
       // Recalculate the resourcesData based on all statuses
       setResourcesData((prevResourcesData) => {
         // Initialize new arrays for transfer and share
@@ -993,7 +1004,7 @@ export const Guesttermsreview = () => {
     });
 
   };
-  console.log("res data", res);
+  console.log("setRejectedStatusesss", rejectedStatuses);
 
   const handleSaveRejection = () => {
     if (Object.keys(rejectedStatuses).length > 0) {
@@ -1713,7 +1724,8 @@ export const Guesttermsreview = () => {
                     <select
                       value={statuses2[permission.labelName] || ""}
                       onChange={(e) =>
-                        handleStatusChange2(permission.labelName, e.target.value)
+                        handleStatusChange2(permission.labelName, e.target.value, permission.dataElement?.split(";")[0])
+                        
                       }
                     >
                       <option value="">Select Status</option>

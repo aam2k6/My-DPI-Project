@@ -774,7 +774,7 @@ export const HostTermsReview = () => {
       alert("Value required in Enter Value field to either Approve or Reject");
     }
   };
-
+console.log("handleStatusChange2", rejectedStatuses)
   //permissions
   const handleStatusChange2 = (index, status, value, type, isFile) => {
 
@@ -784,6 +784,17 @@ export const HostTermsReview = () => {
         ...prevStatuses,
         [index]: status,
       };
+
+      setRejectedStatuses((prevRejectedStatuses) => {
+        const updatedRejectedStatuses = { ...prevRejectedStatuses };
+        if (status === "rejected") {
+          updatedRejectedStatuses[index] = value;
+        } else if (updatedRejectedStatuses[index]) {
+          // If previously rejected and now changed, remove it
+          delete updatedRejectedStatuses[index];
+        }
+        return updatedRejectedStatuses;
+      });
 
       // Recalculate the resourcesData based on all statuses
       setResourcesData((prevResourcesData) => {
@@ -1401,7 +1412,7 @@ export const HostTermsReview = () => {
                     <select
                       value={statuses2[permission.labelName] || ""}
                       onChange={(e) =>
-                        handleStatusChange2(permission.labelName, e.target.value)
+                        handleStatusChange2(permission.labelName, e.target.value, permission.dataElement?.split(";")[0])
                       }
                     >
                       <option value="">Select Status</option>

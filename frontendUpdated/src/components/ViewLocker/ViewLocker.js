@@ -71,11 +71,13 @@ export const ViewLocker = () => {
   const [toPage, setToPage] = useState();
   const [hovered, setHovered] = useState(null);
   const [expandedConnections, setExpandedConnections] = useState([]);
-
+  const [allpostConditions, setAllPostConditions] = useState();
+  const [postConditions, setPostConditions] = useState();
+  const [isLockedPostConditions, setIsLockedPostConditions] = useState();
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
-console.log("allOutgoingConnectionsr", allOutgoingConnections)
-console.log("closedConnectionsr", closedConnections)
+  console.log("allOutgoingConnectionsr", allOutgoingConnections)
+  console.log("closedConnectionsr", closedConnections)
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -92,7 +94,7 @@ console.log("closedConnectionsr", closedConnections)
           console.warn("Missing user_id or locker_id");
           return;
         }
-  
+
         const response = await fetch("host/update_connection_status/".replace(/host/, frontend_host), {
           method: "POST",
           headers: {
@@ -101,7 +103,7 @@ console.log("closedConnectionsr", closedConnections)
           },
           body: JSON.stringify({ user_id, locker_id }),
         });
-  
+
         const result = await response.json();
         if (result.success) {
           console.log("Expired connections updated:", result.updated_connection_ids);
@@ -112,17 +114,17 @@ console.log("closedConnectionsr", closedConnections)
         console.error("Error calling update_connection_status_if_expired:", error);
       }
     };
-  
+
     if (locker) {
       // First update expired connection statuses
       checkAndUpdateConnectionStatus().then(() => {
         // Then fetch other dependent data
-        fetchConnectionsAndOtherConnections(); 
-        fetchResources(); 
+        fetchConnectionsAndOtherConnections();
+        fetchResources();
         fetchXnodes();
       });
     }
-  
+
     if (location.state) {
       setLockers(location.state);
       setLocker_conn(location.state.locker);
@@ -131,7 +133,7 @@ console.log("closedConnectionsr", closedConnections)
       localStorage.setItem("locker", JSON.stringify(locker));
     }
   }, [locker]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
@@ -913,8 +915,26 @@ console.log("closedConnectionsr", closedConnections)
     setResourceVisibility(xnode.visibility);
     setResourceValidity(xnode.validity_until);
     setShowEditModal(true);
+
+    // Destructure to remove creator_conditions
+    const { creator_conditions, ...restPostConditions } = xnode.post_conditions;
+
+    let filteredPostConditions = restPostConditions;
+
+    // If it's a VNODE, keep only 'share' and 'transfer'
+    if (xnode.xnode_Type === "VNODE") {
+      filteredPostConditions = Object.fromEntries(
+        Object.entries(restPostConditions).filter(([key]) =>
+          ["share", "transfer"].includes(key)
+        )
+      );
+    }
+
+    setPostConditions(filteredPostConditions);
+    setIsLockedPostConditions(xnode.is_locked);
   };
 
+  console.log("setSelectedResource", selectedResource, postConditions, isLockedPostConditions)
   const handleSubsetClick = (xnode) => {
     setSelectedResource(xnode);
     // setResourceName(xnode.resource_name);
@@ -941,10 +961,12 @@ console.log("closedConnectionsr", closedConnections)
     const payload = {
       locker_name: locker.name,
       owner_name: curruser.username,
+      xnode_id: xnode.id,
       document_name: xnode.resource_name,
       new_document_name: resourceName,
       new_visibility: resourceVisibility || currentVisibility,
-      new_validity_time: resourceValidity || res.validity_until
+      new_validity_time: resourceValidity || res.validity_until,
+      post_conditions: postConditions
     };
 
     console.log("Payload:", payload);
@@ -976,6 +998,7 @@ console.log("closedConnectionsr", closedConnections)
 
         setModalMessage({ message: "Resource updated successfully!", type: "success" });
         setShowEditModal(false);
+        // window.location.reload();
       } else {
         setModalMessage({ message: data.message || "Failed to update resource.", type: "failure" });
       }
@@ -1178,6 +1201,7 @@ console.log("closedConnectionsr", closedConnections)
 
   const handleCloseModal = () => {
     setModalMessage(null);
+    window.location.reload();
   };
   const toggleResourcesVisibility = () => {
     setResourcesVisible(!isResourcesVisible);
@@ -1513,7 +1537,7 @@ console.log("closedConnectionsr", closedConnections)
         <Grid container padding={{ md: "50px", xs: "20px" }}>
           <Grid item md={5.5} xs={12} className="a">
             <div className="res">
-              <div  style={{marginLeft:"-10px"}}>
+              <div style={{ marginLeft: "-10px" }}>
                 <h4 className="mt-2">Locker resources</h4>
                 <Grid container>
                   {legendItems.map((item, index) => (
@@ -1550,7 +1574,7 @@ console.log("closedConnectionsr", closedConnections)
                       display: "flex",
                       alignItems: "center",
                       marginBottom: "10px",
-                      marginTop:"20px"
+                      marginTop: "20px"
                     }}
                     onClick={() => setResourcesVisible(!isResourcesVisible)}
                   >
@@ -1639,7 +1663,7 @@ console.log("closedConnectionsr", closedConnections)
                                           gap: "10px",
                                         }}
                                       >
-                                        {xnode.xnode_Type === "SNODE" && (
+                                        {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                           <>
                                             <i
@@ -1651,12 +1675,20 @@ console.log("closedConnectionsr", closedConnections)
                                               onClick={() => handleSubsetClick(xnode)}
 
                                             />
+                                            <i
+                                              className="fa-regular fa-pen-to-square"
+                                              data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                              style={{
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => handleEditClick(xnode)}
+                                            />
                                             <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
                                           </>
 
                                         )}
-                                        {xnode.xnode_Type === "INODE" && (
+                                        {xnode.xnode_Type === "INODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
                                           <>
                                             <i
                                               className="subset-icon"
@@ -1682,23 +1714,40 @@ console.log("closedConnectionsr", closedConnections)
                                           </>
 
                                         )}
+
+                                        {xnode.xnode_Type === "VNODE" && (
+                                          <>
+                                            <i
+                                              className="fa-regular fa-pen-to-square"
+                                              data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                              style={{
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => handleEditClick(xnode)}
+                                            />
+                                          </>
+                                        )}
+
                                         <i className="bi bi-info-square"
                                           data-tooltip-id="tooltip"
                                           data-tooltip-content="View Details"
-                                          style={{ marginTop: "-4px", cursor:"pointer" }}
+                                          style={{ marginTop: "-4px", cursor: "pointer" }}
                                           onClick={() => handleViewDetails(xnode.id)}
                                         />
-                                        {xnode.xnode_Type === "INODE" &&  xnode.connection === null &&(
+
+                                        {xnode.xnode_Type === "INODE" && xnode.connection === null && (
                                           <>
                                             <i
-                                          className="fa-regular fa-trash-can"
-                                          data-tooltip-id="tooltip" data-tooltip-content="Delete"
-                                          style={{ cursor: "pointer" }}
-                                          onClick={() => handleDeleteClick(xnode)}
-                                        />
+                                              className="fa-regular fa-trash-can"
+                                              data-tooltip-id="tooltip" data-tooltip-content="Delete"
+                                              style={{ cursor: "pointer" }}
+                                              onClick={() => handleDeleteClick(xnode)}
+                                            />
                                           </>
                                         )}
-                                        
+
+
+
                                         <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
                                       </span>
@@ -1917,7 +1966,7 @@ console.log("closedConnectionsr", closedConnections)
                                                                 gap: "10px",
                                                               }}
                                                             >
-                                                              {xnode.xnode_Type === "SNODE" && (
+                                                              {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                                                 <>
                                                                   <i
@@ -1929,12 +1978,20 @@ console.log("closedConnectionsr", closedConnections)
                                                                     onClick={() => handleSubsetClick(xnode)}
 
                                                                   />
+                                                                  <i
+                                                                    className="fa-regular fa-pen-to-square"
+                                                                    data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                                                    style={{
+                                                                      cursor: "pointer",
+                                                                    }}
+                                                                    onClick={() => handleEditClick(xnode)}
+                                                                  />
                                                                   <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
                                                                 </>
 
                                                               )}
-                                                              {xnode.xnode_Type === "INODE" && (
+                                                              {xnode.xnode_Type === "INODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
                                                                 <>
                                                                   <i
                                                                     className="subset-icon"
@@ -1961,10 +2018,24 @@ console.log("closedConnectionsr", closedConnections)
 
                                                               )}
 
+
+                                                              {xnode.xnode_Type === "VNODE" && (
+                                                                <>
+                                                                  <i
+                                                                    className="fa-regular fa-pen-to-square"
+                                                                    data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                                                    style={{
+                                                                      cursor: "pointer",
+                                                                    }}
+                                                                    onClick={() => handleEditClick(xnode)}
+                                                                  />
+                                                                </>
+                                                              )}
+
                                                               <i className="bi bi-info-square"
                                                                 data-tooltip-id="tooltip"
                                                                 data-tooltip-content="View Details"
-                                                                style={{ marginTop: "-4px", cursor:"pointer"}}
+                                                                style={{ marginTop: "-4px", cursor: "pointer" }}
                                                                 onClick={() => handleViewDetails(xnode.id)}
                                                               />
 
@@ -2148,7 +2219,7 @@ console.log("closedConnectionsr", closedConnections)
                                                     gap: "10px",
                                                   }}
                                                 >
-                                                  {xnode.xnode_Type === "SNODE" && (
+                                                  {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                                     <>
                                                       <i
@@ -2160,12 +2231,20 @@ console.log("closedConnectionsr", closedConnections)
                                                         onClick={() => handleSubsetClick(xnode)}
 
                                                       />
+                                                      <i
+                                                        className="fa-regular fa-pen-to-square"
+                                                        data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={() => handleEditClick(xnode)}
+                                                      />
                                                       <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
                                                     </>
 
                                                   )}
-                                                  {xnode.xnode_Type === "INODE" && (
+                                                  {xnode.xnode_Type === "INODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
                                                     <>
                                                       <i
                                                         className="subset-icon"
@@ -2192,10 +2271,23 @@ console.log("closedConnectionsr", closedConnections)
 
                                                   )}
 
+                                                  {xnode.xnode_Type === "VNODE" && (
+                                                    <>
+                                                      <i
+                                                        className="fa-regular fa-pen-to-square"
+                                                        data-tooltip-id="tooltip" data-tooltip-content="Edit"
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={() => handleEditClick(xnode)}
+                                                      />
+                                                    </>
+                                                  )}
+
                                                   <i className="bi bi-info-square"
                                                     data-tooltip-id="tooltip"
                                                     data-tooltip-content="View Details"
-                                                    style={{ marginTop: "-4px", cursor:"pointer" }}
+                                                    style={{ marginTop: "-4px", cursor: "pointer" }}
                                                     onClick={() => handleViewDetails(xnode.id)}
                                                   />
 
@@ -2295,7 +2387,7 @@ console.log("closedConnectionsr", closedConnections)
               <div
                 className={`tab-header ${activeTab === "incoming" ? "active" : ""
                   }`}
-                  data-tooltip-id="tooltip" data-tooltip-content=""
+                data-tooltip-id="tooltip" data-tooltip-content=""
                 onClick={() => setActiveTab("incoming")}
               >
                 Incoming Connections
@@ -2303,7 +2395,7 @@ console.log("closedConnectionsr", closedConnections)
               <div
                 className={`tab-header ${activeTab === "outgoing" ? "active" : ""
                   }`}
-                  data-tooltip-id="tooltip" data-tooltip-content=""
+                data-tooltip-id="tooltip" data-tooltip-content=""
                 onClick={() => setActiveTab("outgoing")}
               >
                 Outgoing Connections
@@ -2311,7 +2403,7 @@ console.log("closedConnectionsr", closedConnections)
               <div
                 className={`tab-header ${activeTab === "archived" ? "active" : ""
                   }`}
-                  data-tooltip-id="tooltip" data-tooltip-content=""
+                data-tooltip-id="tooltip" data-tooltip-content=""
                 onClick={() => setActiveTab("archived")}
               >
                 Archived
@@ -2486,6 +2578,7 @@ console.log("closedConnectionsr", closedConnections)
                       type="text"
                       value={resourceName}
                       onChange={(e) => setResourceName(e.target.value)}
+                      disabled={selectedResource?.xnode_Type !== "INODE"}
                     />
 
                     <label className="form-label fw-bold">Visibility:</label>
@@ -2494,6 +2587,7 @@ console.log("closedConnectionsr", closedConnections)
                       id="visibility"
                       value={resourceVisibility}
                       onChange={(e) => setResourceVisibility(e.target.value)}
+                      disabled={selectedResource?.xnode_Type !== "INODE"}
                     >
                       <option value="private">Private</option>
                       <option value="public">Public</option>
@@ -2505,8 +2599,40 @@ console.log("closedConnectionsr", closedConnections)
                       className="form-control"
                       value={resourceValidity}
                       onChange={(e) => setResourceValidity(e.target.value)}
-                      required
+                      disabled={selectedResource?.xnode_Type !== "INODE"}
                     />
+
+                    <label htmlFor="postConditions" className="form-label fw-bold mt-2">Post conditions</label>
+                    <div id="postConditions" className="row">
+                      {Object.entries(postConditions).map(([key, value], index) => (
+                        <div className="col-md-4" key={key}>
+                          <div className="form-check mb-2">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id={key}
+                              checked={value}
+                              disabled={
+                                selectedResource?.creator !== selectedResource?.node_information?.current_owner &&
+                                isLockedPostConditions?.[key] === true
+                              }
+                              onChange={(e) => {
+                                setPostConditions((prev) => ({
+                                  ...prev,
+                                  [key]: e.target.checked,
+                                }));
+                              }}
+                            />
+                            <label className="form-check-label" htmlFor={key}>
+                              {key.charAt(0).toUpperCase() + key.slice(1)}
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+
+
 
                     <div className="modal-buttons mt-4">
                       {/* Use an anonymous function to call handleSaveResource */}
@@ -2663,77 +2789,77 @@ console.log("closedConnectionsr", closedConnections)
 
               {activeTab === "archived" && (
                 <>
-                <div className="tab-panel">
-                  <h4 id="headingconnection">Closed connections</h4>
-                  <div className="conn">
-                    {closedConnections.length > 0 ? (
-                      closedConnections.map(
-                        (connection, index) => {
-                          const tracker = trackerData[connection.connection_id];
-                          const color = tracker
-                            ? "gray"
-                            : "gray";
-                          const ratio = tracker
-                            ? calculateRatio(tracker)
-                            : "Loading...";
-                          const trackerReverse = trackerDataReverse[connection.connection_id]
-                          const colorReverse = trackerReverse
-                            ? "gray"
-                            : "gray";
-                          const ratioReverse = trackerReverse
-                            ? calculateRatioReverse(trackerReverse)
-                            : "Loading...";
-                          return (
-                            <Grid container
-                              key={connection.connection_id}
-                              className="viewlockerconnections"
-                              style={{
-                                backgroundColor:"#f0f0f0",
-                                border:"1px solid #ccc",
-                                opacity:"0.85",
-                                color: "#555",
-                                padding: "1rem",
-                                borderRadius: "8px",
-                                marginBottom: "1rem",
-                              }}
-                            >
+                  <div className="tab-panel">
+                    <h4 id="headingconnection">Closed connections</h4>
+                    <div className="conn">
+                      {closedConnections.length > 0 ? (
+                        closedConnections.map(
+                          (connection, index) => {
+                            const tracker = trackerData[connection.connection_id];
+                            const color = tracker
+                              ? "gray"
+                              : "gray";
+                            const ratio = tracker
+                              ? calculateRatio(tracker)
+                              : "Loading...";
+                            const trackerReverse = trackerDataReverse[connection.connection_id]
+                            const colorReverse = trackerReverse
+                              ? "gray"
+                              : "gray";
+                            const ratioReverse = trackerReverse
+                              ? calculateRatioReverse(trackerReverse)
+                              : "Loading...";
+                            return (
+                              <Grid container
+                                key={connection.connection_id}
+                                className="viewlockerconnections"
+                                style={{
+                                  backgroundColor: "#f0f0f0",
+                                  border: "1px solid #ccc",
+                                  opacity: "0.85",
+                                  color: "#555",
+                                  padding: "1rem",
+                                  borderRadius: "8px",
+                                  marginBottom: "1rem",
+                                }}
+                              >
 
-                              <Grid item md={8} xs={12}>
-                                <div className="mb-2">
-                                  <button
-                                    className="connection-name-button"
-                                    // onClick={() => handleTracker(connection)}
-                                    style={{
-                                      textDecoration: "underline",
-                                      background: "none",
-                                      border: "none",
-                                      padding: 0,
-                                      cursor: "pointer",
-                                      color: "inherit",
-                                    }}
-                                  >
-                                    {connection.connection_name}
-                                  </button>
-                                </div>
-                                {/* <div id="conntent">
+                                <Grid item md={8} xs={12}>
+                                  <div className="mb-2">
+                                    <button
+                                      className="connection-name-button"
+                                      // onClick={() => handleTracker(connection)}
+                                      style={{
+                                        textDecoration: "underline",
+                                        background: "none",
+                                        border: "none",
+                                        padding: 0,
+                                        cursor: "pointer",
+                                        color: "inherit",
+                                      }}
+                                    >
+                                      {connection.connection_name}
+                                    </button>
+                                  </div>
+                                  {/* <div id="conntent">
                                   {connection.guest_locker.name} <i class="bi bi-arrows me-1" style={{ fontSize: "16px" }}></i>
                                   {connection.host_locker.name}
                                 </div> */}
-                                {/* <div id="conntent">
+                                  {/* <div id="conntent">
                                   Created On:{" "}
                                   {new Date(
                                     connection.created_time
                                   ).toLocaleString()}
                                 </div> */}
-                                <div id="conntent">
-                                  Valid Until:{" "}
-                                  {new Date(
-                                    connection.validity_time
-                                  ).toLocaleString()}
-                                </div>
-                              </Grid>
-                              <Grid item paddingTop={{ md: "10px", xs: "" }} md={4} xs={12}>
-                                {/* <div>
+                                  <div id="conntent">
+                                    Valid Until:{" "}
+                                    {new Date(
+                                      connection.validity_time
+                                    ).toLocaleString()}
+                                  </div>
+                                </Grid>
+                                <Grid item paddingTop={{ md: "10px", xs: "" }} md={4} xs={12}>
+                                  {/* <div>
                                   <button data-tooltip-id="tooltip" data-tooltip-content="Terms of connection"
                                     className="info-button" style={{ marginRight: '26px', marginLeft: "-6px" }}
                                     onClick={() =>
@@ -2746,61 +2872,61 @@ console.log("closedConnectionsr", closedConnections)
 
                                 </div> */}
 
-                                {/* <button
+                                  {/* <button
                                   className="info-button"
                                   onClick={() => handleInfo(connection)}
                                 >
                                   i{" "}
                                 </button> */}
-                                <div className="d-flex align-items-center">
+                                  <div className="d-flex align-items-center">
 
-                                  <h6 className="mt-2 me-2">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
-                                  <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
-                                  <button
-                                    // onClick={() => handleTracker(connection)}
-                                    style={{
-                                      backgroundColor: color,
-                                      border: 'none',
-                                      padding: '5px 10px',
-                                      borderRadius: '5px',
-                                      color: '#fff',
-                                      cursor: 'pointer',
-                                    }}
-                                  >
-                                    {ratio}
-                                  </button>
-                                </div>
+                                    <h6 className="mt-2 me-2">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
+                                    <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                                    <button
+                                      // onClick={() => handleTracker(connection)}
+                                      style={{
+                                        backgroundColor: color,
+                                        border: 'none',
+                                        padding: '5px 10px',
+                                        borderRadius: '5px',
+                                        color: '#fff',
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      {ratio}
+                                    </button>
+                                  </div>
 
-                                <div className="d-flex align-items-center mt-1">
-                                  <button className="me-2"
-                                    // onClick={() => handleTrackerHost(connection)}
-                                    style={{
-                                      backgroundColor: colorReverse,
-                                      border: 'none',
-                                      padding: '5px 10px',
-                                      borderRadius: '5px',
-                                      color: '#fff',
-                                      cursor: 'pointer',
-                                    }}
-                                  >
-                                    {ratioReverse}
-                                  </button>
-                                  <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
+                                  <div className="d-flex align-items-center mt-1">
+                                    <button className="me-2"
+                                      // onClick={() => handleTrackerHost(connection)}
+                                      style={{
+                                        backgroundColor: colorReverse,
+                                        border: 'none',
+                                        padding: '5px 10px',
+                                        borderRadius: '5px',
+                                        color: '#fff',
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      {ratioReverse}
+                                    </button>
+                                    <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
 
-                                  <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
+                                    <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
 
 
-                                </div>
+                                  </div>
+                                </Grid>
                               </Grid>
-                            </Grid>
-                          );
-                        }
-                      )
-                    ) : (
-                      <p>No closed connections found.</p>
-                    )}
+                            );
+                          }
+                        )
+                      ) : (
+                        <p>No closed connections found.</p>
+                      )}
+                    </div>
                   </div>
-                </div>
                 </>
               )}
             </div>
@@ -2872,7 +2998,7 @@ console.log("closedConnectionsr", closedConnections)
         </div>
 
       )}
-    <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+      <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
     </div>
 

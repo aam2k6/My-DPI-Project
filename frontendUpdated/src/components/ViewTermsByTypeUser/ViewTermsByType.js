@@ -606,6 +606,7 @@ export const ViewTermsByType = () => {
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
   const [initialPostConditions, setInitialPostConditions] = useState({});
   const [editablePostConditions, setEditablePostConditions] = useState({});
+  const [isLockedPostConditions, setIsLockedPostConditions] = useState();
 
   const {
     connectionName,
@@ -702,12 +703,12 @@ export const ViewTermsByType = () => {
   }, [connectionDetails]);
 
   useEffect(() => {
-    if(connection){
+    if (connection) {
       fetchTrackerData(connection)
       fetchTrackerDataReverse(connection);
     }
-  },[connection]);
- 
+  }, [connection]);
+
   // const fetchAllTrackerData = (outgoingConnections) => {
   //   outgoingConnections.forEach((connection) => {
   //     fetchTrackerData(connection);
@@ -715,14 +716,33 @@ export const ViewTermsByType = () => {
   //   });
   // };
 
+  // useEffect(() => {
+  //   if (pdfData?.post_conditions) {
+  //     const { creator_conditions, ...filteredConditions } = pdfData.post_conditions;
+  //     setInitialPostConditions(filteredConditions);
+  //     setEditablePostConditions(filteredConditions);
+  //   }
+  // }, [pdfData]);
+
   useEffect(() => {
     if (pdfData?.post_conditions) {
-      const { creator_conditions, ...filteredConditions } = pdfData.post_conditions;
-      setInitialPostConditions(filteredConditions);
-      setEditablePostConditions(filteredConditions);
+      const { creator_conditions, ...restPostConditions } = pdfData.post_conditions;
+      let filteredPostConditions = restPostConditions;
+
+      if (pdfData.xnode_Type === "VNODE") {
+        filteredPostConditions = Object.fromEntries(
+          Object.entries(restPostConditions).filter(([key]) =>
+            ["share", "transfer"].includes(key)
+          )
+        );
+      }
+      // setInitialPostConditions(filteredConditions);
+      setEditablePostConditions(filteredPostConditions);
+      setIsLockedPostConditions(pdfData.is_locked);
     }
   }, [pdfData]);
 
+  console.log("setInitialPostConditions", editablePostConditions)
 
   const fetchTrackerData = async (connection) => {
     try {
@@ -2729,10 +2749,10 @@ export const ViewTermsByType = () => {
         <h5><b>{connectionName || connection?.connection_name}</b> &nbsp;
           <span
             className={`badge ${connection?.connection_status === "established"
-                ? "text-bg-warning"
-                : connection?.connection_status === "live"
-                  ? "text-bg-success"
-                  : "text-bg-secondary"
+              ? "text-bg-warning"
+              : connection?.connection_status === "live"
+                ? "text-bg-success"
+                : "text-bg-secondary"
               }`}
           >
             {capitalizeFirstLetter(connection?.connection_status) || "Loading..."}
@@ -3888,7 +3908,7 @@ export const ViewTermsByType = () => {
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
-                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                          {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -3915,11 +3935,15 @@ export const ViewTermsByType = () => {
                               {Object.entries(editablePostConditions).map(([key, value]) => (
                                 <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                                   <input
+                                    className="form-check-input"
                                     type="checkbox"
                                     id={key}
-                                    name={key}
+                                    // name={key}
                                     checked={value}
-                                    disabled={initialPostConditions[key] === false} // disable only if initially true
+                                    disabled={
+                                      pdfData?.creator !== pdfData?.node_information?.current_owner &&
+                                      isLockedPostConditions?.[key] === true
+                                    }
                                     onChange={(e) =>
                                       setEditablePostConditions((prev) => ({
                                         ...prev,
@@ -3927,7 +3951,9 @@ export const ViewTermsByType = () => {
                                       }))
                                     }
                                   />
-                                  <label htmlFor={key}>{key}</label>
+                                  <label className="form-check-label" htmlFor={key}>
+                                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                                  </label>
                                 </li>
                               ))}
 
@@ -4050,7 +4076,7 @@ export const ViewTermsByType = () => {
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
-                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                          {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -4077,11 +4103,15 @@ export const ViewTermsByType = () => {
                               {Object.entries(editablePostConditions).map(([key, value]) => (
                                 <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                                   <input
+                                    className="form-check-input"
                                     type="checkbox"
                                     id={key}
-                                    name={key}
+                                    // name={key}
                                     checked={value}
-                                    disabled={initialPostConditions[key] === false} // disable only if initially true
+                                    disabled={
+                                      pdfData?.creator !== pdfData?.node_information?.current_owner &&
+                                      isLockedPostConditions?.[key] === true
+                                    }
                                     onChange={(e) =>
                                       setEditablePostConditions((prev) => ({
                                         ...prev,
@@ -4089,7 +4119,9 @@ export const ViewTermsByType = () => {
                                       }))
                                     }
                                   />
-                                  <label htmlFor={key}>{key}</label>
+                                  <label className="form-check-label" htmlFor={key}>
+                                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                                  </label>
                                 </li>
                               ))}
 
@@ -4158,7 +4190,7 @@ export const ViewTermsByType = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                             <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -4238,11 +4270,15 @@ export const ViewTermsByType = () => {
                               {Object.entries(editablePostConditions).map(([key, value]) => (
                                 <li key={key} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                                   <input
+                                    className="form-check-input"
                                     type="checkbox"
                                     id={key}
-                                    name={key}
+                                    // name={key}
                                     checked={value}
-                                    disabled={initialPostConditions[key] === false} // disable only if initially true
+                                    disabled={
+                                      pdfData?.creator !== pdfData?.node_information?.current_owner &&
+                                      isLockedPostConditions?.[key] === true
+                                    }
                                     onChange={(e) =>
                                       setEditablePostConditions((prev) => ({
                                         ...prev,
@@ -4250,7 +4286,9 @@ export const ViewTermsByType = () => {
                                       }))
                                     }
                                   />
-                                  <label htmlFor={key}>{key}</label>
+                                 <label className="form-check-label" htmlFor={key}>
+                                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                                  </label>
                                 </li>
                               ))}
 
@@ -4320,7 +4358,7 @@ export const ViewTermsByType = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                             <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

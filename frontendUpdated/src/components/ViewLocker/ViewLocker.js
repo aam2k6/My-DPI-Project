@@ -1298,7 +1298,7 @@ export const ViewLocker = () => {
   };
 
   const handleuserclick = (user) => {
-    if (curruser && curruser.username && user === curruser.username) {
+    if (curruser && curruser.username && user.username === curruser.username) {
       navigate('/home');
     } else {
       navigate(`/target-user-view`, { state: { user } });
@@ -2976,7 +2976,7 @@ export const ViewLocker = () => {
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Creator:</span>
-                <span>{capitalizeFirstLetter(resourceData.creator_username)}</span>
+                <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleuserclick(resourceData.creator_details)}>{capitalizeFirstLetter(resourceData.creator_username)}</span>
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Current owner:</span>

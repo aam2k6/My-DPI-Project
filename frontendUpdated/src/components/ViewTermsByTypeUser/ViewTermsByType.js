@@ -2898,13 +2898,13 @@ export const ViewTermsByType = () => {
     }
   };
 
-  // const handleclickuser = (user) => {
-  //   if (curruser && curruser.username && user === curruser.username) {
-  //     navigate('/home');
-  //   } else {
-  //     navigate(`/target-user-view`, { state: { user } });
-  //   }
-  // };
+  const handleclickcreator = (user) => {
+    if (curruser && curruser.username && user.username === curruser.username) {
+      navigate('/home');
+    } else {
+      navigate(`/target-user-view`, { state: { user } });
+    }
+  };
 
   const handleuserclick = (hostUserUsername) => {
     console.log(hostUserUsername);
@@ -4023,7 +4023,7 @@ export const ViewTermsByType = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -4190,7 +4190,7 @@ export const ViewTermsByType = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -4358,7 +4358,7 @@ export const ViewTermsByType = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

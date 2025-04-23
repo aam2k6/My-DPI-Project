@@ -1856,10 +1856,13 @@ console.log("handleStatusChange2", rejectedStatuses)
   )
 
 
-  console.log("conn details", conndetails);
-  console.log("connection", connection);
-  console.log("navigate back 1", connection);
-  console.log("navigate back 2", connectionType);
+  const handleclickcreator = (user) => {
+    if (curruser && curruser.username && user.username === curruser.username) {
+      navigate('/home');
+    } else {
+      navigate(`/target-user-view`, { state: { user } });
+    }
+  };
   return (
     <div>
       <Navbar content={content} breadcrumbs={breadcrumbs} />
@@ -2335,7 +2338,7 @@ console.log("handleStatusChange2", rejectedStatuses)
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -2413,7 +2416,7 @@ console.log("handleStatusChange2", rejectedStatuses)
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

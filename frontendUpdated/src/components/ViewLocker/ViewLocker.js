@@ -928,6 +928,13 @@ export const ViewLocker = () => {
           ["share", "transfer"].includes(key)
         )
       );
+    } else if (xnode.xnode_Type === "SNODE") {
+      // Exclude "subset"
+      filteredPostConditions = Object.fromEntries(
+        Object.entries(restPostConditions).filter(([key]) =>
+          !["subset"].includes(key)
+        )
+      );
     }
 
     setPostConditions(filteredPostConditions);

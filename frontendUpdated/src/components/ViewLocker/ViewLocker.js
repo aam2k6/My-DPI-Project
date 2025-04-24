@@ -1666,7 +1666,7 @@ export const ViewLocker = () => {
                                         {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                           <>
-                                            <i
+                                            {/* <i
                                               className="subset-icon"
                                               data-tooltip-id="tooltip" data-tooltip-content="Subset"
                                               style={{
@@ -1674,7 +1674,7 @@ export const ViewLocker = () => {
                                               }}
                                               onClick={() => handleSubsetClick(xnode)}
 
-                                            />
+                                            /> */}
                                             <i
                                               className="fa-regular fa-pen-to-square"
                                               data-tooltip-id="tooltip" data-tooltip-content="Edit"
@@ -1735,7 +1735,7 @@ export const ViewLocker = () => {
                                           onClick={() => handleViewDetails(xnode.id)}
                                         />
 
-                                        {xnode.xnode_Type === "INODE" && xnode.connection === null && (
+                                        {xnode.xnode_Type === "INODE" && xnode.connection === null && xnode.primary_owner_username === xnode.primary_owner_username && (
                                           <>
                                             <i
                                               className="fa-regular fa-trash-can"
@@ -1969,7 +1969,7 @@ export const ViewLocker = () => {
                                                               {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                                                 <>
-                                                                  <i
+                                                                  {/* <i
                                                                     className="subset-icon"
                                                                     data-tooltip-id="tooltip" data-tooltip-content="Subset"
                                                                     style={{
@@ -1977,7 +1977,7 @@ export const ViewLocker = () => {
                                                                     }}
                                                                     onClick={() => handleSubsetClick(xnode)}
 
-                                                                  />
+                                                                  /> */}
                                                                   <i
                                                                     className="fa-regular fa-pen-to-square"
                                                                     data-tooltip-id="tooltip" data-tooltip-content="Edit"
@@ -2222,7 +2222,7 @@ export const ViewLocker = () => {
                                                   {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                                     <>
-                                                      <i
+                                                      {/* <i
                                                         className="subset-icon"
                                                         data-tooltip-id="tooltip" data-tooltip-content="Subset"
                                                         style={{
@@ -2230,7 +2230,7 @@ export const ViewLocker = () => {
                                                         }}
                                                         onClick={() => handleSubsetClick(xnode)}
 
-                                                      />
+                                                      /> */}
                                                       <i
                                                         className="fa-regular fa-pen-to-square"
                                                         data-tooltip-id="tooltip" data-tooltip-content="Edit"

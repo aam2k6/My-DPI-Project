@@ -1742,7 +1742,7 @@ export const ViewLocker = () => {
                                           onClick={() => handleViewDetails(xnode.id)}
                                         />
 
-                                        {xnode.xnode_Type === "INODE" && xnode.connection === null && xnode.primary_owner_username === xnode.current_owner_username && (
+                                        {xnode.xnode_Type === "INODE" && xnode.connection === null && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
                                           <>
                                             <i
                                               className="fa-regular fa-trash-can"

@@ -2629,6 +2629,7 @@ export const ViewLocker = () => {
                                   [key]: e.target.checked,
                                 }));
                               }}
+                              style={{cursor:"pointer"}}
                             />
                             <label className="form-check-label" htmlFor={key}>
                               {key.charAt(0).toUpperCase() + key.slice(1)}

@@ -84,45 +84,45 @@ export const ViewLocker = () => {
   };
   console.log("connections", connections.outgoing_connections)
   useEffect(() => {
-    const token = Cookies.get("authToken");
-    const checkAndUpdateConnectionStatus = async () => {
-      try {
-        const user_id = curruser?.user_id;
-        const lockerData = location.state || locker?.locker_id;
-        const locker_id = lockerData?.locker?.locker_id;
-        if (!user_id || !locker_id) {
-          console.warn("Missing user_id or locker_id");
-          return;
-        }
+    // const token = Cookies.get("authToken");
+    // const checkAndUpdateConnectionStatus = async () => {
+    //   try {
+    //     const user_id = curruser?.user_id;
+    //     const lockerData = location.state || locker?.locker_id;
+    //     const locker_id = lockerData?.locker?.locker_id;
+    //     if (!user_id || !locker_id) {
+    //       console.warn("Missing user_id or locker_id");
+    //       return;
+    //     }
 
-        const response = await fetch("host/update_connection_status/".replace(/host/, frontend_host), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`
-          },
-          body: JSON.stringify({ user_id, locker_id }),
-        });
+    //     const response = await fetch("host/update_connection_status/".replace(/host/, frontend_host), {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Basic ${token}`
+    //       },
+    //       body: JSON.stringify({ user_id, locker_id }),
+    //     });
 
-        const result = await response.json();
-        if (result.success) {
-          console.log("Expired connections updated:", result.updated_connection_ids);
-        } else {
-          console.warn("API Error:", result.error);
-        }
-      } catch (error) {
-        console.error("Error calling update_connection_status_if_expired:", error);
-      }
-    };
+    //     const result = await response.json();
+    //     if (result.success) {
+    //       console.log("Expired connections updated:", result.updated_connection_ids);
+    //     } else {
+    //       console.warn("API Error:", result.error);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error calling update_connection_status_if_expired:", error);
+    //   }
+    // };
 
     if (locker) {
       // First update expired connection statuses
-      checkAndUpdateConnectionStatus().then(() => {
+      // checkAndUpdateConnectionStatus().then(() => {
         // Then fetch other dependent data
         fetchConnectionsAndOtherConnections();
         fetchResources();
         fetchXnodes();
-      });
+      // });
     }
 
     if (location.state) {
@@ -2413,7 +2413,7 @@ export const ViewLocker = () => {
                 data-tooltip-id="tooltip" data-tooltip-content=""
                 onClick={() => setActiveTab("archived")}
               >
-                Archived
+                Archived Connections
               </div>
               {/* <Tooltip id="tooltip" style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: "13px" }} /> */}
             </div>
@@ -2931,7 +2931,7 @@ export const ViewLocker = () => {
                           }
                         )
                       ) : (
-                        <p>No closed connections found.</p>
+                        <p>No archived connections found.</p>
                       )}
                     </div>
                   </div>

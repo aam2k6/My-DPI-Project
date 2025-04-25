@@ -239,6 +239,29 @@ export const Home = () => {
   }, [curruser, navigate]);
 
   useEffect(() => {
+
+    const checkAndUpdateConnectionStatus = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const response = await fetch("host/update_connection_status_if_expired_onlogin/".replace(/host/, frontend_host), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`
+          }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          console.log("Expired connections updated:", result.updated_connection_ids);
+        } else {
+          console.warn("API Error:", result.error);
+        }
+      } catch (error) {
+        console.error("Error calling update_connection_status_if_expired:", error);
+      }
+    };
+
     const fetchLockers = async () => {
       try {
         const token = Cookies.get('authToken');
@@ -300,8 +323,10 @@ export const Home = () => {
   
 
     if (curruser) {
-      fetchLockers();
-      fetchNotifications();
+      checkAndUpdateConnectionStatus().then(() =>{
+        fetchLockers();
+        fetchNotifications();
+      });
     }
   }, [curruser]);
 

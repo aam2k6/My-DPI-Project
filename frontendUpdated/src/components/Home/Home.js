@@ -520,6 +520,7 @@ export const Home = () => {
 
     </>
   );
+  
 
 
   const toggleExpand = (index) => {

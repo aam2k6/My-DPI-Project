@@ -13,9 +13,21 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import { Tooltip } from 'react-tooltip';
 import { Grid } from "@mui/material"
-
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 export const ViewHostTermsByType = () => {
-
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -2293,8 +2305,22 @@ export const ViewHostTermsByType = () => {
   return (
 
     <div>
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
 
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
 
       {/* <div className={showResources || showResources2 ? "split-view" : ""}>
         <div className="table-container">

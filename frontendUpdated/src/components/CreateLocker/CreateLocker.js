@@ -5,14 +5,28 @@ import Cookies from "js-cookie"
 import Navbar from "../Navbar/Navbar"
 import { frontend_host } from "../../config"
 import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material"
+import Sidebar from "../Sidebar/Sidebar"
+import { Menu } from "lucide-react"
 import "./page2.css"
 
 export const CreateLocker = () => {
+  
   const navigate = useNavigate()
   const [lockerName, setLockerName] = useState("")
   const [description, setDescription] = useState("")
   const { curruser, setUser } = useContext(usercontext)
-
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const handleSubmit = (event) => {
     event.preventDefault()
 
@@ -72,7 +86,22 @@ export const CreateLocker = () => {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <Navbar breadcrumbs={breadcrumbs} />
+       <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar breadcrumbs={breadcrumbs} /> */}
 
       <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
         <Container maxWidth="sm">

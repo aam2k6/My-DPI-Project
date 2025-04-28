@@ -8,9 +8,22 @@ import Modal from '../Modal/Modal';
 import { frontend_host } from '../../config';
 import { Grid, TextField, Button, Select, MenuItem, InputLabel, Typography, Box, Container } from '@mui/material';
 import { Padding } from '@mui/icons-material';
-
+import { Menu} from 'lucide-react';
+import Sidebar from '../Sidebar/Sidebar';
 
 export const UploadResource = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const location = useLocation();
   const locker = location.state ? location.state.locker : null;
   const { curruser, setUser } = useContext(usercontext);
@@ -123,7 +136,22 @@ export const UploadResource = () => {
 
   return (
     <div>
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       {isErrorModalOpen && (
         <Modal
           message={errorModalMessage}

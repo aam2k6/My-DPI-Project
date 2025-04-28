@@ -11,9 +11,22 @@ import { Grid } from '@mui/material'
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import { TextField } from "@mui/material";
-
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 
 export const HostTermsReview = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -1862,7 +1875,22 @@ console.log("handleStatusChange2", rejectedStatuses)
   console.log("navigate back 2", connectionType);
   return (
     <div>
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
 
       <div style={{ marginTop: "140px" }}>
         <div className="connection-details">

@@ -1125,10 +1125,24 @@ import QRCode from "react-qr-code";
 import { Grid, Box, Button } from '@mui/material'
 import { Tooltip } from 'react-tooltip';
 import ReactModal from "react-modal";
+import Sidebar from "../Sidebar/Sidebar.js";
+import { Menu } from "lucide-react";
 // import pdfWorker from "pdfjs-dist/build/pdf.worker.min.js"
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
 export const TargetLockerView = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser, setUser } = useContext(usercontext);
@@ -1710,7 +1724,23 @@ console.log("pdfUrl", pdfUrl)
       {isModalOpen && (
         <Modal message={modalMessage.message || <QRCode value={qrData} />} onClose={handleCloseModal} type={modalMessage.type || "info"} />
       )}
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+       <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <div style={{ marginTop: "140px" }}>
         <Grid container className="page7description" justifyContent="center" alignItems="center">
           <Grid item md={10} sm={12} >

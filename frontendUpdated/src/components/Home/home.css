@@ -98,8 +98,8 @@
   .locker-box2 {
     width: 100%;
     max-width: 800px;
-    border: 1px solid #3874CB;
-    border-radius: 10px;
+    border: 0px solid #f3f3f3;
+    border-radius: 0px;
     margin-top: -20px;
     padding: 40px;
   }

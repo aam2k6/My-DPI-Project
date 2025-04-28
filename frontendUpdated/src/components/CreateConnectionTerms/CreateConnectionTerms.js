@@ -706,10 +706,24 @@ import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config"; import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 import { Grid } from '@mui/material'
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 
 // import res from "./object";
 
 export const CreateConnectionTerms = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser, setUser } = useContext(usercontext);
@@ -1472,7 +1486,7 @@ export const CreateConnectionTerms = () => {
         </div>
       );
     }
-    return <p>No forbidden terms available.</p>;
+ <p>No forbidden terms available.</p>;
   };
 
   console.log(res);
@@ -1803,7 +1817,22 @@ export const CreateConnectionTerms = () => {
   console.log("connectionDetails", connectionDetails)
   return (
     <div>
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <div style={{ marginTop: "150px" }}>
         <div className="connection-details longconnectionDescription">
           Connection Name: {connectionName} <br />

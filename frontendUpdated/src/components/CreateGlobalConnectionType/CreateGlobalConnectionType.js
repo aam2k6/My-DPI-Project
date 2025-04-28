@@ -8,6 +8,8 @@ import { usercontext } from "../../usercontext"
 import { frontend_host } from "../../config"
 import "./CreateGlobalConnectionType.css"
 import "../DPIdirectory/DPIdirectory.css"
+import Sidebar from "../Sidebar/Sidebar"
+import { Menu } from "lucide-react"
 
 const COMPONENT_ID = "create-global-connection-type"
 
@@ -19,6 +21,18 @@ export default function CreateGlobalConnectionType() {
   const navigate = useNavigate()
   const { curruser } = useContext(usercontext)
   const isSystemAdmin = curruser && ["sys_admin", "system_admin"].includes(curruser.user_type)
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
 
   useEffect(() => {
     if (!curruser) {
@@ -132,9 +146,25 @@ export default function CreateGlobalConnectionType() {
 
   return (
     <div id={COMPONENT_ID} className="manage-connection-page">
-      <Navbar breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      
+      {/* <Navbar breadcrumbs={breadcrumbs} /> */}
       <div className="dpi-directories" style={{ marginTop: "140px" }}>
-        <div className="sidebars">
+        {/* <div className="sidebars">
           <button className="btn-open" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i class="bi bi-chevron-right"></i></button>
 
           <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
@@ -165,7 +195,8 @@ export default function CreateGlobalConnectionType() {
               </ul>
             </div>
           </div>
-        </div>
+        </div> */}
+        <div> {breadcrumbs}</div>
         <Grid container className="manage-connection-content">
           <Grid item xs={12}>
             <h3>Global Connection Directory</h3>

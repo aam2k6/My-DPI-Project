@@ -2,13 +2,26 @@ import React, { useState, useEffect, useContext } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Navbar from '../Navbar/Navbar';
 import './ManageUsers.css';
+import { Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Modal from '../Modal/Modal';
 import { frontend_host } from '../../config';
 
-export default function ManageUsers({ role }) {  // Role can be 'moderator' or 'admin'
+export default function ManageUsers({ role }) { 
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    })); // Role can be 'moderator' or 'admin'
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRoleUser, setSelectedRoleUser] = useState(null);
@@ -110,8 +123,22 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
   const value = (role === 'sys_admin' || role === "system_admin") ? "System Admin" : role.charAt(0).toUpperCase() + role.slice(1);
   return (
     <div className='content'>
-      <Navbar />
+      {/* <Navbar /> */}
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
 
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
       <div style={{marginTop: '120px'}}>
       <h2>Manage {value}s</h2>
       <Sidebar />

@@ -4,13 +4,26 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 import { frontend_host } from '../../config';
 import { Grid, Box, Button } from '@mui/material'
 
 export const CreateConnectionType = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [activeMenu, setActiveMenu] = useState("Home");
+    const [openSubmenus, setOpenSubmenus] = useState({
+      directory: false,
+      settings: false,
+    });
+    const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+    const toggleSubmenu = (menu) =>
+      setOpenSubmenus((prev) => ({
+        ...prev,
+        [menu]: !prev[menu],
+      }));
     const { curruser, setUser } = useContext(usercontext);
     const [isOpen, setIsOpen] = useState(false);
     const [lockers, setLockers] = useState([]); // Initialize as empty array
@@ -175,7 +188,22 @@ export const CreateConnectionType = () => {
     )
     return (
         <div id='make-connection'>
-            <Navbar content={content} breadcrumbs={breadcrumbs} />
+             <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+            {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
             <div style={{ marginTop: "150px" }}>
                 <div className="page12typeofconn">
                     <h6>

@@ -526,9 +526,23 @@ import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/f
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import { Tooltip } from 'react-tooltip';
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 import { Grid } from "@mui/material"
 
 export const ViewTermsByType = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -2932,8 +2946,23 @@ export const ViewTermsByType = () => {
   return (
 
     <div>
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
 
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
 
       <div style={{ marginTop: "140px" }}>
         <div className="connection-details">

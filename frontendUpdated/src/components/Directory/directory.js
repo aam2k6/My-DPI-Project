@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from '../Navbar/Navbar';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import "./directory.css";
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 
-const DirectoryPage = () => {
+export const DirectoryPage = () => {
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
     const navigate = useNavigate();
     const breadcrumbs = (
         <div className="breadcrumbs">
@@ -18,7 +32,22 @@ const DirectoryPage = () => {
       )
     return (
         <div>
-            <Navbar breadcrumbs={breadcrumbs} />
+            <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+            {/* <Navbar breadcrumbs={breadcrumbs} /> */}
             <Box className="landing-page">
                 <div className="landing-page-container">
                     <h1>Directory</h1>

@@ -6,6 +6,8 @@ import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal";
 import "./ConnectionTypes.css";
+import Sidebar from "../Sidebar/Sidebar";
+import { Menu } from "lucide-react";
 import {
     Card,
     CardContent,
@@ -35,6 +37,18 @@ export const ConnectionTypes = () => {
     const [modalMessage, setModalMessage] = useState(null); // State for modal message
     const [newConnectionTermName, setNewConnectionTermName] = useState(""); // For the new term name
     const [expandedIndices, setExpandedIndices] = useState({});
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [activeMenu, setActiveMenu] = useState("Home");
+    const [openSubmenus, setOpenSubmenus] = useState({
+      directory: false,
+      settings: false,
+    });
+    const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+    const toggleSubmenu = (menu) =>
+      setOpenSubmenus((prev) => ({
+        ...prev,
+        [menu]: !prev[menu],
+      }));
 
 
 
@@ -287,7 +301,22 @@ export const ConnectionTypes = () => {
     );
     return (
         <div id="all-connection-terms">
-            <Navbar content={content} breadcrumbs={breadcrumbs}/>
+            {/* <Navbar content={content} breadcrumbs={breadcrumbs}/> */}
+              <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
             <div style={{ marginTop: "160px" }}>
                 <Grid container>
                     <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>

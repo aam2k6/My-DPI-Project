@@ -4,7 +4,8 @@ import { usercontext } from '../../usercontext';
 import { frontend_host } from "../../config.js";
 import Cookies from 'js-cookie';
 import Navbar from "../Navbar/Navbar";
-
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 export const FreezeLocker = () => {
     const [lockerName, setLockerName] = useState("");
     const [users, setUsers] = useState([]);
@@ -16,6 +17,18 @@ export const FreezeLocker = () => {
     const [freezeMode, setFreezeMode] = useState(true); // Toggle state
     const { curruser } = useContext(usercontext);
     const [error, setError] = useState(null);
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
 
 
     useEffect(() => {
@@ -149,7 +162,22 @@ export const FreezeLocker = () => {
 
     const code = (
         <>
-            <Navbar breadcrumbs={breadcrumbs} />
+            {/* <Navbar breadcrumbs={breadcrumbs} /> */}
+            <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
             <div className="container" style={{ marginTop: "120px" }}>
                 <div className="row justify-content-center p-4">
                     <div className="col-md-6 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">

@@ -8,8 +8,22 @@ import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
 import { frontend_host } from "../../config";
 import { Grid, Button, Box } from '@mui/material'
+import Sidebar from "../Sidebar/Sidebar.js";
+import { Menu } from "lucide-react";
 
 export const ConnectionTermsGlobal = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const navigate = useNavigate();
   const location = useLocation(); // Get the state passed from the previous page
   const { connectionTypeName, connectionTypeDescription, existingTerms } =
@@ -365,7 +379,22 @@ console.log("errors", error)
           type={modalMessage.type}
         />
       )} */}
-      <Navbar breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar breadcrumbs={breadcrumbs} /> */}
 
       <div className="connectionTermsContainer">
 

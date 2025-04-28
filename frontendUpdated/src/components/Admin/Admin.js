@@ -8,8 +8,22 @@ import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal"; // Import the Modal component
 import { frontend_host } from "../../config";
 import { Grid, Button } from '@mui/material'
+import Sidebar from "../Sidebar/Sidebar";
+import { Menu } from "lucide-react";
 
 export const Admin = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const location = useLocation();
   const navigate = useNavigate();
   const [lockers, setLockers] = useState([]);
@@ -455,7 +469,22 @@ export const Admin = () => {
 
   return (
     <div>
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <Button onClick={gotopage12createconnection} className="btn-color" style={{ marginTop: "140px", marginLeft: "30px", padding: "8px" }}>
         Create New Connection Type
       </Button>

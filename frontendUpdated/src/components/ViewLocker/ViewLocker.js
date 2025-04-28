@@ -5,16 +5,18 @@ import Cookies from "js-cookie";
 import { useLocation, useParams } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
+import Sidebar from "../Sidebar/Sidebar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal";
-import { Grid, Button, ButtonBase } from "@mui/material"
+import { Grid, Button, ButtonBase, Breadcrumbs } from "@mui/material"
 import Tooltips from '@mui/material/Tooltip';
 import { Tooltip } from 'react-tooltip';
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { ConnectionContext } from "../../ConnectionContext";
+import { Menu } from "lucide-react";
 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
@@ -31,6 +33,19 @@ export const ViewLocker = () => {
     incoming_connections: [],
     outgoing_connections: [],
   });
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("My Lockers");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
+
   const [allOutgoingConnections, setAllOutgoingConnections] = useState([]);
   const [closedConnections, setClosedConnections] = useState([]);
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -1497,8 +1512,35 @@ export const ViewLocker = () => {
   };
   return (
     <div id="viewLocker">
-      <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} />
+      {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+        lockerObj={locker}
+      />
+       <h1
+  className="page-title"
+  style={{ fontSize: "28px", textAlign: "right", marginLeft: "520px", marginTop: "20px" }}
+>
+  Locker: {locker.name}
+</h1>
+<div>{breadcrumbs}</div>
+      
+      
       <div className="containers" style={{ marginTop: "150px" }}>
+        
+    
         {/* <div className="locker-description">
           {locker ? ` ${locker.description}` : "Description"}
         </div> */}

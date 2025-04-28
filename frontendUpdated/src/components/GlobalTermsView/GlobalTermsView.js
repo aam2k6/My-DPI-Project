@@ -3,12 +3,25 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import Navbar from "../Navbar/Navbar";
 import Sidebar from "../Sidebar/Sidebar";
+import { Menu } from "lucide-react";
 import { usercontext } from "../../usercontext";
 import { frontend_host } from "../../config";
 import '../Displayterms/Displayterms.css'; // Make sure to create the relevant CSS file
 import { Grid, Box } from '@mui/material';
 
 const GlobalTermsView = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -246,7 +259,22 @@ const GlobalTermsView = () => {
 
   return (
     <div className="global-terms-view-page" id="global-terms-view">
-      <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       {/* {isSystemAdmin && <Sidebar />} Show Sidebar only for System Admin */}
       <div style={{ marginTop: "140px" }}>
         <div className="connection-details" >

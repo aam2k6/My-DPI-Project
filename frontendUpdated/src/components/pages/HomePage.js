@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Home } from "../Home/Home2"; // adjust the path if needed
-import Sidebar from "../Sidebar/sidebar_comp"; // adjust the path if needed
+import Sidebar from "../Sidebar/Sidebar"; // adjust the path if needed
 import { Menu } from "lucide-react";
 
 const HomePage = () => {

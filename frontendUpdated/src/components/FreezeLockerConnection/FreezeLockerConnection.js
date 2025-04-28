@@ -4,11 +4,24 @@ import Modal from '../Modal/Modal.jsx';
 import Navbar from "../Navbar/Navbar";
 import { usercontext } from '../../usercontext';
 import Cookies from 'js-cookie';
-import Sidebar from "../Sidebar/Sidebar";
+import Sidebar from "../Sidebar/Sidebar.js";
 import { frontend_host } from "../../config.js";
+import { Menu } from "lucide-react";
 
 
 export default function FreezeLockerConnection() {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   const [lockerName, setLockerName] = useState("");
   const [connectionName, setConnectionName] = useState("");
   const [modalMessage, setModalMessage] = useState({message: "", type: ""});
@@ -230,7 +243,22 @@ export default function FreezeLockerConnection() {
 // const filteredConnections = userConnections.filter(connection => connection.is_frozen === isFreezing);
 
   const code = (<>
-    <Navbar />
+  <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+    {/* <Navbar /> */}
     <button id = "toggle" onClick={toggleFreezeMode}>
      {freezeMode ? 'Switch to Unfreeze' : 'Switch to Freeze'}
    </button>

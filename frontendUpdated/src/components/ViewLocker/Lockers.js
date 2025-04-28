@@ -5,6 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import "./Lockers.css";
+import Sidebar from "../Sidebar/Sidebar";
+import { Menu } from "lucide-react";
 import Modal from "../Modal/Modal"; // Import the Modal component
 import {
   Card,
@@ -29,6 +31,18 @@ export const AllLokers = () => {
   const [editingLocker, setEditingLocker] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [modalMessage, setModalMessage] = useState(null);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
 
   useEffect(() => {
     const fetchLockers = async () => {
@@ -273,7 +287,22 @@ export const AllLokers = () => {
 
   return (
     <div id="alllockers">
-       <Navbar content={content} breadcrumbs={breadcrumbs} />
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <div style={{marginTop: "150px"}}>
       <Grid container>
             <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>

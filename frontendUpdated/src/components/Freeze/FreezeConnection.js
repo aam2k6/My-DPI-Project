@@ -4,9 +4,22 @@ import Modal from '../Modal/Modal.jsx';
 import Navbar from "../Navbar/Navbar";
 import { usercontext } from '../../usercontext';
 import Cookies from 'js-cookie';
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar.js";
 
 export const FreezeConnection = () => {
-
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState("Home");
+  const [openSubmenus, setOpenSubmenus] = useState({
+    directory: false,
+    settings: false,
+  });
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleSubmenu = (menu) =>
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
     const [userConnections, setConnections] = useState([]);
     const [connectionName, setConnectionName] = useState("");
     const [connectionId, setConnectionId] = useState("");
@@ -147,7 +160,22 @@ export const FreezeConnection = () => {
 
     const code = (
         <>
-            <Navbar breadcrumbs={breadcrumbs} />
+            <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+            {/* <Navbar breadcrumbs={breadcrumbs} /> */}
             <div className="container" style={{ marginTop: "120px" }}>
                 <div className="row justify-content-center p-4">
                     <div className="col-md-6 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">

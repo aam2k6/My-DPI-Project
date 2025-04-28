@@ -87,6 +87,8 @@
 }
 .container-2 {
   width: 100%;
+  justify-content: center;
+
 }
 .loc {
   margin-bottom: 1.5rem;

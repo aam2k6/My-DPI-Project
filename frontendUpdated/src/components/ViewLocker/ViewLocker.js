@@ -1598,7 +1598,7 @@ export const ViewLocker = () => {
                   {/* Resource List inside the folder */}
                   {isResourcesVisible && (
                     <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
-                      {xnodes.length > 0 ? (
+                      {xnodes?.filter((xnode) => xnode.status !== "closed").length > 0 ? (
                         xnodes.filter((xnode) => xnode.connection === null).length > 0 ? (
                           xnodes
                             .filter((xnode) => xnode.connection === null)
@@ -1904,7 +1904,7 @@ export const ViewLocker = () => {
                                             {/* If user is expanded, show resources */}
                                             {expandedusers.includes(uniqueUserKey) && (
                                               <ul style={{ paddingLeft: "40px", marginTop: "5px" }}>
-                                                {userResources[`${user.guest_user.username}-${connection.connection_type_id}`]?.length > 0 ? (
+                                                {userResources[`${user.guest_user.username}-${connection.connection_type_id}`]?.filter(xnode => xnode.status !== "closed").length > 0 ? (
                                                   userResources[`${user.guest_user.username}-${connection.connection_type_id}`].map((xnode) => (
                                                     <div
                                                       key={xnode.id}
@@ -2157,7 +2157,7 @@ export const ViewLocker = () => {
                                 {/* If connection is expanded, show resources */}
                                 {expandedConnections.includes(connection.connection_id) && (
                                   <ul style={{ paddingLeft: "40px", marginTop: "5px" }}>
-                                    {userResources[connection.connection_id]?.length > 0 ? (
+                                    {userResources[connection.connection_id]?.filter(xnode => xnode.status !== "closed").length > 0 ? (
                                       userResources[connection.connection_id].map((xnode) => (
                                         <div
                                           key={xnode.id}

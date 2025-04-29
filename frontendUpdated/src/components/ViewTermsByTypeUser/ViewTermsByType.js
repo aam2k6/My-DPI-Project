@@ -1297,11 +1297,12 @@ export const ViewTermsByType = () => {
         // console.log("xnode data", data);
 
         if (data.xnode_list) {
-          setXnodes(data.xnode_list);
+          // setXnodes(data.xnode_list);
           const filteredData = data.xnode_list.filter(
-            (node) => node.node_information?.primary_owner === node.node_information?.current_owner
+            // (node) => node.node_information?.primary_owner === node.node_information?.current_owner
+            (xnode) => xnode.status !== "closed"
           );
-
+          setXnodes(filteredData);
           // Set filtered xnodes
           setFilteredXnodes(filteredData);
         } else {
@@ -3202,7 +3203,7 @@ export const ViewTermsByType = () => {
                         <div className="resource-container">
                           <h3>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
-
+                        {xnodes.length > 0 ? (
                           <ul>
                             {xnodes.map((resource, index) => {
                               const isResourceInFiltered = filteredXnodes.some((item) => item.id === resource.id);
@@ -3241,6 +3242,9 @@ export const ViewTermsByType = () => {
                             })}
 
                           </ul>
+                          ) : ( 
+                            <p>No resource found.</p>
+                          )}
                           <div className="button-group">
                             <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
@@ -3261,7 +3265,7 @@ export const ViewTermsByType = () => {
                         <div className="resource-container">
                           <h3 style={{ fontWeight: "bold" }}>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
-
+                          {xnodes.length > 0 ? (
                           <ul>
                             {xnodes.map((resource, index) => (
                               <li key={index}>
@@ -3292,6 +3296,9 @@ export const ViewTermsByType = () => {
                               </li>
                             ))}
                           </ul>
+                          ) : (
+                          <p>No resource found.</p>
+                          )}
                           <div className="button-group">
                             <button className="btn-color" onClick={() => setShowResources2(false)}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>

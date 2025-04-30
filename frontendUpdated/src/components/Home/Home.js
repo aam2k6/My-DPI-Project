@@ -239,6 +239,51 @@ export const Home = () => {
   }, [curruser, navigate]);
 
   useEffect(() => {
+
+    const checkAndUpdateConnectionStatus = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const response = await fetch("host/update_connection_status_if_expired_onlogin/".replace(/host/, frontend_host), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`
+          }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          console.log("Expired connections updated:", result.updated_connection_ids);
+        } else {
+          console.warn("API Error:", result.error);
+        }
+      } catch (error) {
+        console.error("Error calling update_connection_status_if_expired:", error);
+      }
+    };
+
+    const checkAndUpdateXnodeStatus = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const response = await fetch("host/update_xnode_v2_status/".replace(/host/, frontend_host), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`
+          }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          console.log("Expired xnode updated");
+        } else {
+          console.warn("API Error:", result.error);
+        }
+      } catch (error) {
+        console.error("Error calling update_xnode_v2_status:", error);
+      }
+    };    
+
     const fetchLockers = async () => {
       try {
         const token = Cookies.get('authToken');
@@ -267,41 +312,44 @@ export const Home = () => {
       }
     };
 
-  //   const fetchLockers = async () => {
-  //     try {
-  //         const token = Cookies.get('authToken');
-  
-  //         const response = await fetch(`${frontend_host}/get-lockers-user/`, {
-  //             method: 'GET',
-  //             headers: {
-  //                 'Authorization': `Basic ${(token)}`,  // Ensure proper decoding
-  //                 'Content-Type': 'application/json',
-  //             },
-  //             mode: 'cors',  // Enable CORS
-  //             credentials: 'include' // Include cookies if required
-  //         });
-  
-  //         if (!response.ok) {
-  //             const errorData = await response.json();
-  //             setError(errorData.error || 'Failed to fetch lockers');
-  //             return;
-  //         }
-  
-  //         const data = await response.json();
-  //         if (data.success) {
-  //             setLockers(data.lockers || []);
-  //         } else {
-  //             setError(data.message || data.error);
-  //         }
-  //     } catch (error) {
-  //         setError("An error occurred while fetching lockers.");
-  //     }
-  // };
-  
+    //   const fetchLockers = async () => {
+    //     try {
+    //         const token = Cookies.get('authToken');
+
+    //         const response = await fetch(`${frontend_host}/get-lockers-user/`, {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Authorization': `Basic ${(token)}`,  // Ensure proper decoding
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             mode: 'cors',  // Enable CORS
+    //             credentials: 'include' // Include cookies if required
+    //         });
+
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             setError(errorData.error || 'Failed to fetch lockers');
+    //             return;
+    //         }
+
+    //         const data = await response.json();
+    //         if (data.success) {
+    //             setLockers(data.lockers || []);
+    //         } else {
+    //             setError(data.message || data.error);
+    //         }
+    //     } catch (error) {
+    //         setError("An error occurred while fetching lockers.");
+    //     }
+    // };
+
 
     if (curruser) {
-      fetchLockers();
-      fetchNotifications();
+      checkAndUpdateConnectionStatus().then(() => {
+        fetchLockers();
+        checkAndUpdateXnodeStatus();
+        fetchNotifications();
+      });
     }
   }, [curruser]);
 
@@ -373,7 +421,7 @@ export const Home = () => {
         const data = await response.json();
         if (data.success) {
           const filteredOutgoing = data.outgoing_connections.filter(
-            (connection) => connection.closed === false
+            (connection) => connection.connection_status !== "closed"
           );
           setOutgoingConnections(filteredOutgoing || []);
         } else {
@@ -550,7 +598,7 @@ export const Home = () => {
               )}
             </Grid>
             <Grid item md={4} xs={6}>
-              <Button className="btn-color" variant="contained"  onClick={handleConsentDashboardClick} size="small" >
+              <Button className="btn-color" variant="contained" onClick={handleConsentDashboardClick} size="small" >
                 {showOutgoingConnections ? "Lockers" : "Consent Dashboard"} {/* Change button text based on state */}
               </Button>
             </Grid>
@@ -663,10 +711,10 @@ export const Home = () => {
               )}
             </div>
           ) : (
-            <div className="allLockers" style={{border:"none"}}>
+            <div className="allLockers" style={{ border: "none" }}>
               {lockers.length > 0 ? (
                 lockers.map(locker => (
-                  <div key={locker.locker_id} className="page1-locker" style={{borderRadius:"5px"}}>
+                  <div key={locker.locker_id} className="page1-locker" style={{ borderRadius: "5px" }}>
                     <h4>{locker.name}</h4>
                     {locker.is_frozen === false ? (
                       <Button className="subbutton" id="openLockerBtn" onClick={() => handleClick(locker)}>
@@ -679,7 +727,7 @@ export const Home = () => {
                   </div>
                 ))
               ) : (
-                <p style={{marginTop:"1.30rem"}}>No lockers found.</p>
+                <p style={{ marginTop: "1.30rem" }}>No lockers found.</p>
               )}
             </div>
           )}

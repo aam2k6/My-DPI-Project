@@ -2014,10 +2014,14 @@ export const Guesttermsreview = () => {
     setPdfUrl(null);
   };
 
-  console.log("conn details", conndetails);
-  console.log("connection", connection);
-  console.log("navigate back 1", connection);
-  console.log("navigate back 2", connectionType);
+  const handleuserclick = (user) => {
+    if (curruser && curruser.username && user.username === curruser.username) {
+      navigate('/home');
+    } else {
+      navigate(`/target-user-view`, { state: { user } });
+    }
+  };
+
   return (
     <div>
       <button
@@ -2523,7 +2527,7 @@ export const Guesttermsreview = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -2601,7 +2605,7 @@ export const Guesttermsreview = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

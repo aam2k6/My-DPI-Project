@@ -99,45 +99,45 @@ export const ViewLocker = () => {
   };
   console.log("connections", connections.outgoing_connections)
   useEffect(() => {
-    const token = Cookies.get("authToken");
-    const checkAndUpdateConnectionStatus = async () => {
-      try {
-        const user_id = curruser?.user_id;
-        const lockerData = location.state || locker?.locker_id;
-        const locker_id = lockerData?.locker?.locker_id;
-        if (!user_id || !locker_id) {
-          console.warn("Missing user_id or locker_id");
-          return;
-        }
+    // const token = Cookies.get("authToken");
+    // const checkAndUpdateConnectionStatus = async () => {
+    //   try {
+    //     const user_id = curruser?.user_id;
+    //     const lockerData = location.state || locker?.locker_id;
+    //     const locker_id = lockerData?.locker?.locker_id;
+    //     if (!user_id || !locker_id) {
+    //       console.warn("Missing user_id or locker_id");
+    //       return;
+    //     }
 
-        const response = await fetch("host/update_connection_status/".replace(/host/, frontend_host), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`
-          },
-          body: JSON.stringify({ user_id, locker_id }),
-        });
+    //     const response = await fetch("host/update_connection_status/".replace(/host/, frontend_host), {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Basic ${token}`
+    //       },
+    //       body: JSON.stringify({ user_id, locker_id }),
+    //     });
 
-        const result = await response.json();
-        if (result.success) {
-          console.log("Expired connections updated:", result.updated_connection_ids);
-        } else {
-          console.warn("API Error:", result.error);
-        }
-      } catch (error) {
-        console.error("Error calling update_connection_status_if_expired:", error);
-      }
-    };
+    //     const result = await response.json();
+    //     if (result.success) {
+    //       console.log("Expired connections updated:", result.updated_connection_ids);
+    //     } else {
+    //       console.warn("API Error:", result.error);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error calling update_connection_status_if_expired:", error);
+    //   }
+    // };
 
     if (locker) {
       // First update expired connection statuses
-      checkAndUpdateConnectionStatus().then(() => {
+      // checkAndUpdateConnectionStatus().then(() => {
         // Then fetch other dependent data
         fetchConnectionsAndOtherConnections();
         fetchResources();
         fetchXnodes();
-      });
+      // });
     }
 
     if (location.state) {
@@ -943,6 +943,13 @@ export const ViewLocker = () => {
           ["share", "transfer"].includes(key)
         )
       );
+    } else if (xnode.xnode_Type === "SNODE") {
+      // Exclude "subset"
+      filteredPostConditions = Object.fromEntries(
+        Object.entries(restPostConditions).filter(([key]) =>
+          !["subset"].includes(key)
+        )
+      );
     }
 
     setPostConditions(filteredPostConditions);
@@ -1313,7 +1320,7 @@ export const ViewLocker = () => {
   };
 
   const handleuserclick = (user) => {
-    if (curruser && curruser.username && user === curruser.username) {
+    if (curruser && curruser.username && user.username === curruser.username) {
       navigate('/home');
     } else {
       navigate(`/target-user-view`, { state: { user } });
@@ -1633,7 +1640,7 @@ export const ViewLocker = () => {
                   {/* Resource List inside the folder */}
                   {isResourcesVisible && (
                     <ul style={{ paddingTop: "10px", paddingLeft: "20px" }}>
-                      {xnodes.length > 0 ? (
+                      {xnodes?.filter((xnode) => xnode.status !== "closed").length > 0 ? (
                         xnodes.filter((xnode) => xnode.connection === null).length > 0 ? (
                           xnodes
                             .filter((xnode) => xnode.connection === null)
@@ -1708,7 +1715,7 @@ export const ViewLocker = () => {
                                         {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                           <>
-                                            <i
+                                            {/* <i
                                               className="subset-icon"
                                               data-tooltip-id="tooltip" data-tooltip-content="Subset"
                                               style={{
@@ -1716,7 +1723,7 @@ export const ViewLocker = () => {
                                               }}
                                               onClick={() => handleSubsetClick(xnode)}
 
-                                            />
+                                            /> */}
                                             <i
                                               className="fa-regular fa-pen-to-square"
                                               data-tooltip-id="tooltip" data-tooltip-content="Edit"
@@ -1777,7 +1784,7 @@ export const ViewLocker = () => {
                                           onClick={() => handleViewDetails(xnode.id)}
                                         />
 
-                                        {xnode.xnode_Type === "INODE" && xnode.connection === null && (
+                                        {xnode.xnode_Type === "INODE" && xnode.connection === null && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
                                           <>
                                             <i
                                               className="fa-regular fa-trash-can"
@@ -1939,7 +1946,7 @@ export const ViewLocker = () => {
                                             {/* If user is expanded, show resources */}
                                             {expandedusers.includes(uniqueUserKey) && (
                                               <ul style={{ paddingLeft: "40px", marginTop: "5px" }}>
-                                                {userResources[`${user.guest_user.username}-${connection.connection_type_id}`]?.length > 0 ? (
+                                                {userResources[`${user.guest_user.username}-${connection.connection_type_id}`]?.filter(xnode => xnode.status !== "closed").length > 0 ? (
                                                   userResources[`${user.guest_user.username}-${connection.connection_type_id}`].map((xnode) => (
                                                     <div
                                                       key={xnode.id}
@@ -2011,7 +2018,7 @@ export const ViewLocker = () => {
                                                               {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                                                 <>
-                                                                  <i
+                                                                  {/* <i
                                                                     className="subset-icon"
                                                                     data-tooltip-id="tooltip" data-tooltip-content="Subset"
                                                                     style={{
@@ -2019,7 +2026,7 @@ export const ViewLocker = () => {
                                                                     }}
                                                                     onClick={() => handleSubsetClick(xnode)}
 
-                                                                  />
+                                                                  /> */}
                                                                   <i
                                                                     className="fa-regular fa-pen-to-square"
                                                                     data-tooltip-id="tooltip" data-tooltip-content="Edit"
@@ -2192,7 +2199,7 @@ export const ViewLocker = () => {
                                 {/* If connection is expanded, show resources */}
                                 {expandedConnections.includes(connection.connection_id) && (
                                   <ul style={{ paddingLeft: "40px", marginTop: "5px" }}>
-                                    {userResources[connection.connection_id]?.length > 0 ? (
+                                    {userResources[connection.connection_id]?.filter(xnode => xnode.status !== "closed").length > 0 ? (
                                       userResources[connection.connection_id].map((xnode) => (
                                         <div
                                           key={xnode.id}
@@ -2264,7 +2271,7 @@ export const ViewLocker = () => {
                                                   {xnode.xnode_Type === "SNODE" && xnode.node_information.primary_owner == xnode.node_information.current_owner && (
 
                                                     <>
-                                                      <i
+                                                      {/* <i
                                                         className="subset-icon"
                                                         data-tooltip-id="tooltip" data-tooltip-content="Subset"
                                                         style={{
@@ -2272,7 +2279,7 @@ export const ViewLocker = () => {
                                                         }}
                                                         onClick={() => handleSubsetClick(xnode)}
 
-                                                      />
+                                                      /> */}
                                                       <i
                                                         className="fa-regular fa-pen-to-square"
                                                         data-tooltip-id="tooltip" data-tooltip-content="Edit"
@@ -2448,7 +2455,7 @@ export const ViewLocker = () => {
                 data-tooltip-id="tooltip" data-tooltip-content=""
                 onClick={() => setActiveTab("archived")}
               >
-                Archived
+                Archived Connections
               </div>
               {/* <Tooltip id="tooltip" style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: "13px" }} /> */}
             </div>
@@ -2664,6 +2671,7 @@ export const ViewLocker = () => {
                                   [key]: e.target.checked,
                                 }));
                               }}
+                              style={{cursor:"pointer"}}
                             />
                             <label className="form-check-label" htmlFor={key}>
                               {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -2965,7 +2973,7 @@ export const ViewLocker = () => {
                           }
                         )
                       ) : (
-                        <p>No closed connections found.</p>
+                        <p>No archived connections found.</p>
                       )}
                     </div>
                   </div>
@@ -3018,7 +3026,7 @@ export const ViewLocker = () => {
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Creator:</span>
-                <span>{capitalizeFirstLetter(resourceData.creator_username)}</span>
+                <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleuserclick(resourceData.creator_details)}>{capitalizeFirstLetter(resourceData.creator_username)}</span>
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Current owner:</span>

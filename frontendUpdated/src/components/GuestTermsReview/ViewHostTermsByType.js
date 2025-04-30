@@ -796,13 +796,14 @@ export const ViewHostTermsByType = () => {
 
         if (data.xnode_list) {
           // Set all xnodes
-          setXnodes(data.xnode_list);
+          // setXnodes(data.xnode_list);
 
           // Filter xnodes where primary_owner === current_owner
           const filteredData = data.xnode_list.filter(
-            (node) => node.node_information?.primary_owner === node.node_information?.current_owner
+            // (node) => node.node_information?.primary_owner === node.node_information?.current_owner
+            (xnode) => xnode.status !== "closed"
           );
-
+          setXnodes(filteredData);
           // Set filtered xnodes
           setFilteredXnodes(filteredData);
         } else {
@@ -2302,6 +2303,14 @@ export const ViewHostTermsByType = () => {
     }
   };
 
+  const handleclickcreator = (user) => {
+    if (curruser && curruser.username && user.username === curruser.username) {
+      navigate('/home');
+    } else {
+      navigate(`/target-user-view`, { state: { user } });
+    }
+  };
+
   return (
 
     <div>
@@ -2585,48 +2594,51 @@ export const ViewHostTermsByType = () => {
                         <div className="resource-container">
                           <h3>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
+                          {xnodes.length > 0 ? (
+                            <ul>
+                              {xnodes.map((resource, index) => {
+                                const isResourceInFiltered = filteredXnodes.some((item) => item.id === resource.id);
 
-                          <ul>
-                            {xnodes.map((resource, index) => {
-                              const isResourceInFiltered = filteredXnodes.some((item) => item.id === resource.id);
+                                return (
+                                  <li key={index}>
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                      <label id={
+                                        resource.xnode_Type === "INODE"
+                                          ? "documents"
+                                          : resource.xnode_Type === "SNODE"
+                                            ? "documents-byConfer"
+                                            : "documents-byShare"
+                                      }
+                                      // className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}
+                                      >
+                                        <input
+                                          type="radio"
+                                          name="selectedResource"
+                                          value={resource.resource_name}
+                                          checked={selection[currentLabelName]?.id === resource.id}
+                                          onClick={() => handleResourceSelection(resource)}
+                                        // disabled={typeofShare !== "share" && !isResourceInFiltered}
+                                        />
+                                        {resource.resource_name}
 
-                              return (
-                                <li key={index}>
-                                  <div style={{ display: "flex", alignItems: "center" }}>
-                                    <label id={
-                                      resource.xnode_Type === "INODE"
-                                        ? "documents"
-                                        : resource.xnode_Type === "SNODE"
-                                          ? "documents-byConfer"
-                                          : "documents-byShare"
-                                    }
-                                    // className={typeofShare !== "share" && !isResourceInFiltered ? "disabled-label" : ""}
-                                    >
-                                      <input
-                                        type="radio"
-                                        name="selectedResource"
-                                        value={resource.resource_name}
-                                        checked={selection[currentLabelName]?.id === resource.id}
-                                        onClick={() => handleResourceSelection(resource)}
-                                      // disabled={typeofShare !== "share" && !isResourceInFiltered}
-                                      />
-                                      {resource.resource_name}
+                                      </label>
+                                      <button
+                                        id="view"
+                                        className="subbutton"
+                                        style={{ textDecoration: "none" }}
+                                        onClick={() => handleClick(resource.id)}
+                                      >
+                                        View
+                                      </button>
+                                    </div>
+                                  </li>
+                                );
+                              })}
 
-                                    </label>
-                                    <button
-                                      id="view"
-                                      className="subbutton"
-                                      style={{ textDecoration: "none" }}
-                                      onClick={() => handleClick(resource.id)}
-                                    >
-                                      View
-                                    </button>
-                                  </div>
-                                </li>
-                              );
-                            })}
-
-                          </ul>
+                            </ul>
+                          ) : (
+                            <p>No resource found.</p>
+                          )}
                           <div className="button-group">
                             <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
@@ -2638,7 +2650,7 @@ export const ViewHostTermsByType = () => {
                         <div className="resource-container">
                           <h3>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
-
+                          {xnodes.length > 0 ? (
                           <ul>
                             {xnodes.map((resource, index) => (
                               <li key={index}>
@@ -2669,6 +2681,9 @@ export const ViewHostTermsByType = () => {
                               </li>
                             ))}
                           </ul>
+                          ) : (
+                            <p>No resource found</p>
+                          )}
                           <div className="button-group">
                             <button className="btn-color" onClick={() => setShowResources2(false)}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
@@ -3381,7 +3396,7 @@ setToPage('');
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Creator:</span>
-                                  <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                                  <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Current owner:</span>
@@ -3568,7 +3583,7 @@ setToPage('');
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Creator:</span>
-                                  <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                                  <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Current owner:</span>
@@ -3755,7 +3770,7 @@ setToPage('');
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Creator:</span>
-                                  <span>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                                  <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Current owner:</span>

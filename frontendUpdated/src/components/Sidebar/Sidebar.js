@@ -26,6 +26,7 @@ const Sidebar = ({
   openSubmenus,
   toggleSubmenu,
   lockerObj = null,
+  locker_on=false
 }) => {
   const navigate = useNavigate();
   const { curruser, setUser } = useContext(usercontext);
@@ -110,6 +111,17 @@ const Sidebar = ({
       console.error("Failed to mark notification as read", err);
     }
   };
+  // --- NEW useEffect to fetch notifications on component mount ---
+  useEffect(() => {
+    // Make sure fetchNotifications function is available
+    if (fetchNotifications) {
+      fetchNotifications();
+    } else {
+      console.error("fetchNotifications function is not available!");
+    }
+     // The empty dependency array ensures this runs only once on mount
+  }, [fetchNotifications]); // Added fetchNotifications to dependency array as a best practice if it's a prop
+
 
   const toggleNotifications = async () => {
     setIsNotificationsOpen((prev) => !prev);
@@ -141,7 +153,9 @@ const Sidebar = ({
     <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
         <div className="user-info">
-          <h2 className="sidebar-title">{capitalizeFirstLetter(curruser.username)}</h2>
+          <h2 className="sidebar-title">
+            {capitalizeFirstLetter(curruser.username)}
+          </h2>
           <p className="sidebar-subtitle">{curruser.description}</p>
         </div>
         <div className="notification-container" ref={notificationsRef}>
@@ -158,18 +172,19 @@ const Sidebar = ({
               <h4>Notifications</h4>
               {error && <p className="error">{error}</p>}
               {notifications.length > 0 ? (
-                // --- This part handles rendering the list ---
-                notifications.map((n) => (
-                  <div
-                    key={n.id} // Unique key for each item - Good!
-                    className={`notification-item ${n.read ? "read" : "unread"}`}
-                    onClick={() => markNotificationAsRead(n.id)}
-                  >
-                    <p>{n.message}</p>
-                    <small>{new Date(n.created_at).toLocaleString()}</small>
-                  </div>
-                ))
-                // --- End of list rendering ---
+                
+                <div className="notification-list">
+                  {notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className={`notification-item ${n.read ? "read" : "unread"}`}
+                      onClick={() => markNotificationAsRead(n.id)}
+                    >
+                      <p>{n.message}</p>
+                      <small>{new Date(n.created_at).toLocaleString()}</small>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <p>No notifications.</p>
               )}
@@ -181,7 +196,8 @@ const Sidebar = ({
         </button>
       </div>
 
-      <nav className="sidebar-nav">
+     
+      <nav className="sidebar-nav scrollable-nav-container">
         <ul>
           <li>
             <button
@@ -201,15 +217,26 @@ const Sidebar = ({
               <span>Directory</span>
             </button>
             <ul className={`submenu ${openSubmenus.directory ? "show" : ""}`}>
-              <li onClick={() => handleNavigate("DPI Directory", "/dpi-directory")}>
+              <li
+                 className="submenu-item" // Added class for potential styling
+                onClick={() => handleNavigate("DPI Directory", "/dpi-directory")}
+              >
                 • DPI Directory
               </li>
-              <li onClick={() => handleNavigate("Global Connection Directory", "/create-global-connection-type")}>
+              <li
+                 className="submenu-item" // Added class for potential styling
+                onClick={() =>
+                  handleNavigate(
+                    "Global Connection Directory",
+                    "/create-global-connection-type"
+                  )
+                }
+              >
                 • Global Connection Directory
               </li>
             </ul>
           </li>
-          <li>
+          {locker_on && (<li>
             <button
               className={`nav-item ${activeMenu === "Locker Admin" ? "active" : ""}`}
               onClick={handleLockerAdminNavigate}
@@ -217,67 +244,130 @@ const Sidebar = ({
               <Lock size={20} />
               <span>Locker Admin</span>
             </button>
-          </li>
+          </li>)
+}
           <li>
             <button
-              className={`nav-item ${activeMenu === "Consent Dashboard" ? "active" : ""}`}
-              onClick={() => handleNavigate("Consent Dashboard", "/connectionTerms")}
-            >
-              <LayoutGrid size={20} />
-              <span>Consent Dashboard</span>
-            </button>
-          </li>
-          <li>
-            <button
-              className={`nav-item ${openSubmenus.settings ? "submenu-open" : ""}`}
+              className={`nav-item ${openSubmenus.settings ? "submenu-open nested-submenu" : ""}`}
               onClick={() => toggleSubmenu("settings")}
             >
               <Settings size={20} />
               <span>Settings</span>
             </button>
             <ul className={`submenu ${openSubmenus.settings ? "show" : ""}`}>
-              <li onClick={() => handleNavigate("User Settings", "/settings-page")}>
+              <li
+                 className="submenu-item" // Added class for potential styling
+                onClick={() => handleNavigate("User Settings", "/settings-page")}
+              >
                 • User Settings
               </li>
-              {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") ? (
+
+              {/* Conditional Rendering for Admin-specific Settings */}
+              {(curruser.user_type === "sys_admin" ||
+                curruser.user_type === "system_admin") ? (
                 <>
-                  <li onClick={() => toggleSubmenu("lockerSettings")}>• Locker Settings</li>
+                  <li
+                    className={`submenu-item ${openSubmenus.lockerSettings ? "submenu-open" : ""}`}
+                    onClick={() => toggleSubmenu("lockerSettings")}
+                  >
+                    • Locker Settings
+                  </li>
                   {openSubmenus.lockerSettings && (
                     <>
-                      <li onClick={() => handleNavigate("Freeze Locker", "/freeze-locker")}>
+                      <li
+                         className="submenu-item nested" // Added class for potential styling
+                        onClick={() =>
+                          handleNavigate("Freeze Locker", "/freeze-locker")
+                        }
+                      >
                           • Freeze Locker
                       </li>
-                      <li onClick={() => handleNavigate("Locker", "/all-lockers")}>
+                      <li
+                         className="submenu-item nested" // Added class for potential styling
+                        onClick={() => handleNavigate("Locker", "/all-lockers")}
+                      >
                           • Locker
                       </li>
                     </>
                   )}
-                </>
-              ) : (
-                <li onClick={() => handleNavigate("Locker Settings", "/all-lockers")}>
-                  • Locker Settings
-                </li>
-              )}
-               {(curruser.user_type === "sys_admin" || curruser.user_type === "system_admin") ? (
-                <>
-                  <li onClick={() => toggleSubmenu("lockerSettings1")}> • Connection Settings</li>
+
+                  <li
+                    className={`submenu-item ${openSubmenus.lockerSettings1 ? "submenu-open" : ""}`}
+                    onClick={() => toggleSubmenu("lockerSettings1")}
+                  >
+                    • Connection Settings
+                  </li>
                   {openSubmenus.lockerSettings1 && (
-                    <>
-                      <li onClick={() => handleNavigate("Freeze Connection", "/freeze-connection")}>
+                    <ul className={`submenu ${openSubmenus.lockerSettings1 ? "show" : ""} nested-submenu`}>
+                  
+                      <li
+                         className="submenu-item nested" // Added class for potential styling
+                        onClick={() =>
+                          handleNavigate("Freeze Connection", "/freeze-connection")
+                        }
+                      >
                           • Freeze Connection
                       </li>
-                      <li onClick={() => handleNavigate("Connection Types", "/all-connection-types")}>
+                      <li
+                         className="submenu-item nested" // Added class for potential styling
+                        onClick={() =>
+                          handleNavigate("Connection Types", "/all-connection-types")
+                        }
+                      >
                           • Connection Types
                       </li>
+                      
+                    
+                     
+                      </ul>
+                  )}
+
+                  {/* NEW: Admin Settings Option */}
+                  <li
+                    className={`submenu-item ${openSubmenus.adminSettings ? "submenu-open" : ""}`}
+                    onClick={() => toggleSubmenu("adminSettings")}
+                  >
+                    • System Admin Settings
+                  </li>
+                  {openSubmenus.adminSettings && (
+                    <>
+                      <li
+                         className="submenu-item nested" // Added class for potential styling
+                        onClick={() =>
+                          handleNavigate("Manage Users", "/manage-admins")
+                        }
+                      >
+                          • Manage Admin
+                      </li>
+                       <li
+                         className="submenu-item nested" // Added class for potential styling
+                        onClick={() =>
+                          handleNavigate("System Configuration", "/manage-moderators")
+                        }
+                      >
+                          • Manage Moderator
+                      </li>
+                       {/* Add more admin specific items here */}
                     </>
                   )}
                 </>
               ) : (
-                <li onClick={() => handleNavigate("Connection Settings", "/all-connection-types")}>
-                • Connection Settings
-              </li>
+                <>
+                   {/* Non-admin user's view of Settings */}
+                  <li
+                     className="submenu-item" // Added class for potential styling
+                    onClick={() => handleNavigate("Locker Settings", "/all-lockers")}
+                  >
+                    • Locker Settings
+                  </li>
+                   <li
+                     className="submenu-item" // Added class for potential styling
+                    onClick={() => handleNavigate("Connection Settings", "/all-connection-types")}
+                  >
+                   • Connection Settings
+                 </li>
+                </>
               )}
-            
             </ul>
           </li>
         </ul>

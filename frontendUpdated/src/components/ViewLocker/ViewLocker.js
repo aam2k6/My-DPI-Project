@@ -1535,17 +1535,18 @@ export const ViewLocker = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
         lockerObj={locker}
+        locker_on={true}
       />
        <h1
   className="page-title"
-  style={{ fontSize: "28px", textAlign: "right", marginLeft: "520px", marginTop: "20px" }}
+  style={{ fontSize: "28px", textAlign: "right", marginLeft: "520px", marginTop: "10px" }}
 >
   Locker: {locker.name}
 </h1>
 <div>{breadcrumbs}</div>
       
       
-      <div className="containers" style={{ marginTop: "150px" }}>
+      <div className="containers" style={{ marginTop: "50px" }}>
         
     
         {/* <div className="locker-description">

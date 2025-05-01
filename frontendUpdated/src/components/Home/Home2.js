@@ -248,149 +248,181 @@ export const Home = () => {
       [menu]: !prev[menu],
     }));
 
-  return (
-    <div className="app-container">
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <Menu size={24} />
-      </button>
-
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        openSubmenus={openSubmenus}
-        toggleSubmenu={toggleSubmenu}
-      />
-
-      <main
-        className={`main-content ${isSidebarOpen ? "sidebar-open" : ""}`}
-        style={{ transform: `scale(${scale})`, transformOrigin: "top center" }}
-      >
-        <h1 className="page-title" style={{ fontSize: `${48 * scale}px` }}>
-          Home Page
-        </h1>
-
-        <div className="content-container">
-          {!showOutgoingConnections ? (
-            <>
-              <div className="button-container">
-                <span className="text-button" style={{ fontSize: `${28 * scale}px` }}>
-                  My Lockers
-                </span>
-                <button
-                  className="primary-button"
-                  onClick={() => navigate("/create-locker")}
-                  style={{
-                    fontSize: `${14 * scale}px`,
-                    padding: `${10 * scale}px ${24 * scale}px`,
-                  }}
-                >
-                  CREATE NEW LOCKER
-                </button>
-                <button
-                  className="primary-button"
-                  onClick={handleConsentDashboardClick}
-                  style={{
-                    fontSize: `${14 * scale}px`,
-                    padding: `${10 * scale}px ${24 * scale}px`,
-                  }}
-                >
-                  CONSENT DASHBOARD
-                </button>
-              </div>
-
-              {error && <div style={{ color: "red", marginTop: "1rem" }}>{error}</div>}
-
-              <div className="locker-box2">
-                {lockers.map((locker, index) => (
-                  <div key={index} className="locker-box">
-                    <div className="locker-inner">
-                      <div className="locker-content">
-                        <h2
-                          className="locker-heading"
-                          style={{ fontSize: `${20 * scale}px` }}
-                        >
-                          {locker.name || "Untitled Locker"}
-                        </h2>
-                        <p
-                          className="locker-text"
-                          style={{ fontSize: `${14 * scale}px` }}
-                        >
-                          {locker.description || "No description provided."}
-                        </p>
-                      </div>
-                      <button
-                        className="open-button"
-                        onClick={() => handleClick(locker)}
-                        style={{
-                          fontSize: `${14 * scale}px`,
-                          padding: `${8 * scale}px ${24 * scale}px`,
-                        }}
-                      >
-                        Open
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="consent-dashboard-container">
-            <button
-              className="primary-button"
-              onClick={() => setShowOutgoingConnections(false)}
-              style={{
-                fontSize: `${14 * scale}px`,
-                padding: `${10 * scale}px ${24 * scale}px`,
-                marginBottom: "1rem",
-              }}
-            >
-              ← Back to Lockers
-            </button>
-            <h2 style={{ fontSize: `${24 * scale}px` }}>Consent Dashboard</h2>
-            
-            {outgoingConnections.length > 0 ? (
-              <div className="tableContainer table-responsive">
-                <table className="table table-bordered table-striped table-hover outgoingConnectionsTable">
-                  <thead>
-                    <tr>
-                      <th>S.No</th>
-                      <th>Connection Type</th>
-                      <th>Host User</th>
-                      <th>Host Locker</th>
-                      <th>Guest Locker</th>
-                      <th>Created On</th>
-                      <th>Validity On</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {outgoingConnections.map((connection, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <button
-                            className="connection-name-button"
-                            onClick={() => navigateToViewTerms(connection)}
-                            style={{
-                              textDecoration: "underline",
-                              background: "none",
-                              border: "none",
-                              padding: 0,
-                              cursor: "pointer",
-                              color: "inherit",
-                              textAlign: "left",
-                            }}
+    return (
+      <div className="app-container">
+        {/* Hamburger menu, visible on mobile/tablet hidden on PC by CSS */}
+        <button
+          className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <Menu size={24} />
+        </button>
+  
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          activeMenu={activeMenu}
+          setActiveMenu={setActiveMenu}
+          openSubmenus={openSubmenus}
+          toggleSubmenu={toggleSubmenu}
+        />
+  
+        {/* Main content area */}
+        <main
+          className={`main-content ${isSidebarOpen ? "sidebar-open" : ""}`}
+          // Inline style for scaling - kept as per request for current PC look
+          style={{ transform: `scale(${scale})`, transformOrigin: "top center" }}
+        >
+          {/* Page Title */}
+          <h1 className="page-title" style={{ fontSize: `${48 * scale}px` }}> {/* Inline style for dynamic font size on PC */}
+            Home Page
+          </h1>
+  
+          {/* Container for buttons and lockers/consent dashboard */}
+          <div className="content-container">
+            {!showOutgoingConnections ? (
+              <>
+                {/* Button and "My Lockers" text container */}
+                <div className="button-container">
+                  {/* Text Button */}
+                  <span className="text-button" style={{ fontSize: `${28 * scale}px` }}> {/* Inline style for dynamic font size on PC */}
+                    My Lockers
+                  </span>
+                  {/* Create Locker Button */}
+                  <button
+                    className="primary-button"
+                    onClick={() => navigate("/create-locker")}
+                     // Inline styles for dynamic padding/font size on PC
+                    style={{
+                      fontSize: `${14 * scale}px`,
+                      padding: `${10 * scale}px ${24 * scale}px`,
+                    }}
+                  >
+                    CREATE NEW LOCKER
+                  </button>
+                  {/* Consent Dashboard Button */}
+                  <button
+                    className="primary-button"
+                    onClick={handleConsentDashboardClick}
+                     // Inline styles for dynamic padding/font size on PC
+                    style={{
+                      fontSize: `${14 * scale}px`,
+                      padding: `${10 * scale}px ${24 * scale}px`,
+                    }}
+                  >
+                    CONSENT DASHBOARD
+                  </button>
+                </div>
+  
+                {/* Error message */}
+                {error && <div style={{ color: "red", marginTop: "1rem" }}>{error}</div>}
+  
+                {/* Lockers Container */}
+                <div className="locker-box2">
+                  {lockers.map((locker, index) => (
+                    <div key={index} className="locker-box">
+                      <div className="locker-inner">
+                        <div className="locker-content">
+                          {/* Locker Heading */}
+                          <h2
+                            className="locker-heading"
+                            style={{ fontSize: `${20 * scale}px` }} 
                           >
-                            {connection.connection_name}
-                          </button>
-                          {expandedIndex === index ? (
-                            <div>
-                              <div>{connection.connection_description}</div>
+                            {locker.name || "Untitled Locker"}
+                          </h2>
+                          {/* Locker Description */}
+                          <p
+                            className="locker-text"
+                            style={{ fontSize: `${14 * scale}px` }} 
+                          >
+                            {locker.description || "No description provided."}
+                          </p>
+                        </div>
+                        {/* Open Locker Button */}
+                        <button
+                          className="open-button"
+                          onClick={() => handleClick(locker)}
+                          // Inline styles for dynamic padding/font size on PC
+                          style={{
+                            fontSize: `${14 * scale}px`,
+                            padding: `${8 * scale}px ${24 * scale}px`,
+                          }}
+                        >
+                          Open
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="consent-dashboard-container">
+              <button
+                className="primary-button"
+                onClick={() => setShowOutgoingConnections(false)}
+                style={{
+                  fontSize: `${14 * scale}px`,
+                  padding: `${10 * scale}px ${24 * scale}px`,
+                  marginBottom: "1rem",
+                }}
+              >
+                ← Back to Lockers
+              </button>
+              <h2 style={{ fontSize: `${24 * scale}px` }}>Consent Dashboard</h2>
+  
+              {outgoingConnections.length > 0 ? (
+                <div className="tableContainer table-responsive"> {/* table-responsive class is likely from Bootstrap, keeping it */}
+                  <table className="table table-bordered table-striped table-hover outgoingConnectionsTable"> {/* Bootstrap table classes, keeping them */}
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>Connection Type</th>
+                        <th>Host User</th>
+                        <th>Host Locker</th>
+                        <th>Guest Locker</th>
+                        <th>Created On</th>
+                        <th>Validity On</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {outgoingConnections.map((connection, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>
+                            <button
+                              className="connection-name-button"
+                              onClick={() => navigateToViewTerms(connection)}
+                              style={{
+                                textDecoration: "underline",
+                                background: "none",
+                                border: "none",
+                                padding: 0,
+                                cursor: "pointer",
+                                color: "inherit",
+                                textAlign: "left",
+                              }}
+                            >
+                              {connection.connection_name}
+                            </button>
+                            {expandedIndex === index ? (
+                              <div>
+                                <div>{connection.connection_description}</div>
+                                <button
+                                  onClick={() => toggleExpand(index)}
+                                  style={{
+                                    textDecoration: "underline",
+                                    background: "none",
+                                    border: "none",
+                                    padding: 0,
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                >
+                                  Read less
+                                </button>
+                              </div>
+                            ) : (
                               <button
                                 onClick={() => toggleExpand(index)}
                                 style={{
@@ -402,64 +434,49 @@ export const Home = () => {
                                   color: "blue",
                                 }}
                               >
-                                Read less
+                                Read more
+                              </button>
+                            )}
+                          </td>
+                          <td>{connection.host_user.username}</td>
+                          <td>{connection.host_locker.name}</td>
+                          <td>{connection.guest_locker.name}</td>
+                          <td>{new Date(connection.created_time).toLocaleString()}</td>
+                          <td>{new Date(connection.validity_time).toLocaleString()}</td>
+                          <td>
+                            <div className="d-flex justify-content-center">
+                              <button
+                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center me-2" 
+                                onClick={() => handleInfo(connection)}
+                                style={{ width: "30px", height: "30px", fontWeight: "bold" }}
+                              >
+                                I
+                              </button>
+                              <button
+                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center" 
+                                onClick={() => handleConsent(connection)}
+                                style={{ width: "30px", height: "30px", fontWeight: "bold" }}
+                              >
+                                C
                               </button>
                             </div>
-                          ) : (
-                            <button
-                              onClick={() => toggleExpand(index)}
-                              style={{
-                                textDecoration: "underline",
-                                background: "none",
-                                border: "none",
-                                padding: 0,
-                                cursor: "pointer",
-                                color: "blue",
-                              }}
-                            >
-                              Read more
-                            </button>
-                          )}
-                        </td>
-                        <td>{connection.host_user.username}</td>
-                        <td>{connection.host_locker.name}</td>
-                        <td>{connection.guest_locker.name}</td>
-                        <td>{new Date(connection.created_time).toLocaleString()}</td>
-                        <td>{new Date(connection.validity_time).toLocaleString()}</td>
-                        <td>
-                          <div className="d-flex justify-content-center">
-                            <button
-                              className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center me-2"
-                              onClick={() => handleInfo(connection)}
-                              style={{ width: "30px", height: "30px", fontWeight: "bold" }}
-                            >
-                              I
-                            </button>
-                            <button
-                              className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center"
-                              onClick={() => handleConsent(connection)}
-                              style={{ width: "30px", height: "30px", fontWeight: "bold" }}
-                            >
-                              C
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p style={{ fontSize: `${16 * scale}px` }}>
-                No outgoing connections found.
-              </p>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p style={{ fontSize: `${16 * scale}px` }}> {/* Inline style for dynamic font size on PC */}
+                  No outgoing connections found.
+                </p>
+              )}
+            </div>
             )}
           </div>
-          )}
-        </div>
-      </main>
-    </div>
-  );
-};
-
-export default Home;
+        </main>
+      </div>
+    );
+  };
+  
+  export default Home;

@@ -147,14 +147,17 @@ const Sidebar = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isNotificationsOpen]);
 console.log("curruser", curruser)
+console.log("typeof username:", typeof curruser?.username);
   return (
     <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
         <div className="user-info">
-          <h2 className="sidebar-title">
+          {/* <h2 className="sidebar-title">
             {capitalizeFirstLetter(curruser?.username)}
-          </h2>
-          <p className="sidebar-subtitle">{curruser?.description}</p>
+          </h2> */}
+          <p className="sidebar-subtitle">
+  {typeof curruser?.description === "string" ? curruser.description : "Invalid description"}
+</p>
         </div>
         <div className="notification-container" ref={notificationsRef}>
           <button className="notification-btn" onClick={toggleNotifications}>

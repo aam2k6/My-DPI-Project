@@ -39,8 +39,11 @@ const Sidebar = ({
   const handleLogout = () => {
     Cookies.remove("authToken");
     localStorage.removeItem("curruser");
+    console.log("Logged out");
+    window.history.pushState(null, null, "/");
+    navigate("/", { replace: true });
+    window.location.reload();
     setUser(null);
-    navigate("/");
   };
 
   const capitalizeFirstLetter = (string) => {
@@ -109,13 +112,13 @@ const Sidebar = ({
     }
   };
   // --- NEW useEffect to fetch notifications on component mount ---
-  // useEffect(() => {
-  //   if (curruser) {
-  //     fetchNotifications();
-  //   } else {
-  //     console.error("fetchNotifications function is not available!");
-  //   }
-  // }, [curruser]);
+  useEffect(() => {
+    if (curruser) {
+      fetchNotifications();
+    } else {
+      console.error("fetchNotifications function is not available!");
+    }
+  }, [curruser]);
 
 
   const toggleNotifications = async () => {
@@ -125,33 +128,33 @@ const Sidebar = ({
     }
   };
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (
-  //       notificationsRef.current &&
-  //       !notificationsRef.current.contains(event.target)
-  //     ) {
-  //       setIsNotificationsOpen(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        setIsNotificationsOpen(false);
+      }
+    };
 
-  //   if (isNotificationsOpen) {
-  //     document.addEventListener("mousedown", handleClickOutside);
-  //   } else {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   }
+    if (isNotificationsOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
 
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, [isNotificationsOpen]);
-
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isNotificationsOpen]);
+console.log("curruser", curruser)
   return (
     <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
         <div className="user-info">
           <h2 className="sidebar-title">
-            {capitalizeFirstLetter(curruser.username)}
+            {capitalizeFirstLetter(curruser?.username)}
           </h2>
-          <p className="sidebar-subtitle">{curruser.description}</p>
+          <p className="sidebar-subtitle">{curruser?.description}</p>
         </div>
         <div className="notification-container" ref={notificationsRef}>
           <button className="notification-btn" onClick={toggleNotifications}>
@@ -373,7 +376,7 @@ const Sidebar = ({
           <div className="user-avatar">
             <User size={16} />
           </div>
-          <span>{capitalizeFirstLetter(curruser.username)}</span>
+          <span>{capitalizeFirstLetter(curruser?.username)}</span>
         </div>
         <button className="logout-btn" onClick={handleLogout}>
           <LogOut size={20} />

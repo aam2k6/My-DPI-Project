@@ -321,7 +321,7 @@ export const Home2 = () => {
 
   //   </>
   // );
-
+  console.log("curruser", curruser)
   return (
     <div className="app-container">
       {/* Hamburger menu, visible on mobile/tablet hidden on PC by CSS */}

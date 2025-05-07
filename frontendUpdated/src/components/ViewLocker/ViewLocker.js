@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { useLocation, useParams } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
-// import Sidebar from "../Sidebar/Sidebar";
+import Sidebar from "../Sidebar/Sidebar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal";
@@ -1487,26 +1487,26 @@ export const ViewLocker = () => {
   };
 
   console.log("datadata", userResource)
-  // const content = (
-  //   <>
-  //     <div className="navbarBrands">
-  //       {locker ? `Locker: ${locker.name}` : "Locker"}
-  //     </div>
-  //     <div>
-  //       {locker ? ` ${locker.description}` : "Description"}
-  //     </div>
-  //   </>
-  // );
+  const content = (
+    <>
+      <div className="navbarBrands">
+        {locker ? `Locker: ${locker.name}` : "Locker"}
+      </div>
+      <div>
+        {locker ? ` ${locker.description}` : "Description"}
+      </div>
+    </>
+  );
 
-  // const breadcrumbs = (
-  //   <div className="breadcrumbs">
-  //     <a href="/home" className="breadcrumb-item">
-  //       Home
-  //     </a>
-  //     <span className="breadcrumb-separator">▶</span>
-  //     <span className="breadcrumb-item current">View Locker</span>
-  //   </div>
-  // )
+  const breadcrumbs = (
+    <div className="breadcrumbs">
+      <a href="/home" className="breadcrumb-item">
+        Home
+      </a>
+      <span className="breadcrumb-separator">▶</span>
+      <span className="breadcrumb-item current">View Locker</span>
+    </div>
+  )
   // console.log("res vnode", VnodeResources);
   console.log("xnodes", xnodes);
 
@@ -1525,7 +1525,7 @@ export const ViewLocker = () => {
         onClick={toggleSidebar}
       >
         <Menu size={24} />
-      </button>
+      </button> */}
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -1536,9 +1536,14 @@ export const ViewLocker = () => {
         toggleSubmenu={toggleSubmenu}
         lockerObj={locker}
         locker_on={true}
-      /> */}
+      />
 
-       
+<div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
     
 
       

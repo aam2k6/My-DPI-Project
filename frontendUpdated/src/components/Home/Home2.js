@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import { Menu } from "lucide-react";
-import Sidebar from "../Sidebar/Sidebar"; // adjust path if needed
+// import Sidebar from "../Sidebar/Sidebar"; 
 import "./home.css";
 import { frontend_host } from "../../config";
 
@@ -332,14 +332,14 @@ export const Home2 = () => {
         <Menu size={24} />
       </button>
 
-      <Sidebar
+      {/* <Sidebar
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
         activeMenu={activeMenu}
         setActiveMenu={setActiveMenu}
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
-      />
+      /> */}
 
       {/* <div className="locker-header">
         <div className="locker-text">

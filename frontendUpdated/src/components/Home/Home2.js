@@ -309,18 +309,7 @@ export const Home2 = () => {
       [menu]: !prev[menu],
     }));
 
-  // const content = (
-  //   <>
-  //     <div className="navbarBrands">
-  //       {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
-  //     </div>
-  //     <div>
-  //       {curruser ? curruser.description : "None"}
-  //     </div>
-  //     {/* <Typography> {curruser ? curruser.description : "None"}</Typography> */}
-
-  //   </>
-  // );
+  
   console.log("curruser", curruser)
   return (
     <div className="app-container">
@@ -341,11 +330,7 @@ export const Home2 = () => {
         toggleSubmenu={toggleSubmenu}
       /> */}
 
-      {/* <div className="locker-header">
-        <div className="locker-text">
-          <div className="navbar-content">{content}</div>
-        </div>
-      </div> */}
+      
 
       {/* Main content area */}
       <main

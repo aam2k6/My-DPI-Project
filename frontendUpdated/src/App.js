@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import { Login } from "./components/Login/Login";
-import { Home2 } from "./components/Home/Home2";
+import { Home } from "./components/Home/Home";
 import { CreateLocker } from "./components/CreateLocker/CreateLocker";
 import { ViewLocker } from "./components/ViewLocker/ViewLocker";
 import { UploadResource } from "./components/UploadResource/UploadResource";
@@ -84,7 +84,7 @@ function App() {
               path="/home"
               element={
                 <ProtectedRoute>
-                  <Home2 />
+                  <Home />
                   <Scanner />
                 </ProtectedRoute>
               }

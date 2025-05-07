@@ -1520,12 +1520,12 @@ export const ViewLocker = () => {
   return (
     <div id="viewLocker">
       {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
-      <button
+      {/* <button
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
         <Menu size={24} />
-      </button>
+      </button> */}
 
       {/* <Sidebar
         isSidebarOpen={isSidebarOpen}

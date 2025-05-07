@@ -18,17 +18,17 @@ export const FreezeLocker = () => {
     const { curruser } = useContext(usercontext);
     const [error, setError] = useState(null);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState("Home");
-  const [openSubmenus, setOpenSubmenus] = useState({
-    directory: false,
-    settings: false,
-  });
-  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
-  const toggleSubmenu = (menu) =>
-    setOpenSubmenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    const [activeMenu, setActiveMenu] = useState("Home");
+    const [openSubmenus, setOpenSubmenus] = useState({
+        directory: false,
+        settings: false,
+    });
+    const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+    const toggleSubmenu = (menu) =>
+        setOpenSubmenus((prev) => ({
+            ...prev,
+            [menu]: !prev[menu],
+        }));
 
 
     useEffect(() => {
@@ -150,82 +150,95 @@ export const FreezeLocker = () => {
         setSelectedUser(null);
     };
 
+    const content = (
+        <>
+            <div className="navbarBrands">Freeze Locker</div>
+        </>
+    );
+
     const breadcrumbs = (
-        <div className="breadcrumbs">
-          <a href="/home" className="breadcrumb-item">
-            Home
-          </a>
-          <span className="breadcrumb-separator">▶</span>
-          <span className="breadcrumb-item current">Freeze Locker</span>
+        <div className="breadcrumbs mt-2">
+            <a href="/home" className="breadcrumb-item">
+                Home
+            </a>
+            <span className="breadcrumb-separator">▶</span>
+            <span className="breadcrumb-item current">Freeze Locker</span>
         </div>
-      )
+    )
 
     const code = (
         <>
             {/* <Navbar breadcrumbs={breadcrumbs} /> */}
             <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <Menu size={24} />
-      </button>
+                className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+                onClick={toggleSidebar}
+            >
+                <Menu size={24} />
+            </button>
 
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        openSubmenus={openSubmenus}
-        toggleSubmenu={toggleSubmenu}
-      />
-            <div className="container" style={{ marginTop: "120px" }}>
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                openSubmenus={openSubmenus}
+                toggleSubmenu={toggleSubmenu}
+            />
+
+            <div className="locker-header">
+                <div className="locker-text">
+                    <div className="navbar-content">{content}</div>
+                </div>
+                <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+            </div>
+            <div className="container" style={{ marginTop: "12px" }}>
                 <div className="row justify-content-center p-4">
                     <div className="col-md-6 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">
-                    <button onClick={toggleFreezeMode}>
+                        <button onClick={toggleFreezeMode}>
                             {freezeMode ? 'Switch to Unfreeze' : 'Switch to Freeze'}
                         </button>
                         <div className="row justify-content-center mt-4">
-                        <div className="col-md-8 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">
-                        
-                        <h2 className="m-4" style={{ textAlign: "center"}}>{freezeMode ? "Freeze Locker" : "Unfreeze Locker"}</h2>
+                            <div className="col-md-8 col-sm-12 col-xs-12 p-4 border border-primary rounded shadow">
 
-                        <div className="mb-3">
-                            <label className="form-label fw-bold">Select Username</label>
-                            <select
-                                className="form-select"
-                                onChange={(e) => {
-                                    const selected = users.find(user => user.username === e.target.value);
-                                    setSelectedUser(selected);
-                                }}
-                                value={selectedUser ? selectedUser.username : ""}
-                            >
-                                <option value="">Select a user</option>
-                                {users.map(user => (
-                                    <option key={user.user_id} value={user.username}>
-                                        {user.username}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label fw-bold">Select Locker Name</label>
-                            <select
-                                className="form-select"
-                                onChange={(e) => setLockerName(e.target.value)}
-                                value={lockerName}
-                            >
-                                <option value="">Select a locker</option>
-                                {userLockers.map(locker => (
-                                    <option key={locker.locker_id} value={locker.name}>
-                                        {locker.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                                <h2 className="m-4" style={{ textAlign: "center" }}>{freezeMode ? "Freeze Locker" : "Unfreeze Locker"}</h2>
 
-                        <button onClick={handleFreezeLocker} disabled={isLoading.locker}>
-                            {isLoading.locker ? (freezeMode ? "Freezing Locker..." : "Unfreezing Locker...") : (freezeMode ? "Freeze Locker" : "Unfreeze Locker")}
-                        </button>
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Select Username</label>
+                                    <select
+                                        className="form-select"
+                                        onChange={(e) => {
+                                            const selected = users.find(user => user.username === e.target.value);
+                                            setSelectedUser(selected);
+                                        }}
+                                        value={selectedUser ? selectedUser.username : ""}
+                                    >
+                                        <option value="">Select a user</option>
+                                        {users.map(user => (
+                                            <option key={user.user_id} value={user.username}>
+                                                {user.username}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Select Locker Name</label>
+                                    <select
+                                        className="form-select"
+                                        onChange={(e) => setLockerName(e.target.value)}
+                                        value={lockerName}
+                                    >
+                                        <option value="">Select a locker</option>
+                                        {userLockers.map(locker => (
+                                            <option key={locker.locker_id} value={locker.name}>
+                                                {locker.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <button onClick={handleFreezeLocker} disabled={isLoading.locker}>
+                                    {isLoading.locker ? (freezeMode ? "Freezing Locker..." : "Unfreezing Locker...") : (freezeMode ? "Freeze Locker" : "Unfreeze Locker")}
+                                </button>
                             </div>
                         </div>
 
@@ -242,8 +255,8 @@ export const FreezeLocker = () => {
         <>
 
             {((curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin') && (curruser.user_type !== 'moderator')) &&
-                <div >{code} 
-                {/* <Sidebar /> */}
+                <div >{code}
+                    {/* <Sidebar /> */}
                 </div>}
 
             {curruser.user_type === 'moderator' && <>{code}</>}

@@ -84,6 +84,13 @@ export const CreateLocker = () => {
     </div>
   )
 
+  const content = (
+    <>
+        <div className="navbarBrands">Create Locker</div>
+    </>
+);
+
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
        <button
@@ -101,6 +108,13 @@ export const CreateLocker = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+      </div>
       {/* <Navbar breadcrumbs={breadcrumbs} /> */}
 
       <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>

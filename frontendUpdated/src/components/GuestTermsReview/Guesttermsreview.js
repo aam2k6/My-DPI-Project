@@ -2039,9 +2039,15 @@ export const Guesttermsreview = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
 
-      <div style={{ marginTop: '140px' }}>
+      <div style={{ marginTop: '12px' }}>
         <div className="connection-details">
           <b>Connection Name:</b> {conndetails?.connection_name || "Loading..."}
           <button

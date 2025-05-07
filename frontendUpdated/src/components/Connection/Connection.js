@@ -160,9 +160,15 @@ export const Connection = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs}></Navbar> */}
       {/* <Panel /> */}
-      <Container maxWidth="md" style={{ marginTop: "140px" }}>
+      <Container maxWidth="md">
         <div>
           {/* <div className="connection-resourceHeading">Connection</div> */}
           <div className="connection-lockerForms">

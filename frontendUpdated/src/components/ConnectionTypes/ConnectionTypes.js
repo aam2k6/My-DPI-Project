@@ -296,7 +296,7 @@ export const ConnectionTypes = () => {
             Home
           </a>
           <span className="breadcrumb-separator">▶</span>
-          <span className="breadcrumb-item current">Connections Types</span>
+          <span className="breadcrumb-item current"> All connection types</span>
         </div>
     );
     return (
@@ -317,10 +317,16 @@ export const ConnectionTypes = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
-            <div style={{ marginTop: "160px" }}>
-                <Grid container>
+       <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
+            <div style={{ marginTop: "50px" }}>
+                <Grid container paddingLeft={{ md: 6, sm: 2, xs: 2 }}>
                     <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>
-                        <h3>Connections Type</h3>
+                        <h3>Connection Types</h3>
                     </Grid>
                 </Grid>
                 {error && <p>{error}</p>}

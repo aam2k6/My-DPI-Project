@@ -68,7 +68,7 @@ body {
   display: flex; /* Arrange items horizontally on PC */
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px; /* Space below buttons on PC */
+  margin-bottom: 15px; /* Space below buttons on PC */
   flex-wrap: wrap; /* Allow wrapping if space is limited */
   gap: 20px; /* Gap between buttons on PC */
 }
@@ -100,8 +100,10 @@ body {
   max-width: 800px; /* Max width for locker container on PC */
   border: 0px solid #f3f3f3; /* Seems like a placeholder border */
   border-radius: 0px;
-  margin-top: -20px; /* Adjusting vertical spacing */
-  padding: 40px; /* Internal padding */
+  margin-top: -10px;
+  padding: 20px; /* Internal padding */
+  max-height: 550px; /* Set a max height for scrolling */
+  overflow-y: auto;
 }
 
 .locker-box {
@@ -319,7 +321,7 @@ body {
     flex-direction: column; /* Stack buttons vertically */
     gap: 16px; /* Space between stacked buttons */
     align-items: flex-start; /* Align buttons to the left */
-    margin-bottom: 20px; /* Adjust space below buttons */
+    margin-bottom: 15px; /* Adjust space below buttons */
   }
 
   .text-button {
@@ -338,19 +340,12 @@ body {
     margin-top: 0; /* Remove negative margin */
   }
 
-  .locker-box {
-    /* margin-top: 20px; Keep space between lockers */
-  }
 
   .locker-inner {
     padding: 16px; /* Adjust padding */
     flex-direction: column; /* Stack locker content and button vertically */
     gap: 12px; /* Space between stacked items */
     align-items: flex-start; /* Align items to the left */
-  }
-
-  .locker-content {
-      /* Keep default flow */
   }
 
   .locker-heading {
@@ -367,10 +362,6 @@ body {
     font-size: 16px; /* Slightly larger font */
   }
 
-  /* Adjustments for the Consent Dashboard table on mobile */
-  .tableContainer {
-      /* overflow-x: auto; is already added, good */
-  }
 
   .outgoingConnectionsTable th,
   .outgoingConnectionsTable td {
@@ -475,14 +466,6 @@ body {
       margin-left: 300px; /* Maintain desktop margin */
       width: calc(100% - 300px); /* Maintain desktop width */
   }
-
-  /* REMOVED: display: none; - Hamburger menu is now visible on PC */
-  .hamburger-menu {
-    /* Position and appearance on PC might need adjustment */
-    /* Keep default 'display: flex' from base styles */
-    /* You might want to adjust its 'top' or 'left' if it conflicts with other headers */
-  }
-
 
   .content-container {
     max-width: 1000px;

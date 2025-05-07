@@ -642,8 +642,14 @@ export const Displayterms = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-      <div className="connection-details" style={{ marginTop: "150px" }}>
+      <div className="connection-details" style={{ marginTop: "12px" }}>
         <div className="connectionName1">Connection Type Name: {connectionTypeName}</div>
         <div className="connectionName2">
           {globalTemplateNames.length > 0 && "Connection has been imported from "}

@@ -8,14 +8,16 @@ body{
     max-height: 100vh;
 }
 .breadcrumbs {
-    display: flex;
+    display: inline-flex;
+    justify-content: flex-end;
     align-items: center;
     font-family: Arial, sans-serif;
     font-size: 14px;
     background-color: #f4f4f4;
-    padding: 10px;
+    padding: 6px 10px;
     border-radius: 5px;
     font-weight: bold;
+    /* align-items: right; */
   }
   
   .breadcrumb-item {
@@ -47,6 +49,29 @@ body{
     cursor: default;
     text-decoration: none;
   }
+
+  .locker-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    padding: 10px 20px;
+  }
+  
+  .locker-text {
+    text-align: right;
+    margin-bottom: 5px;
+  }
+  
+  .locker-name {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .locker-description {
+    font-size: 14px;
+    color: #555;
+  }
   
   /* Responsive styles for smaller screens */
   @media (max-width: 600px) {
@@ -71,11 +96,7 @@ body{
       white-space: nowrap; /* Prevent wrapping within individual items */
     }
   }
-  @media (min-width: 992px) {
-    .breadcrumbs {
-      margin-top: -30px; /* Add margin-top for larger screens */
-    }
-  }
+ 
 
   .btn-color {
     background-color: #0d6efd !important;

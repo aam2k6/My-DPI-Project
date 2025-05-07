@@ -274,9 +274,15 @@ const GlobalTermsView = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       {/* {isSystemAdmin && <Sidebar />} Show Sidebar only for System Admin */}
-      <div style={{ marginTop: "140px" }}>
+      <div style={{ marginTop: "12px" }}>
         <div className="connection-details" >
           <div className="connectionName1">Global Connection Type Name: {res ? res.template_name : "Loading..."}</div>
           <div className="dates">

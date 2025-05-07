@@ -148,8 +148,14 @@ export const FreezeConnection = () => {
         // setSelectedUser(null);
     };
 
+    const content = (
+        <>
+          <div className="navbarBrands">Freeze Connection</div>
+        </>
+      );
+
     const breadcrumbs = (
-        <div className="breadcrumbs">
+        <div className="breadcrumbs mt-2">
           <a href="/home" className="breadcrumb-item">
             Home
           </a>
@@ -175,6 +181,12 @@ export const FreezeConnection = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
             {/* <Navbar breadcrumbs={breadcrumbs} /> */}
             <div className="container" style={{ marginTop: "120px" }}>
                 <div className="row justify-content-center p-4">

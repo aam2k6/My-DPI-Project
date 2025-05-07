@@ -371,8 +371,14 @@ export const Guestusers = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-      <Box className="page5heroContainer" marginTop={{ md: "150px", xs: "100px" }}>
+      <Box className="page5heroContainer" marginTop={{ md: "12px", xs: "12px" }}>
         <h4 className='guestusers' style={{ textAlign: "center", marginBottom: "25px", fontWeight: "bold" }}>Guest Users</h4>
         <div className="search">
           <form onSubmit={handleSearch}>

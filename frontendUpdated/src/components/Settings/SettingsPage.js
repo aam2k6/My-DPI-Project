@@ -148,6 +148,10 @@ export default function SettingsPage() {
     directory: false,
     settings: false,
   });
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
   const toggleSubmenu = (menu) =>
     setOpenSubmenus((prev) => ({
@@ -214,9 +218,16 @@ export default function SettingsPage() {
             Home
           </a>
           <span className="breadcrumb-separator">▶</span>
-          <span className="breadcrumb-item current">Profile Settings</span>
+          <span className="breadcrumb-item current">User Settings</span>
         </div>
       )
+      
+    const content = (
+        <>
+            <div className="navbarBrands">User Settings</div>
+            {/* <div className="navbarBrands">Owner : {capitalizeFirstLetter(curruser.username)} </div> */}
+        </>
+    );
 
     return (
         <>
@@ -235,8 +246,14 @@ export default function SettingsPage() {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+       <div className="locker-header">
+              <div className="locker-text">
+                <div className="navbar-content">{content}</div>
+              </div>
+              <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+          </div>
             {/* <Navbar breadcrumbs={breadcrumbs} /> */}
-            <Box className="settings-page" style={{border:"2px solid rgb(107, 120, 231)"}} marginTop={{xs:"50%", md:"15%"}}>
+            <Box className="settings-page" style={{border:"2px solid rgb(107, 120, 231)"}} marginTop={{xs:"1%", md:"5%"}}>
                 <h1>User Profile</h1>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
                 <div style={{alignItems:"center"}}>

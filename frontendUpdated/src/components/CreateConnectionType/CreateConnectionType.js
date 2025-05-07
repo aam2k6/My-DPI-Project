@@ -203,8 +203,14 @@ export const CreateConnectionType = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+       <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
             {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-            <div style={{ marginTop: "150px" }}>
+            <div style={{ marginTop: "12px" }}>
                 <div className="page12typeofconn">
                     <h6>
                         {selectedConnectionType && <div><b>{selectedConnectionType.connection_type_name} ({curruser.username} <i class="bi bi-arrows"></i> {parentUser.username})</b> <p className="">Description: {selectedConnectionType.connection_description}</p></div>}

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./page6.css";
+import "../Home/page1.css";
 import Cookies from "js-cookie";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
@@ -113,7 +114,7 @@ export const TargetUserView = () => {
   )
 
   return (
-    <div>
+    <div id="targetUserView">
       <button
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
@@ -129,9 +130,15 @@ export const TargetUserView = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs}/> */}
 
-      <div style={{ marginTop: "140px" }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "120px"}}>
         <div className="heroContainers">
           <div className="page6-allLockers" style={{border:"none"}}>
             {error && <div className="error">{error}</div>}

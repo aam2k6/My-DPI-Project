@@ -484,8 +484,14 @@ export const Admin = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+          <div className="locker-text">
+            <div className="navbar-content">{content}</div>
+          </div>
+          <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-      <Button onClick={gotopage12createconnection} className="btn-color" style={{ marginTop: "140px", marginLeft: "30px", padding: "8px" }}>
+      <Button onClick={gotopage12createconnection} className="btn-color" style={{ marginTop: "50px", marginLeft: "30px", padding: "8px" }}>
         Create New Connection Type
       </Button>
       <Grid container padding={"30px"}>

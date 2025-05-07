@@ -1537,13 +1537,14 @@ export const ViewLocker = () => {
         lockerObj={locker}
         locker_on={true}
       />
-       <h1
-  className="page-title"
-  style={{ fontSize: "28px", textAlign: "right", marginLeft: "520px", marginTop: "10px" }}
->
-  Locker: {locker.name}
-</h1>
-<div>{breadcrumbs}</div>
+
+       <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
+
       
       
       <div className="containers" style={{ marginTop: "50px" }}>

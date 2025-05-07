@@ -83,9 +83,13 @@ export const DPIdirectory = () => {
       navigate(`/target-user-view`, { state: { user } });
     }
   };
-
+  const content = (
+    <>
+      <div className="navbarBrands">DPI Directory</div>
+    </>
+  );
   const breadcrumbs = (
-    <div className="breadcrumbs" >
+    <div className="breadcrumbs mt-2" >
       <a href="/home" className="breadcrumb-item">
         Home
       </a>
@@ -112,12 +116,18 @@ export const DPIdirectory = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar breadcrumbs={breadcrumbs} /> */}
-      <div className="page5heroContainer dpi-directories" style={{ marginTop: "120px" }}>
-      <h1 className="page-title " style={{ fontSize: `${48}px` }}>
+      <div className="page5heroContainer dpi-directories" style={{ marginTop: "12px" }}>
+      {/* <h1 className="page-title " style={{ fontSize: `${48}px` }}>
          DPI Directory  
-        </h1> 
-        <div> {breadcrumbs}</div>
+        </h1>  */}
+        {/* <div> {breadcrumbs}</div> */}
         
         {/* <div className="sidebars">
           <button className="btn-open" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i class="bi bi-chevron-right"></i></button>

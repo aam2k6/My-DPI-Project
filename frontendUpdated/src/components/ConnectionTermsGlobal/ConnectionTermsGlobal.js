@@ -394,6 +394,12 @@ console.log("errors", error)
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        {/* <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div> */}
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar breadcrumbs={breadcrumbs} /> */}
 
       <div className="connectionTermsContainer">

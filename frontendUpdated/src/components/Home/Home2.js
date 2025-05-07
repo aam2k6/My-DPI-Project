@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import { Menu } from "lucide-react";
 import Sidebar from "../Sidebar/Sidebar"; // adjust path if needed
@@ -16,13 +17,23 @@ export const Home = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("Home");
   const [expandedIndex, setExpandedIndex] = useState(null);
-
+  const { curruser } = useContext(usercontext);
   const [openSubmenus, setOpenSubmenus] = useState({
     directory: false,
     settings: false,
   });
-  const curruser = JSON.parse(localStorage.getItem("curruser"));
+  // const curruser = JSON.parse(localStorage.getItem("curruser"));
+  useEffect(() => {
+    if (!curruser) {
+      navigate('/');
+      return;
+    }
+  }, [curruser, navigate]);
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   const handleConsentDashboardClick = async () => {
     setShowOutgoingConnections(!showOutgoingConnections); // Toggle the state
@@ -194,21 +205,66 @@ export const Home = () => {
   };
 
 
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const width = window.innerWidth;
+  //     if (width < 480) setScale(0.6);
+  //     else if (width < 768) setScale(0.7);
+  //     else if (width < 1024) setScale(0.85);
+  //     else setScale(1);
+  //   };
+
+  //   handleResize();
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
+
   useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (width < 480) setScale(0.6);
-      else if (width < 768) setScale(0.7);
-      else if (width < 1024) setScale(0.85);
-      else setScale(1);
+
+    const checkAndUpdateConnectionStatus = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const response = await fetch("host/update_connection_status_if_expired_onlogin/".replace(/host/, frontend_host), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`
+          }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          console.log("Expired connections updated:", result.updated_connection_ids);
+        } else {
+          console.warn("API Error:", result.error);
+        }
+      } catch (error) {
+        console.error("Error calling update_connection_status_if_expired:", error);
+      }
     };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    const checkAndUpdateXnodeStatus = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        const response = await fetch("host/update_xnode_v2_status/".replace(/host/, frontend_host), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`
+          }
+        });
 
-  useEffect(() => {
+        const result = await response.json();
+        if (result.success) {
+          console.log("Expired xnode updated");
+        } else {
+          console.warn("API Error:", result.error);
+        }
+      } catch (error) {
+        console.error("Error calling update_xnode_v2_status:", error);
+      }
+    };
+
     const fetchLockers = async () => {
       try {
         const token = Cookies.get("authToken");
@@ -232,10 +288,15 @@ export const Home = () => {
       }
     };
 
-    fetchLockers();
-  }, []);
+    if (curruser) {
+      checkAndUpdateConnectionStatus().then(() => {
+        fetchLockers();
+        checkAndUpdateXnodeStatus();
+      });
+    }
+  }, [curruser]);
 
-      
+
 
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
@@ -248,97 +309,119 @@ export const Home = () => {
       [menu]: !prev[menu],
     }));
 
-    return (
-      <div className="app-container">
-        {/* Hamburger menu, visible on mobile/tablet hidden on PC by CSS */}
-        <button
-          className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-          onClick={toggleSidebar}
-        >
-          <Menu size={24} />
-        </button>
-  
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-          activeMenu={activeMenu}
-          setActiveMenu={setActiveMenu}
-          openSubmenus={openSubmenus}
-          toggleSubmenu={toggleSubmenu}
-        />
-  
-        {/* Main content area */}
-        <main
-          className={`main-content ${isSidebarOpen ? "sidebar-open" : ""}`}
-          // Inline style for scaling - kept as per request for current PC look
-          style={{ transform: `scale(${scale})`, transformOrigin: "top center" }}
-        >
-          {/* Page Title */}
-          <h1 className="page-title" style={{ fontSize: `${48 * scale}px` }}> {/* Inline style for dynamic font size on PC */}
-            Home Page
-          </h1>
-  
-          {/* Container for buttons and lockers/consent dashboard */}
-          <div className="content-container">
-            {!showOutgoingConnections ? (
-              <>
-                {/* Button and "My Lockers" text container */}
-                <div className="button-container">
-                  {/* Text Button */}
-                  <span className="text-button" style={{ fontSize: `${28 * scale}px` }}> {/* Inline style for dynamic font size on PC */}
-                    My Lockers
-                  </span>
-                  {/* Create Locker Button */}
-                  <button
-                    className="primary-button"
-                    onClick={() => navigate("/create-locker")}
-                     // Inline styles for dynamic padding/font size on PC
-                    style={{
-                      fontSize: `${14 * scale}px`,
-                      padding: `${10 * scale}px ${24 * scale}px`,
-                    }}
-                  >
-                    CREATE NEW LOCKER
-                  </button>
-                  {/* Consent Dashboard Button */}
-                  <button
-                    className="primary-button"
-                    onClick={handleConsentDashboardClick}
-                     // Inline styles for dynamic padding/font size on PC
-                    style={{
-                      fontSize: `${14 * scale}px`,
-                      padding: `${10 * scale}px ${24 * scale}px`,
-                    }}
-                  >
-                    CONSENT DASHBOARD
-                  </button>
-                </div>
-  
-                {/* Error message */}
-                {error && <div style={{ color: "red", marginTop: "1rem" }}>{error}</div>}
-  
-                {/* Lockers Container */}
-                <div className="locker-box2">
-                  {lockers.map((locker, index) => (
-                    <div key={index} className="locker-box">
-                      <div className="locker-inner">
-                        <div className="locker-content">
-                          {/* Locker Heading */}
-                          <h2
-                            className="locker-heading"
-                            style={{ fontSize: `${20 * scale}px` }} 
-                          >
-                            {locker.name || "Untitled Locker"}
-                          </h2>
-                          {/* Locker Description */}
-                          <p
-                            className="locker-text"
-                            style={{ fontSize: `${14 * scale}px` }} 
-                          >
-                            {locker.description || "No description provided."}
-                          </p>
-                        </div>
-                        {/* Open Locker Button */}
+  const content = (
+    <>
+      <div className="navbarBrands">
+        {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
+      </div>
+      <div>
+        {curruser ? curruser.description : "None"}
+      </div>
+      {/* <Typography> {curruser ? curruser.description : "None"}</Typography> */}
+
+    </>
+  );
+
+  return (
+    <div className="app-container">
+      {/* Hamburger menu, visible on mobile/tablet hidden on PC by CSS */}
+      <button
+        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+        openSubmenus={openSubmenus}
+        toggleSubmenu={toggleSubmenu}
+      />
+
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        {/* <div className="navbar-breadcrumbs">{breadcrumbs}</div> */}
+      </div>
+
+      {/* Main content area */}
+      <main
+        className={`main-content ${isSidebarOpen ? "sidebar-open" : ""}`}
+        // Inline style for scaling - kept as per request for current PC look
+        style={{ transform: `scale(${scale})`, transformOrigin: "top center" }}
+      >
+        {/* Page Title */}
+        {/* <h1 className="page-title" style={{ fontSize: `${48 * scale}px` }}>
+          Home Page
+        </h1> */}
+
+        {/* Container for buttons and lockers/consent dashboard */}
+        <div className="content-container">
+          {!showOutgoingConnections ? (
+            <>
+              {/* Button and "My Lockers" text container */}
+              <div className="button-container">
+                {/* Text Button */}
+                <span className="text-button" style={{ fontSize: `${28 * scale}px` }}> {/* Inline style for dynamic font size on PC */}
+                  My Lockers
+                </span>
+                {/* Create Locker Button */}
+                <button
+                  className="primary-button"
+                  onClick={() => navigate("/create-locker")}
+                  // Inline styles for dynamic padding/font size on PC
+                  style={{
+                    fontSize: `${14 * scale}px`,
+                    padding: `${10 * scale}px ${24 * scale}px`,
+                  }}
+                >
+                  CREATE NEW LOCKER
+                </button>
+                {/* Consent Dashboard Button */}
+                <button
+                  className="primary-button"
+                  onClick={handleConsentDashboardClick}
+                  // Inline styles for dynamic padding/font size on PC
+                  style={{
+                    fontSize: `${14 * scale}px`,
+                    padding: `${10 * scale}px ${24 * scale}px`,
+                  }}
+                >
+                  CONSENT DASHBOARD
+                </button>
+              </div>
+
+              {/* Error message */}
+              {/* {error && <div style={{ color: "red", marginTop: "1rem" }}>{error}</div>} */}
+
+              {/* Lockers Container */}
+              <div className="locker-box2">
+                {lockers.map((locker, index) => (
+                  <div key={index} className="locker-box">
+                    <div className="locker-inner">
+                      <div className="locker-content">
+                        {/* Locker Heading */}
+                        <h2
+                          className="locker-heading"
+                          style={{ fontSize: `${20 * scale}px` }}
+                        >
+                          {locker.name || "Untitled Locker"}
+                        </h2>
+                        {/* Locker Description */}
+                        <p
+                          className="locker-text" style={{ textAlign: "left" }}
+                        // style={{ fontSize: `${14 * scale}px` }} 
+                        >
+                          {locker.description || "No description provided."}
+                        </p>
+                      </div>
+                      {/* Open Locker Button */}
+
+                      {locker.is_frozen === false ? (
                         <button
                           className="open-button"
                           onClick={() => handleClick(locker)}
@@ -350,13 +433,26 @@ export const Home = () => {
                         >
                           Open
                         </button>
-                      </div>
+                      ) : (
+                        <button
+                          className=" btn btn-secondary"
+                          // onClick={() => handleClick(locker)}
+                          // Inline styles for dynamic padding/font size on PC
+                          style={{
+                            fontSize: `${14 * scale}px`,
+                            padding: `${8 * scale}px ${24 * scale}px`,
+                          }}
+                        >
+                          Frozen
+                        </button>
+                      )}
                     </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="consent-dashboard-container">
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="consent-dashboard-container">
               <button
                 className="primary-button"
                 onClick={() => setShowOutgoingConnections(false)}
@@ -369,7 +465,7 @@ export const Home = () => {
                 ← Back to Lockers
               </button>
               <h2 style={{ fontSize: `${24 * scale}px` }}>Consent Dashboard</h2>
-  
+
               {outgoingConnections.length > 0 ? (
                 <div className="tableContainer table-responsive"> {/* table-responsive class is likely from Bootstrap, keeping it */}
                   <table className="table table-bordered table-striped table-hover outgoingConnectionsTable"> {/* Bootstrap table classes, keeping them */}
@@ -446,14 +542,14 @@ export const Home = () => {
                           <td>
                             <div className="d-flex justify-content-center">
                               <button
-                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center me-2" 
+                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center me-2"
                                 onClick={() => handleInfo(connection)}
                                 style={{ width: "30px", height: "30px", fontWeight: "bold" }}
                               >
                                 I
                               </button>
                               <button
-                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center" 
+                                className="btn btn-outline-dark rounded-circle p-0 d-flex align-items-center justify-content-center"
                                 onClick={() => handleConsent(connection)}
                                 style={{ width: "30px", height: "30px", fontWeight: "bold" }}
                               >
@@ -472,11 +568,11 @@ export const Home = () => {
                 </p>
               )}
             </div>
-            )}
-          </div>
-        </main>
-      </div>
-    );
-  };
-  
-  export default Home;
+          )}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Home;

@@ -32,7 +32,7 @@
     width: 90%; /* Responsive width */
     /* max-width: 500px; */
     height: auto;
-    background: rgb(224, 26, 26);
+    background: 0d6efd;
     border-radius: 12px; /* Rounded corners */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
  /* Prevent overflow for contents */

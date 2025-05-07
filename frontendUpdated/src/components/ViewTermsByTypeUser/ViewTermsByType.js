@@ -2763,14 +2763,14 @@ export const ViewTermsByType = () => {
       <div className="navbarBrands">
         <h5><b>{connectionName || connection?.connection_name}</b> &nbsp;
           <span
-            className={`badge ${connection?.connection_status === "established"
+            className={`badge ${connectionDetails?.connection_status === "established"
               ? "text-bg-warning"
-              : connection?.connection_status === "live"
+              : connectionDetails?.connection_status === "live"
                 ? "text-bg-success"
                 : "text-bg-secondary"
               }`}
           >
-            {capitalizeFirstLetter(connection?.connection_status) || "Loading..."}
+            {capitalizeFirstLetter(connectionDetails?.connection_status) || "Loading..."}
           </span>
         </h5>
       </div>
@@ -2962,10 +2962,15 @@ export const ViewTermsByType = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
-
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
 
-      <div style={{ marginTop: "140px" }}>
+      <div style={{marginTop:"12px"}}>
         <div className="connection-details">
           <b>Connection Name:</b> {connectionName}
           <button

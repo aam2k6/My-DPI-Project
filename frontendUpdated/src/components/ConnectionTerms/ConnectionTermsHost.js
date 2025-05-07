@@ -550,10 +550,15 @@ console.log("connectionTermsData", connectionTermsData)
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+       <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+    </div>
       {/* <Navbar content={content}></Navbar> */}
       <div>
         {/* <Panel /> */}
-        <div className="Panelcontent" style={{ marginTop: "120px" }}>
+        <div className="Panelcontent">
           <div className="connectionTerms-heroContainer-nonglobal">
             {/* <div className="main-heading">Guest Terms Of Service</div> */}
             <Grid container className="parent-container ">

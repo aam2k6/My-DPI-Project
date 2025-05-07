@@ -1739,9 +1739,14 @@ console.log("pdfUrl", pdfUrl)
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
-
+ <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-      <div style={{ marginTop: "140px" }}>
+      <div style={{ marginTop: "14px" }}>
         <Grid container className="page7description" justifyContent="center" alignItems="center">
           <Grid item md={10} sm={12} >
 

@@ -114,13 +114,13 @@ const Sidebar = ({
   // --- NEW useEffect to fetch notifications on component mount ---
   useEffect(() => {
     // Make sure fetchNotifications function is available
-    if (fetchNotifications) {
+    if (curruser) {
       fetchNotifications();
     } else {
       console.error("fetchNotifications function is not available!");
     }
      // The empty dependency array ensures this runs only once on mount
-  }, [fetchNotifications]); // Added fetchNotifications to dependency array as a best practice if it's a prop
+  }, [curruser]); // Added fetchNotifications to dependency array as a best practice if it's a prop
 
 
   const toggleNotifications = async () => {
@@ -201,7 +201,7 @@ const Sidebar = ({
         <ul>
           <li>
             <button
-              className={`nav-item ${activeMenu === "Home" ? "active" : ""}`}
+              className="nav-item"
               onClick={() => handleNavigate("Home", "/home")}
             >
               <HomeIcon size={20} />

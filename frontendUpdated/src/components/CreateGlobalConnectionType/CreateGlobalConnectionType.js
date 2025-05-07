@@ -161,9 +161,14 @@ export default function CreateGlobalConnectionType() {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
-      
+      <div className="locker-header">
+        {/* <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div> */}
+        <div className="navbar-breadcrumbs mt-2">{breadcrumbs}</div>
+    </div>
       {/* <Navbar breadcrumbs={breadcrumbs} /> */}
-      <div className="dpi-directories" style={{ marginTop: "140px" }}>
+      <div className="dpi-directories" style={{ marginTop: "45px" }}>
         {/* <div className="sidebars">
           <button className="btn-open" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i class="bi bi-chevron-right"></i></button>
 
@@ -196,7 +201,7 @@ export default function CreateGlobalConnectionType() {
             </div>
           </div>
         </div> */}
-        <div> {breadcrumbs}</div>
+        {/* <div> {breadcrumbs}</div> */}
         <Grid container className="manage-connection-content">
           <Grid item xs={12}>
             <h3>Global Connection Directory</h3>

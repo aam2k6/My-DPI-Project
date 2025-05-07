@@ -151,6 +151,12 @@ export const UploadResource = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       {isErrorModalOpen && (
         <Modal
@@ -159,7 +165,7 @@ export const UploadResource = () => {
         />
       )}
 
-      <div style={{ marginTop: "140px" }}>
+      <div style={{ marginTop: "50px" }}>
         {/* <div className='uploadDescriptions'>
           <p>{locker.description}</p>
         </div> */}

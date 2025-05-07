@@ -302,8 +302,14 @@ export const AllLokers = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
        {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-      <div style={{marginTop: "150px"}}>
+      <div style={{marginTop: "50px"}}>
       <Grid container>
             <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>
               <h3>All Lockers</h3>

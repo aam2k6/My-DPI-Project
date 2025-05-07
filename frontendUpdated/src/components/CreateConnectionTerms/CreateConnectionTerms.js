@@ -1832,8 +1832,14 @@ export const CreateConnectionTerms = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
+      <div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+    </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-      <div style={{ marginTop: "150px" }}>
+      <div style={{ marginTop: "12px" }}>
         <div className="connection-details longconnectionDescription">
           Connection Name: {connectionName} <br />
           <h3>

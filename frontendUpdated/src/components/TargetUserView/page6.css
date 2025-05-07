@@ -147,13 +147,13 @@
   }
   
   /* Hero Container */
-  .heroContainers {
+  #targetUserView   .heroContainers {
     margin-top: 0rem !important;
-    margin-left: 5rem;
+    margin-left: 0rem !important;
     width: 50%;
   }
   
-  .newLocker {
+  #targetUserView  .newLocker {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -161,7 +161,7 @@
     font-size: 1.45rem;
   }
   
-  .newLocker button {
+ #targetUserView .newLocker button {
     background-color: #007bff;
     color: #fff;
     width: auto;
@@ -174,7 +174,7 @@
     max-width: 200px;
   }
   
-  .page6-allLockers {
+  #targetUserView   .page6-allLockers {
     border: 2px solid rgb(107, 120, 231);
     /* padding: 1rem; */
     padding-left: 1.30rem;
@@ -183,7 +183,7 @@
     overflow-y: auto; /* Enable vertical scrolling */
   }
   
-  .page6-locker {
+  #targetUserView .page6-locker {
     border: 2px solid rgb(107, 120, 231);
     padding: 1rem;
     margin-bottom: 1rem;
@@ -195,7 +195,7 @@
     font-size: 1.45rem;
   }
   
-  .page6-locker  button{
+  #targetUserView  .page6-locker  button{
     font-weight: bolder;
     /* padding: 0.5rem 1rem; */
     cursor: pointer;
@@ -210,18 +210,18 @@
   
   /* Responsive Design */
   @media (max-width: 768px) {
-    .heroContainers {
-      width: 90%;
+    #targetUserView .heroContainers {
+      width: 90% !important;
       margin-left: 1rem;
       margin-top: 4rem;
     }
   
-    .newLocker {
+    #targetUserView  .newLocker {
       flex-direction: column;
       align-items: flex-start;
     }
   
-    .newLocker button {
+    #targetUserView   .newLocker button {
       margin-top: 1rem;
     }
   }

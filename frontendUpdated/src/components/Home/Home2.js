@@ -7,7 +7,7 @@ import Sidebar from "../Sidebar/Sidebar"; // adjust path if needed
 import "./home.css";
 import { frontend_host } from "../../config";
 
-export const Home = () => {
+export const Home2 = () => {
   const navigate = useNavigate();
   const [scale, setScale] = useState(1);
   const [lockers, setLockers] = useState([]);
@@ -309,18 +309,18 @@ export const Home = () => {
       [menu]: !prev[menu],
     }));
 
-  const content = (
-    <>
-      <div className="navbarBrands">
-        {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
-      </div>
-      <div>
-        {curruser ? curruser.description : "None"}
-      </div>
-      {/* <Typography> {curruser ? curruser.description : "None"}</Typography> */}
+  // const content = (
+  //   <>
+  //     <div className="navbarBrands">
+  //       {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
+  //     </div>
+  //     <div>
+  //       {curruser ? curruser.description : "None"}
+  //     </div>
+  //     {/* <Typography> {curruser ? curruser.description : "None"}</Typography> */}
 
-    </>
-  );
+  //   </>
+  // );
 
   return (
     <div className="app-container">
@@ -341,12 +341,11 @@ export const Home = () => {
         toggleSubmenu={toggleSubmenu}
       />
 
-      <div className="locker-header">
+      {/* <div className="locker-header">
         <div className="locker-text">
           <div className="navbar-content">{content}</div>
         </div>
-        {/* <div className="navbar-breadcrumbs">{breadcrumbs}</div> */}
-      </div>
+      </div> */}
 
       {/* Main content area */}
       <main
@@ -466,7 +465,7 @@ export const Home = () => {
               </button>
               <h2 style={{ fontSize: `${24 * scale}px` }}>Consent Dashboard</h2>
 
-              {outgoingConnections.length > 0 ? (
+              {outgoingConnections?.length > 0 ? (
                 <div className="tableContainer table-responsive"> {/* table-responsive class is likely from Bootstrap, keeping it */}
                   <table className="table table-bordered table-striped table-hover outgoingConnectionsTable"> {/* Bootstrap table classes, keeping them */}
                     <thead>
@@ -482,7 +481,7 @@ export const Home = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {outgoingConnections.map((connection, index) => (
+                      {outgoingConnections?.map((connection, index) => (
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>
@@ -575,4 +574,3 @@ export const Home = () => {
   );
 };
 
-export default Home;

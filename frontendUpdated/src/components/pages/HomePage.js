@@ -1,7 +1,7 @@
 
 
 import React, { useState } from "react";
-import { Home } from "../Home/Home2"; // adjust the path if needed
+import { Home2 } from "../Home/Home2"; // adjust the path if needed
 import Sidebar from "../Sidebar/Sidebar"; // adjust the path if needed
 import { Menu } from "lucide-react";
 
@@ -38,7 +38,7 @@ const HomePage = () => {
         toggleSubmenu={toggleSubmenu}
       />
 
-      <Home />
+      <Home2 />
     </div>
   );
 };

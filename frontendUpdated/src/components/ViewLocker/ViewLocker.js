@@ -1527,7 +1527,7 @@ export const ViewLocker = () => {
         <Menu size={24} />
       </button>
 
-      {/* <Sidebar
+      <Sidebar
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
         activeMenu={activeMenu}
@@ -1536,15 +1536,8 @@ export const ViewLocker = () => {
         toggleSubmenu={toggleSubmenu}
         lockerObj={locker}
         locker_on={true}
-      /> */}
+      />
 
-<div className="locker-header">
-        <div className="locker-text">
-          <div className="navbar-content">{content}</div>
-        </div>
-        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
-    
 
       
       

@@ -42,7 +42,6 @@ import { ConnectionTypes } from "./components/ConnectionTypes/ConnectionTypes";
 import { FreezeConnection } from "./components/Freeze/FreezeConnection";
 import { ConnectionProvider } from "./ConnectionContext";
 import DirectoryPage from "./components/Directory/directory";
-import HomePage from "./components/pages/HomePage";
 
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 

@@ -39,11 +39,8 @@ const Sidebar = ({
   const handleLogout = () => {
     Cookies.remove("authToken");
     localStorage.removeItem("curruser");
-    console.log("Logged out");
-    window.history.pushState(null, null, "/");
-    navigate("/", { replace: true });
-    window.location.reload();
     setUser(null);
+    navigate("/");
   };
 
   const capitalizeFirstLetter = (string) => {
@@ -112,15 +109,13 @@ const Sidebar = ({
     }
   };
   // --- NEW useEffect to fetch notifications on component mount ---
-  useEffect(() => {
-    // Make sure fetchNotifications function is available
-    if (curruser) {
-      fetchNotifications();
-    } else {
-      console.error("fetchNotifications function is not available!");
-    }
-     // The empty dependency array ensures this runs only once on mount
-  }, [curruser]); // Added fetchNotifications to dependency array as a best practice if it's a prop
+  // useEffect(() => {
+  //   if (curruser) {
+  //     fetchNotifications();
+  //   } else {
+  //     console.error("fetchNotifications function is not available!");
+  //   }
+  // }, [curruser]);
 
 
   const toggleNotifications = async () => {
@@ -130,24 +125,24 @@ const Sidebar = ({
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        notificationsRef.current &&
-        !notificationsRef.current.contains(event.target)
-      ) {
-        setIsNotificationsOpen(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (
+  //       notificationsRef.current &&
+  //       !notificationsRef.current.contains(event.target)
+  //     ) {
+  //       setIsNotificationsOpen(false);
+  //     }
+  //   };
 
-    if (isNotificationsOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
+  //   if (isNotificationsOpen) {
+  //     document.addEventListener("mousedown", handleClickOutside);
+  //   } else {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   }
 
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isNotificationsOpen]);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, [isNotificationsOpen]);
 
   return (
     <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>

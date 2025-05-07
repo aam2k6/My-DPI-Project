@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { useLocation, useParams } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
-import Sidebar from "../Sidebar/Sidebar";
+// import Sidebar from "../Sidebar/Sidebar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal";
@@ -1520,7 +1520,7 @@ export const ViewLocker = () => {
   return (
     <div id="viewLocker">
       {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
-      <button
+      {/* <button
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
@@ -1536,7 +1536,7 @@ export const ViewLocker = () => {
         toggleSubmenu={toggleSubmenu}
         lockerObj={locker}
         locker_on={true}
-      />
+      /> */}
 
        
     

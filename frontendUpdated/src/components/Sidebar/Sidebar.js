@@ -40,8 +40,7 @@ const Sidebar = ({
     Cookies.remove("authToken");
     localStorage.removeItem("curruser");
     console.log("Logged out");
-    window.history.pushState(null, null, "/");
-    navigate("/", { replace: true });
+    navigate("/");
     window.location.reload();
     setUser(null);
   };

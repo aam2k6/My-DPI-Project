@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import { Menu } from "lucide-react";
-// import Sidebar from "../Sidebar/Sidebar"; 
+import Sidebar from "../Sidebar/Sidebar"; 
 import "./home.css";
 import { frontend_host } from "../../config";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export const Home2 = () => {
   const navigate = useNavigate();
@@ -310,7 +312,17 @@ export const Home2 = () => {
     }));
 
   
-  console.log("curruser", curruser)
+    const content = (
+          <>
+            <div className="navbarBrand">
+              {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
+            </div>
+            <div className="description">
+              {curruser ? curruser.description : "None"}
+            </div>
+          </>
+        );
+
   return (
     <div className="app-container">
       {/* Hamburger menu, visible on mobile/tablet hidden on PC by CSS */}
@@ -318,18 +330,22 @@ export const Home2 = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} />
       </button>
 
-      {/* <Sidebar
+      <Sidebar
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
         activeMenu={activeMenu}
         setActiveMenu={setActiveMenu}
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
-      /> */}
-
+      />
+<div className="locker-header">
+        <div className="locker-text">
+          <div className="navbar-content">{content}</div>
+        </div>
+    </div>
       
 
       {/* Main content area */}

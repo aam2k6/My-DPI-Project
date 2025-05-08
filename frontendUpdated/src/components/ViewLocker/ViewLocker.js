@@ -98,6 +98,13 @@ export const ViewLocker = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
   console.log("connections", connections.outgoing_connections)
+  console.log("SERVER PARENT DEBUG: typeof Menu icon:", typeof Menu);
+console.log("SERVER PARENT DEBUG: Menu icon value:", Menu);
+try {
+  console.log("SERVER PARENT DEBUG: Menu icon (JSON):", JSON.stringify(Menu));
+} catch (e) {
+  console.log("SERVER PARENT DEBUG: Menu icon (could not stringify)");
+}
   useEffect(() => {
     // const token = Cookies.get("authToken");
     // const checkAndUpdateConnectionStatus = async () => {
@@ -1520,13 +1527,13 @@ export const ViewLocker = () => {
   return (
     <div id="viewLocker">
       {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
-      <button
+      {/* <button
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
         <h1>Menu</h1>
-        {/* <Menu size={24} /> */}
-      </button>
+        <Menu size={24} />
+      </button> */}
 
       {/* <Sidebar
         isSidebarOpen={isSidebarOpen}

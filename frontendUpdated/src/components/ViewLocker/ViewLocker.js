@@ -16,7 +16,7 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { ConnectionContext } from "../../ConnectionContext";
-import { Menu as MenuImport } from "lucide-react";
+import { Menu } from "lucide-react";
 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
@@ -99,10 +99,6 @@ export const ViewLocker = () => {
   };
 
   
-  const Menu = MenuImport.default || MenuImport; // Attempt to grab .default if it exists
-
-  // Log what Menu becomes after the potential .default access
-  console.log("SERVER PARENT DEBUG: Corrected Menu:", typeof Menu, Menu);
   console.log("connections", connections.outgoing_connections)
   console.log("SERVER PARENT DEBUG: typeof Menu icon:", typeof Menu);
 console.log("SERVER PARENT DEBUG: Menu icon value:", Menu);
@@ -1540,7 +1536,7 @@ try {
       >
         <i style={{color:"white"}} className="bi bi-list"></i>
         {/* <h1>Menu</h1> */}
-        {/* <Menu size={24} /> */}
+        <Menu />
       </button>
 
       {/* <Sidebar

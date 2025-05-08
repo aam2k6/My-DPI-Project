@@ -4,10 +4,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Navbar from '../Navbar/Navbar';
-import { Menu } from "lucide-react";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { frontend_host } from '../../config';
 import { Grid, Box, Button } from '@mui/material'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export const CreateConnectionType = () => {
     const navigate = useNavigate();
@@ -192,7 +193,7 @@ export const CreateConnectionType = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

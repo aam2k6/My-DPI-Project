@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { Home2 } from "../Home/Home2"; // adjust the path if needed
 import Sidebar from "../Sidebar/Sidebar"; // adjust the path if needed
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 const HomePage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -26,7 +27,7 @@ const HomePage = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

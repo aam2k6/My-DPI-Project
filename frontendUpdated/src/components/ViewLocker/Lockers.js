@@ -6,7 +6,8 @@ import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import "./Lockers.css";
 import Sidebar from "../Sidebar/Sidebar";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Modal from "../Modal/Modal"; // Import the Modal component
 import {
   Card,
@@ -291,7 +292,7 @@ export const AllLokers = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

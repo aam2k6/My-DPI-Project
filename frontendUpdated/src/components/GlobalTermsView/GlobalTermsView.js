@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import Navbar from "../Navbar/Navbar";
 import Sidebar from "../Sidebar/Sidebar";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { usercontext } from "../../usercontext";
 import { frontend_host } from "../../config";
 import '../Displayterms/Displayterms.css'; // Make sure to create the relevant CSS file
@@ -263,7 +264,7 @@ const GlobalTermsView = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+         <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

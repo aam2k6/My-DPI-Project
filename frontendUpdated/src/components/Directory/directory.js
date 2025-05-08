@@ -4,7 +4,8 @@ import Navbar from '../Navbar/Navbar';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import "./directory.css";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
 
 export const DirectoryPage = () => {
@@ -36,7 +37,7 @@ export const DirectoryPage = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+         <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

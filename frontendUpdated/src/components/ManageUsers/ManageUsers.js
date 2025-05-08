@@ -7,7 +7,8 @@ import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import Modal from '../Modal/Modal';
 import { frontend_host } from '../../config';
-import { Menu } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export default function ManageUsers({ role }) {  // Role can be 'moderator' or 'admin'
   const [users, setUsers] = useState([]);
@@ -167,7 +168,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

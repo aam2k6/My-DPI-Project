@@ -1126,7 +1126,8 @@ import { Grid, Box, Button } from '@mui/material'
 import { Tooltip } from 'react-tooltip';
 import ReactModal from "react-modal";
 import Sidebar from "../Sidebar/Sidebar.js";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 // import pdfWorker from "pdfjs-dist/build/pdf.worker.min.js"
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 
@@ -1728,7 +1729,7 @@ console.log("pdfUrl", pdfUrl)
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

@@ -4,7 +4,8 @@ import { usercontext } from '../../usercontext';
 import { frontend_host } from "../../config.js";
 import Cookies from 'js-cookie';
 import Navbar from "../Navbar/Navbar";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
 export const FreezeLocker = () => {
     const [lockerName, setLockerName] = useState("");
@@ -173,7 +174,7 @@ export const FreezeLocker = () => {
                 className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
                 onClick={toggleSidebar}
             >
-                <Menu size={24} />
+                <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
             </button>
 
             <Sidebar

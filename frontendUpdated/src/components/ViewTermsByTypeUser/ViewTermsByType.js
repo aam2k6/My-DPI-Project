@@ -526,9 +526,10 @@ import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/f
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import { Tooltip } from 'react-tooltip';
-import { Menu } from "lucide-react";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { Grid } from "@mui/material"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export const ViewTermsByType = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -2951,7 +2952,7 @@ export const ViewTermsByType = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

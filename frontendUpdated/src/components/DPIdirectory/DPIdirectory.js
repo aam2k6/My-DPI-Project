@@ -6,7 +6,8 @@ import Navbar from '../Navbar/Navbar';
 import { frontend_host } from '../../config';
 import Sidebar from '../Sidebar/Sidebar';
 import './DPIdirectory.css';
-import { Menu } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import {
   Card,
   CardContent,
@@ -105,7 +106,8 @@ export const DPIdirectory = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
+        
       </button>
 
       <Sidebar

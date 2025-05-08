@@ -154,8 +154,9 @@ import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
 import { frontend_host } from "../../config";
 import { Grid } from "@mui/material"
-import { Menu } from "lucide-react";
 import Sidebar from "../Sidebar/Sidebar.js";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export const Displayterms = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -631,7 +632,8 @@ export const Displayterms = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+      <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
+        
       </button>
 
       <Sidebar

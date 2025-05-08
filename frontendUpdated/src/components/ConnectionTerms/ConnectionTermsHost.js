@@ -19,7 +19,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Typography from "@mui/material/Typography";
 import Sidebar from "../Sidebar/Sidebar.js";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export const ConnectionTermsHost = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -539,7 +540,7 @@ console.log("connectionTermsData", connectionTermsData)
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}} />
       </button>
 
       <Sidebar

@@ -706,7 +706,8 @@ import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
 import { frontend_host } from "../../config"; import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
 import { Grid } from '@mui/material'
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
 
 // import res from "./object";
@@ -1821,7 +1822,7 @@ export const CreateConnectionTerms = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

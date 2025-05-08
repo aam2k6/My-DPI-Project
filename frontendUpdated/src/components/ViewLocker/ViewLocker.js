@@ -1526,7 +1526,7 @@ export const ViewLocker = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <FontAwesomeIcon icon={faBars} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
         {/* <Menu size={24} /> */}
       </button>
 

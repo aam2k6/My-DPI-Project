@@ -9,7 +9,8 @@ import { frontend_host } from "../../config"
 import "./CreateGlobalConnectionType.css"
 import "../DPIdirectory/DPIdirectory.css"
 import Sidebar from "../Sidebar/Sidebar"
-import { Menu } from "lucide-react"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 const COMPONENT_ID = "create-global-connection-type"
 
@@ -150,7 +151,7 @@ export default function CreateGlobalConnectionType() {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

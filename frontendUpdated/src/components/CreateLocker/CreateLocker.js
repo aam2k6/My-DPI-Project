@@ -6,7 +6,8 @@ import Navbar from "../Navbar/Navbar"
 import { frontend_host } from "../../config"
 import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material"
 import Sidebar from "../Sidebar/Sidebar"
-import { Menu } from "lucide-react"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import "./page2.css"
 
 export const CreateLocker = () => {
@@ -97,7 +98,7 @@ export const CreateLocker = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+         <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

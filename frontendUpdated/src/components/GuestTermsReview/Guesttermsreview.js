@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 import "./Guesttermsreview.css";
 import Navbar from "../Navbar/Navbar";
 import Modal from "../Modal/Modal.jsx";
-import { Menu } from "lucide-react";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { frontend_host } from "../../config";
 import { FaArrowCircleRight, FaUserCircle, FaRegUserCircle } from 'react-icons/fa';
@@ -13,6 +12,8 @@ import { Grid } from '@mui/material'
 import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import { TextField } from "@mui/material";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 
 export const Guesttermsreview = () => {
@@ -2028,7 +2029,7 @@ export const Guesttermsreview = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

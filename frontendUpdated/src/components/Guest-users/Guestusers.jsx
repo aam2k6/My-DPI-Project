@@ -4,7 +4,6 @@ import Cookies from 'js-cookie';
 import { usercontext } from "../../usercontext";
 import "./guestuser.css";
 import Navbar from '../Navbar/Navbar';
-import { Menu } from "lucide-react";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { frontend_host } from '../../config';
 import {
@@ -17,6 +16,8 @@ import {
   Grid,
   TextField,
 } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export const Guestusers = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -360,7 +361,7 @@ export const Guestusers = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

@@ -9,7 +9,9 @@ import { frontend_host } from "../../config";
 import { Grid, Button, Box } from '@mui/material'
 import { ConnectionContext } from "../../ConnectionContext";
 import Sidebar from "../Sidebar/Sidebar.js";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+
 export const ConnectionTermsGlobalHost = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("Home");
@@ -340,7 +342,7 @@ const handleCloseModal = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

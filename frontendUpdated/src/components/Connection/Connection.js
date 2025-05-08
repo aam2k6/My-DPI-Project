@@ -4,7 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ConnectionContext } from "../../ConnectionContext";
 import { usercontext } from "../../usercontext";
 import Sidebar from "../Sidebar/Sidebar";
-import { Menu } from "lucide-react";
+// import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import "./connection.css";
 import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
@@ -149,7 +151,7 @@ export const Connection = () => {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}} />
       </button>
 
       <Sidebar

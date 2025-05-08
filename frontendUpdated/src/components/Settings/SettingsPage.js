@@ -130,7 +130,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Using FontAwesome icons
 import { frontend_host } from '../../config';
 import { Button, Grid, Box } from '@mui/material'
 import Sidebar from '../Sidebar/Sidebar';
-import { Menu } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export default function SettingsPage() {
     const { curruser, setUser } = useContext(usercontext);
@@ -235,7 +236,7 @@ export default function SettingsPage() {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <Menu size={24} />
+        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
       </button>
 
       <Sidebar

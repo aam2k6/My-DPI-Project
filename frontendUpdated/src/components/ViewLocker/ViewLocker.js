@@ -1534,13 +1534,14 @@ try {
   return (
     <div id="viewLocker">
       {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
-      {/* <button
+      <button
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <h1>Menu</h1>
-        <Menu size={24} />
-      </button> */}
+        <i style={{color:"white"}} className="bi bi-list"></i>
+        {/* <h1>Menu</h1> */}
+        {/* <Menu size={24} /> */}
+      </button>
 
       {/* <Sidebar
         isSidebarOpen={isSidebarOpen}

@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { useLocation, useParams } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Navbar from "../Navbar/Navbar";
-// import Sidebar from "../Sidebar/Sidebar";
+import Sidebar from "../Sidebar/Sidebar";
 import { frontend_host } from "../../config";
 import { QrReader } from "react-qr-reader";
 import Modal from "../Modal/Modal";
@@ -16,7 +16,9 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { ConnectionContext } from "../../ConnectionContext";
-import { Menu } from "lucide-react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+// import { Menu } from "lucide-react";
 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
@@ -97,17 +99,7 @@ export const ViewLocker = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-
-  
   console.log("connections", connections.outgoing_connections)
-  console.log("SERVER PARENT DEBUG: typeof Menu icon:", typeof Menu);
-console.log("SERVER PARENT DEBUG: Menu icon value:", Menu);
-try {
-  console.log("SERVER PARENT DEBUG: Menu icon (JSON):", JSON.stringify(Menu));
-} catch (e) {
-  console.log("SERVER PARENT DEBUG: Menu icon (could not stringify)");
-}
-
   useEffect(() => {
     // const token = Cookies.get("authToken");
     // const checkAndUpdateConnectionStatus = async () => {
@@ -1534,9 +1526,8 @@ try {
         className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
         onClick={toggleSidebar}
       >
-        <i style={{color:"white"}} className="bi bi-list"></i>
-        {/* <h1>Menu</h1> */}
-        <Menu />
+        <FontAwesomeIcon icon={faBars} />
+        {/* <Menu size={24} /> */}
       </button>
 
       {/* <Sidebar
@@ -1550,13 +1541,12 @@ try {
         locker_on={true}
       /> */}
 
-<div className="locker-header">
+       <div className="locker-header">
         <div className="locker-text">
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
     </div>
-    
 
       
       

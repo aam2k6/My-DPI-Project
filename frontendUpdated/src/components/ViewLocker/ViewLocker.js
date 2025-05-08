@@ -97,6 +97,12 @@ export const ViewLocker = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+
+  
+  const Menu = MenuImport.default || MenuImport; // Attempt to grab .default if it exists
+
+  // Log what Menu becomes after the potential .default access
+  console.log("SERVER PARENT DEBUG: Corrected Menu:", typeof Menu, Menu);
   console.log("connections", connections.outgoing_connections)
   console.log("SERVER PARENT DEBUG: typeof Menu icon:", typeof Menu);
 console.log("SERVER PARENT DEBUG: Menu icon value:", Menu);
@@ -105,10 +111,7 @@ try {
 } catch (e) {
   console.log("SERVER PARENT DEBUG: Menu icon (could not stringify)");
 }
-const Menu = MenuImport.default || MenuImport; // Attempt to grab .default if it exists
 
-// Log what Menu becomes after the potential .default access
-console.log("SERVER PARENT DEBUG: Corrected Menu:", typeof Menu, Menu);
   useEffect(() => {
     // const token = Cookies.get("authToken");
     // const checkAndUpdateConnectionStatus = async () => {

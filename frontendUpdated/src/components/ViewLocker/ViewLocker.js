@@ -16,7 +16,7 @@ import ReactModal from "react-modal";
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { ConnectionContext } from "../../ConnectionContext";
-import { Menu } from "lucide-react";
+import { Menu as MenuImport } from "lucide-react";
 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
 export const ViewLocker = () => {
@@ -105,6 +105,10 @@ try {
 } catch (e) {
   console.log("SERVER PARENT DEBUG: Menu icon (could not stringify)");
 }
+const Menu = MenuImport.default || MenuImport; // Attempt to grab .default if it exists
+
+// Log what Menu becomes after the potential .default access
+console.log("SERVER PARENT DEBUG: Corrected Menu:", typeof Menu, Menu);
   useEffect(() => {
     // const token = Cookies.get("authToken");
     // const checkAndUpdateConnectionStatus = async () => {

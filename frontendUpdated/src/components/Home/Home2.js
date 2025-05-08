@@ -19,12 +19,12 @@ export const Home2 = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("Home");
   const [expandedIndex, setExpandedIndex] = useState(null);
-  // const { curruser } = useContext(usercontext);
+  const { curruser } = useContext(usercontext);
   const [openSubmenus, setOpenSubmenus] = useState({
     directory: false,
     settings: false,
   });
-  const curruser = JSON.parse(localStorage.getItem("curruser"));
+  // const curruser = JSON.parse(localStorage.getItem("curruser"));
   useEffect(() => {
     if (!curruser) {
       navigate('/');

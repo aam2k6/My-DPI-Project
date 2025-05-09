@@ -54,7 +54,7 @@ export const ConnectionTermsGlobalHost = () => {
     domain: "",
   };
 
-  const { connectionData } = useContext(ConnectionContext);
+  const { connectionData, connectionTermsData } = useContext(ConnectionContext);
   console.log("connectionDatass", connectionData)
 
   const [globalFormData, setGlobalFormData] = useState(initialGlobalForm);
@@ -68,7 +68,7 @@ export const ConnectionTermsGlobalHost = () => {
   // const globalTemplateData = location.state?.globalTemplateData;
 
   // console.log("Received Data:", connectionTermsData);
-
+// console.log("globalTemplateData", connectionTermsData, connectionData)s
   useEffect(() => {
     if (location.state) {
       // setGlobalFormData(
@@ -181,19 +181,45 @@ export const ConnectionTermsGlobalHost = () => {
     
     const token = Cookies.get("authToken");
 
-    const newConnectionTermsData = {
-      ...connectionData,
-      obligations, // Updating with new obligations
-      permissions: {
-        canShareMoreData: obligationFormData.canShareMore,
-        canDownloadData: obligationFormData.canDownload,
-      },
-      forbidden: obligationFormData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
+    const GuestData={
+      from: "GUEST",
+      to: "HOST",
+      ...connectionTermsData
+    }
+
+    const HostData = {
       from: "HOST",
-      to: "GUEST"
+      to: "GUEST",
+      obligations: obligations.map(obligation =>({
+        ...obligation,
+        hostPermissions: obligationFormData.hostPermissions,
+      })),
+      forbidden: obligationFormData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"]
     };
 
-    console.log("newConnectionTermsData", newConnectionTermsData);
+    const finalData = {
+      ...connectionData,
+      directions: [
+        GuestData,
+        HostData
+      ]
+    }
+    console.log("finalData", HostData, GuestData)
+    // const newConnectionTermsData = {
+    //   ...connectionData,
+    //   obligations, // Updating with new obligations
+    //   permissions: {
+    //     canShareMoreData: obligationFormData.canShareMore,
+    //     canDownloadData: obligationFormData.canDownload,
+    //   },
+    //   forbidden: obligationFormData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
+    //   from: "HOST",
+    //   to: "GUEST"
+    // };
+
+    
+
+    console.log("newConnectionTermsData", finalData);
     // console.log(globalName);
     // console.log(globalDescription);
     fetch(`${frontend_host}/create-global-terms/`, {
@@ -202,7 +228,7 @@ export const ConnectionTermsGlobalHost = () => {
         "Content-Type": "application/json",
         Authorization: `Basic ${token}`, // Corrected template literal
       },
-      body: JSON.stringify(newConnectionTermsData),
+      body: JSON.stringify(finalData),
     })
     .then(async (response) => {
       const data = await response.json();
@@ -637,11 +663,11 @@ const handleCloseModal = () => {
                     </Grid>
                   </Grid>
                 </Box>
-                <div className="mb-1 row">
+                {/* <div className="mb-1 row">
                   <h5><b>Permissions</b></h5>
-                </div>
+                </div> */}
 
-                <div className="mb-3 row">
+                {/* <div className="mb-3 row">
                   <div className="col-md-7 col-xs-12">
                     <label className="col-md-7 col-xs-12" style={{ fontWeight: "normal" }}>
                       Can the guest share more data
@@ -655,7 +681,7 @@ const handleCloseModal = () => {
                       onChange={handleCheckboxChange}
                     />
                   </div>
-                </div>
+                </div> */}
                 {/* <div className="mb-3 row">
                 <div className="col-md-6 col-xs-12">
                     <label className="col-md-6 col-xs-12" style={{fontWeight:"normal"}}>
@@ -679,7 +705,7 @@ const handleCloseModal = () => {
                 <div className="mb-3 row">
                   <div className="col-md-7 col-xs-12 ">
                     <label className="agreeLabel" style={{ fontWeight: "normal" }}>
-                      You cannot unilaterally close the connection
+                      Host cannot unilaterally close the connection
                     </label>
                   </div>
                   <div className="col-md-1 col-xs-2">

@@ -30,7 +30,7 @@ export const ConnectionTermsGlobal = () => {
   const { connectionTypeName, connectionTypeDescription, existingTerms } =
     location.state || {};
   const [purpose, setPurpose] = useState(""); // Ensure it's initialized
-  const { setConnectionData } = useContext(ConnectionContext);
+  const { setConnectionData, setConnectionTermsData } = useContext(ConnectionContext);
 
 
   // Separate states for global and obligation form data
@@ -159,7 +159,18 @@ export const ConnectionTermsGlobal = () => {
   };
 
   const handleSubmits = (event) => {
-    navigate("/ConnectionTermsGlobalHost"); // Navigate to next page
+    const connectionTermsData = {
+      obligations,
+      permissions: {
+        canShareMoreData: obligationFormData.canShareMore,
+        canDownloadData: obligationFormData.canDownload,
+        // resharePermission: formData.resharePermission,
+      },
+      forbidden: obligationFormData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
+    };
+    console.log("setConnectionTermsData", connectionTermsData);
+    setConnectionTermsData(connectionTermsData); // Update context
+    navigate("/ConnectionTermsGlobalHost"); // Navigate to the next page
   };
 
   const handleSubmit = (event) => {
@@ -197,30 +208,33 @@ export const ConnectionTermsGlobal = () => {
     setConnectionData(globalTemplateData);
     const connectionTermsData = {
       ...globalTemplateData,
-      obligations,
-      permissions: {
-        canShareMoreData: obligationFormData.canShareMore,
-        canDownloadData: obligationFormData.canDownload,
-      },
-      forbidden: obligationFormData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
-      from: "GUEST",
-      to: "HOST"
+      obligations: obligations.map(obligation => ({
+        ...obligation,
+        hostPermissions: obligationFormData.hostPermissions,
+      }))
+      // permissions: {
+      //   canShareMoreData: obligationFormData.canShareMore,
+      //   canDownloadData: obligationFormData.canDownload,
+      // },
+      // forbidden: obligationFormData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"],
     };
 
     console.log(connectionTermsData);
     console.log(globalName);
     console.log(globalDescription);
-    fetch(`${frontend_host}/create-global-terms/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${token}`, // Corrected template literal
-      },
-      body: JSON.stringify(connectionTermsData),
-    })
-    .then((response) =>
-      response.json().then((data) => ({ status: response.status, data }))
-    )
+    handleSubmits();
+  };
+    // fetch(`${frontend_host}/create-global-terms/`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Basic ${token}`, // Corrected template literal
+    //   },
+    //   body: JSON.stringify(connectionTermsData),
+    // })
+    // .then((response) =>
+    //   response.json().then((data) => ({ status: response.status, data }))
+    // )
       // .then((response) => {
       //   console.log("response", response)
       //   if (response.status === 200 || response.status === 201) {
@@ -249,31 +263,33 @@ export const ConnectionTermsGlobal = () => {
       //     setIsModalOpen(true); // Open modal with error message.
       //   }
       // })
-      .then(({ status, data }) => {
-        if (status === 200 || status ===201) {
-          handleSubmits()
-        } else if (status === 400 && data.error.includes("already exists")) {
-          // Handle the case where the connection type already exists.
-          setError(
-            `${data.error}`
-          );
-          setModalMessage({
-            message:
-              `${data.error}`,
-            type: "error",
-          });
-          setIsModalOpen(true);
-        } else {
-          // General error handling.
-          console.error("Error:", data.error);
-          setError(data.error);
-          setModalMessage({
-            message: data.error,
-            type: "error",
-          });
-          setIsModalOpen(true); // Open modal with error message.
-        }
-      })
+
+      // --------------------------
+      // .then(({ status, data }) => {
+      //   if (status === 200 || status ===201) {
+      //     handleSubmits()
+      //   } else if (status === 400 && data.error.includes("already exists")) {
+      //     // Handle the case where the connection type already exists.
+      //     setError(
+      //       `${data.error}`
+      //     );
+      //     setModalMessage({
+      //       message:
+      //         `${data.error}`,
+      //       type: "error",
+      //     });
+      //     setIsModalOpen(true);
+      //   } else {
+      //     // General error handling.
+      //     console.error("Error:", data.error);
+      //     setError(data.error);
+      //     setModalMessage({
+      //       message: data.error,
+      //       type: "error",
+      //     });
+      //     setIsModalOpen(true); // Open modal with error message.
+      //   }
+      // })
       // .then((data) => {
       //   console.log("Global terms created successfully.");
       //   navigate("/create-global-connection-type");
@@ -306,11 +322,11 @@ export const ConnectionTermsGlobal = () => {
       // .then(() => {
       //   alert("Global template added successfully.");
       // })
-      .catch((error) => {
-        console.error("Error:", error);
-        setError("An error occurred while submitting the data.");
-      });
-  };
+      // .catch((error) => {
+      //   console.error("Error:", error);
+      //   setError("An error occurred while submitting the data.");
+      // });
+
 
 console.log("errors", error)
   const handleHostPermissionsChange = (event) => {
@@ -687,11 +703,11 @@ console.log("errors", error)
                     </Grid>
                   </Grid>
                 </Box>
-                <div className="mb-1 row">
+                {/* <div className="mb-1 row">
                   <h5><b>Permissions</b></h5>
-                </div>
+                </div> */}
 
-                <div className="mb-3 row">
+                {/* <div className="mb-3 row">
                   <div className="col-md-7 col-xs-12">
                     <label className="col-md-7 col-xs-12" style={{ fontWeight: "normal" }}>
                       Can the guest share more data
@@ -705,7 +721,7 @@ console.log("errors", error)
                       onChange={handleCheckboxChange}
                     />
                   </div>
-                </div>
+                </div> */}
                 {/* <div className="mb-3 row">
                 <div className="col-md-6 col-xs-12">
                     <label className="col-md-6 col-xs-12" style={{fontWeight:"normal"}}>
@@ -729,7 +745,7 @@ console.log("errors", error)
                 <div className="mb-3 row">
                   <div className="col-md-7 col-xs-12 ">
                     <label className="agreeLabel" style={{ fontWeight: "normal" }}>
-                      You cannot unilaterally close the connection
+                      Guest cannot unilaterally close the connection
                     </label>
                   </div>
                   <div className="col-md-1 col-xs-2">

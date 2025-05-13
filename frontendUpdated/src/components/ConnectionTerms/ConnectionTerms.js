@@ -714,7 +714,7 @@ console.log("connectionData", connectionData)
                 // showInfo: true,
               };
             });
-            setHostGlobalObligations(hostObligationsWithGlobalId)
+            setHostGlobalObligations(prev => [...prev, ...hostObligationsWithGlobalId]);
 console.log("hostObligationsWithGlobalId", hostObligationsWithGlobalId)
             // Combine obligations, permissions, and forbidden into a single array or separate arrays
             // setObligations((prev) => [

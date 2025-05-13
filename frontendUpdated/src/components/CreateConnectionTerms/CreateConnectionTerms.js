@@ -1123,9 +1123,9 @@ export const CreateConnectionTerms = () => {
           'Authorization': `Basic ${token}`,
         },
         body: new URLSearchParams({
-          connection_type_name: connectionTypeName,
+          // connection_type_name: connectionTypeName,
           connection_type_id: connectionTypeID,
-          // connection_name: connectionName,
+          connection_name: connectionName,
           connection_description: connectionDescription,
           host_locker_name: hostLockerName,
           guest_locker_name: locker,

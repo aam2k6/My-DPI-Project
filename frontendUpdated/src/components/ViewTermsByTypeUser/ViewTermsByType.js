@@ -751,7 +751,14 @@ export const ViewTermsByType = () => {
             ["share", "transfer"].includes(key)
           )
         );
-      }
+      } else if (pdfData.xnode_Type === "SNODE") {
+      // Exclude "subset"
+      filteredPostConditions = Object.fromEntries(
+        Object.entries(restPostConditions).filter(([key]) =>
+          !["subset"].includes(key)
+        )
+      );
+    }
       // setInitialPostConditions(filteredConditions);
       setEditablePostConditions(filteredPostConditions);
       setIsLockedPostConditions(pdfData.is_locked);

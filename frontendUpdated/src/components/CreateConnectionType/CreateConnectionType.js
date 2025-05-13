@@ -36,7 +36,7 @@ export const CreateConnectionType = () => {
     const [locker, setLocker] = useState(location.state ? location.state.hostlocker : null);
     const [selectedConnectionType, setSelectedConnectionType] = useState(location.state ? location.state.selectedConnectionType : null);
 
-
+console.log("selectedConnectionType", selectedConnectionType)
     useEffect(() => {
         if (!curruser) {
             navigate('/');
@@ -126,6 +126,7 @@ export const CreateConnectionType = () => {
         navigate('/show-connection-terms', {
             state: {
                 connectionTypeName: selectedConnectionType.connection_type_name,
+                connectionTypeID: selectedConnectionType.connection_type_id,
                 connectionDescription: selectedConnectionType.connection_description,
                 locker: selectedLocker.name,
                 guestUserUsername: curruser.username,

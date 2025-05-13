@@ -763,6 +763,7 @@ export const CreateConnectionTerms = () => {
     hostLockerName,
     guestLockerName,
     connectionTypeName,
+    connectionTypeID,
     hostUserUsername,
     connectionDescription,
     guestUserUsername,
@@ -804,7 +805,7 @@ export const CreateConnectionTerms = () => {
     connectionType
   );
 
-  console.log("viewHost", viewHost)
+  console.log("viewHost", connectionTypeID)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -1123,7 +1124,8 @@ export const CreateConnectionTerms = () => {
         },
         body: new URLSearchParams({
           connection_type_name: connectionTypeName,
-          connection_name: connectionName,
+          connection_type_id: connectionTypeID,
+          // connection_name: connectionName,
           connection_description: connectionDescription,
           host_locker_name: hostLockerName,
           guest_locker_name: locker,
@@ -1145,7 +1147,8 @@ export const CreateConnectionTerms = () => {
         },
         body: new URLSearchParams({
           connection_name: connectionName,
-          connection_type_name: connectionTypeName,
+          connection_type_id: connectionTypeID,
+          // connection_type_name: connectionTypeName,
           guest_username: curruser.username,
           guest_lockername: locker,
           host_username: hostUserUsername,

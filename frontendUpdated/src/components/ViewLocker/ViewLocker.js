@@ -1522,14 +1522,21 @@ export const ViewLocker = () => {
   return (
     <div id="viewLocker">
       {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-        {/* <Menu size={24} /> */}
-      </button>
 
+<div className="user-greeting-container shadow">
+  <button
+    className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+    onClick={toggleSidebar}
+  >
+    <FontAwesomeIcon icon={faBars} />
+  </button>
+  <span className="fw-semibold fs-6 text-dark">
+    Hi, {capitalizeFirstLetter(curruser.username)}
+  </span>
+</div>
+
+
+      {/* <span className="fw-medium">Hi, Meghana</span> */}
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}

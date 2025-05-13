@@ -139,6 +139,7 @@ export const ViewHostTermsByType = () => {
     guestLocker,
     hostLocker
   )
+  const connectionsData = connection
   // useEffect(() => {
   //   const fetchData = async () => {
   //     const token = Cookies.get("authToken"); // Get the token from Cookies
@@ -1894,6 +1895,7 @@ export const ViewHostTermsByType = () => {
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
           connectionTypeName,
+          connectionTypeID: connectionsData?.connection_type,
           hostUserUsername: hostUserUsername,
           guestUserUsername: guestUserUsername,
           guestLockerName: guestLockerName,

@@ -749,7 +749,7 @@ export const CreateConnectionTerms = () => {
   const [termsValueReverse, setTermsValueReverse] = useState({});
 
   // const [forbiddenContent, setForbiddenContent] = useState("null")
-  console.log("resss", res)
+  console.log("resss", connectionDetails)
   const forbiddenContent =
     res?.forbidden?.host_to_guest?.[0]?.labelDescription ??
     res?.forbidden?.guest_to_host?.[0]?.labelDescription ??
@@ -805,7 +805,7 @@ export const CreateConnectionTerms = () => {
     connectionType
   );
 
-  console.log("viewHost", connectionTypeID)
+  console.log("ssssssss", agrees, Iagree, showConsent, consentData, connection, connectionTypeID)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -826,13 +826,14 @@ export const CreateConnectionTerms = () => {
       const token = Cookies.get("authToken");
       const queryParams = new URLSearchParams({
         connection_name: connectionName,
-        connection_type_name: connectionTypeName,
+        connection_type_id: connectionTypeID,
+        // connection_type_name: connectionTypeName,
         guest_username: guestUserUsername,
         guest_lockername: guestLockerName,
         host_username: hostUserUsername,
         host_lockername: hostLockerName,
       });
-
+console.log("queryParams", queryParams)
       const response = await fetch(
         `host/get-consent/?${queryParams.toString()}`.replace(
           /host/,
@@ -849,7 +850,7 @@ export const CreateConnectionTerms = () => {
       const data = await response.json();
       if (data.success) {
         setConsentData(data);
-        console.log(data);
+        console.log("data", data);
         setIagree(data.consent_status ? "1" : "0");
       } else {
         setMessage(data.error || "Failed to check consent status.");

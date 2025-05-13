@@ -639,7 +639,8 @@ export const ViewTermsByType = () => {
     guestLocker
   } = location.state || {};
 
-  console.log("datass", connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername)
+  console.log("datass", connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, connection)
+  const connectionsData = connection
   useEffect(() => {
     const token = Cookies.get("authToken");
     const connectionLifeCycle = () => {
@@ -2375,14 +2376,16 @@ export const ViewTermsByType = () => {
         guest_locker_id: connection.guest_locker?.id,
         host_locker_id: connection.host_locker?.id,
         connection_id: connection.connection_id,
+        connectionTypeID: connectionsData?.connection_type,
       });
-
+console.log("Navigating with state:", connectionsData)
       navigate("/show-connection-terms", {
         state: {
           connectionName: connectionName, // Pass the string as connectionName
           connectionDescription: connectionDescription,
           hostLockerName: hostLockerName,
           connectionTypeName,
+          connectionTypeID: connectionsData?.connection_type,
           guestLockerName: guestLockerName,
           hostUserUsername: hostUserUsername,
           guestUserUsername: guestUserUsername,

@@ -391,9 +391,9 @@ body {
   }
 
   /* Hamburger menu is visible on PC */
-  .hamburger-menu {
+  /* .hamburger-menu {
     /* Position and appearance on PC might need adjustment */
-  }
+  } */
 
   .content-container {
     max-width: 1000px;

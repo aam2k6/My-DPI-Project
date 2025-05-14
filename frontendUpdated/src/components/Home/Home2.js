@@ -314,10 +314,10 @@ export const Home2 = () => {
 
   const content = (
     <>
-      <div className="navbarBrand">
+      <div className="navbarBrands">
         {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
       </div>
-      <div className="description">
+      <div>
         {curruser ? curruser.description : "None"}
       </div>
     </>

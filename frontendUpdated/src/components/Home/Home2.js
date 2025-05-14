@@ -326,9 +326,9 @@ export const Home2 = () => {
   return (
     <div className="app-container">
       {/* Hamburger menu, visible on mobile/tablet hidden on PC by CSS */}
-      <div className="user-greeting-container shadow">
+      <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          className="hamburger-btn me-2"
           onClick={toggleSidebar}
         >
           <FontAwesomeIcon icon={faBars} />

@@ -193,9 +193,9 @@ export const CreateConnectionType = () => {
     )
     return (
         <div id='make-connection'>
-            <div className="user-greeting-container shadow">
+            <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
                 <button
-                    className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+                    className="hamburger-btn me-2"
                     onClick={toggleSidebar}
                 >
                     <FontAwesomeIcon icon={faBars} />

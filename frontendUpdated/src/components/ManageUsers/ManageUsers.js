@@ -168,9 +168,9 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
   return (
     <div className='content'>
       {/* <Navbar /> */} {/* Navbar might be placed outside this component depending on layout */}
-      <div className="user-greeting-container shadow">
+      <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          className="hamburger-btn me-2"
           onClick={toggleSidebar}
         >
           <FontAwesomeIcon icon={faBars} />

@@ -446,6 +446,7 @@ body {
   min-width: fit-content;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* fixed incorrect rgba */
   display: flex;
+  z-index: 1050;
   align-items: center;
 }
 

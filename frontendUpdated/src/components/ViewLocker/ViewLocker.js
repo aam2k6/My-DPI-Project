@@ -1523,9 +1523,9 @@ export const ViewLocker = () => {
     <div id="viewLocker">
       {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
 
-<div className="user-greeting-container shadow">
+<div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
   <button
-    className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+    className="hamburger-btn me-2"
     onClick={toggleSidebar}
   >
     <FontAwesomeIcon icon={faBars} />

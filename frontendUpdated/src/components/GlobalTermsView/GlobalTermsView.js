@@ -263,9 +263,9 @@ const GlobalTermsView = () => {
 
   return (
     <div className="global-terms-view-page" id="global-terms-view">
-      <div className="user-greeting-container shadow">
+      <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          className="hamburger-btn me-2"
           onClick={toggleSidebar}
         >
           <FontAwesomeIcon icon={faBars} />

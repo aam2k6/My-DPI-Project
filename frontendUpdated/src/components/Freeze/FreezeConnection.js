@@ -10,17 +10,17 @@ import Sidebar from "../Sidebar/Sidebar.js";
 
 export const FreezeConnection = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState("Home");
-  const [openSubmenus, setOpenSubmenus] = useState({
-    directory: false,
-    settings: false,
-  });
-  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
-  const toggleSubmenu = (menu) =>
-    setOpenSubmenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    const [activeMenu, setActiveMenu] = useState("Home");
+    const [openSubmenus, setOpenSubmenus] = useState({
+        directory: false,
+        settings: false,
+    });
+    const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+    const toggleSubmenu = (menu) =>
+        setOpenSubmenus((prev) => ({
+            ...prev,
+            [menu]: !prev[menu],
+        }));
     const [userConnections, setConnections] = useState([]);
     const [connectionName, setConnectionName] = useState("");
     const [connectionId, setConnectionId] = useState("");
@@ -31,6 +31,11 @@ export const FreezeConnection = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { curruser } = useContext(usercontext);
     const [users, setUsers] = useState([]);
+
+    const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
     useEffect(() => {
         const token = Cookies.get('authToken');
@@ -151,43 +156,48 @@ export const FreezeConnection = () => {
 
     const content = (
         <>
-          <div className="navbarBrands">Freeze Connection</div>
+            <div className="navbarBrands">Freeze Connection</div>
         </>
-      );
+    );
 
     const breadcrumbs = (
         <div className="breadcrumbs mt-2">
-          <a href="/home" className="breadcrumb-item">
-            Home
-          </a>
-          <span className="breadcrumb-separator">▶</span>
-          <span className="breadcrumb-item current">Freeze Connection</span>
+            <a href="/home" className="breadcrumb-item">
+                Home
+            </a>
+            <span className="breadcrumb-separator">▶</span>
+            <span className="breadcrumb-item current">Freeze Connection</span>
         </div>
-      )
+    )
 
     const code = (
         <>
-            <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+            <div className="user-greeting-container shadow">
+                <button
+                    className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+                    onClick={toggleSidebar}
+                >
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
+                <span className="fw-semibold fs-6 text-dark">
+                    Hi, {capitalizeFirstLetter(curruser.username)}
+                </span>
+            </div>
 
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        openSubmenus={openSubmenus}
-        toggleSubmenu={toggleSubmenu}
-      />
-      <div className="locker-header">
-        <div className="locker-text">
-          <div className="navbar-content">{content}</div>
-        </div>
-        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                openSubmenus={openSubmenus}
+                toggleSubmenu={toggleSubmenu}
+            />
+            <div className="locker-header">
+                <div className="locker-text">
+                    <div className="navbar-content">{content}</div>
+                </div>
+                <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+            </div>
             {/* <Navbar breadcrumbs={breadcrumbs} /> */}
             <div className="container" style={{ marginTop: "120px" }}>
                 <div className="row justify-content-center p-4">
@@ -240,8 +250,8 @@ export const FreezeConnection = () => {
     return (
         <>
             {((curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin') && (curruser.user_type !== 'moderator')) &&
-                <div >{code} 
-                {/* <Sidebar /> */}
+                <div >{code}
+                    {/* <Sidebar /> */}
                 </div>}
 
             {curruser.user_type === 'moderator' && <>{code}</>}

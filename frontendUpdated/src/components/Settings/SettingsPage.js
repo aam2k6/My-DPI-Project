@@ -6,7 +6,7 @@
 
 // export default function SettingsPage() {
 //     const { curruser, setUser } = useContext(usercontext);
-    
+
 //     console.log(curruser);
 //     const [isEditing, setIsEditing] = useState(false);
 //     const [newUsername, setNewUsername] = useState(curruser?.username || '');
@@ -135,7 +135,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export default function SettingsPage() {
     const { curruser, setUser } = useContext(usercontext);
-    
+
     console.log(curruser);
     const [isEditing, setIsEditing] = useState(false);
     const [newUsername, setNewUsername] = useState(curruser?.username || '');
@@ -144,21 +144,21 @@ export default function SettingsPage() {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState("Home");
-  const [openSubmenus, setOpenSubmenus] = useState({
-    directory: false,
-    settings: false,
-  });
-  const capitalizeFirstLetter = (string) => {
-    if (!string) return "";
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
-  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
-  const toggleSubmenu = (menu) =>
-    setOpenSubmenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    const [activeMenu, setActiveMenu] = useState("Home");
+    const [openSubmenus, setOpenSubmenus] = useState({
+        directory: false,
+        settings: false,
+    });
+    const capitalizeFirstLetter = (string) => {
+        if (!string) return "";
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+    const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+    const toggleSubmenu = (menu) =>
+        setOpenSubmenus((prev) => ({
+            ...prev,
+            [menu]: !prev[menu],
+        }));
 
     useEffect(() => {
         if (curruser) {
@@ -193,36 +193,36 @@ export default function SettingsPage() {
             },
             body: JSON.stringify(updatedUser),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                setUser({ ...curruser, username: newUsername, description: description });
-                setIsEditing(false);
-                setErrorMessage('');
-                alert("Profile updated successfully.");
-            } else {
-                console.error("Error:", data.error);
-                setErrorMessage(data.error);
-                alert(data.error);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            setErrorMessage("An error occurred during profile update.");
-            alert("An error occurred during profile update.");
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setUser({ ...curruser, username: newUsername, description: description });
+                    setIsEditing(false);
+                    setErrorMessage('');
+                    alert("Profile updated successfully.");
+                } else {
+                    console.error("Error:", data.error);
+                    setErrorMessage(data.error);
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                setErrorMessage("An error occurred during profile update.");
+                alert("An error occurred during profile update.");
+            });
     };
 
     const breadcrumbs = (
         <div className="breadcrumbs">
-          <a href="/home" className="breadcrumb-item">
-            Home
-          </a>
-          <span className="breadcrumb-separator">▶</span>
-          <span className="breadcrumb-item current">User Settings</span>
+            <a href="/home" className="breadcrumb-item">
+                Home
+            </a>
+            <span className="breadcrumb-separator">▶</span>
+            <span className="breadcrumb-item current">User Settings</span>
         </div>
-      )
-      
+    )
+
     const content = (
         <>
             <div className="navbarBrands">User Settings</div>
@@ -232,56 +232,61 @@ export default function SettingsPage() {
 
     return (
         <>
-         <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+            <div className="user-greeting-container shadow">
+                <button
+                    className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+                    onClick={toggleSidebar}
+                >
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
+                <span className="fw-semibold fs-6 text-dark">
+                    Hi, {capitalizeFirstLetter(curruser.username)}
+                </span>
+            </div>
 
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        openSubmenus={openSubmenus}
-        toggleSubmenu={toggleSubmenu}
-      />
-       <div className="locker-header">
-              <div className="locker-text">
-                <div className="navbar-content">{content}</div>
-              </div>
-              <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-          </div>
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                openSubmenus={openSubmenus}
+                toggleSubmenu={toggleSubmenu}
+            />
+            <div className="locker-header">
+                <div className="locker-text">
+                    <div className="navbar-content">{content}</div>
+                </div>
+                <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+            </div>
             {/* <Navbar breadcrumbs={breadcrumbs} /> */}
-            <Box className="settings-page" style={{border:"2px solid rgb(107, 120, 231)"}} marginTop={{xs:"1%", md:"5%"}}>
+            <Box className="settings-page" style={{ border: "2px solid rgb(107, 120, 231)" }} marginTop={{ xs: "1%", md: "5%" }}>
                 <h1>User Profile</h1>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
-                <div style={{alignItems:"center"}}>
-                <div className="profile-info">
-                    <label>Username:</label>
-                    {isEditing ? (
-                        <input
-                            type="text"
-                            value={newUsername}
-                            onChange={(e) => setNewUsername(e.target.value)}
-                        />
-                    ) : (
-                        <p>{curruser.username}</p>
-                    )}
-                </div>
-                <div className="profile-info">
-                    <label>Description:</label>
-                    {isEditing ? (
-                        <input
-                            type="text"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    ) : (
-                        <p>{curruser.description}</p>
-                    )}
-                </div>
+                <div style={{ alignItems: "center" }}>
+                    <div className="profile-info">
+                        <label>Username:</label>
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                value={newUsername}
+                                onChange={(e) => setNewUsername(e.target.value)}
+                            />
+                        ) : (
+                            <p>{curruser.username}</p>
+                        )}
+                    </div>
+                    <div className="profile-info">
+                        <label>Description:</label>
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        ) : (
+                            <p>{curruser.description}</p>
+                        )}
+                    </div>
                 </div>
                 {isEditing && (
                     <div className="profile-info">
@@ -292,7 +297,7 @@ export default function SettingsPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            <span 
+                            <span
                                 className="toggle-password"
                                 onClick={() => setPasswordVisible(!passwordVisible)}
                             >
@@ -308,7 +313,7 @@ export default function SettingsPage() {
                         </Button>
                     </Grid>
                     <Grid item md={3} xs={12}></Grid>
-                    <Grid item md={3.7}  xs={10}>
+                    <Grid item md={3.7} xs={10}>
                         {isEditing && (
                             <Button fullWidth variant="contained" onClick={handleSave}>
                                 Save Changes

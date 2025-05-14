@@ -41,15 +41,15 @@ export const ConnectionTypes = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState("Home");
     const [openSubmenus, setOpenSubmenus] = useState({
-      directory: false,
-      settings: false,
+        directory: false,
+        settings: false,
     });
     const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
     const toggleSubmenu = (menu) =>
-      setOpenSubmenus((prev) => ({
-        ...prev,
-        [menu]: !prev[menu],
-      }));
+        setOpenSubmenus((prev) => ({
+            ...prev,
+            [menu]: !prev[menu],
+        }));
 
 
 
@@ -293,37 +293,42 @@ export const ConnectionTypes = () => {
     );
     const breadcrumbs = (
         <div className="breadcrumbs">
-          <a href="/home" className="breadcrumb-item">
-            Home
-          </a>
-          <span className="breadcrumb-separator">▶</span>
-          <span className="breadcrumb-item current"> All connection types</span>
+            <a href="/home" className="breadcrumb-item">
+                Home
+            </a>
+            <span className="breadcrumb-separator">▶</span>
+            <span className="breadcrumb-item current"> All connection types</span>
         </div>
     );
     return (
         <div id="all-connection-terms">
             {/* <Navbar content={content} breadcrumbs={breadcrumbs}/> */}
-              <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+            <div className="user-greeting-container shadow">
+                <button
+                    className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+                    onClick={toggleSidebar}
+                >
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
+                <span className="fw-semibold fs-6 text-dark">
+                    Hi, {capitalizeFirstLetter(curruser.username)}
+                </span>
+            </div>
 
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        openSubmenus={openSubmenus}
-        toggleSubmenu={toggleSubmenu}
-      />
-       <div className="locker-header">
-        <div className="locker-text">
-          <div className="navbar-content">{content}</div>
-        </div>
-        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                openSubmenus={openSubmenus}
+                toggleSubmenu={toggleSubmenu}
+            />
+            <div className="locker-header">
+                <div className="locker-text">
+                    <div className="navbar-content">{content}</div>
+                </div>
+                <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+            </div>
             <div style={{ marginTop: "50px" }}>
                 <Grid container paddingLeft={{ md: 6, sm: 2, xs: 2 }}>
                     <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>

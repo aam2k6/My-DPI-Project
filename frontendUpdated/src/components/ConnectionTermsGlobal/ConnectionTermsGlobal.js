@@ -64,6 +64,11 @@ export const ConnectionTermsGlobal = () => {
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (location.state) {
       setGlobalFormData({
@@ -224,111 +229,111 @@ export const ConnectionTermsGlobal = () => {
     console.log(globalDescription);
     handleSubmits();
   };
-    // fetch(`${frontend_host}/create-global-terms/`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Basic ${token}`, // Corrected template literal
-    //   },
-    //   body: JSON.stringify(connectionTermsData),
-    // })
-    // .then((response) =>
-    //   response.json().then((data) => ({ status: response.status, data }))
-    // )
-      // .then((response) => {
-      //   console.log("response", response)
-      //   if (response.status === 200 || response.status === 201) {
-      //     return response.json().then((data) => {
-      //       navigate("/ConnectionTermsGlobalHost"); // Navigate after parsing response
-      //       return data;
-      //     });
-      //   } else if (response.status === 400 && response.error.includes("already exists")) {
-      //     setError(
-      //       "Global Connection type with this name already exists."
-      //     );
-      //     setModalMessage({
-      //       message:
-      //         "Global Connection type with this name already exists.",
-      //       type: "error",
-      //     });
-      //     setIsModalOpen(true)
-      //   } else {
-      //     // General error handling.
-      //     console.error("Error:", response.error);
-      //     setError(response.error);
-      //     setModalMessage({
-      //       message: response.error,
-      //       type: "error",
-      //     });
-      //     setIsModalOpen(true); // Open modal with error message.
-      //   }
-      // })
+  // fetch(`${frontend_host}/create-global-terms/`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Basic ${token}`, // Corrected template literal
+  //   },
+  //   body: JSON.stringify(connectionTermsData),
+  // })
+  // .then((response) =>
+  //   response.json().then((data) => ({ status: response.status, data }))
+  // )
+  // .then((response) => {
+  //   console.log("response", response)
+  //   if (response.status === 200 || response.status === 201) {
+  //     return response.json().then((data) => {
+  //       navigate("/ConnectionTermsGlobalHost"); // Navigate after parsing response
+  //       return data;
+  //     });
+  //   } else if (response.status === 400 && response.error.includes("already exists")) {
+  //     setError(
+  //       "Global Connection type with this name already exists."
+  //     );
+  //     setModalMessage({
+  //       message:
+  //         "Global Connection type with this name already exists.",
+  //       type: "error",
+  //     });
+  //     setIsModalOpen(true)
+  //   } else {
+  //     // General error handling.
+  //     console.error("Error:", response.error);
+  //     setError(response.error);
+  //     setModalMessage({
+  //       message: response.error,
+  //       type: "error",
+  //     });
+  //     setIsModalOpen(true); // Open modal with error message.
+  //   }
+  // })
 
-      // --------------------------
-      // .then(({ status, data }) => {
-      //   if (status === 200 || status ===201) {
-      //     handleSubmits()
-      //   } else if (status === 400 && data.error.includes("already exists")) {
-      //     // Handle the case where the connection type already exists.
-      //     setError(
-      //       `${data.error}`
-      //     );
-      //     setModalMessage({
-      //       message:
-      //         `${data.error}`,
-      //       type: "error",
-      //     });
-      //     setIsModalOpen(true);
-      //   } else {
-      //     // General error handling.
-      //     console.error("Error:", data.error);
-      //     setError(data.error);
-      //     setModalMessage({
-      //       message: data.error,
-      //       type: "error",
-      //     });
-      //     setIsModalOpen(true); // Open modal with error message.
-      //   }
-      // })
-      // .then((data) => {
-      //   console.log("Global terms created successfully.");
-      //   navigate("/create-global-connection-type");
-      //   const termsIDs = data.terms.map((term) => term.terms_id);
+  // --------------------------
+  // .then(({ status, data }) => {
+  //   if (status === 200 || status ===201) {
+  //     handleSubmits()
+  //   } else if (status === 400 && data.error.includes("already exists")) {
+  //     // Handle the case where the connection type already exists.
+  //     setError(
+  //       `${data.error}`
+  //     );
+  //     setModalMessage({
+  //       message:
+  //         `${data.error}`,
+  //       type: "error",
+  //     });
+  //     setIsModalOpen(true);
+  //   } else {
+  //     // General error handling.
+  //     console.error("Error:", data.error);
+  //     setError(data.error);
+  //     setModalMessage({
+  //       message: data.error,
+  //       type: "error",
+  //     });
+  //     setIsModalOpen(true); // Open modal with error message.
+  //   }
+  // })
+  // .then((data) => {
+  //   console.log("Global terms created successfully.");
+  //   navigate("/create-global-connection-type");
+  //   const termsIDs = data.terms.map((term) => term.terms_id);
 
-      //   const globalTemplateData = {
-      //     global_connection_type_name: globalFormData.globalName,
-      //     global_connection_type_description: globalFormData.globalDescription,
-      //     global_terms_IDs: termsIDs,
-      //     globaltype: globalFormData.globaltype,
-      //     domain: globalFormData.domain, // Include domain here
-      //   };
-      //   console.log(globalTemplateData);
-      //   // return fetch(`${frontend_host}/add-global-template/`, {
-      //   //   method: "POST",
-      //   //   headers: {
-      //   //     "Content-Type": "application/json",
-      //   //     Authorization: `Basic ${token}`,
-      //   //   },
-      //   //   body: JSON.stringify(globalTemplateData),
-      //   // });
-      // })
-      // .then((response) => {
-      //   if (response.status === 200 || response.status === 201) {
-      //     return response.json();
-      //   } else {
-      //     throw new Error("Failed to add global template");
-      //   }
-      // })
-      // .then(() => {
-      //   alert("Global template added successfully.");
-      // })
-      // .catch((error) => {
-      //   console.error("Error:", error);
-      //   setError("An error occurred while submitting the data.");
-      // });
+  //   const globalTemplateData = {
+  //     global_connection_type_name: globalFormData.globalName,
+  //     global_connection_type_description: globalFormData.globalDescription,
+  //     global_terms_IDs: termsIDs,
+  //     globaltype: globalFormData.globaltype,
+  //     domain: globalFormData.domain, // Include domain here
+  //   };
+  //   console.log(globalTemplateData);
+  //   // return fetch(`${frontend_host}/add-global-template/`, {
+  //   //   method: "POST",
+  //   //   headers: {
+  //   //     "Content-Type": "application/json",
+  //   //     Authorization: `Basic ${token}`,
+  //   //   },
+  //   //   body: JSON.stringify(globalTemplateData),
+  //   // });
+  // })
+  // .then((response) => {
+  //   if (response.status === 200 || response.status === 201) {
+  //     return response.json();
+  //   } else {
+  //     throw new Error("Failed to add global template");
+  //   }
+  // })
+  // .then(() => {
+  //   alert("Global template added successfully.");
+  // })
+  // .catch((error) => {
+  //   console.error("Error:", error);
+  //   setError("An error occurred while submitting the data.");
+  // });
 
 
-console.log("errors", error)
+  console.log("errors", error)
   const handleHostPermissionsChange = (event) => {
     const { value, checked } = event.target;
 
@@ -396,12 +401,17 @@ console.log("errors", error)
           type={modalMessage.type}
         />
       )} */}
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -416,7 +426,7 @@ console.log("errors", error)
           <div className="navbar-content">{content}</div>
         </div> */}
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar breadcrumbs={breadcrumbs} /> */}
 
       <div className="connectionTermsContainer">

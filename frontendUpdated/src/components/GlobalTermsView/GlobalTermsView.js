@@ -33,7 +33,10 @@ const GlobalTermsView = () => {
   const [perm, setPerm] = useState(null);
   const { connectionTypeName, connectionTypeDescription, template_Id, hide } = location.state || {};
   const isSystemAdmin = curruser && (curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin');
-
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -260,12 +263,17 @@ const GlobalTermsView = () => {
 
   return (
     <div className="global-terms-view-page" id="global-terms-view">
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-         <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -280,7 +288,7 @@ const GlobalTermsView = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       {/* {isSystemAdmin && <Sidebar />} Show Sidebar only for System Admin */}
       <div style={{ marginTop: "12px" }}>
@@ -292,7 +300,7 @@ const GlobalTermsView = () => {
             </div>
           </div>
         </div>
-        <Box className="show-connection" padding={{xs:"20px", md:"35px"}}>
+        <Box className="show-connection" padding={{ xs: "20px", md: "35px" }}>
           <Grid container className="view-container1">
             <Grid item xs={12} className="b">
               <div className="tabs">

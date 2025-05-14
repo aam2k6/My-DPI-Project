@@ -68,6 +68,11 @@ export const Admin = () => {
   const [newPurpose, setNewPurpose] = useState(""); // New purpose
   const [refreshToggle, setRefreshToggle] = useState(false); // New state variable
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (!curruser) {
       navigate("/");
@@ -471,12 +476,17 @@ export const Admin = () => {
 
   return (
     <div>
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}} />
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}

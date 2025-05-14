@@ -1741,7 +1741,7 @@ export const Guesttermsreview = () => {
                       value={statuses2[permission.labelName] || ""}
                       onChange={(e) =>
                         handleStatusChange2(permission.labelName, e.target.value, permission.dataElement?.split(";")[0])
-                        
+
                       }
                     >
                       <option value="">Select Status</option>
@@ -2025,12 +2025,17 @@ export const Guesttermsreview = () => {
 
   return (
     <div>
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -2045,7 +2050,7 @@ export const Guesttermsreview = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
 
       <div style={{ marginTop: '12px' }}>
@@ -2534,7 +2539,7 @@ export const Guesttermsreview = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -2612,7 +2617,7 @@ export const Guesttermsreview = () => {
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

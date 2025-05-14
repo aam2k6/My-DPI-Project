@@ -94,7 +94,7 @@ export const Connection = () => {
       connectionName,
       connectionDescription,
       validity,
-      postConditions:permissions,
+      postConditions: permissions,
     };
     setConnectionData(connectionData);
     console.log("Form submitted");
@@ -147,12 +147,17 @@ export const Connection = () => {
   };
   return (
     <>
-    <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}} />
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -167,7 +172,7 @@ export const Connection = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs}></Navbar> */}
       {/* <Panel /> */}
       <Container maxWidth="md">

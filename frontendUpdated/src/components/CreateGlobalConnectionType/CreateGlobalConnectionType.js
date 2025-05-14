@@ -35,6 +35,7 @@ export default function CreateGlobalConnectionType() {
       [menu]: !prev[menu],
     }));
 
+
   useEffect(() => {
     if (!curruser) {
       navigate("/")
@@ -98,8 +99,10 @@ export default function CreateGlobalConnectionType() {
     }))
   }
 
-  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1)
-
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
   const renderConnectionList = (domain, globalType) => {
     const filteredTypes = connectionTypes.filter((type) => type.domain === domain && type.globaltype === globalType)
 
@@ -147,12 +150,17 @@ export default function CreateGlobalConnectionType() {
 
   return (
     <div id={COMPONENT_ID} className="manage-connection-page">
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -167,7 +175,7 @@ export default function CreateGlobalConnectionType() {
           <div className="navbar-content">{content}</div>
         </div> */}
         <div className="navbar-breadcrumbs mt-2">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar breadcrumbs={breadcrumbs} /> */}
       <div className="dpi-directories" style={{ marginTop: "45px" }}>
         {/* <div className="sidebars">

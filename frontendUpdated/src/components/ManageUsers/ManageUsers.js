@@ -17,7 +17,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
   const navigate = useNavigate();
   const { curruser } = useContext(usercontext);
   const [error, setError] = useState(null);
-  const [modalMessage, setModalMessage] = useState({message: "", type: ""});
+  const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [locker, setLocker] = useState(null); // Added placeholder state for locker
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -33,6 +33,10 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
       [menu]: !prev[menu],
     }));
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   useEffect(() => {
     // Redirect if user is not logged in or doesn't have appropriate role (optional, depending on your auth logic)
@@ -86,7 +90,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setModalMessage({message: "", type: ""});
+    setModalMessage({ message: "", type: "" });
     // Optional: Refetch users after a successful role change if needed
     // window.location.reload();
   };
@@ -95,7 +99,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
     const user = action === 'make' ? selectedUser : selectedRoleUser;
 
     if (!user) {
-      setModalMessage({message: `Please select a user to ${action === 'make' ? 'make' : 'remove'} as ${role}.`, type: 'failure'});
+      setModalMessage({ message: `Please select a user to ${action === 'make' ? 'make' : 'remove'} as ${role}.`, type: 'failure' });
       setIsModalOpen(true);
       return;
     }
@@ -125,7 +129,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
     })
       .then(response => {
         if (!response.ok) {
-           return response.json().then(err => { throw new Error(err.message || `Failed to ${action} user role`) });
+          return response.json().then(err => { throw new Error(err.message || `Failed to ${action} user role`) });
         }
         return response.json();
       })
@@ -141,15 +145,15 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
             setSelectedRoleUser(null); // Reset select element implicitly by state change
           }
 
-          setModalMessage({message: data.message || `User "${user.username}" ${action}d as ${role}.`, type: 'success'});
+          setModalMessage({ message: data.message || `User "${user.username}" ${action}d as ${role}.`, type: 'success' });
         } else {
-           setModalMessage({message: data.message || data.error || `Failed to ${action} user role.`, type: 'failure'});
+          setModalMessage({ message: data.message || data.error || `Failed to ${action} user role.`, type: 'failure' });
         }
-         setIsModalOpen(true);
+        setIsModalOpen(true);
       })
       .catch(error => {
         console.error(`Error during ${action} role change:`, error);
-        setModalMessage({message: `An error occurred while ${action}ing the user role: ${error.message}`, type: 'failure'});
+        setModalMessage({ message: `An error occurred while ${action}ing the user role: ${error.message}`, type: 'failure' });
         setIsModalOpen(true);
       });
   };
@@ -164,12 +168,17 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
   return (
     <div className='content'>
       {/* <Navbar /> */} {/* Navbar might be placed outside this component depending on layout */}
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -181,7 +190,7 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
         lockerObj={locker} // Pass the locker state
         locker_on={false} // Set to false if locker features are not relevant on this page
       />
-      <div style={{marginTop: '120px'}}> {/* Adjust margin based on Navbar height if present */}
+      <div style={{ marginTop: '120px' }}> {/* Adjust margin based on Navbar height if present */}
         <h2>Manage {value}s</h2>
 
         {/* Add Role Section */}
@@ -202,12 +211,12 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
         {/* Remove Role Section */}
         <div className="remove">
           <label>Remove {value}</label>
-           {/* Ensure the value in option matches the user object's username */}
+          {/* Ensure the value in option matches the user object's username */}
           <select onChange={(e) => setSelectedRoleUser(usersWithRole.find(user => user.username === e.target.value))} value={selectedRoleUser?.username || ''}>
             <option value="">Select {value}</option>
             {usersWithRole.map(user => (
               <option key={user.user_id} value={user.username}>
-                 {user.username.charAt(0).toUpperCase() + user.username.slice(1)} {/* Display capitalized username */}
+                {user.username.charAt(0).toUpperCase() + user.username.slice(1)} {/* Display capitalized username */}
               </option>
             ))}
           </select>

@@ -71,7 +71,7 @@ export const ConnectionTermsHost = () => {
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [navigateHome, setNavigateHome] = useState(false)
   const [selectedTemplateDetails, setSelectedTemplateDetails] = useState(null);
-console.log("connectionTermsData", connectionTermsData)
+  console.log("connectionTermsData", connectionTermsData, connectionData)
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -96,13 +96,13 @@ console.log("connectionTermsData", connectionTermsData)
         setError("Failed to fetch templates");
       });
   };
- 
+
   useEffect(() => {
     if (hostGlobalObligationTerms) {
       setObligations(() => [
         ...hostGlobalObligationTerms,
       ]);
-  
+
       // // Handle permissions
       // setFormData((prevFormData) => ({
       //   ...prevFormData,
@@ -416,7 +416,7 @@ console.log("connectionTermsData", connectionTermsData)
     }
     const token = Cookies.get("authToken");
 
-    const GuestData={
+    const GuestData = {
       from: "GUEST",
       to: "HOST",
       ...connectionTermsData
@@ -436,7 +436,7 @@ console.log("connectionTermsData", connectionTermsData)
       },
       // hostPermissions: formData.hostPermissions,
       forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"]
-     
+
     };
 
     const finalData = {
@@ -445,7 +445,7 @@ console.log("connectionTermsData", connectionTermsData)
         GuestData,
         HostData
       ]
-}
+    }
 
     fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
       method: "POST",
@@ -536,12 +536,17 @@ console.log("connectionTermsData", connectionTermsData)
   return (
     <div id="connectionTermHost">
 
-<button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}} />
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -551,11 +556,11 @@ console.log("connectionTermsData", connectionTermsData)
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
-       <div className="locker-header">
+      <div className="locker-header">
         <div className="locker-text">
           <div className="navbar-content">{content}</div>
         </div>
-    </div>
+      </div>
       {/* <Navbar content={content}></Navbar> */}
       <div>
         {/* <Panel /> */}
@@ -566,9 +571,9 @@ console.log("connectionTermsData", connectionTermsData)
               <Grid item xs={12} md={8} className="parent-left-heading">
                 <div>
                   <Grid container>
-                    <Grid item md={3.5} xs={12}>
+                    <Grid item md={7} xs={12}>
                       <div className="connectionTerms-resourceHeading">
-                        Host Obligations
+                        Host Obligations for {connectionData?.connectionName}
                       </div>
                     </Grid>
                     <Grid item md={3.5} xs={12}>
@@ -948,52 +953,52 @@ console.log("connectionTermsData", connectionTermsData)
         </div>
       </div>
       <div className="modalWidth">
-      {isTemplateModalOpen && (
-        <Modal
-          message="Select Global Templates"
-           onClose={handleGlobalModal}
-          type="info"
-        >
-          <div className="template-selection-container">
-            {globalTemplates.length > 0 ? (
-              <>
-                <label>Select Templates:</label>
-                {globalTemplates.map((template) => (
-                  <div
-                    key={
-                      template.global_connection_type_template_id
-                    }
-                  >
-                    <label>
-                      <input
-                        className="templete"
-                        type="checkbox"
-                        value={
-                          template.global_connection_type_template_id
-                        }
-                        checked={selectedTemplateIds.includes(
-                          template.global_connection_type_template_id
-                        )}
-                        onChange={() =>
-                          handleTemplateSelection(template)
-                        }
-                      />
-                      {template.global_connection_type_name}
-                      {/* <br />
+        {isTemplateModalOpen && (
+          <Modal
+            message="Select Global Templates"
+            onClose={handleGlobalModal}
+            type="info"
+          >
+            <div className="template-selection-container">
+              {globalTemplates.length > 0 ? (
+                <>
+                  <label>Select Templates:</label>
+                  {globalTemplates.map((template) => (
+                    <div
+                      key={
+                        template.global_connection_type_template_id
+                      }
+                    >
+                      <label>
+                        <input
+                          className="templete"
+                          type="checkbox"
+                          value={
+                            template.global_connection_type_template_id
+                          }
+                          checked={selectedTemplateIds.includes(
+                            template.global_connection_type_template_id
+                          )}
+                          onChange={() =>
+                            handleTemplateSelection(template)
+                          }
+                        />
+                        {template.global_connection_type_name}
+                        {/* <br />
               {template.global_connection_type_description} */}
-                    </label>
-                  </div>
-                ))}
-                <button onClick={handleFetchObligations}>
-                  Add Selected Templates
-                </button>
-              </>
-            ) : (
-              <div>Loading templates...</div>
-            )}
-          </div>
-        </Modal>
-      )}
+                      </label>
+                    </div>
+                  ))}
+                  <button onClick={handleFetchObligations}>
+                    Add Selected Templates
+                  </button>
+                </>
+              ) : (
+                <div>Loading templates...</div>
+              )}
+            </div>
+          </Modal>
+        )}
       </div>
       {isModalOpen && (
         <Modal

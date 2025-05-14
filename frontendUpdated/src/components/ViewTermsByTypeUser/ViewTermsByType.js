@@ -752,13 +752,13 @@ export const ViewTermsByType = () => {
           )
         );
       } else if (pdfData.xnode_Type === "SNODE") {
-      // Exclude "subset"
-      filteredPostConditions = Object.fromEntries(
-        Object.entries(restPostConditions).filter(([key]) =>
-          !["subset"].includes(key)
-        )
-      );
-    }
+        // Exclude "subset"
+        filteredPostConditions = Object.fromEntries(
+          Object.entries(restPostConditions).filter(([key]) =>
+            !["subset"].includes(key)
+          )
+        );
+      }
       // setInitialPostConditions(filteredConditions);
       setEditablePostConditions(filteredPostConditions);
       setIsLockedPostConditions(pdfData.is_locked);
@@ -2385,7 +2385,7 @@ export const ViewTermsByType = () => {
         connection_id: connection.connection_id,
         connectionTypeID: connectionsData?.connection_type,
       });
-console.log("Navigating with state:", connectionsData)
+      console.log("Navigating with state:", connectionsData)
       navigate("/show-connection-terms", {
         state: {
           connectionName: connectionName, // Pass the string as connectionName
@@ -2958,12 +2958,17 @@ console.log("Navigating with state:", connectionsData)
   return (
 
     <div>
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -2978,10 +2983,10 @@ console.log("Navigating with state:", connectionsData)
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
 
-      <div style={{marginTop:"12px"}}>
+      <div style={{ marginTop: "12px" }}>
         <div className="connection-details">
           <b>Connection Name:</b> {connectionName}
           <button
@@ -3248,46 +3253,46 @@ console.log("Navigating with state:", connectionsData)
                         <div className="resource-container">
                           <h3>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
-                        {xnodes.length > 0 ? (
-                          <ul>
-                            {xnodes.map((resource, index) => {
-                              const isResourceInFiltered = filteredXnodes.some((item) => item.id === resource.id);
+                          {xnodes.length > 0 ? (
+                            <ul>
+                              {xnodes.map((resource, index) => {
+                                const isResourceInFiltered = filteredXnodes.some((item) => item.id === resource.id);
 
-                              return (
-                                <li key={index}>
-                                  <div style={{ display: "flex", alignItems: "center" }}>
-                                    <label id={
-                                      resource.xnode_Type === "INODE"
-                                        ? "documents"
-                                        : resource.xnode_Type === "SNODE"
-                                          ? "documents-byConfer"
-                                          : "documents-byShare"
-                                    }>
-                                      <input
-                                        type="radio"
-                                        name="selectedResource"
-                                        value={resource.resource_name}
-                                        checked={selection[currentLabelName]?.id === resource.id}
-                                        onClick={() => handleResourceSelection(resource)}
-                                      />
-                                      {resource.resource_name}
+                                return (
+                                  <li key={index}>
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                      <label id={
+                                        resource.xnode_Type === "INODE"
+                                          ? "documents"
+                                          : resource.xnode_Type === "SNODE"
+                                            ? "documents-byConfer"
+                                            : "documents-byShare"
+                                      }>
+                                        <input
+                                          type="radio"
+                                          name="selectedResource"
+                                          value={resource.resource_name}
+                                          checked={selection[currentLabelName]?.id === resource.id}
+                                          onClick={() => handleResourceSelection(resource)}
+                                        />
+                                        {resource.resource_name}
 
-                                    </label>
-                                    <button
-                                      id="view"
-                                      className="subbutton"
-                                      style={{ textDecoration: "none" }}
-                                      onClick={() => handleClick(resource.id)}
-                                    >
-                                      View
-                                    </button>
-                                  </div>
-                                </li>
-                              );
-                            })}
+                                      </label>
+                                      <button
+                                        id="view"
+                                        className="subbutton"
+                                        style={{ textDecoration: "none" }}
+                                        onClick={() => handleClick(resource.id)}
+                                      >
+                                        View
+                                      </button>
+                                    </div>
+                                  </li>
+                                );
+                              })}
 
-                          </ul>
-                          ) : ( 
+                            </ul>
+                          ) : (
                             <p>No resource found.</p>
                           )}
                           <div className="button-group">
@@ -3311,38 +3316,38 @@ console.log("Navigating with state:", connectionsData)
                           <h3 style={{ fontWeight: "bold" }}>Select Resource for {currentLabelName}</h3>
                           {/* {error && <p className="error">{error}</p>} */}
                           {xnodes.length > 0 ? (
-                          <ul>
-                            {xnodes.map((resource, index) => (
-                              <li key={index}>
-                                <div style={{ display: "flex", alignItems: "center" }}>
-                                  <label id={
-                                    resource.xnode_Type === "INODE"
-                                      ? "documents"
-                                      : resource.xnode_Type === "SNODE"
-                                        ? "documents-byConfer"
-                                        : "documents-byShare"
-                                  } >
-                                    <input
-                                      type="radio"
-                                      name="selectedResource"
-                                      value={resource.resource_name} //i changed here
-                                      checked={
-                                        selection2[currentLabelName]
-                                          ?.id === resource.id
-                                      }
-                                      onClick={() => handleResourceSelection2(resource)}
-                                    />
-                                    {resource.resource_name}
-                                  </label>
-                                  <button id="view" className="subbutton" style={{ textDecoration: "none" }} onClick={() => handleClick(resource.id)}>View</button>
+                            <ul>
+                              {xnodes.map((resource, index) => (
+                                <li key={index}>
+                                  <div style={{ display: "flex", alignItems: "center" }}>
+                                    <label id={
+                                      resource.xnode_Type === "INODE"
+                                        ? "documents"
+                                        : resource.xnode_Type === "SNODE"
+                                          ? "documents-byConfer"
+                                          : "documents-byShare"
+                                    } >
+                                      <input
+                                        type="radio"
+                                        name="selectedResource"
+                                        value={resource.resource_name} //i changed here
+                                        checked={
+                                          selection2[currentLabelName]
+                                            ?.id === resource.id
+                                        }
+                                        onClick={() => handleResourceSelection2(resource)}
+                                      />
+                                      {resource.resource_name}
+                                    </label>
+                                    <button id="view" className="subbutton" style={{ textDecoration: "none" }} onClick={() => handleClick(resource.id)}>View</button>
 
 
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
                           ) : (
-                          <p>No resource found.</p>
+                            <p>No resource found.</p>
                           )}
                           <div className="button-group">
                             <button className="btn-color" onClick={() => setShowResources2(false)}>Cancel</button>
@@ -4075,7 +4080,7 @@ console.log("Navigating with state:", connectionsData)
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -4242,7 +4247,7 @@ console.log("Navigating with state:", connectionsData)
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
@@ -4338,7 +4343,7 @@ console.log("Navigating with state:", connectionsData)
                                       }))
                                     }
                                   />
-                                 <label className="form-check-label" htmlFor={key}>
+                                  <label className="form-check-label" htmlFor={key}>
                                     {key.charAt(0).toUpperCase() + key.slice(1)}
                                   </label>
                                 </li>
@@ -4410,7 +4415,7 @@ console.log("Navigating with state:", connectionsData)
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Creator:</span>
-                            <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
+                            <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>

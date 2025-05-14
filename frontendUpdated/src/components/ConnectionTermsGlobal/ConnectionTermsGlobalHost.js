@@ -33,7 +33,7 @@ export const ConnectionTermsGlobalHost = () => {
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [navigatePrev, setNavigatePrev] = useState(false)
-  
+
   // Separate states for global and obligation form data
   const initialObligationForm = {
     labelName: "",
@@ -65,10 +65,16 @@ export const ConnectionTermsGlobalHost = () => {
   const [error, setError] = useState(null);
   const { curruser, setUser } = useContext(usercontext);
   const [isOpen, setIsOpen] = useState(false);
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   // const globalTemplateData = location.state?.globalTemplateData;
 
   // console.log("Received Data:", connectionTermsData);
-// console.log("globalTemplateData", connectionTermsData, connectionData)s
+  // console.log("globalTemplateData", connectionTermsData, connectionData)s
   useEffect(() => {
     if (location.state) {
       // setGlobalFormData(
@@ -168,7 +174,7 @@ export const ConnectionTermsGlobalHost = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+
     if (obligations.length === 0) {
       setError("At least one obligation must be added.");
       setModalMessage({
@@ -178,10 +184,10 @@ export const ConnectionTermsGlobalHost = () => {
       setIsModalOpen(true); // Open modal with info message.
       return;
     }
-    
+
     const token = Cookies.get("authToken");
 
-    const GuestData={
+    const GuestData = {
       from: "GUEST",
       to: "HOST",
       ...connectionTermsData
@@ -190,7 +196,7 @@ export const ConnectionTermsGlobalHost = () => {
     const HostData = {
       from: "HOST",
       to: "GUEST",
-      obligations: obligations.map(obligation =>({
+      obligations: obligations.map(obligation => ({
         ...obligation,
         hostPermissions: obligationFormData.hostPermissions,
       })),
@@ -217,7 +223,7 @@ export const ConnectionTermsGlobalHost = () => {
     //   to: "GUEST"
     // };
 
-    
+
 
     console.log("newConnectionTermsData", finalData);
     // console.log(globalName);
@@ -230,29 +236,29 @@ export const ConnectionTermsGlobalHost = () => {
       },
       body: JSON.stringify(finalData),
     })
-    .then(async (response) => {
-      const data = await response.json();
-      console.log("datas", data)
-      if (data.success) {
-        // setError("Connection Type successfully created!");
-        setModalMessage({
-          message: data.connection_type_message          ,
-          type: "success",
-        });
-        setIsModalOpen(true);
-        setNavigatePrev(true);
-        // setNavigateHome(true);
-      } else {
-        // General error handling.
-        console.error("Error:", data.error);
-        setError(data.error);
-        setModalMessage({
-          message: data.error,
-          type: "error",
-        });
-        setIsModalOpen(true); // Open modal with error message.
-      }
-    })
+      .then(async (response) => {
+        const data = await response.json();
+        console.log("datas", data)
+        if (data.success) {
+          // setError("Connection Type successfully created!");
+          setModalMessage({
+            message: data.connection_type_message,
+            type: "success",
+          });
+          setIsModalOpen(true);
+          setNavigatePrev(true);
+          // setNavigateHome(true);
+        } else {
+          // General error handling.
+          console.error("Error:", data.error);
+          setError(data.error);
+          setModalMessage({
+            message: data.error,
+            type: "error",
+          });
+          setIsModalOpen(true); // Open modal with error message.
+        }
+      })
       // .then((response) => {
       //   if (response.status === 200 || response.status === 201) {
       //     return response.json().then((data) => {
@@ -325,7 +331,7 @@ export const ConnectionTermsGlobalHost = () => {
       };
     });
   };
-console.log("isModalOpen", isModalOpen)
+  console.log("isModalOpen", isModalOpen)
   useEffect(() => {
     if (!curruser) {
       navigate("/");
@@ -354,7 +360,7 @@ console.log("isModalOpen", isModalOpen)
   //       <span className="breadcrumb-item current">AddNewGlobalConnectionType</span>
   //     </div>
   //   )
-const handleCloseModal = () => {
+  const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage({ message: "", type: "" });
     if (navigatePrev) {
@@ -364,12 +370,17 @@ const handleCloseModal = () => {
   };
   return (
     <div id="connectionTerms">
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}

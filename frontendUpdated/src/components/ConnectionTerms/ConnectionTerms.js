@@ -587,7 +587,7 @@ export const ConnectionTerms = () => {
     forbidden: false,
     resharePermission: ""
   };
-console.log("connectionData", connectionData)
+  console.log("connectionData", connectionData)
   const [formData, setFormData] = useState(initialFormData);
   const [obligations, setObligations] = useState([]); // Change to an array
   const [error, setError] = useState(null);
@@ -602,7 +602,7 @@ console.log("connectionData", connectionData)
   const [selectedTemplateDetails, setSelectedTemplateDetails] = useState(null);
   const [hostGlobalObligations, setHostGlobalObligations] = useState([])
 
-  console.log("globalTemplates", hostGlobalObligations)
+  console.log("globalTemplates", hostGlobalObligations, connectionData)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -715,7 +715,7 @@ console.log("connectionData", connectionData)
               };
             });
             setHostGlobalObligations(prev => [...prev, ...hostObligationsWithGlobalId]);
-console.log("hostObligationsWithGlobalId", hostObligationsWithGlobalId)
+            console.log("hostObligationsWithGlobalId", hostObligationsWithGlobalId)
             // Combine obligations, permissions, and forbidden into a single array or separate arrays
             // setObligations((prev) => [
             //   ...prev,
@@ -958,7 +958,7 @@ console.log("hostObligationsWithGlobalId", hostObligationsWithGlobalId)
       }
     });
   };
-console.log("connectionData", connectionData)
+  console.log("connectionData", connectionData)
   const handleSubmit = (event) => {
     event.preventDefault();
     if (obligations.length === 0) {
@@ -1096,12 +1096,18 @@ console.log("connectionData", connectionData)
           type={modalMessage.type}
         />
       )}
-       <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}} />
-      </button>
+
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -1115,7 +1121,7 @@ console.log("connectionData", connectionData)
         <div className="locker-text">
           <div className="navbar-content">{content}</div>
         </div>
-    </div>
+      </div>
       {/* <Navbar content={content}></Navbar> */}
       <div>
         {/* <Panel /> */}
@@ -1126,12 +1132,12 @@ console.log("connectionData", connectionData)
               <Grid item xs={12} md={8} className="parent-left-heading">
                 <div>
                   <Grid container>
-                    <Grid item md={3.5} xs={12}>
+                    <Grid item md={7} xs={12}>
                       <div className="connectionTerms-resourceHeading">
-                        Guest Obligations
+                        Guest Obligations for {connectionData?.connectionName}
                       </div>
                     </Grid>
-                    <Grid item md={3.5} xs={12}>
+                    <Grid item md={1} xs={12}>
                       {/* <button
                         className=""
                         type="button"
@@ -1140,7 +1146,7 @@ console.log("connectionData", connectionData)
                         Add Obligations
                       </button> */}
                     </Grid>
-                    <Grid item md={5} xs={12}>
+                    <Grid item md={4} xs={12}>
                       <button
                         className="mb-4"
                         onClick={() => {
@@ -1510,50 +1516,50 @@ console.log("connectionData", connectionData)
         </div>
       </div>
       <div className="modalWidth">
-      {isTemplateModalOpen && (
-        <Modal
-          message="Select Global Templates"
-          onClose={handleGlobalModal}
-          type="info"
-        >
-          <div className="template-selection-container">
-            {globalTemplates.length > 0 ? (
-              <>
-                <label>Select Templates:</label>
-                {globalTemplates.map((template) => (
-                  <div
-                    key={
-                      template.global_connection_type_template_id
-                    }
-                  >
-                    <label>
-                      <input className="templete"
-                        type="checkbox"
-                        value={
-                          template.global_connection_type_template_id
-                        }
-                        checked={selectedTemplateIds.includes(
-                          template.global_connection_type_template_id
-                        )}
-                        onChange={() => handleTemplateSelection(template)}
+        {isTemplateModalOpen && (
+          <Modal
+            message="Select Global Templates"
+            onClose={handleGlobalModal}
+            type="info"
+          >
+            <div className="template-selection-container">
+              {globalTemplates.length > 0 ? (
+                <>
+                  <label>Select Templates:</label>
+                  {globalTemplates.map((template) => (
+                    <div
+                      key={
+                        template.global_connection_type_template_id
+                      }
+                    >
+                      <label>
+                        <input className="templete"
+                          type="checkbox"
+                          value={
+                            template.global_connection_type_template_id
+                          }
+                          checked={selectedTemplateIds.includes(
+                            template.global_connection_type_template_id
+                          )}
+                          onChange={() => handleTemplateSelection(template)}
 
-                      />
-                         {template.global_connection_type_name}
-                      {/* <br />
+                        />
+                        {template.global_connection_type_name}
+                        {/* <br />
                 {template.global_connection_type_description} */}
-                    </label>
-                  </div>
-                ))}
-                <button onClick={handleFetchObligations}>
-                  Add Selected Templates
-                </button>
-              </>
-            ) : (
-              <div>Loading templates...</div>
-            )}
-          </div>
-        </Modal>
-      )}
+                      </label>
+                    </div>
+                  ))}
+                  <button onClick={handleFetchObligations}>
+                    Add Selected Templates
+                  </button>
+                </>
+              ) : (
+                <div>Loading templates...</div>
+              )}
+            </div>
+          </Modal>
+        )}
       </div>
     </div>
   );

@@ -32,7 +32,10 @@ export const TargetUserView = () => {
       [menu]: !prev[menu],
     }));
 
-
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }; 
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -116,12 +119,17 @@ export const TargetUserView = () => {
 
   return (
     <div id="targetUserView">
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -136,28 +144,28 @@ export const TargetUserView = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs}/> */}
 
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "120px"}}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "120px" }}>
         <div className="heroContainers">
-          <div className="page6-allLockers" style={{border:"none"}}>
+          <div className="page6-allLockers" style={{ border: "none" }}>
             {error && <div className="error">{error}</div>}
             {Array.isArray(allLockers) && allLockers.length > 0 ? (
               allLockers.map(lockers => (
-                <div key={lockers.locker_id} className="page6-locker" style={{borderRadius:"5px"}}>
+                <div key={lockers.locker_id} className="page6-locker" style={{ borderRadius: "5px" }}>
                   <h4>{lockers.name}</h4>
 
-                  {lockers.is_frozen === false && <Button id="docsBtn" className="subbutton" style={{padding:"6px 8px"}} variant="contained" onClick={() => handleLockersClick(lockers)}>
+                  {lockers.is_frozen === false && <Button id="docsBtn" className="subbutton" style={{ padding: "6px 8px" }} variant="contained" onClick={() => handleLockersClick(lockers)}>
                     Open
                   </Button>}
-                  {lockers.is_frozen === true && <Button id="docsBtn" className="subbutton" style={{padding:"6px 8px"}} variant="contained">Frozen</Button>}
+                  {lockers.is_frozen === true && <Button id="docsBtn" className="subbutton" style={{ padding: "6px 8px" }} variant="contained">Frozen</Button>}
 
                   <p className="description2">{lockers.description}</p>
                 </div>
               ))
             ) : (
-              <p style={{marginTop:"1.30rem"}}>No lockers found.</p>
+              <p style={{ marginTop: "1.30rem" }}>No lockers found.</p>
             )}
           </div>
         </div>

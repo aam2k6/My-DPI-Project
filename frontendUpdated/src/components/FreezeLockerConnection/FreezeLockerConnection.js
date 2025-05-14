@@ -25,11 +25,11 @@ export default function FreezeLockerConnection() {
     }));
   const [lockerName, setLockerName] = useState("");
   const [connectionName, setConnectionName] = useState("");
-  const [modalMessage, setModalMessage] = useState({message: "", type: ""});
+  const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState({locker: false, connection: false});
-  const { curruser} = useContext(usercontext);
+  const [isLoading, setIsLoading] = useState({ locker: false, connection: false });
+  const { curruser } = useContext(usercontext);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userConnections, setConnections] = useState([]);
   const [userLockers, setUserLockers] = useState([]);
@@ -37,9 +37,14 @@ export default function FreezeLockerConnection() {
   const [freezeMode, setFreezeMode] = useState(true); //state for toggle
   const [connectionId, setConnectionId] = useState("");
 
-   useEffect(() => {
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  useEffect(() => {
     const token = Cookies.get('authToken');
-         fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
+    fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${token}`,
@@ -49,7 +54,7 @@ export default function FreezeLockerConnection() {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          console.log("dpi ",data);
+          console.log("dpi ", data);
           setUsers(data.users);
         } else {
           setError(data.message || data.error);
@@ -60,7 +65,7 @@ export default function FreezeLockerConnection() {
         console.error("Error:", error);
       });
 
-   }, []);
+  }, []);
 
   const fetchLockers = async () => {
     if (!selectedUser) return;
@@ -138,12 +143,12 @@ export default function FreezeLockerConnection() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setModalMessage({message: "", type: ""});
+    setModalMessage({ message: "", type: "" });
   };
 
   const handleFreezeLocker = async () => {
     if (!lockerName) {
-      setModalMessage({message: 'Please enter a locker name', type: 'info'});
+      setModalMessage({ message: 'Please enter a locker name', type: 'info' });
       setIsModalOpen(true);
       return;
     }
@@ -158,7 +163,7 @@ export default function FreezeLockerConnection() {
     try {
       const response = await fetch("host/freeze-unfreeze-locker/".replace(/host/, frontend_host), {
         method: "PUT",
-        body: JSON.stringify({ locker_name: lockerName, username: selectedUser.username, action}),
+        body: JSON.stringify({ locker_name: lockerName, username: selectedUser.username, action }),
         headers: {
           'Authorization': `Basic ${token}`,
           "Content-Type": "application/json",
@@ -181,7 +186,7 @@ export default function FreezeLockerConnection() {
       console.log('er', error);
       setModalMessage({ message: `Error while performing ${action}`, type: 'failure' });
       setIsModalOpen(true);
-    }  finally {
+    } finally {
       setIsLoading((prevState) => ({ ...prevState, locker: false }));
     }
   };
@@ -204,11 +209,11 @@ export default function FreezeLockerConnection() {
       const response = await fetch("host/freeze-unfreeze-connection/".replace(/host/, frontend_host), {
         method: "PUT",
         //curruser is user obj
-        body: JSON.stringify({ connection_id: connectionId, connection_name: connectionName, action}),
+        body: JSON.stringify({ connection_id: connectionId, connection_name: connectionName, action }),
         headers: {
           'Authorization': `Basic ${token}`,
           "Content-Type": "application/json",
-        },   
+        },
       });
       const data = await response.json();
       if (response.ok) {
@@ -234,106 +239,111 @@ export default function FreezeLockerConnection() {
   };
 
   const toggleFreezeMode = () => {
-      // setIsFreezing(prev => !prev);
-      setFreezeMode(prev => !prev);
-      setLockerName("");
-      setSelectedUser(null);
+    // setIsFreezing(prev => !prev);
+    setFreezeMode(prev => !prev);
+    setLockerName("");
+    setSelectedUser(null);
   };
 
-// const filteredLockers = userLockers.filter(locker => locker.is_frozen === isFreezing);
-// const filteredConnections = userConnections.filter(connection => connection.is_frozen === isFreezing);
+  // const filteredLockers = userLockers.filter(locker => locker.is_frozen === isFreezing);
+  // const filteredConnections = userConnections.filter(connection => connection.is_frozen === isFreezing);
 
   const code = (<>
-  <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
+    <div className="user-greeting-container shadow">
+      <button
+        className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
         onClick={toggleSidebar}
       >
-         <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
+        <FontAwesomeIcon icon={faBars} />
       </button>
+      <span className="fw-semibold fs-6 text-dark">
+        Hi, {capitalizeFirstLetter(curruser.username)}
+      </span>
+    </div>
 
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        openSubmenus={openSubmenus}
-        toggleSubmenu={toggleSubmenu}
-      />
+    <Sidebar
+      isSidebarOpen={isSidebarOpen}
+      toggleSidebar={toggleSidebar}
+      activeMenu={activeMenu}
+      setActiveMenu={setActiveMenu}
+      openSubmenus={openSubmenus}
+      toggleSubmenu={toggleSubmenu}
+    />
     {/* <Navbar /> */}
-    <button id = "toggle" onClick={toggleFreezeMode}>
-     {freezeMode ? 'Switch to Unfreeze' : 'Switch to Freeze'}
-   </button>
+    <button id="toggle" onClick={toggleFreezeMode}>
+      {freezeMode ? 'Switch to Unfreeze' : 'Switch to Freeze'}
+    </button>
     <div className="freeze-section">
-    <>
-      <div className="freeze-locker">
-        <label>Select Username</label>
-        <select
-        onChange={(e) => {
-        const selected = users.find(user => user.username === e.target.value);
-        setSelectedUser(selected);
-      }}
-      value={selectedUser ? selectedUser.username : ""}
-      >
-      <option value="">Select a user</option>
-      {users.map(user => (
-        <option key={user.user_id} value={user.username}>
-          {user.username}
-        </option>
-      ))}
-    </select>
-        <label>Select Locker Name</label>
-        <select
-          onChange={(e) => setLockerName(e.target.value)}
-          value={lockerName}
-        >
-          <option value="">Select a locker</option>
-          {userLockers.map(locker => (
-            <option key={locker.locker_id} value={locker.name}>
-              {locker.name}
-            </option>
-          ))}
-        </select>
-        <button onClick={handleFreezeLocker} disabled={isLoading.locker}>
-       {isLoading.locker ? (freezeMode ? "Freezing Locker..." : "Unfreezing Locker...") : (freezeMode ? "Freeze Locker" : "Unfreeze Locker")}
-     </button>
-      </div>
+      <>
+        <div className="freeze-locker">
+          <label>Select Username</label>
+          <select
+            onChange={(e) => {
+              const selected = users.find(user => user.username === e.target.value);
+              setSelectedUser(selected);
+            }}
+            value={selectedUser ? selectedUser.username : ""}
+          >
+            <option value="">Select a user</option>
+            {users.map(user => (
+              <option key={user.user_id} value={user.username}>
+                {user.username}
+              </option>
+            ))}
+          </select>
+          <label>Select Locker Name</label>
+          <select
+            onChange={(e) => setLockerName(e.target.value)}
+            value={lockerName}
+          >
+            <option value="">Select a locker</option>
+            {userLockers.map(locker => (
+              <option key={locker.locker_id} value={locker.name}>
+                {locker.name}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleFreezeLocker} disabled={isLoading.locker}>
+            {isLoading.locker ? (freezeMode ? "Freezing Locker..." : "Unfreezing Locker...") : (freezeMode ? "Freeze Locker" : "Unfreeze Locker")}
+          </button>
+        </div>
 
-      <div className="freeze-connection">
-        <label>Enter Connection Name</label>
-        <select
-          onChange={ (e) => {
-            const selectedConnection = userConnections.find(connection => connection.connection_name === e.target.value);
-            console.log(selectedConnection);
-            setConnectionName(e.target.value);
-            setConnectionId(selectedConnection ? selectedConnection.connection_id : "");
-          }}
-          value={connectionName}
-        >
-          <option value="">Select a connection</option>
-          {userConnections.map(connection => (
-            <option key={connection.connection_id} value={connection.connection_name}>
-              {connection.connection_name}
-            </option>
-          ))}
-        </select>
-         <button onClick={handleFreezeConnection} disabled={isLoading.connection}>
-       {isLoading.connection ? (freezeMode? "Freezing Connection..." : "Unfreezing Connection...") : (freezeMode ? "Freeze Connection" : "Unfreeze Connection")}
-     </button>
-      </div>
-    </>
-{isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
-</div>
-</>);
+        <div className="freeze-connection">
+          <label>Enter Connection Name</label>
+          <select
+            onChange={(e) => {
+              const selectedConnection = userConnections.find(connection => connection.connection_name === e.target.value);
+              console.log(selectedConnection);
+              setConnectionName(e.target.value);
+              setConnectionId(selectedConnection ? selectedConnection.connection_id : "");
+            }}
+            value={connectionName}
+          >
+            <option value="">Select a connection</option>
+            {userConnections.map(connection => (
+              <option key={connection.connection_id} value={connection.connection_name}>
+                {connection.connection_name}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleFreezeConnection} disabled={isLoading.connection}>
+            {isLoading.connection ? (freezeMode ? "Freezing Connection..." : "Unfreezing Connection...") : (freezeMode ? "Freeze Connection" : "Unfreeze Connection")}
+          </button>
+        </div>
+      </>
+      {isModalOpen && <Modal message={modalMessage.message} onClose={handleCloseModal} type={modalMessage.type} />}
+    </div>
+  </>);
   return (
     <>
-     
-    {((curruser.user_type === 'sys_admin'  || curruser.user_type === 'system_admin') && (curruser.user_type !== 'moderator')) && 
-    <div className="content" style={{marginTop:"100px"}}>{code} <Sidebar /></div> }
 
-    {curruser.user_type === 'moderator' &&<>{code}</>}
+      {((curruser.user_type === 'sys_admin' || curruser.user_type === 'system_admin') && (curruser.user_type !== 'moderator')) &&
+        <div className="content" style={{ marginTop: "100px" }}>{code} <Sidebar /></div>}
+
+      {curruser.user_type === 'moderator' && <>{code}</>}
 
     </>
   );
-  
+
 }
 

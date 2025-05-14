@@ -387,11 +387,11 @@ export const Displayterms = () => {
             <ul>
               <li>No forbidden terms available.</li>
             </ul>
-            
+
           )}
         </div>
       );
-    } 
+    }
     return <p>No forbidden terms available.</p>;
   };
 
@@ -511,7 +511,7 @@ export const Displayterms = () => {
     })
   }
 
-  
+
   const handleViewHostTermsClick = () => {
     navigate("/host-terms-review", {
       state: {
@@ -628,13 +628,17 @@ export const Displayterms = () => {
   console.log(res, "res");
   return (
     <div>
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-      <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-        
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -649,7 +653,7 @@ export const Displayterms = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <div className="connection-details" style={{ marginTop: "12px" }}>
         <div className="connectionName1">Connection Type Name: {connectionTypeName}</div>
@@ -709,9 +713,9 @@ export const Displayterms = () => {
                     <div className="page13headterms">Guest Forbidden Terms</div>
                     <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("guest")}</div>
                     <div className="page13headterms">Default Host Privileges</div>
-                    <li style={{ fontSize: "18px", marginLeft:"14px" }}>By default <span className=" text-end">
-                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
-                            </span> are disabled unless otherwise mentioned in the terms</li>
+                    <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
+                      {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                    </span> are disabled unless otherwise mentioned in the terms</li>
                   </div>
                 )}
                 {activeTab === "host" && (
@@ -723,9 +727,9 @@ export const Displayterms = () => {
                     <div className="page13headterms">Host Forbidden Terms</div>
                     <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("host")}</div>
                     <div className="page13headterms">Default Host Privileges</div>
-                    <li style={{ fontSize: "18px", marginLeft:"14px" }}>By default <span className=" text-end">
-                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
-                            </span> are disabled unless otherwise mentioned in the terms</li>
+                    <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
+                      {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                    </span> are disabled unless otherwise mentioned in the terms</li>
                   </div>
                 )}
               </div>

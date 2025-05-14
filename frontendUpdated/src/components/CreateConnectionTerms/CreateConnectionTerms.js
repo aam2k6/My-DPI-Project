@@ -833,7 +833,7 @@ export const CreateConnectionTerms = () => {
         host_username: hostUserUsername,
         host_lockername: hostLockerName,
       });
-console.log("queryParams", queryParams)
+      console.log("queryParams", queryParams)
       const response = await fetch(
         `host/get-consent/?${queryParams.toString()}`.replace(
           /host/,
@@ -1491,7 +1491,7 @@ console.log("queryParams", queryParams)
         </div>
       );
     }
- <p>No forbidden terms available.</p>;
+    <p>No forbidden terms available.</p>;
   };
 
   console.log(res);
@@ -1822,12 +1822,17 @@ console.log("queryParams", queryParams)
   console.log("connectionDetails", connectionDetails)
   return (
     <div>
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -1842,7 +1847,7 @@ console.log("queryParams", queryParams)
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <div style={{ marginTop: "12px" }}>
         <div className="connection-details longconnectionDescription">
@@ -1881,12 +1886,12 @@ console.log("queryParams", queryParams)
 
           <div className="tooltip-container user-container">
             <div className="tooltips user-container" style={{ cursor: 'pointer' }}>
-            <i className="guestLocker-icon" />
+              <i className="guestLocker-icon" />
               <span className="userName">: {guestLockerName} &nbsp;</span>
             </div>
             <i className="fa-solid fa-right-long mt-1"></i> &nbsp;
             <div className="tooltips user-container">
-            <i className="hostLocker-icon" />
+              <i className="hostLocker-icon" />
               <span className="userName">: {hostLockerName}</span>
             </div>
           </div>
@@ -1919,9 +1924,9 @@ console.log("queryParams", queryParams)
                       <div className="page13headterms">Your Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px", marginLeft:"14px" }}>By default <span className=" text-end">
-                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
-                            </span> are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
+                        {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                      </span> are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -1933,9 +1938,9 @@ console.log("queryParams", queryParams)
                       <div className="page13headterms" >Host Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
                       <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px", marginLeft:"14px" }}>By default <span className=" text-end">
-                              {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
-                            </span> are disabled unless otherwise mentioned in the terms</li>
+                      <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
+                        {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
+                      </span> are disabled unless otherwise mentioned in the terms</li>
                     </div>
                   )}
                 </div>

@@ -288,12 +288,17 @@ export const AllLokers = () => {
 
   return (
     <div id="alllockers">
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -308,14 +313,14 @@ export const AllLokers = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
-       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
-      <div style={{marginTop: "50px"}}>
-      <Grid container>
-            <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>
-              <h3>All Lockers</h3>
-            </Grid>
+      </div>
+      {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
+      <div style={{ marginTop: "50px" }}>
+        <Grid container>
+          <Grid item md={2} xs={12} sx={{ textAlign: "center" }}>
+            <h3>All Lockers</h3>
           </Grid>
+        </Grid>
         {error && <p>{error}</p>}
         <Grid container spacing={3} className="page5container" padding={{ md: 10, sm: 2, xs: 2 }}>
           {lockers.length > 0 ? (

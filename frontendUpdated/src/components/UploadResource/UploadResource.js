@@ -47,7 +47,7 @@ export const UploadResource = () => {
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
-    return string.charAt(0).toUpperCase()  + string.slice(1);
+    return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export const UploadResource = () => {
     }
   }, [curruser, navigate]);
 
-  console.log("JSON Data",  JSON.stringify(permissions))
+  console.log("JSON Data", JSON.stringify(permissions))
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -137,12 +137,17 @@ export const UploadResource = () => {
 
   return (
     <div>
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -157,7 +162,7 @@ export const UploadResource = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       {isErrorModalOpen && (
         <Modal
@@ -224,7 +229,7 @@ export const UploadResource = () => {
                 <div className="mt-3">
                   <label className="form-label fw-bold mb-2">Permissions</label>
                   <Grid container md={8} sm={8} xs={12} style={{ marginLeft: "3px" }}>
-                    <Grid item  md={4} sm={4} xs={6} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -237,7 +242,7 @@ export const UploadResource = () => {
                         Download
                       </label>
                     </Grid>
-                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -250,7 +255,7 @@ export const UploadResource = () => {
                         Subset
                       </label>
                     </Grid>
-                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -263,7 +268,7 @@ export const UploadResource = () => {
                         Reshare
                       </label>
                     </Grid>
-                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -276,7 +281,7 @@ export const UploadResource = () => {
                         Confer
                       </label>
                     </Grid>
-                    <Grid item   md={4} sm={4} xs={6} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -289,7 +294,7 @@ export const UploadResource = () => {
                         Collateral
                       </label>
                     </Grid>
-                    <Grid item  md={4} sm={4} xs={6} className="mb-2">
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"

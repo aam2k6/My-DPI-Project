@@ -1167,7 +1167,7 @@ export const TargetLockerView = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showInfo, setShowInfo] = useState(null);
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
-console.log("pdfUrl", pdfUrl)
+  console.log("pdfUrl", pdfUrl)
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -1725,12 +1725,17 @@ console.log("pdfUrl", pdfUrl)
       {isModalOpen && (
         <Modal message={modalMessage.message || <QRCode value={qrData} />} onClose={handleCloseModal} type={modalMessage.type || "info"} />
       )}
-       <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -1740,12 +1745,12 @@ console.log("pdfUrl", pdfUrl)
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
- <div className="locker-header">
+      <div className="locker-header">
         <div className="locker-text">
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <div style={{ marginTop: "14px" }}>
         <Grid container className="page7description" justifyContent="center" alignItems="center">

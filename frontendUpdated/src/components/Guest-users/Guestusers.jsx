@@ -301,8 +301,8 @@ export const Guestusers = () => {
         hostUserUsername: hostUserUsername,
         locker: locker,
         hostLocker: hostLocker,
-        connectionType:connectionType,
-        connection:connection,
+        connectionType: connectionType,
+        connection: connection,
         viewGuestuser: true,
       },
     });
@@ -357,12 +357,17 @@ export const Guestusers = () => {
   )
   return (
     <div>
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -377,7 +382,7 @@ export const Guestusers = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <Box className="page5heroContainer" marginTop={{ md: "12px", xs: "12px" }}>
         <h4 className='guestusers' style={{ textAlign: "center", marginBottom: "25px", fontWeight: "bold" }}>Guest Users</h4>

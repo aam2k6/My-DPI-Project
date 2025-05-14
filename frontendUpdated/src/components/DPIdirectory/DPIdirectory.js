@@ -39,6 +39,10 @@ export const DPIdirectory = () => {
       [menu]: !prev[menu],
     }));
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
   useEffect(() => {
     if (!curruser) {
       navigate('/');
@@ -102,13 +106,17 @@ export const DPIdirectory = () => {
 
   return (
     <div id="dpi-directory">
-       <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-        
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}
@@ -123,14 +131,14 @@ export const DPIdirectory = () => {
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
       {/* <Navbar breadcrumbs={breadcrumbs} /> */}
       <div className="page5heroContainer dpi-directories" style={{ marginTop: "12px" }}>
-      {/* <h1 className="page-title " style={{ fontSize: `${48}px` }}>
+        {/* <h1 className="page-title " style={{ fontSize: `${48}px` }}>
          DPI Directory  
         </h1>  */}
         {/* <div> {breadcrumbs}</div> */}
-        
+
         {/* <div className="sidebars">
           <button className="btn-open" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i class="bi bi-chevron-right"></i></button>
 
@@ -224,7 +232,7 @@ export const DPIdirectory = () => {
           )}
         </Grid>
       </div>
-      
+
     </div>
   );
 };

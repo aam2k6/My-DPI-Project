@@ -11,7 +11,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import "./page2.css"
 
 export const CreateLocker = () => {
-  
+
   const navigate = useNavigate()
   const [lockerName, setLockerName] = useState("")
   const [description, setDescription] = useState("")
@@ -28,6 +28,10 @@ export const CreateLocker = () => {
       ...prev,
       [menu]: !prev[menu],
     }));
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
   const handleSubmit = (event) => {
     event.preventDefault()
 
@@ -87,19 +91,24 @@ export const CreateLocker = () => {
 
   const content = (
     <>
-        <div className="navbarBrands">Create Locker</div>
+      <div className="navbarBrands">Create Locker</div>
     </>
-);
+  );
 
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-       <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-         <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
       <Sidebar
         isSidebarOpen={isSidebarOpen}

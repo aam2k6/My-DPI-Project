@@ -16,15 +16,15 @@ export const CreateConnectionType = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState("Home");
     const [openSubmenus, setOpenSubmenus] = useState({
-      directory: false,
-      settings: false,
+        directory: false,
+        settings: false,
     });
     const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
     const toggleSubmenu = (menu) =>
-      setOpenSubmenus((prev) => ({
-        ...prev,
-        [menu]: !prev[menu],
-      }));
+        setOpenSubmenus((prev) => ({
+            ...prev,
+            [menu]: !prev[menu],
+        }));
     const { curruser, setUser } = useContext(usercontext);
     const [isOpen, setIsOpen] = useState(false);
     const [lockers, setLockers] = useState([]); // Initialize as empty array
@@ -35,8 +35,11 @@ export const CreateConnectionType = () => {
     const [parentUser, setParentUser] = useState(location.state ? location.state.hostuser : null);
     const [locker, setLocker] = useState(location.state ? location.state.hostlocker : null);
     const [selectedConnectionType, setSelectedConnectionType] = useState(location.state ? location.state.selectedConnectionType : null);
-
-console.log("selectedConnectionType", selectedConnectionType)
+    const capitalizeFirstLetter = (string) => {
+        if (!string) return "";
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+    console.log("selectedConnectionType", selectedConnectionType)
     useEffect(() => {
         if (!curruser) {
             navigate('/');
@@ -145,7 +148,7 @@ console.log("selectedConnectionType", selectedConnectionType)
     const handleTargetUserView = () => {
         navigate('/target-user-view', {
             state: {
-                user: { username: parentUser.username , description: parentUser.description }
+                user: { username: parentUser.username, description: parentUser.description }
             },
         });
     }
@@ -153,10 +156,10 @@ console.log("selectedConnectionType", selectedConnectionType)
     const handleTargetLockerView = () => {
         navigate('/target-locker-view', {
             state: {
-              user: { username: parentUser.username },
-              locker: locker
+                user: { username: parentUser.username },
+                locker: locker
             }
-          });
+        });
     }
 
     console.log(connectionTypes);
@@ -168,49 +171,54 @@ console.log("selectedConnectionType", selectedConnectionType)
                     <option key={type.connection_type_id} value={type.connection_type_name}>{type.connection_type_name}</option>
                 ))}
             </select>
-            
+
         </>
 
     )
 
-    const breadcrumbs =(
+    const breadcrumbs = (
         <div className="breadcrumbs">
-        <a href="/home" className="breadcrumb-item">
-            Home
-        </a>
-        <span className="breadcrumb-separator">▶</span>
-        <a className="breadcrumb-item" href="/dpi-directory">User Directory</a>
-        <span className="breadcrumb-separator">▶</span>
-        <span onClick={() => handleTargetUserView()} className="breadcrumb-item">TargetUserView</span>
-        <span className="breadcrumb-separator">▶</span>
-        <span onClick={() => handleTargetLockerView(locker)} className="breadcrumb-item">TargetLockerView</span>
-        <span className="breadcrumb-separator">▶</span>
-        <span className="breadcrumb-item current">MakeConnection</span>
-    </div>
+            <a href="/home" className="breadcrumb-item">
+                Home
+            </a>
+            <span className="breadcrumb-separator">▶</span>
+            <a className="breadcrumb-item" href="/dpi-directory">User Directory</a>
+            <span className="breadcrumb-separator">▶</span>
+            <span onClick={() => handleTargetUserView()} className="breadcrumb-item">TargetUserView</span>
+            <span className="breadcrumb-separator">▶</span>
+            <span onClick={() => handleTargetLockerView(locker)} className="breadcrumb-item">TargetLockerView</span>
+            <span className="breadcrumb-separator">▶</span>
+            <span className="breadcrumb-item current">MakeConnection</span>
+        </div>
     )
     return (
         <div id='make-connection'>
-             <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
+            <div className="user-greeting-container shadow">
+                <button
+                    className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+                    onClick={toggleSidebar}
+                >
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
+                <span className="fw-semibold fs-6 text-dark">
+                    Hi, {capitalizeFirstLetter(curruser.username)}
+                </span>
+            </div>
 
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        activeMenu={activeMenu}
-        setActiveMenu={setActiveMenu}
-        openSubmenus={openSubmenus}
-        toggleSubmenu={toggleSubmenu}
-      />
-       <div className="locker-header">
-        <div className="locker-text">
-          <div className="navbar-content">{content}</div>
-        </div>
-        <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                openSubmenus={openSubmenus}
+                toggleSubmenu={toggleSubmenu}
+            />
+            <div className="locker-header">
+                <div className="locker-text">
+                    <div className="navbar-content">{content}</div>
+                </div>
+                <div className="navbar-breadcrumbs">{breadcrumbs}</div>
+            </div>
             {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
             <div style={{ marginTop: "12px" }}>
                 <div className="page12typeofconn">

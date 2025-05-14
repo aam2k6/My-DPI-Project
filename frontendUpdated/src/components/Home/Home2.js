@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { usercontext } from "../../usercontext";
 import Cookies from "js-cookie";
 import { Menu } from "lucide-react";
-import Sidebar from "../Sidebar/Sidebar"; 
+import Sidebar from "../Sidebar/Sidebar";
 import "./home.css";
 import { frontend_host } from "../../config";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -311,28 +311,32 @@ export const Home2 = () => {
       [menu]: !prev[menu],
     }));
 
-  
-    const content = (
-          <>
-            <div className="navbarBrand">
-              {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
-            </div>
-            <div className="description">
-              {curruser ? curruser.description : "None"}
-            </div>
-          </>
-        );
+
+  const content = (
+    <>
+      <div className="navbarBrand">
+        {curruser ? capitalizeFirstLetter(curruser.username) : "None"}
+      </div>
+      <div className="description">
+        {curruser ? curruser.description : "None"}
+      </div>
+    </>
+  );
 
   return (
     <div className="app-container">
       {/* Hamburger menu, visible on mobile/tablet hidden on PC by CSS */}
-      <button
-        className={`hamburger-menu ${isSidebarOpen ? "hidden" : ""}`}
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={faBars} style={{fontSize:"20px"}}/>
-      </button>
-
+      <div className="user-greeting-container shadow">
+        <button
+          className={`hamburger-btn me-2 ${isSidebarOpen ? "d-none" : ""}`}
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
@@ -341,12 +345,12 @@ export const Home2 = () => {
         openSubmenus={openSubmenus}
         toggleSubmenu={toggleSubmenu}
       />
-<div className="locker-header">
+      <div className="locker-header">
         <div className="locker-text">
           <div className="navbar-content">{content}</div>
         </div>
-    </div>
-      
+      </div>
+
 
       {/* Main content area */}
       <main

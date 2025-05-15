@@ -177,7 +177,8 @@ console.log("typeof username:", typeof curruser?.username);
           {isNotificationsOpen && (
             <div className="notification-modal right">
               <h4>Notifications</h4>
-              {error && <p className="error">{error}</p>}
+              <hr style={{border:"none", margin:"10px 0", borderTop:"2px solid #ccc"}}></hr>
+              {/* {error && <p className="error">{error}</p>} */}
               {notifications.length > 0 ? (
                 
                 <div className="notification-list">

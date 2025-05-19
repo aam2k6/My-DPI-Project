@@ -2518,7 +2518,30 @@ export const Guesttermsreview = () => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+                 <div
+                className="fw-bold  mb-1"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
+                  Consent Artefact
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 <div className="card p-3 shadow-lg border-0">
                   {termsValue[selectedRowData.labelName]?.split(";")[0] ? (
@@ -2541,10 +2564,10 @@ export const Guesttermsreview = () => {
                             <span className="fw-bold">Creator:</span>
                             <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
-                          <div className="d-flex justify-content-between border-bottom py-2">
+                          {/* <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
-                          </div>
+                          </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
                             <span>{selectedRowData.typeOfSharing}
@@ -2596,7 +2619,30 @@ export const Guesttermsreview = () => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+                 <div
+                className="fw-bold  mb-1"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
+                  Consent Artefact
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 <div className="card p-3 shadow-lg border-0">
                   {selectedRowData1.dataElement ? (
@@ -2619,10 +2665,10 @@ export const Guesttermsreview = () => {
                             <span className="fw-bold">Creator:</span>
                             <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleuserclick(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
-                          <div className="d-flex justify-content-between border-bottom py-2">
+                          {/* <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
-                          </div>
+                          </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
                             <span>{selectedRowData1.share}

@@ -42,6 +42,7 @@ const Sidebar = ({
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const notificationsRef = useRef(null);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const handleLogout = () => {
     Cookies.remove("authToken");
@@ -96,6 +97,17 @@ const Sidebar = ({
       setError("An error occurred while fetching notifications.");
     }
   };
+
+  const handleNotificationClick = (notification) => {
+    setSelectedNotification(notification);
+    setIsNotificationsOpen(false);
+    markNotificationAsRead(notification.id);
+  };
+
+  const closePopup = () => {
+    setSelectedNotification(null);
+  };
+
 
   const markNotificationAsRead = async (id) => {
     try {
@@ -180,22 +192,24 @@ console.log("typeof username:", typeof curruser?.username);
               <hr style={{border:"none", margin:"10px 0", borderTop:"2px solid #ccc"}}></hr>
               {/* {error && <p className="error">{error}</p>} */}
               {notifications.length > 0 ? (
-                
-                <div className="notification-list">
-                  {notifications.map((n) => (
-                    <div
-                      key={n.id}
-                      className={`notification-item ${n.read ? "read" : "unread"}`}
-                      onClick={() => markNotificationAsRead(n.id)}
-                    >
-                      <p>{n.message}</p>
-                      <small>{new Date(n.created_at).toLocaleString()}</small>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>No notifications.</p>
-              )}
+        <div className="notification-list">
+          {notifications.map((n) => (
+            <div
+              key={n.id}
+              className={`notification-item ${n.read ? "read" : "unread"}`}
+              onClick={() => handleNotificationClick(n)}
+            >
+              <p>{n.message.length > 20 ? `${n.message.slice(0, 30)}...` : n.message}</p>
+              <small>{new Date(n.created_at).toLocaleString()}</small>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No notifications.</p>
+      )}
+
+      {/* Popup Modal */}
+      
             </div>
           )}
         </div>
@@ -392,6 +406,39 @@ console.log("typeof username:", typeof curruser?.username);
         <FontAwesomeIcon icon={faArrowRightFromBracket} />
         </button>
       </div>
+{selectedNotification && (
+       <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+              <div className="modal-content">
+                {/* Close Button */}
+                <div className="close-detail">
+                  <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                    onClick={closePopup}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8d7da",
+                      color: "#721c24",
+                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      transition: "0.3s ease-in-out",
+                    }}
+                    aria-label="Close"
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+                  </button>
+                </div>
+
+                <div className="card p-3 shadow-lg border-0">
+                  <p>{selectedNotification.message}</p>
+                  <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
+                </div>
+              </div>
+            </div>
+            )}
+           
     </div>
   );
 };

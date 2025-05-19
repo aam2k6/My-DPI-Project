@@ -3946,9 +3946,31 @@ export const ViewTermsByType = () => {
           !selectedRowData.value.endsWith("T") ? (
             <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
               <div className="modal-content" style={{ border: "2px solid blue" }}>
-                <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                <div
+                  className="subset-title"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
                   Consent Artefact
-                </h3>
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
+
                 {termValues[selectedRowData.labelName]?.split(";")[0] ? (
                   <div>
                     <label className="form-label fw-bold mt-1">File name:{" "}</label>
@@ -3967,10 +3989,10 @@ export const ViewTermsByType = () => {
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
                           {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-                        </div>
+                        </div> */}
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
                           {selectedRowData.typeOfSharing}
@@ -4059,7 +4081,30 @@ export const ViewTermsByType = () => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+                <div
+                className="fw-bold  mb-1"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
+                  Consent Artefact
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 <div className="card p-3 shadow-lg border-0">
                   {termValues[selectedRowData.labelName]?.split(";")[0] ? (
@@ -4082,10 +4127,10 @@ export const ViewTermsByType = () => {
                             <span className="fw-bold">Creator:</span>
                             <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
-                          <div className="d-flex justify-content-between border-bottom py-2">
+                          {/* <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
-                          </div>
+                          </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
                             <span>{selectedRowData.typeOfSharing}
@@ -4114,9 +4159,30 @@ export const ViewTermsByType = () => {
           !selectedRowData1.dataElement.endsWith("T") ? (
             <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
               <div className="modal-content" style={{ border: "2px solid blue" }}>
-                <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+                <div
+                  className="subset-title"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
                   Consent Artefact
-                </h3>
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
                 {selectedRowData1.dataElement ? (
                   <div>
                     <label className="form-label fw-bold mt-1">File name:{" "}</label>
@@ -4135,10 +4201,10 @@ export const ViewTermsByType = () => {
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
                           {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-                        </div>
+                        </div> */}
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
                           {selectedRowData1.share}
@@ -4226,7 +4292,30 @@ export const ViewTermsByType = () => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+                 <div
+                className="fw-bold  mb-1"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
+                  Consent Artefact
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 <div className="card p-3 shadow-lg border-0">
                   {selectedRowData1.dataElement?.split(";")[0] ? (
@@ -4249,10 +4338,10 @@ export const ViewTermsByType = () => {
                             <span className="fw-bold">Creator:</span>
                             <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
-                          <div className="d-flex justify-content-between border-bottom py-2">
+                          {/* <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
-                          </div>
+                          </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
                             <span>{selectedRowData1.share}
@@ -4281,9 +4370,30 @@ export const ViewTermsByType = () => {
           !selectedRowData2.enter_value.endsWith("T") ? (
             <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
               <div className="modal-content" style={{ border: "2px solid blue" }}>
-                <h3 className="subset-title" style={{ display: "flex", justifyContent: "center" }}>
+               <div
+                  className="subset-title"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
                   Consent Artefact
-                </h3>
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
                 {selectedRowData2.enter_value?.split(";")[0] ? (
                   <div>
                     <label className="form-label fw-bold mt-1">File name:{" "}</label>
@@ -4302,10 +4412,10 @@ export const ViewTermsByType = () => {
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
                           {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
-                        </div>
+                        </div> */}
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
                           {selectedRowData2.typeOfSharing}
@@ -4394,7 +4504,30 @@ export const ViewTermsByType = () => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                <h5 className="fw-bold  mb-1">Consent Artefact</h5>
+                 <div
+                className="fw-bold  mb-1"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "15px",
+                    marginBottom: "15px",
+                    marginTop: "10px",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold"
+                  }}
+                >
+                  Consent Artefact
+                  {pdfData?.xnode_Type !== "VNODE" && (
+                    <>
+                      {pdfData?.current_owner_username === pdfData?.primary_owner_username ? (
+                        <i className="bi bi-unlock-fill"></i>
+                      ) : (
+                        <i className="bi bi-lock-fill"></i>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 <div className="card p-3 shadow-lg border-0">
                   {selectedRowData2.enter_value?.split(";")[0] ? (
@@ -4417,10 +4550,10 @@ export const ViewTermsByType = () => {
                             <span className="fw-bold">Creator:</span>
                             <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleclickcreator(pdfData.creator_details)}>{capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                           </div>
-                          <div className="d-flex justify-content-between border-bottom py-2">
+                          {/* <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Current owner:</span>
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
-                          </div>
+                          </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
                             <span>{selectedRowData2.typeOfSharing}

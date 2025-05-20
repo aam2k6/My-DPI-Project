@@ -104,7 +104,7 @@ export const ViewHostTermsByType = () => {
   const [initialPostConditions, setInitialPostConditions] = useState({});
   const [editablePostConditions, setEditablePostConditions] = useState({});
   const [isLockedPostConditions, setIsLockedPostConditions] = useState();
-
+  const [extractedId, setExtractedId] = useState(null);
 
   const {
     connectionName,
@@ -1087,6 +1087,12 @@ export const ViewHostTermsByType = () => {
   };
 
   const handleButtonClick = (obligation) => {
+    if (obligation?.value?.includes('|') && obligation?.value?.includes(';')) {
+      const idPart = obligation.value.split('|')[1].split(';')[0].trim();
+      setExtractedId(idPart);
+    } else {
+      setExtractedId(null);
+    }
     setSelectedLocker(guestLockerName);
     setShowResources(true);
     setCurrentLabelName(obligation.labelName);
@@ -1188,6 +1194,12 @@ export const ViewHostTermsByType = () => {
 
   //********************************************************** */
   const handleButtonClick2 = (term) => {
+     if (term?.enter_value?.includes('|') && term?.enter_value?.includes(';')) {
+      const idPart = term?.enter_value.split('|')[1].split(';')[0].trim();
+      setExtractedId(idPart);
+    } else {
+      setExtractedId(null);
+    }
     setSelectedLocker(guestLockerName);
     setShowResources2(true);
     setCurrentLabelName(term.labelName);
@@ -1278,6 +1290,7 @@ export const ViewHostTermsByType = () => {
         host_user_username: hostUserUsername,
         xnode_id: resource.id,
         share_Type: typeofShare,
+        old_xnode: extractedId,
       };
       console.log("payload for post", data)
       try {
@@ -1302,7 +1315,7 @@ export const ViewHostTermsByType = () => {
           const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
           appendPagesToTerms2(termValue);
 
-
+          setExtractedId(null);
           setShowPageInput2(false);
           setShowResources2(false)
           setErrorMessage(null);
@@ -1439,6 +1452,7 @@ export const ViewHostTermsByType = () => {
         host_user_username: hostUserUsername,
         xnode_id: resource.id,
         share_Type: typeofShare,
+        old_xnode: extractedId,
       };
       console.log("payload for post", data)
       try {
@@ -1463,7 +1477,7 @@ export const ViewHostTermsByType = () => {
           const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
           appendPagesToTerms(termValue);
 
-
+          setExtractedId(null);
           setShowPageInput(false);
           setErrorMessage(null);
           setShowResources(false)
@@ -2662,7 +2676,10 @@ export const ViewHostTermsByType = () => {
                             <p>No resource found.</p>
                           )}
                           <div className="button-group">
-                            <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
+                            <button className="btn-color" onClick={() => {
+                              setShowResources(false);
+                              setExtractedId(null);
+                            }}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                           </div>
                         </div>
@@ -2707,7 +2724,10 @@ export const ViewHostTermsByType = () => {
                             <p>No resource found</p>
                           )}
                           <div className="button-group">
-                            <button className="btn-color" onClick={() => setShowResources2(false)}>Cancel</button>
+                            <button className="btn-color" onClick={() => {
+                              setShowResources2(false);
+                              setExtractedId(null);
+                            }}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
                           </div>
                         </div>

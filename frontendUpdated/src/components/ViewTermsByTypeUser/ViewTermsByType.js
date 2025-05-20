@@ -622,6 +622,8 @@ export const ViewTermsByType = () => {
   const [initialPostConditions, setInitialPostConditions] = useState({});
   const [editablePostConditions, setEditablePostConditions] = useState({});
   const [isLockedPostConditions, setIsLockedPostConditions] = useState();
+  const [extractedId, setExtractedId] = useState(null);
+  
 
   const {
     connectionName,
@@ -1656,6 +1658,12 @@ export const ViewTermsByType = () => {
   };
 
   const handleButtonClick = (obligation) => {
+     if (obligation?.value?.includes('|') && obligation?.value?.includes(';')) {
+      const idPart = obligation.value.split('|')[1].split(';')[0].trim();
+      setExtractedId(idPart);
+    } else {
+      setExtractedId(null);
+    }
     setSelectedLocker(guestLockerName);
     setShowResources(true);
     setCurrentLabelName(obligation.labelName);
@@ -1710,6 +1718,13 @@ export const ViewTermsByType = () => {
 
   //********************************************************** */
   const handleButtonClick2 = (term) => {
+    console.log("termss", term)
+     if (term?.enter_value?.includes('|') && term?.enter_value?.includes(';')) {
+      const idPart = term?.enter_value.split('|')[1].split(';')[0].trim();
+      setExtractedId(idPart);
+    } else {
+      setExtractedId(null);
+    }
     setSelectedLocker(guestLockerName);
     setShowResources2(true);
     setCurrentLabelName(term.labelName);
@@ -1753,6 +1768,7 @@ export const ViewTermsByType = () => {
         guest_user_username: guestUserUsername,
         xnode_id: resource.id,
         share_Type: typeofShare,
+        old_xnode: extractedId,
       };
       console.log("typesss", typeofShare)
       console.log("typesss", data)
@@ -1778,7 +1794,7 @@ export const ViewTermsByType = () => {
           const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
           appendPagesToTerms2(termValue);
 
-
+          setExtractedId(null);
           setShowPageInput2(false);
           setErrorMessage(null);
           setShowResources2(false)
@@ -1953,6 +1969,7 @@ export const ViewTermsByType = () => {
         guest_user_username: guestUserUsername,
         xnode_id: resource.id,
         share_Type: typeofShare,
+        old_xnode: extractedId,
       };
       console.log("payload for post", data)
 
@@ -1978,7 +1995,7 @@ export const ViewTermsByType = () => {
           const termValue = `${resource.resource_name}|${new_xnode_id}; F`;
           appendPagesToTerms(termValue);
 
-
+          setExtractedId(null);
           setShowPageInput(false);
           setErrorMessage(null);
           setShowResources(false)
@@ -3296,7 +3313,7 @@ export const ViewTermsByType = () => {
                             <p>No resource found.</p>
                           )}
                           <div className="button-group">
-                            <button className="btn-color" onClick={() => setShowResources(false)}>Cancel</button>
+                            c
                             <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                           </div>
                         </div>
@@ -3350,7 +3367,10 @@ export const ViewTermsByType = () => {
                             <p>No resource found.</p>
                           )}
                           <div className="button-group">
-                            <button className="btn-color" onClick={() => setShowResources2(false)}>Cancel</button>
+                            <button className="btn-color" onClick={() => {
+                              setShowResources2(false);
+                              setExtractedId(null);
+                            }}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
                           </div>
                         </div>

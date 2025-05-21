@@ -71,7 +71,7 @@ export const Guesttermsreview = () => {
   const [resourceModal, setResourceModal] = useState(false);
   const [trackerData, setTrackerData] = useState({});
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
-
+  const [xnodeToDownload, setXnodeToDownload] = useState(null);
   const [rejectedStatuses, setRejectedStatuses] = useState({});
   const [showRejectionPopup, setShowRejectionPopup] = useState(false);
   const [rejectionComment, setRejectionComment] = useState("");
@@ -89,7 +89,7 @@ export const Guesttermsreview = () => {
   //     </div>
   // );
 
-  console.log("resourcesDatass", rejectedStatuses)
+  console.log("resourcesDatass", curruser)
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -657,7 +657,7 @@ export const Guesttermsreview = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}&from_page=${from_page}&to_page=${to_page}`.replace(
+      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
         /host/,
         frontend_host
       ), {
@@ -675,8 +675,12 @@ export const Guesttermsreview = () => {
 
       const data = await response.json();
       console.log(data);
-      const { link_To_File } = data;
-
+      const { link_To_File, xnode } = data;
+      if (xnode) {
+        setXnodeToDownload(xnode);
+      } else {
+        setXnodeToDownload(null);
+      }
       if (link_To_File) {
         const secureFileUrl = link_To_File.replace('http://', 'https://');
         setPdfUrl(secureFileUrl);
@@ -698,12 +702,13 @@ export const Guesttermsreview = () => {
       // setLoading(false);
     }
   };
+  console.log("setXnodeToDownload", xnodeToDownload)
   const handleClicks = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
     const from_page = parseInt(pages?.split(':')[0].split("(")[1], 10);
     const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
-    console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
+    // console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
       const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}`.replace(
@@ -2013,6 +2018,48 @@ export const Guesttermsreview = () => {
   const handleClose = () => {
     setIsReactModalOpen(false);
     setPdfUrl(null);
+    setXnodeToDownload(null);
+  };
+  const downloadFile = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const downloadFileID = xnodeToDownload.id;
+
+      // ✅ Append xnode_id in query string
+      const response = await fetch(`${frontend_host}/download_resource_v2/?xnode_id=${downloadFileID}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`, // base64 encoded username:password
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Download error:", errorData);
+        alert(`Error: ${errorData.error}`);
+        return;
+      }
+
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get("Content-Disposition");
+      let filename = "downloaded_file";
+
+      if (contentDisposition && contentDisposition.includes("filename=")) {
+        filename = contentDisposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      alert("Failed to download file.");
+    }
   };
 
   const handleuserclick = (user) => {
@@ -2310,19 +2357,37 @@ export const Guesttermsreview = () => {
                                     },
                                   }}
                                 >
-                                  <button
-                                    onClick={handleClose}
+                                  {/* Button container at top-right */}
+                                  {/* Fixed buttons at the top-right corner of viewport or modal */}
+                                  <div
                                     style={{
-                                      marginBottom: "10px",
-                                      cursor: "pointer",
-                                      position: "absolute",
-                                      top: "10px",
-                                      right: "10px", // Button positioned at the top right
-                                      zIndex: 100,
+                                      position: "fixed", // or "absolute" if inside a relative modal
+                                      top: "20px",
+                                      right: "20px",
+                                      display: "flex",
+                                      gap: "10px",
+                                      zIndex: 9999,
                                     }}
                                   >
-                                    Close
-                                  </button>
+                                    {xnodeToDownload?.xnode_Type !== "VNODE" &&
+                                      xnodeToDownload?.node_information?.primary_owner === xnodeToDownload?.node_information?.current_owner &&
+                                      xnodeToDownload?.node_information?.primary_owner === curruser?.user_id &&
+                                      xnodeToDownload?.is_locked?.download === false && (
+                                        <button className="btn btn-primary btn-sm" onClick={downloadFile} title="Download">
+                                          <i className="bi bi-download" style={{ fontWeight: "bolder", fontSize: "1.1rem" }}></i>
+                                        </button>
+                                      )}
+
+                                    <button
+                                      onClick={handleClose}
+                                      className="btn btn-danger btn-sm"
+                                      title="Close"
+                                    >
+                                      Close
+                                    </button>
+                                  </div>
+
+
                                   {pdfUrl ? (
                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                                       <Viewer fileUrl={pdfUrl} />
@@ -2518,8 +2583,8 @@ export const Guesttermsreview = () => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                 <div
-                className="fw-bold  mb-1"
+                <div
+                  className="fw-bold  mb-1"
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -2619,8 +2684,8 @@ export const Guesttermsreview = () => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                 <div
-                className="fw-bold  mb-1"
+                <div
+                  className="fw-bold  mb-1"
                   style={{
                     display: "flex",
                     justifyContent: "center",

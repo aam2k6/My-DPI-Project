@@ -623,7 +623,11 @@ export const ViewTermsByType = () => {
   const [editablePostConditions, setEditablePostConditions] = useState({});
   const [isLockedPostConditions, setIsLockedPostConditions] = useState();
   const [extractedId, setExtractedId] = useState(null);
-  
+ const [editableValidityUntil, setEditableValidityUntil] = useState(
+  pdfData?.validity_until?.split('T')?.[0] || ""
+);
+
+
 
   const {
     connectionName,
@@ -640,6 +644,12 @@ export const ViewTermsByType = () => {
     connection,
     guestLocker
   } = location.state || {};
+useEffect(() => {
+  if (pdfData?.validity_until) {
+    setEditableValidityUntil(pdfData.validity_until.split('T')[0]);
+  }
+}, [pdfData]);
+
 
   console.log("datass", connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, connection)
   const connectionsData = connection
@@ -1434,6 +1444,7 @@ export const ViewTermsByType = () => {
     const payload = {
       xnode_id: pdfData.id,
       post_conditions: editablePostConditions,
+      new_validity: editableValidityUntil,
     };
 
     console.log("Sending PATCH request with:", payload);
@@ -3313,7 +3324,10 @@ export const ViewTermsByType = () => {
                             <p>No resource found.</p>
                           )}
                           <div className="button-group">
-                            c
+                            <button className="btn-color" onClick={() => {
+                              setShowResources(false);
+                              setExtractedId(null);
+                            }}>Cancel</button>
                             <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                           </div>
                         </div>
@@ -4001,10 +4015,12 @@ export const ViewTermsByType = () => {
                           <label className="form-label fw-bold mt-1">Created on:{" "}</label>
                           {new Date(pdfData.created_at).toLocaleString()}
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                           {new Date(pdfData.validity_until).toLocaleString()}
-                        </div>
+                        </div> */}
+
+
                         <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
@@ -4016,6 +4032,16 @@ export const ViewTermsByType = () => {
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
                           {selectedRowData.typeOfSharing}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                          <input
+                          type="date"
+                          className="form-control"
+                          value={editableValidityUntil}
+                          onChange={(e) => setEditableValidityUntil(e.target.value)}
+                          min={new Date().toISOString().slice(0, 10)}
+                        />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Post Conditions:</label>
@@ -4214,10 +4240,6 @@ export const ViewTermsByType = () => {
                           {new Date(pdfData.created_at).toLocaleString()}
                         </div>
                         <div>
-                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                          {new Date(pdfData.validity_until).toLocaleString()}
-                        </div>
-                        <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
@@ -4228,6 +4250,16 @@ export const ViewTermsByType = () => {
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
                           {selectedRowData1.share}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                          <input
+                          type="date"
+                          className="form-control"
+                          value={editableValidityUntil}
+                          onChange={(e) => setEditableValidityUntil(e.target.value)}
+                          min={new Date().toISOString().slice(0, 10)}
+                        />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Post Conditions:</label>
@@ -4425,10 +4457,6 @@ export const ViewTermsByType = () => {
                           {new Date(pdfData.created_at).toLocaleString()}
                         </div>
                         <div>
-                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
-                          {new Date(pdfData.validity_until).toLocaleString()}
-                        </div>
-                        <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
                           {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
                         </div>
@@ -4439,6 +4467,16 @@ export const ViewTermsByType = () => {
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
                           {selectedRowData2.typeOfSharing}
+                        </div>
+                        <div>
+                          <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
+                          <input
+                          type="date"
+                          className="form-control"
+                          value={editableValidityUntil}
+                          onChange={(e) => setEditableValidityUntil(e.target.value)}
+                          min={new Date().toISOString().slice(0, 10)}
+                        />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Post Conditions:</label>

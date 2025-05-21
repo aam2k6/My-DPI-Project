@@ -2788,7 +2788,10 @@ export const Guesttermsreview = () => {
                 </div>
               ))}
 
-              <button onClick={handleRejectionSubmit}>Submit</button>
+              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+                <button className="btn btn-primary p-2" onClick={handleRejectionSubmit}>Submit</button>
+                <button className="btn btn-primary p-2" onClick={() => setShowRejectionPopup(false)}>Cancel</button>
+              </div>
               {/* Optional Cancel Button */}
               {/* <button onClick={handleRejectionCancel} style={{ marginLeft: "1rem" }}>Cancel</button> */}
             </div>

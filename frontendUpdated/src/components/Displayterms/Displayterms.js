@@ -726,7 +726,7 @@ export const Displayterms = () => {
                     <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("host")}</div> */}
                     <div className="page13headterms">Host Forbidden Terms</div>
                     <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("host")}</div>
-                    <div className="page13headterms">Default Host Privileges</div>
+                    <div className="page13headterms">Default Guest Privileges</div>
                     <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
                       {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
                     </span> are disabled unless otherwise mentioned in the terms</li>

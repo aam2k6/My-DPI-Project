@@ -2686,11 +2686,11 @@ export const ViewHostTermsByType = () => {
                             <p>No resource found.</p>
                           )}
                           <div className="button-group">
+                            <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                             <button className="btn-color" onClick={() => {
                               setShowResources(false);
                               setExtractedId(null);
                             }}>Cancel</button>
-                            <button className="btn-color" onClick={handlePageSubmit}>Submit</button>
                           </div>
                         </div>
                       )}
@@ -2734,11 +2734,11 @@ export const ViewHostTermsByType = () => {
                             <p>No resource found</p>
                           )}
                           <div className="button-group">
+                            <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
                             <button className="btn-color" onClick={() => {
                               setShowResources2(false);
                               setExtractedId(null);
                             }}>Cancel</button>
-                            <button className="btn-color" onClick={handlePageSubmit2}>Submit</button>
                           </div>
                         </div>
                       )}

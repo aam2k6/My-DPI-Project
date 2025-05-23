@@ -165,7 +165,7 @@ export const CreateConnectionType = () => {
     console.log(connectionTypes);
     const content = (
         <>
-            <select className="navbarBrands" style={{ fontSize: "20px", marginTop: "5px", padding: "8px", borderRadius: "5px" }} name="connectionType" onChange={handleConnectionTypeChange} value={selectedConnectionType ? selectedConnectionType.connection_type_name : ''}>
+            <select className="navbarBrands" style={{ fontSize: "1rem", marginTop: "5px", padding: "8px", borderRadius: "5px" }} name="connectionType" onChange={handleConnectionTypeChange} value={selectedConnectionType ? selectedConnectionType.connection_type_name : ''}>
                 <option value="" disabled>Select Connection Type</option>
                 {connectionTypes && connectionTypes.map(type => (
                     <option key={type.connection_type_id} value={type.connection_type_name}>{type.connection_type_name}</option>

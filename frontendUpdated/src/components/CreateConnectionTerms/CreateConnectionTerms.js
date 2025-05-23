@@ -1937,7 +1937,7 @@ export const CreateConnectionTerms = () => {
                       <div className="page13lowerterms">{renderPermissions("host")}</div> */}
                       <div className="page13headterms" >Host Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
-                      <div className="page13headterms">Default Host Privileges</div>
+                      <div className="page13headterms">Default Guest Privileges</div>
                       <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
                         {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
                       </span> are disabled unless otherwise mentioned in the terms</li>
@@ -2034,10 +2034,10 @@ export const CreateConnectionTerms = () => {
             {showConsent && Iagree === "1" && !agrees && (
               <Grid container className="page13parent13state1">
                 <Grid item xs={12} md={1}></Grid>
-                <Grid item xs={12} md={4} className="page13consent" mb={3}>
-                  Consent Given on : {consentData.consent_given}
-                  <br />
-                  Consent valid Until : {consentData.valid_until}
+                <Grid item xs={12} md={3} className="page13consent" mb={3}>
+                  <p style={{fontSize:"16px"}}>Consent Given on : {consentData.consent_given}</p>
+                  {/* <br /> */}
+                  <p style={{fontSize:"16px", marginBottom:"0px"}}>Consent valid Until : {consentData.valid_until}</p>
                 </Grid>
                 <Grid xs={2} md={2}></Grid>
                 <Grid item xs={5} md={2} className="page13button" mb={3}>

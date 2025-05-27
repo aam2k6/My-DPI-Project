@@ -108,6 +108,7 @@ export const ViewHostTermsByType = () => {
   const [editableValidityUntil, setEditableValidityUntil] = useState(
     pdfData?.validity_until?.split('T')?.[0] || ""
   );
+  const [remarks, setRemarks] = useState("");
 
   const {
     connectionName,
@@ -148,6 +149,12 @@ export const ViewHostTermsByType = () => {
       setEditableValidityUntil(pdfData.validity_until.split('T')[0]);
     }
   }, [pdfData]);
+  useEffect(() => {
+    if (pdfData?.node_information?.remarks !== undefined) {
+      setRemarks(pdfData.node_information.remarks);
+    }
+  }, [pdfData]);
+  
   const connectionsData = connection
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -2307,6 +2314,7 @@ export const ViewHostTermsByType = () => {
       xnode_id: pdfData.id,
       post_conditions: editablePostConditions,
       new_validity: editableValidityUntil,
+      remarks: remarks,
     };
 
     console.log("Sending PATCH request with:", payload);
@@ -3387,6 +3395,16 @@ setToPage('');
                                 />
                               </div>
                               <div>
+                                <label className="form-label fw-bold mt-1">Remarks:{" "}</label>
+                                <input
+                                  required
+                                  type="text"
+                                  className="form-control"
+                                  value={remarks}
+                                  onChange={(e) => setRemarks(e.target.value)}
+                                />
+                              </div>
+                              <div>
                                 <label className="form-label fw-bold mt-1">Post Conditions:</label>
                               </div>
                               {Object.keys(postConditionsKeys).length > 0 ? (
@@ -3513,6 +3531,10 @@ setToPage('');
                                   <span>{selectedRowData.typeOfSharing}
                                   </span>
                                 </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Remarks:</span>
+                                  <span>{pdfData.node_information?.remarks}</span>
+                                </div>
                                 <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
                                   <span className="fw-bold">Post Conditions:</span>
                                   <span className=" text-end">
@@ -3604,6 +3626,16 @@ setToPage('');
                                     value={editableValidityUntil}
                                     onChange={(e) => setEditableValidityUntil(e.target.value)}
                                     min={new Date().toISOString().slice(0, 10)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Remarks:{" "}</label>
+                                  <input
+                                    required
+                                    type="text"
+                                    className="form-control"
+                                    value={remarks}
+                                    onChange={(e) => setRemarks(e.target.value)}
                                   />
                                 </div>
                                 <div>
@@ -3754,6 +3786,10 @@ setToPage('');
                                   <span>{selectedRowData1.share}
                                   </span>
                                 </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Remarks:</span>
+                                  <span>{pdfData.node_information?.remarks}</span>
+                                </div>
                                 <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
                                   <span className="fw-bold">Post Conditions:</span>
                                   <span className=" text-end">
@@ -3845,6 +3881,16 @@ setToPage('');
                                     value={editableValidityUntil}
                                     onChange={(e) => setEditableValidityUntil(e.target.value)}
                                     min={new Date().toISOString().slice(0, 10)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="form-label fw-bold mt-1">Remarks:{" "}</label>
+                                  <input
+                                    required
+                                    type="text"
+                                    className="form-control"
+                                    value={remarks}
+                                    onChange={(e) => setRemarks(e.target.value)}
                                   />
                                 </div>
                                 <div>
@@ -3994,6 +4040,10 @@ setToPage('');
                                   <span className="fw-bold">Type of Share:</span>
                                   <span>{selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
                                   </span>
+                                </div>
+                                <div className="d-flex justify-content-between border-bottom py-2">
+                                  <span className="fw-bold">Remarks:</span>
+                                  <span>{pdfData.node_information?.remarks}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
                                   <span className="fw-bold">Post Conditions:</span>

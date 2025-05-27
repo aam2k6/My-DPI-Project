@@ -2473,6 +2473,10 @@ export const HostTermsReview = () => {
                             <span>{selectedRowData.typeOfSharing}
                             </span>
                           </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Remarks:</span>
+                            <span>{pdfData.node_information?.remarks}</span>
+                          </div>
                           <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
                             <span className="fw-bold">Post Conditions:</span>
                             <span className=" text-end">
@@ -2572,6 +2576,10 @@ export const HostTermsReview = () => {
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
                             <span>{selectedRowData1.share}</span>
+                          </div>
+                          <div className="d-flex justify-content-between border-bottom py-2">
+                            <span className="fw-bold">Remarks:</span>
+                            <span>{pdfData.node_information?.remarks}</span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
                             <span className="fw-bold">Post Conditions:</span>

@@ -623,9 +623,9 @@ export const ViewTermsByType = () => {
   const [editablePostConditions, setEditablePostConditions] = useState({});
   const [isLockedPostConditions, setIsLockedPostConditions] = useState();
   const [extractedId, setExtractedId] = useState(null);
- const [editableValidityUntil, setEditableValidityUntil] = useState(
-  pdfData?.validity_until?.split('T')?.[0] || ""
-);
+  const [editableValidityUntil, setEditableValidityUntil] = useState(
+    pdfData?.validity_until?.split('T')?.[0] || ""
+  );
   const [remarks, setRemarks] = useState("");
 
 
@@ -645,17 +645,17 @@ export const ViewTermsByType = () => {
     connection,
     guestLocker
   } = location.state || {};
-useEffect(() => {
-  if (pdfData?.validity_until) {
-    setEditableValidityUntil(pdfData.validity_until.split('T')[0]);
-  }
-}, [pdfData]);
+  useEffect(() => {
+    if (pdfData?.validity_until) {
+      setEditableValidityUntil(pdfData.validity_until.split('T')[0]);
+    }
+  }, [pdfData]);
 
-useEffect(() => {
-  if (pdfData?.node_information?.remarks !== undefined) {
-    setRemarks(pdfData.node_information.remarks);
-  }
-}, [pdfData]);
+  useEffect(() => {
+    if (pdfData?.node_information?.remarks !== undefined) {
+      setRemarks(pdfData.node_information.remarks);
+    }
+  }, [pdfData]);
 
 
   console.log("datass", connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, connection)
@@ -1677,7 +1677,7 @@ useEffect(() => {
   };
 
   const handleButtonClick = (obligation) => {
-     if (obligation?.value?.includes('|') && obligation?.value?.includes(';')) {
+    if (obligation?.value?.includes('|') && obligation?.value?.includes(';')) {
       const idPart = obligation.value.split('|')[1].split(';')[0].trim();
       setExtractedId(idPart);
     } else {
@@ -1738,7 +1738,7 @@ useEffect(() => {
   //********************************************************** */
   const handleButtonClick2 = (term) => {
     console.log("termss", term)
-     if (term?.enter_value?.includes('|') && term?.enter_value?.includes(';')) {
+    if (term?.enter_value?.includes('|') && term?.enter_value?.includes(';')) {
       const idPart = term?.enter_value.split('|')[1].split(';')[0].trim();
       setExtractedId(idPart);
     } else {
@@ -3337,7 +3337,7 @@ useEffect(() => {
                               setShowResources(false);
                               setExtractedId(null);
                             }}>Cancel</button>
-                            
+
                           </div>
                         </div>
                       )}
@@ -3821,13 +3821,13 @@ useEffect(() => {
                             </h3>
                           )}
 
-                          {isModalOpen && (
+                          {/* {isModalOpen && (
                             <Modal
                               message={modalMessage.message}
                               onClose={handleCloseModal}
                               type={modalMessage.type}
                             />
-                          )}
+                          )} */}
 
 
                           {/* {showRevokeConsentModal && (
@@ -3839,7 +3839,7 @@ useEffect(() => {
                             />
                           )} */}
 
-                          {isModalOpenClose && (
+                          {/* {isModalOpenClose && (
                             <Modal
                               message={modalMessage.message}
                               onClose={handleCloseModalClose}
@@ -3848,7 +3848,7 @@ useEffect(() => {
                               onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
                               viewTerms={() => navigateToConnectionTerms(connectionName)}
                             />
-                          )}
+                          )} */}
 
                           {/* {showPageInput && (
       <div className="page-input-modal">
@@ -4045,22 +4045,22 @@ useEffect(() => {
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                           <input
-                          type="date"
-                          className="form-control"
-                          value={editableValidityUntil}
-                          onChange={(e) => setEditableValidityUntil(e.target.value)}
-                          min={new Date().toISOString().slice(0, 10)}
-                        />
+                            type="date"
+                            className="form-control"
+                            value={editableValidityUntil}
+                            onChange={(e) => setEditableValidityUntil(e.target.value)}
+                            min={new Date().toISOString().slice(0, 10)}
+                          />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Remarks:{" "}</label>
                           <input
-                          required
-                          type="text"
-                          className="form-control"
-                          value={remarks}
-                          onChange={(e) => setRemarks(e.target.value)}
-                        />
+                            required
+                            type="text"
+                            className="form-control"
+                            value={remarks}
+                            onChange={(e) => setRemarks(e.target.value)}
+                          />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Post Conditions:</label>
@@ -4147,7 +4147,7 @@ useEffect(() => {
                   </button>
                 </div>
                 <div
-                className="fw-bold  mb-1"
+                  className="fw-bold  mb-1"
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -4277,22 +4277,22 @@ useEffect(() => {
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                           <input
-                          type="date"
-                          className="form-control"
-                          value={editableValidityUntil}
-                          onChange={(e) => setEditableValidityUntil(e.target.value)}
-                          min={new Date().toISOString().slice(0, 10)}
-                        />
+                            type="date"
+                            className="form-control"
+                            value={editableValidityUntil}
+                            onChange={(e) => setEditableValidityUntil(e.target.value)}
+                            min={new Date().toISOString().slice(0, 10)}
+                          />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                           <input
-                          required
-                          type="text"
-                          className="form-control"
-                          value={remarks}
-                          onChange={(e) => setRemarks(e.target.value)}
-                        />
+                            required
+                            type="text"
+                            className="form-control"
+                            value={remarks}
+                            onChange={(e) => setRemarks(e.target.value)}
+                          />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Post Conditions:</label>
@@ -4377,8 +4377,8 @@ useEffect(() => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                 <div
-                className="fw-bold  mb-1"
+                <div
+                  className="fw-bold  mb-1"
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -4459,7 +4459,7 @@ useEffect(() => {
           !selectedRowData2.enter_value.endsWith("T") ? (
             <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
               <div className="modal-content" style={{ border: "2px solid blue" }}>
-               <div
+                <div
                   className="subset-title"
                   style={{
                     display: "flex",
@@ -4508,22 +4508,22 @@ useEffect(() => {
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
                           <input
-                          type="date"
-                          className="form-control"
-                          value={editableValidityUntil}
-                          onChange={(e) => setEditableValidityUntil(e.target.value)}
-                          min={new Date().toISOString().slice(0, 10)}
-                        />
+                            type="date"
+                            className="form-control"
+                            value={editableValidityUntil}
+                            onChange={(e) => setEditableValidityUntil(e.target.value)}
+                            min={new Date().toISOString().slice(0, 10)}
+                          />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Remarks:{" "}</label>
                           <input
-                          required
-                          type="text"
-                          className="form-control"
-                          value={remarks}
-                          onChange={(e) => setRemarks(e.target.value)}
-                        />
+                            required
+                            type="text"
+                            className="form-control"
+                            value={remarks}
+                            onChange={(e) => setRemarks(e.target.value)}
+                          />
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Post Conditions:</label>
@@ -4609,8 +4609,8 @@ useEffect(() => {
                     <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
                   </button>
                 </div>
-                 <div
-                className="fw-bold  mb-1"
+                <div
+                  className="fw-bold  mb-1"
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -4689,6 +4689,24 @@ useEffect(() => {
 
         )}
       </div>
+      {isModalOpen && (
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModal}
+          type={modalMessage.type}
+        />
+      )}
+
+      {isModalOpenClose && (
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModalClose}
+          type={modalMessage.type}
+          closeConnection={closeState}
+          onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
+          viewTerms={() => navigateToConnectionTerms(connectionName)}
+        />
+      )}
     </div>
 
   );

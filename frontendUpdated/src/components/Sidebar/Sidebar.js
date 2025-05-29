@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faBell, 
-  faArrowLeft, 
-  faArrowRightFromBracket, 
+import {
+  faBell,
+  faArrowLeft,
+  faArrowRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 
 // import {
@@ -33,7 +33,7 @@ const Sidebar = ({
   openSubmenus,
   toggleSubmenu,
   lockerObj = null,
-  locker_on=false
+  locker_on = false
 }) => {
   const navigate = useNavigate();
   const { curruser, setUser } = useContext(usercontext);
@@ -43,6 +43,7 @@ const Sidebar = ({
   const [error, setError] = useState(null);
   const notificationsRef = useRef(null);
   const [selectedNotification, setSelectedNotification] = useState(null);
+  const [hoveredNotificationId, setHoveredNotificationId] = useState(null);
 
   const handleLogout = () => {
     Cookies.remove("authToken");
@@ -88,7 +89,7 @@ const Sidebar = ({
 
       const data = await response.json();
       if (data.success) {
-        console.log(data);    
+        console.log(data);
         setNotifications(data.notifications || []);
       } else {
         setError(data.message || data.error);
@@ -104,6 +105,7 @@ const Sidebar = ({
     markNotificationAsRead(notification.id);
   };
 
+
   const closePopup = () => {
     setSelectedNotification(null);
   };
@@ -112,18 +114,23 @@ const Sidebar = ({
   const markNotificationAsRead = async (id) => {
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/mark-notification-read/${id}`, {
+      const data = {
+        notification_id: id,
+      };
+      const response = await fetch(`${frontend_host}/mark-notification-read/`, {
         method: "POST",
         headers: {
           Authorization: `Basic ${token}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(data),
       });
 
       if (response.ok) {
         setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+          prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
         );
+        // fetchNotifications();
       }
     } catch (err) {
       console.error("Failed to mark notification as read", err);
@@ -164,8 +171,8 @@ const Sidebar = ({
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isNotificationsOpen]);
-console.log("curruser", curruser)
-console.log("typeof username:", typeof curruser?.username);
+  console.log("curruser", curruser)
+  console.log("typeof username:", typeof curruser?.username);
   return (
     <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
@@ -174,51 +181,82 @@ console.log("typeof username:", typeof curruser?.username);
             {capitalizeFirstLetter(curruser?.username)}
           </h2>
           <p className="sidebar-subtitle">
-  {typeof curruser?.description === "string" ? curruser.description : "Invalid description"}
-</p>
+            {typeof curruser?.description === "string" ? curruser.description : "Invalid description"}
+          </p>
         </div>
         <div className="notification-container" ref={notificationsRef}>
           <button className="notification-btn" onClick={toggleNotifications}>
-            <FontAwesomeIcon icon={faBell} style={{fontSize:"20px"}} />
-            {notifications.some((n) => !n.read) && (
+            <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px" }} />
+            {notifications.some((n) => !n.is_read) && (
               <span className="notification-badge">
-                {notifications.filter((n) => !n.read).length}
+                {notifications.filter((n) => !n.is_read).length}
               </span>
             )}
           </button>
           {isNotificationsOpen && (
             <div className="notification-modal right">
               <h4>Notifications</h4>
-              <hr style={{border:"none", margin:"10px 0", borderTop:"2px solid #ccc"}}></hr>
+              <hr style={{ border: "none", margin: "10px 0", borderTop: "2px solid #ccc" }}></hr>
               {/* {error && <p className="error">{error}</p>} */}
               {notifications.length > 0 ? (
-        <div className="notification-list">
-          {notifications.map((n) => (
-            <div
-              key={n.id}
-              className={`notification-item ${n.read ? "read" : "unread"}`}
-              onClick={() => handleNotificationClick(n)}
-            >
-              <p>{n.message.length > 20 ? `${n.message.slice(0, 30)}...` : n.message}</p>
-              <small>{new Date(n.created_at).toLocaleString()}</small>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No notifications.</p>
-      )}
+                <div className="notification-list">
+                  {notifications.map((n) => (
+                    <div
+                      className="notification-card"
+                      key={n.id}
+                      onClick={() => handleNotificationClick(n)}
+                      onMouseEnter={() => setHoveredNotificationId(n.id)}
+                      onMouseLeave={() => setHoveredNotificationId(null)}
+                      style={{
+                        background: n.is_read
+                          ? "linear-gradient(145deg, #f0f0f0, #ffffff)"
+                          : "linear-gradient(145deg, #e6f0ff, #ffffff)",
+                        boxShadow:
+                          hoveredNotificationId === n.id
+                            ? "0 10px 20px rgba(0, 0, 0, 0.12)"
+                            : "0 2px 6px rgba(0, 0, 0, 0.08)",
+                        transform:
+                          hoveredNotificationId === n.id ? "translateY(-5px) scale(1.02)" : "scale(1)",
+                        borderLeft: n.is_read ? "4px solid #ccc" : "4px solid #007bff",
+                      }}
+                    >
+                      <div style={{ flex: 1, paddingRight: "10px" }}>
+                        <p
+                          style={{
+                            fontWeight: n.is_read ? "400" : "600",
+                          }}
+                        >
+                          {n.message.length > 50 ? `${n.message.slice(0, 50)}...` : n.message}
+                        </p>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span style={{ fontSize: "12px", color: "#666" }}>
+                            {new Date(n.created_at).toLocaleString()}
+                          </span>
+                          {!n.is_read && (
+                            <div className="notification-new-badge">
+                              New
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No notifications.</p>
+              )}
 
-      {/* Popup Modal */}
-      
+              {/* Popup Modal */}
+
             </div>
           )}
         </div>
         <button className="notification-btn" onClick={toggleSidebar}>
-        <FontAwesomeIcon icon={faArrowLeft} />
+          <FontAwesomeIcon icon={faArrowLeft} />
         </button>
       </div>
 
-     
+
       <nav className="sidebar-nav scrollable-nav-container">
         <ul>
           <li>
@@ -226,7 +264,7 @@ console.log("typeof username:", typeof curruser?.username);
               className="nav-item"
               onClick={() => handleNavigate("Home", "/home")}
             >
-              <i className="bi bi-house-door" style={{color:"#0D6EFD", fontSize:"20px"}}></i>
+              <i className="bi bi-house-door" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
               <span>Home</span>
             </button>
           </li>
@@ -235,18 +273,18 @@ console.log("typeof username:", typeof curruser?.username);
               className={`nav-item ${openSubmenus.directory ? "submenu-open" : ""}`}
               onClick={() => toggleSubmenu("directory")}
             >
-              <i className="bi bi-folder2" style={{color:"#0D6EFD", fontSize:"20px"}}></i>
+              <i className="bi bi-folder2" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
               <span>Directory</span>
             </button>
             <ul className={`submenu ${openSubmenus.directory ? "show" : ""}`}>
               <li
-                 className="submenu-item" // Added class for potential styling
+                className="submenu-item" // Added class for potential styling
                 onClick={() => handleNavigate("DPI Directory", "/dpi-directory")}
               >
                 • DPI Directory
               </li>
               <li
-                 className="submenu-item" // Added class for potential styling
+                className="submenu-item" // Added class for potential styling
                 onClick={() =>
                   handleNavigate(
                     "Global Connection Directory",
@@ -263,22 +301,22 @@ console.log("typeof username:", typeof curruser?.username);
               className={`nav-item ${activeMenu === "Locker Admin" ? "active" : ""}`}
               onClick={handleLockerAdminNavigate}
             >
-              <i className="bi bi-person-lock" style={{color:"#0D6EFD", fontSize:"22px"}}></i>
+              <i className="bi bi-person-lock" style={{ color: "#0D6EFD", fontSize: "22px" }}></i>
               <span>Locker Admin</span>
             </button>
           </li>)
-}
+          }
           <li>
             <button
               className={`nav-item ${openSubmenus.settings ? "submenu-open nested-submenu" : ""}`}
               onClick={() => toggleSubmenu("settings")}
             >
-              <i className="bi bi-gear" style={{color:"#0D6EFD", fontSize:"20px"}}></i>
+              <i className="bi bi-gear" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
               <span>Settings</span>
             </button>
             <ul className={`submenu ${openSubmenus.settings ? "show" : ""}`}>
               <li
-                 className="submenu-item" // Added class for potential styling
+                className="submenu-item" // Added class for potential styling
                 onClick={() => handleNavigate("User Settings", "/settings-page")}
               >
                 • User Settings
@@ -297,18 +335,18 @@ console.log("typeof username:", typeof curruser?.username);
                   {openSubmenus.lockerSettings && (
                     <>
                       <li
-                         className="submenu-item nested" // Added class for potential styling
+                        className="submenu-item nested" // Added class for potential styling
                         onClick={() =>
                           handleNavigate("Freeze Locker", "/freeze-locker")
                         }
                       >
-                          • Freeze Locker
+                        • Freeze Locker
                       </li>
                       <li
-                         className="submenu-item nested" // Added class for potential styling
+                        className="submenu-item nested" // Added class for potential styling
                         onClick={() => handleNavigate("Locker", "/all-lockers")}
                       >
-                          • Locker
+                        • Locker
                       </li>
                     </>
                   )}
@@ -321,27 +359,27 @@ console.log("typeof username:", typeof curruser?.username);
                   </li>
                   {openSubmenus.lockerSettings1 && (
                     <ul className={`submenu ${openSubmenus.lockerSettings1 ? "show" : ""} nested-submenu`}>
-                  
+
                       <li
-                         className="submenu-item nested" // Added class for potential styling
+                        className="submenu-item nested" // Added class for potential styling
                         onClick={() =>
                           handleNavigate("Freeze Connection", "/freeze-connection")
                         }
                       >
-                          • Freeze Connection
+                        • Freeze Connection
                       </li>
                       <li
-                         className="submenu-item nested" // Added class for potential styling
+                        className="submenu-item nested" // Added class for potential styling
                         onClick={() =>
                           handleNavigate("Connection Types", "/all-connection-types")
                         }
                       >
-                          • Connection Types
+                        • Connection Types
                       </li>
-                      
-                    
-                     
-                      </ul>
+
+
+
+                    </ul>
                   )}
 
                   {/* NEW: Admin Settings Option */}
@@ -354,40 +392,40 @@ console.log("typeof username:", typeof curruser?.username);
                   {openSubmenus.adminSettings && (
                     <>
                       <li
-                         className="submenu-item nested" // Added class for potential styling
+                        className="submenu-item nested" // Added class for potential styling
                         onClick={() =>
                           handleNavigate("Manage Users", "/manage-admins")
                         }
                       >
-                          • Manage Admin
+                        • Manage Admin
                       </li>
-                       <li
-                         className="submenu-item nested" // Added class for potential styling
+                      <li
+                        className="submenu-item nested" // Added class for potential styling
                         onClick={() =>
                           handleNavigate("System Configuration", "/manage-moderators")
                         }
                       >
-                          • Manage Moderator
+                        • Manage Moderator
                       </li>
-                       {/* Add more admin specific items here */}
+                      {/* Add more admin specific items here */}
                     </>
                   )}
                 </>
               ) : (
                 <>
-                   {/* Non-admin user's view of Settings */}
+                  {/* Non-admin user's view of Settings */}
                   <li
-                     className="submenu-item" // Added class for potential styling
+                    className="submenu-item" // Added class for potential styling
                     onClick={() => handleNavigate("Locker Settings", "/all-lockers")}
                   >
                     • Locker Settings
                   </li>
-                   <li
-                     className="submenu-item" // Added class for potential styling
+                  <li
+                    className="submenu-item" // Added class for potential styling
                     onClick={() => handleNavigate("Connection Settings", "/all-connection-types")}
                   >
-                   • Connection Settings
-                 </li>
+                    • Connection Settings
+                  </li>
                 </>
               )}
             </ul>
@@ -398,47 +436,47 @@ console.log("typeof username:", typeof curruser?.username);
       <div className="sidebar-footer">
         <div className="user-profile">
           <div className="user-avatar">
-          <i class="bi bi-person" style={{color:"#0D6EFD", fontSize:"20px"}}></i>
+            <i class="bi bi-person" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
           </div>
           <span>{capitalizeFirstLetter(curruser?.username)}</span>
         </div>
         <button className="logout-btn" onClick={handleLogout}>
-        <FontAwesomeIcon icon={faArrowRightFromBracket} />
+          <FontAwesomeIcon icon={faArrowRightFromBracket} />
         </button>
       </div>
-{selectedNotification && (
-       <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
-              <div className="modal-content">
-                {/* Close Button */}
-                <div className="close-detail">
-                  <button
-                    type="button"
-                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
-                    onClick={closePopup}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      backgroundColor: "#f8d7da",
-                      color: "#721c24",
-                      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
-                      cursor: "pointer",
-                      transition: "0.3s ease-in-out",
-                    }}
-                    aria-label="Close"
-                  >
-                    <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
-                  </button>
-                </div>
-
-                <div className="card p-3 shadow-lg border-0">
-                  <p>{selectedNotification.message}</p>
-                  <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
-                </div>
-              </div>
+      {selectedNotification && (
+        <div className="edit-modal" style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+          <div className="modal-content">
+            {/* Close Button */}
+            <div className="close-detail">
+              <button
+                type="button"
+                className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                onClick={closePopup}
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  backgroundColor: "#f8d7da",
+                  color: "#721c24",
+                  boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                  cursor: "pointer",
+                  transition: "0.3s ease-in-out",
+                }}
+                aria-label="Close"
+              >
+                <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+              </button>
             </div>
-            )}
-           
+
+            <div className="card p-3 shadow-lg border-0">
+              <p>{selectedNotification.message}</p>
+              <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

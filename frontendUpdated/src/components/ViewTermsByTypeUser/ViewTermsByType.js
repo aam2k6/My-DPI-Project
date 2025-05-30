@@ -2914,12 +2914,19 @@ export const ViewTermsByType = () => {
     });
   };
 
+  // const tooltips = {
+  //   share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
+  //   transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
+  //   confer: "You are going to transfer ownership of the resource, but the recipient cannot modify the contents. You still have rights over this resource.",
+  //   collateral: "You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource."
+  // };
+
   const tooltips = {
-    share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
-    transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
-    confer: "You are going to transfer ownership of the resource, but the recipient cannot modify the contents. You still have rights over this resource.",
-    collateral: "You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource."
-  };
+    share: "Resource is accessible, ownership is not transferred",
+    transfer: "Resource is accessible and ownership is transferred",
+    confer: "Resource is accessible and delegated ownership is established",
+    collateral: "Resource is accessible and pledged ownership is established",
+  }
 
   const renderTooltip = (typeOfShare) => {
     return (
@@ -4017,12 +4024,12 @@ export const ViewTermsByType = () => {
                 {termValues[selectedRowData.labelName]?.split(";")[0] ? (
                   <div>
                     <label className="form-label fw-bold mt-1">File name:{" "}</label>
-                    {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}
+                    <span> {termValues[selectedRowData.labelName]?.split(";")[0]?.split("|")[0]}</span>
                     {pdfData ? (
                       <div>
                         <div>
                           <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                          {new Date(pdfData.created_at).toLocaleString()}
+                          <span> {new Date(pdfData.created_at).toLocaleString()}</span>
                         </div>
                         {/* <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
@@ -4032,7 +4039,7 @@ export const ViewTermsByType = () => {
 
                         <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
-                          {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                          <span> {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                         </div>
                         {/* <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -4040,7 +4047,10 @@ export const ViewTermsByType = () => {
                         </div> */}
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
-                          {selectedRowData.typeOfSharing}
+                          <span className="tooltips">
+                            {selectedRowData.typeOfSharing}
+                            {renderTooltip(selectedRowData.typeOfSharing)}
+                          </span>
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
@@ -4198,7 +4208,9 @@ export const ViewTermsByType = () => {
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
-                            <span>{selectedRowData.typeOfSharing}
+                            <span className="tooltips">
+                              {selectedRowData.typeOfSharing}
+                              {renderTooltip(selectedRowData.typeOfSharing)}
                             </span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
@@ -4255,16 +4267,16 @@ export const ViewTermsByType = () => {
                 {selectedRowData1.dataElement ? (
                   <div>
                     <label className="form-label fw-bold mt-1">File name:{" "}</label>
-                    {selectedRowData1.dataElement?.split(";")[0]?.split("|")[0]}
+                    <span> {selectedRowData1.dataElement?.split(";")[0]?.split("|")[0]}</span>
                     {pdfData ? (
                       <div>
                         <div>
                           <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                          {new Date(pdfData.created_at).toLocaleString()}
+                          <span> {new Date(pdfData.created_at).toLocaleString()}</span>
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
-                          {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                          <span> {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                         </div>
                         {/* <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -4272,7 +4284,10 @@ export const ViewTermsByType = () => {
                         </div> */}
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
-                          {selectedRowData1.share}
+                          <span className="tooltips">
+                            {selectedRowData1.share}
+                            {renderTooltip(selectedRowData1.share)}
+                          </span>
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
@@ -4429,7 +4444,9 @@ export const ViewTermsByType = () => {
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
-                            <span>{selectedRowData1.share}
+                            <span className="tooltips">
+                              {selectedRowData1.share}
+                              {renderTooltip(selectedRowData1.share)}
                             </span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
@@ -4486,16 +4503,16 @@ export const ViewTermsByType = () => {
                 {selectedRowData2.enter_value?.split(";")[0] ? (
                   <div>
                     <label className="form-label fw-bold mt-1">File name:{" "}</label>
-                    {selectedRowData2.enter_value?.split(";")[0]?.split("|")[0]}
+                    <span> {selectedRowData2.enter_value?.split(";")[0]?.split("|")[0]}</span>
                     {pdfData ? (
                       <div>
                         <div>
                           <label className="form-label fw-bold mt-1">Created on:{" "}</label>
-                          {new Date(pdfData.created_at).toLocaleString()}
+                          <span> {new Date(pdfData.created_at).toLocaleString()}</span>
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Creator: {" "}</label>
-                          {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}
+                          <span> {capitalizeFirstLetter(pdfData.creator_username) || "N/A"}</span>
                         </div>
                         {/* <div>
                           <label className="form-label fw-bold mt-1">Current owner: {" "}</label>
@@ -4503,7 +4520,10 @@ export const ViewTermsByType = () => {
                         </div> */}
                         <div>
                           <label className="form-label fw-bold mt-1">Type of Share: </label>
-                          {selectedRowData2.typeOfSharing}
+                          <span className="tooltips"> 
+                             {selectedRowData2.typeOfSharing}
+                            {renderTooltip(selectedRowData2.typeOfSharing)}
+                          </span>
                         </div>
                         <div>
                           <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
@@ -4661,7 +4681,9 @@ export const ViewTermsByType = () => {
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
-                            <span>{selectedRowData2.typeOfSharing}
+                            <span className="tooltips">
+                              {selectedRowData2.typeOfSharing}
+                              {renderTooltip(selectedRowData2.typeOfSharing)}
                             </span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">

@@ -1774,12 +1774,19 @@ export const HostTermsReview = () => {
       });
     }
   };
+  // const tooltips = {
+  //   share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
+  //   transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
+  //   confer: "You are going to transfer ownership of the resource, but the recipient cannot modify the contents. You still have rights over this resource.",
+  //   collateral: "You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource."
+  // };
+
   const tooltips = {
-    share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
-    transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
-    confer: "You are going to transfer ownership of the resource, but the recipient cannot modify the contents. You still have rights over this resource.",
-    collateral: "You are temporarily transferring ownership to the recipient. After this operation, you cannot change anything in the resource."
-  };
+    share: "Resource is accessible, ownership is not transferred",
+    transfer: "Resource is accessible and ownership is transferred",
+    confer: "Resource is accessible and delegated ownership is established",
+    collateral: "Resource is accessible and pledged ownership is established",
+  }
 
   const renderTooltip = (typeOfShare) => {
     return (
@@ -2470,7 +2477,9 @@ export const HostTermsReview = () => {
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
-                            <span>{selectedRowData.typeOfSharing}
+                            <span className="tooltips">
+                              {selectedRowData.typeOfSharing}
+                              {renderTooltip(selectedRowData.typeOfSharing)}
                             </span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
@@ -2575,7 +2584,7 @@ export const HostTermsReview = () => {
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Type of Share:</span>
-                            <span>{selectedRowData1.share}</span>
+                            <span className="tooltips">{selectedRowData1.share}{renderTooltip(selectedRowData1.share)} </span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">
                             <span className="fw-bold">Remarks:</span>

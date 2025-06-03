@@ -22,7 +22,7 @@ import "./Sidebar.css";
 import Cookies from "js-cookie";
 import { frontend_host } from "../../config";
 import { usercontext } from "../../usercontext";
-
+import { Link } from "react-router-dom";
 // const frontend_host = "http://your-backend-api.com"; // Replace with actual host
 
 const Sidebar = ({
@@ -196,6 +196,9 @@ const Sidebar = ({
           {isNotificationsOpen && (
             <div className="notification-modal right">
               <h4>Notifications</h4>
+               <Link  to="/view-all-notifications" className="view-all-btn">
+                  View All
+                </Link>
               <hr style={{ border: "none", margin: "10px 0", borderTop: "2px solid #ccc" }}></hr>
               {/* {error && <p className="error">{error}</p>} */}
               {notifications.length > 0 ? (

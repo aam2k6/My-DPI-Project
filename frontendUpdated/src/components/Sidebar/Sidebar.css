@@ -494,3 +494,23 @@ body {
   align-self: right;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+.notification-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.view-all-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+}
+
+.view-all-btn:hover {
+  text-decoration: underline;
+}

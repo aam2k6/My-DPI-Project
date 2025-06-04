@@ -100,22 +100,25 @@
   margin-bottom: 8px;
   color: #1f2328;
 }
-.notification-card {
+.all-notification-card {
   background-color: rgb(129, 199, 209);
   padding: 16px;
-  border-bottom: 1px solid #ddd;
-  transition: background-color 0.2s ease;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.1s ease;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 55vw; 
 }
 
-.notification-card.read {
+.all-notification-card.read {
   background-color: #f0f0f0; /* light gray */
 }
 
-.notification-card.read:hover {
+.all-notification-card.read:hover {
   cursor: pointer;
   background-color: #f9f9f9;
 }

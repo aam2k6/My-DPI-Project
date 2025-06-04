@@ -248,7 +248,7 @@ const ViewAllNotifications = () => {
 
             notifications.map((notif, index) => (
 
-              <div key={index} className={`notification-card ${notif.is_read ? 'read' : ''}`}
+              <div key={index} className={`all-notification-card ${notif.is_read ? 'read' : ''}`}
                 onClick={() => handleNotificationClick(notif)}>
                 {/* <div className="notification-title">{notif.notification_type}</div> */}
                 <div className="notification-card-left">

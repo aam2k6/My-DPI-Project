@@ -514,3 +514,9 @@ body {
 .view-all-btn:hover {
   text-decoration: underline;
 }
+
+.header-div{
+ display: flex;
+ flex-direction: row;
+  justify-content: space-between;
+}

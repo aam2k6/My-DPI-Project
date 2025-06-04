@@ -236,39 +236,40 @@ const ViewAllNotifications = () => {
 
           </div>
         </div>
+        <div className="outer-box-notif">
+          <div className="notification-body">
+            {notifications.length === 0 ? (
+              <div className="empty-state">
 
-        <div className="notification-body">
-          {notifications.length === 0 ? (
-            <div className="empty-state">
-
-              <h3>All caught up!</h3>
-
-            </div>
-          ) : (
-
-            notifications.map((notif, index) => (
-
-              <div key={index} className={`all-notification-card ${notif.is_read ? 'read' : ''}`}
-                onClick={() => handleNotificationClick(notif)}>
-                {/* <div className="notification-title">{notif.notification_type}</div> */}
-                <div className="notification-card-left">
-                  <div className="notification-message">{notif.message}</div>
-                  <div className="date-and-time">
-                    {new Date(notif.created_at).toLocaleString()}
-                  </div>
-                </div>
-                <div className="notification-card-right">
-                  {/* icon */}
-                  <IconButton onClick={(e) => handleMenuOpen(e, notif)}>
-                    <MoreVertIcon />
-                  </IconButton>
-
-
-                </div>
+                <h3>All caught up!</h3>
 
               </div>
-            ))
-          )}
+            ) : (
+
+              notifications.map((notif, index) => (
+
+                <div key={index} className={`all-notification-card ${notif.is_read ? 'read' : ''}`}
+                  onClick={() => handleNotificationClick(notif)}>
+                  {/* <div className="notification-title">{notif.notification_type}</div> */}
+                  <div className="notification-card-left">
+                    <div className="notification-message">{notif.message}</div>
+                    <div className="date-and-time">
+                      {new Date(notif.created_at).toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="notification-card-right">
+                    {/* icon */}
+                    <IconButton onClick={(e) => handleMenuOpen(e, notif)}>
+                      <MoreVertIcon />
+                    </IconButton>
+
+
+                  </div>
+
+                </div>
+              ))
+            )}
+          </div>
         </div>
         <Menu
           anchorEl={anchorEl}

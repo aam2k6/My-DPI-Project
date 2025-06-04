@@ -5,6 +5,10 @@
   background-color: #ffffff;
   min-height: 100vh;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .notification-header2 {
@@ -100,6 +104,7 @@
   margin-bottom: 8px;
   color: #1f2328;
 }
+
 .all-notification-card {
   background-color: rgb(129, 199, 209);
   padding: 16px;
@@ -111,14 +116,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 55vw; 
+  width: 55vw;
 }
 
 .all-notification-card.read {
-  background-color: #f0f0f0; /* light gray */
+  background-color: #f0f0f0;
+  /* light gray */
 }
 
 .all-notification-card.read:hover {
   cursor: pointer;
   background-color: #f9f9f9;
+}
+
+.outer-box-notif {
+  border: 1px solid #ebebeb;
+  padding: 5px;
+  max-height: 550px;
+  overflow-y: auto;
+  width: 60vw;
 }

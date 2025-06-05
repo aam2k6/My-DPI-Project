@@ -171,6 +171,108 @@ const Sidebar = ({
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isNotificationsOpen]);
+
+    const linkStyle = {
+      color: '#0d6efd',        // Bootstrap primary blue
+      textDecoration: 'none',  // Remove underline
+      fontWeight: '600',  
+      cursor: 'pointer',
+    };
+
+const handleSenderUserClick = (user) => {
+    navigate('/target-user-view', { state: { user } });
+  };
+  const handleReceiverLockerClick = (locker, user) => {
+    navigate('/view-locker', { state: { locker: locker, user: user } });
+  };
+
+  const handleHostConnectionClick = (connection, connectionType) => {
+    console.log("navigate", connection, connectionType);
+    navigate("/guest-terms-review", { state: { connection, connectionType } });
+  };
+
+  const handleRejectConnectionClick = (extraData) => {
+    console.log("extraData", extraData);
+    if (extraData?.rejector_role === "Guest") {
+      navigate('/guest-terms-review', { state: { connection:extraData.connection_info, connectionType:extraData.connection_type } });
+    } else if (extraData?.rejector_role === "Host") {
+      navigate('/host-terms-review', { state: { connection:extraData.connection_info, connectionType:extraData.connection_type } });
+    }
+  }
+// Sender user click
+  const SenderUserLink = ({ user }) => (
+    <span style={linkStyle} onClick={() => handleSenderUserClick(user)}>
+      {user.username}
+    </span>
+  );
+
+// Reject user click
+  const RejectUserLink = ({ extraData }) => (
+    <>
+      {extraData.rejector_role === "Guest" ? (
+        <span style={linkStyle} onClick={() => handleSenderUserClick(extraData.guest_user)}>
+          {extraData.guest_user.username}
+        </span>
+      ) : (
+        <span style={linkStyle} onClick={() => handleSenderUserClick(extraData.host_user)}>
+          {extraData.host_user.username}
+        </span>
+      )}
+    </>
+  );
+
+// Receiver locker click
+  const ReveiverLockerLink = ({ locker, user }) => (
+    <span style={linkStyle} onClick={() => handleReceiverLockerClick(locker, user)}>
+      {locker.name}
+    </span>
+  );
+
+// Host connection click
+
+  const HostConnectionLink =  ({connection, connectionType}) => (
+    <span style={linkStyle}onClick={() => handleHostConnectionClick(connection, connectionType)}>
+      {connection?.connection_type_name}
+    </span>
+  )
+
+  const RejectConnectionLink =  ({extraData}) => (
+    <span style={linkStyle} onClick={() => handleRejectConnectionClick(extraData)}>
+      {extraData?.connection_type?.connection_type_name}
+    </span>
+  )
+
+
+const renderNotificationMessage = (notification) => {
+  const { notification_type, extra_data } = notification;
+
+  switch (notification_type) {
+    case 'connection_created':
+      return (
+        <p>
+          <SenderUserLink user={extra_data.guest_user} /> has connected to the connection type {" "}
+          <HostConnectionLink connection = {extra_data.connection_info} connectionType={extra_data.connection_type} /> associated with Locker{' '}
+          <ReveiverLockerLink locker={extra_data.host_locker} user={extra_data.host_user} />.
+        </p>
+      );
+
+    case 'resource_rejected':
+      return (
+        <p>
+          {extra_data?.rejector_role} <RejectUserLink extraData={extra_data} /> has rejected the resource '{extra_data.resource_name}' from the connection <RejectConnectionLink extraData={extra_data}/>.<br/>
+            Reason: {extra_data?.rejection_reason}
+        </p>
+      );
+
+    case 'resource_deleted':
+      return (
+        <p>{notification.message}</p>
+      );
+
+    default:
+      return <p>{notification.message}</p>;
+  }
+};
   console.log("curruser", curruser)
   console.log("typeof username:", typeof curruser?.username);
   return (
@@ -195,10 +297,12 @@ const Sidebar = ({
           </button>
           {isNotificationsOpen && (
             <div className="notification-modal right">
+              <div className="header-div">
               <h4>Notifications</h4>
                <Link  to="/view-all-notifications" className="view-all-btn">
                   View All
                 </Link>
+                </div>
               <hr style={{ border: "none", margin: "10px 0", borderTop: "2px solid #ccc" }}></hr>
               {/* {error && <p className="error">{error}</p>} */}
               {notifications.length > 0 ? (
@@ -473,8 +577,11 @@ const Sidebar = ({
             </div>
 
             <div className="card p-3 shadow-lg border-0">
-              <p>{selectedNotification.message}</p>
+              {renderNotificationMessage(selectedNotification)}
               <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
+              
+              {/* <p>{selectedNotification.message}</p> */}
+              {/* <small>{new Date(selectedNotification.created_at).toLocaleString()}</small> */}
             </div>
           </div>
         </div>

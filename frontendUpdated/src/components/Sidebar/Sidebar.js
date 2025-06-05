@@ -543,7 +543,7 @@ const renderNotificationMessage = (notification) => {
       <div className="sidebar-footer">
         <div className="user-profile">
           <div className="user-avatar">
-            <i class="bi bi-person" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
+            <i className="bi bi-person" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
           </div>
           <span>{capitalizeFirstLetter(curruser?.username)}</span>
         </div>

@@ -42,7 +42,8 @@ export const Guestusers = () => {
   const [filteredConnections, setFilteredConnections] = useState([]);
   const [trackerData, setTrackerData] = useState({});
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
-
+  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [filteredStatusConnections, setFilteredStatusConnections] = useState([]);
 
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
@@ -93,7 +94,7 @@ export const Guestusers = () => {
       .then(data => {
         if (data.connections) {
           setConnections(data.connections);
-          const filteredConnections = data.connections.filter(connection => connection.connection_status !== "closed");
+          const filteredConnections = data.connections.filter(connection => connection.connection_status !== "revoked")
           setFilteredConnections(filteredConnections);
           fetchAllTrackerData(data.connections);
         } else {
@@ -105,6 +106,38 @@ export const Guestusers = () => {
         console.error("Error:", error);
       });
   }, [curruser, navigate, locker, connectionType]);
+
+  const filterConnections = () => {
+    let results = filteredConnections;
+
+    // Filter by status (skip if 'All')
+    if (selectedStatus !== 'All') {
+      results = results.filter(connection => connection.connection_status === selectedStatus.toLowerCase());
+    }
+
+    // Filter by search term
+    if (searchTerm.trim() !== '') {
+      results = results.filter(connection =>
+        connection.guest_user.username.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredStatusConnections(results);
+  };
+
+  const handleFilterClick = (status) => {
+    setSelectedStatus(status);
+  };
+
+  useEffect(() => {
+    filterConnections();
+  }, [searchTerm, selectedStatus, filteredConnections]);
+
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    filterConnections();
+  };
 
 
   const fetchAllTrackerData = (outgoingConnections) => {
@@ -243,13 +276,13 @@ export const Guestusers = () => {
   };
 
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const results = connections.filter(connection =>
-      connection.guest_user.username.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredConnections(results);
-  };
+  // const handleSearch = (event) => {
+  //   event.preventDefault();
+  //   const results = filteredConnections.filter(connection =>
+  //     connection.guest_user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+  //   setFilteredStatusConnections(results);
+  // };
 
   const handleConnectionClick = (connection) => {
     console.log("navigate", connection, connectionType);
@@ -312,6 +345,19 @@ export const Guestusers = () => {
     navigate('/view-locker', { state: { locker } });
   };
 
+  // const handleFilterClick = (status) => {
+  //   setSelectedStatus(status);
+
+  //   if (status === 'All') {
+  //     setFilteredStatusConnections(filteredConnections);
+  //   } else {
+  //     const filtered = filteredConnections.filter(
+  //       (conn) => conn.connection_status.toLowerCase() === status.toLowerCase()
+  //     );
+  //     setFilteredStatusConnections(filtered);
+  //   }
+  // };
+
   const content = (
     <>
       {connectionType && (
@@ -343,7 +389,8 @@ export const Guestusers = () => {
       )}
     </>
   );
-  // console.log(filteredConnections);
+  console.log("filteredConnections", filteredConnections);
+  console.log("filteredStatusConnections", filteredStatusConnections);
   const breadcrumbs = (
     <div className="breadcrumbs">
       <a href="/home" className="breadcrumb-item">
@@ -386,7 +433,7 @@ export const Guestusers = () => {
       {/* <Navbar content={content} breadcrumbs={breadcrumbs} /> */}
       <Box className="page5heroContainer" marginTop={{ md: "12px", xs: "12px" }}>
         <h4 className='guestusers' style={{ textAlign: "center", marginBottom: "25px", fontWeight: "bold" }}>Guest Users</h4>
-        <div className="search">
+        {/* <div className="search">
           <form onSubmit={handleSearch}>
             <div className="inputContainer" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginLeft: "20px", marginRight: "20px" }}>
               <TextField
@@ -421,10 +468,119 @@ export const Guestusers = () => {
             </div>
           </form>
         </div>
-        <Grid container spacing={{ md: 5, xs: 4, sm: 4 }} className="page5container" padding={{ md: 10, sm: 2, xs: 2 }}>
+        <div style={{ margin: '1rem 0' }}>
+          <span style={{ marginRight: '1rem' }}>Filter by status:</span>
+          {['All', 'Established', 'Live', 'Closed'].map((status) => (
+            <button
+              key={status}
+              onClick={() => handleFilterClick(status)}
+              style={{
+                marginRight: '0.5rem',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: '1px solid #ccc',
+                backgroundColor: selectedStatus === status ? 'black' : 'white',
+                color: selectedStatus === status ? 'white' : 'black',
+                fontWeight: selectedStatus === status ? 'bold' : 'normal',
+                cursor: 'pointer',
+              }}
+            >
+              {status}
+            </button>
+          ))}
+        </div> */}
+
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '2rem',
+            margin: '1rem 1rem',
+          }}
+        >
+
+          {/* Filter Buttons */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}
+          >
+            <span style={{ fontWeight: 500 }}>Filter by Connection Status:</span>
+            {['All', 'Established', 'Live', 'Closed'].map((status) => (
+              <button
+                key={status}
+                onClick={() => handleFilterClick(status)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #ccc',
+                  backgroundColor: selectedStatus === status ? '#1976D2' : 'white',
+                  color: selectedStatus === status ? 'white' : 'black',
+                  fontWeight: selectedStatus === status ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                }}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Form */}
+          <form
+            onSubmit={handleSearch}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              flexShrink: 1,
+            }}
+          >
+            <TextField
+              type="text"
+              size='small'
+              placeholder="Search guest users"
+              name="search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: "200px",
+                marginRight: "0.5rem",
+                // padding: "0.25rem 0.5rem",
+                border: '1px solid black',
+                borderRadius: "10px"
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                padding: '6px 12px',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+              }}
+            >
+              Search
+            </button>
+          </form>
+
+
+        </div>
+
+
+
+
+        <Grid container spacing={{ md: 5, xs: 4, sm: 4 }} className="page5container" padding={{ md: 6, sm: 2, xs: 2 }}>
           {/* {error && <div className="error">{error}</div>} */}
-          {filteredConnections.length > 0 ? (
-            filteredConnections.map((connection, index) => {
+          {filteredStatusConnections.length > 0 ? (
+            filteredStatusConnections.map((connection, index) => {
               const tracker = trackerData[connection.connection_id];
               const color = tracker ? getStatusColor(tracker) : "gray";
               const ratio = tracker
@@ -439,9 +595,47 @@ export const Guestusers = () => {
                 : "Loading...";
               return (
                 <Grid item xs={12} sm={6} md={4} paddingRight={{ md: 0, xs: "30px" }}>
-                  <Grid container className="card">
+                  <Grid container className="card" style={{ backgroundColor: connection.connection_status === "closed" ? "#f0f0f0" : "white" }}>
                     <Grid item md={7} xs={12} key={index} >
-                      <h4>{connection.guest_user.username}</h4>
+                      {/* <h4>{connection.guest_user.username}</h4> */}
+                      {/* <h6><b>{connection.guest_user.username}</b> &nbsp;
+          <span
+            className={`badge ${connection?.connection_status === "established"
+              ? "text-bg-warning"
+              : connection?.connection_status === "live"
+                ? "text-bg-success"
+                : "text-bg-secondary"
+              }`}
+          >
+            {capitalizeFirstLetter(connection?.connection_status) || "Loading..."}
+          </span>
+        </h6> */}
+
+                      <h5>
+                        <b>
+                          {connection.guest_user.username}
+                          <sup>
+                            <span
+                              className={`badge ${connection?.connection_status === "established"
+                                  ? "text-bg-warning"
+                                  : connection?.connection_status === "live"
+                                    ? "text-bg-success"
+                                    : "text-bg-secondary"
+                                }`}
+                              style={{
+                                fontSize: '0.8rem',
+                                padding: '4px 8px',
+                                verticalAlign: 'top',
+                                marginLeft: '4px'
+                              }}
+                            >
+                              {capitalizeFirstLetter(connection?.connection_status)}
+                            </span>
+                          </sup>
+                        </b>
+                      </h5>
+
+
                       <p>{connection.guest_user.description}</p>
                       <p> Locker: {connection.guest_locker.name}</p>
                       {/* <CardActions sx={{ justifyContent: 'center' }}>
@@ -470,8 +664,10 @@ export const Guestusers = () => {
                             padding: '5px 10px',
                             borderRadius: '5px',
                             color: '#fff',
-                            cursor: 'pointer',
+                            cursor: connection.connection_status === "closed" ? "initial" : "pointer",
+                            backgroundColor: connection.connection_status === "closed" ? "gray" : color,
                           }}
+                          disabled={connection.connection_status === "closed"}
                         >
                           {ratio}
                         </button>
@@ -486,8 +682,10 @@ export const Guestusers = () => {
                             padding: '5px 10px',
                             borderRadius: '5px',
                             color: '#fff',
-                            cursor: 'pointer',
+                            cursor: connection.connection_status === "closed" ? "initial" : "pointer",
+                            backgroundColor: connection.connection_status === "closed" ? "gray" : colorReverse,
                           }}
+                          disabled={connection.connection_status === "closed"}
                         >
                           {ratioReverse}
                         </button>
@@ -501,8 +699,13 @@ export const Guestusers = () => {
                           className='cardButton'
                           size='small'
                           variant='contained'
-                          fontWeight="bold"
+                          fontWeight="600"
+                          style={{
+                            backgroundColor: connection.connection_status === "closed" ? "#808080" : "#1976d2",
+                            color: "white",
+                          }}
                           onClick={() => handleConnectionClick(connection)}
+                          disabled={connection.connection_status === "closed"}
                         >
                           View Details
                         </Button>
@@ -514,7 +717,7 @@ export const Guestusers = () => {
               );
             })
           ) : (
-            <Typography variant="body1" padding={{ xs: "60px", md: "0px" }}>No guest users found.</Typography>
+            <Typography variant="body1" padding={{ xs: "60px", md: "40px" }}>No guest users found.</Typography>
 
           )}
         </Grid>

@@ -109,6 +109,7 @@ export const ViewHostTermsByType = () => {
     pdfData?.validity_until?.split('T')?.[0] || ""
   );
   const [remarks, setRemarks] = useState("");
+  const [isReactModalOpen, setIsReactModalOpen] = useState(false);
 
   const {
     connectionName,
@@ -383,6 +384,7 @@ export const ViewHostTermsByType = () => {
   };
 
   const handleClose = () => {
+    setIsReactModalOpen(false);
     setIsModalOpen(false);
     setPdfUrl(null);
   };
@@ -972,7 +974,7 @@ export const ViewHostTermsByType = () => {
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1045,7 +1047,7 @@ export const ViewHostTermsByType = () => {
               </button>
             )}
             <ReactModal
-              isOpen={isModalOpen}
+              isOpen={isReactModalOpen}
               onRequestClose={handleClose}
               contentLabel="PDF Viewer"
               style={{
@@ -2058,7 +2060,7 @@ export const ViewHostTermsByType = () => {
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);

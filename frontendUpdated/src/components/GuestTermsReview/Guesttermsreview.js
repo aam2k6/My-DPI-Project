@@ -126,10 +126,10 @@ export const Guesttermsreview = () => {
 
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
-    const message = await handleRevoke(connection_id);
+    handleRevoke();
     setIsModalOpen(false);
-    setModalMessage({ message: message, type: "info" });
-    setIsModalOpen(true);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpen(true);
   };
 
   const onCloseButtonClick = async (connection_id) => {
@@ -367,7 +367,7 @@ export const Guesttermsreview = () => {
     if (connectionDetails) {
       const { revoke_guest, revoke_host } = connectionDetails;
       //   console.log(revoke_host, revoke_guest);
-      if (revoke_guest === true || revoke_host === true) {
+      if (revoke_guest === true && revoke_host === false) {
         setModalMessage({
           message:
             "The guest has revoked the connection, click Revoke to revoke the connection",
@@ -378,30 +378,46 @@ export const Guesttermsreview = () => {
     }
   }, [connectionDetails]);
 
+useEffect(() => {
+    if (connectionDetails) {
+      const { revoke_guest, revoke_host  } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (revoke_host === true && revoke_guest === false) {
+        setModalMessage({
+          message:
+            "You revoked  the connection waiting for guest to revoke the connection",
+          type: "info",
+        });
+        setIsModalOpens(true);
+      }
+    }
+  }, [connectionDetails]);
+  
+
+  // useEffect(() => {
+  //   if (connectionDetails) {
+  //     const { close_guest, close_host } = connectionDetails;
+  //     //   console.log(revoke_host, revoke_guest);
+  //     if (close_guest === false && close_host === true) {
+  //       setModalMessage({
+  //         message:
+  //           "You have closed the connection, but the guest is yet to approve your close connection.",
+  //         type: "info",
+  //       });
+  //       setIsModalOpenClose(true);
+  //     }
+  //   }
+  // }, [connectionDetails]);
+
+
   useEffect(() => {
     if (connectionDetails) {
       const { close_guest, close_host } = connectionDetails;
       //   console.log(revoke_host, revoke_guest);
-      if (close_guest === false && close_host === true) {
+      if (close_host === true && close_guest === false) {
         setModalMessage({
           message:
-            "You have closed the connection, but the guest is yet to approve your close connection.",
-          type: "info",
-        });
-        setIsModalOpenClose(true);
-      }
-    }
-  }, [connectionDetails]);
-
-
-  useEffect(() => {
-    if (connectionDetails) {
-      const { close_host } = connectionDetails;
-      //   console.log(revoke_host, revoke_guest);
-      if (close_host === true) {
-        setModalMessage({
-          message:
-            "You closed  the connection waiting for guest to close",
+            "You closed  the connection waiting for guest to close connection",
           type: "info",
         });
         setIsModalOpens(true);
@@ -757,63 +773,116 @@ export const Guesttermsreview = () => {
       .map(([key]) => key);
   };
   const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
-  const handleRevoke = async (connection_id) => {
-    const formData = new FormData();
-    formData.append("connection_id", connection_id);
-    formData.append("revoke_host_bool", "True");
+  // const handleRevoke = async (connection_id) => {
+  //   const formData = new FormData();
+  //   formData.append("connection_id", connection_id);
+  //   formData.append("revoke_host_bool", "True");
 
-    // console.log(connection_id ,"id");
-    const token = Cookies.get("authToken");
-    try {
-      // Step 1: Call revoke_host API using fetch
-      const revokeHostResponse = await fetch(
-        "host/revoke-host/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
+  //   // console.log(connection_id ,"id");
+  //   const token = Cookies.get("authToken");
+  //   try {
+  //     // Step 1: Call revoke_host API using fetch
+  //     const revokeHostResponse = await fetch(
+  //       "host/revoke-host/".replace(/host/, frontend_host),
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Basic ${token}`,
+  //         },
 
-          body: formData,
+  //         body: formData,
+  //       }
+  //     );
+
+  //     const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+
+  //     if (revokeHostResponse.ok) {
+  //       // console.log("Revoke host successful: ", revokeHostData.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+
+  //   // Step 2: Call revoke API using fetch
+  //   try {
+  //     const response = await fetch(
+  //       "host/revoke-guest/".replace(/host/, frontend_host),
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           // 'Content-Type': 'application/json',
+  //           Authorization: `Basic ${token}`,
+  //         },
+  //         body: formData,
+  //       }
+  //     );
+
+  //     const data = await response.json();
+  //     // console.log("revoke consent", data);
+  //     if (response.status === 200) {
+  //       return "Successfully revoked ";
+  //     } else {
+  //       return data.message || "An error occurred while revoking consent.";
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+
+  //     return "An error occurred while revoking consent.";
+  //   }
+  // };
+
+
+  const handleRevoke = async () => {
+        const token = Cookies.get("authToken");
+        const formData = new FormData();
+        formData.append("connection_name", connectionDetails?.connection_name);
+        formData.append("connection_type_name", connectionDetails?.connection_type_name);
+        formData.append("guest_username", connectionDetails?.guest_user?.username);
+        formData.append("guest_lockername", connectionDetails?.guest_locker?.name);
+        formData.append("host_username", connectionDetails?.host_user?.username);
+        formData.append("host_lockername", connectionDetails?.host_locker?.name);
+    
+    console.log("formData", formData);
+        try {
+          const response = await fetch(
+            "host/revoke-consent/".replace(/host/, frontend_host),
+            {
+              method: "POST",
+              headers: {
+                // 'Content-Type': 'application/json',
+                Authorization: `Basic ${token}`,
+              },
+              body: formData,
+            }
+          );
+    
+          const data = await response.json();
+          console.log("revoke consent", data);
+          if (response.status === 200) {
+            // setMessage("Consent revoked successfully.");
+            setModalMessage({
+              message:  data.message || "Consent revoked successfully.",
+              type: "success",
+            });
+            setIsModalOpen(true);
+          } else {
+            setModalMessage({
+              message: data?.error,
+              type: "info",
+            });
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          setModalMessage({
+            messgae: error,
+            type: "error",
+          });
         }
-      );
+        setIsModalOpens(true);
+        // navigate(`/target-locker-view`);
+    
+      };
 
-      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
-
-      if (revokeHostResponse.ok) {
-        // console.log("Revoke host successful: ", revokeHostData.message);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-
-    // Step 2: Call revoke API using fetch
-    try {
-      const response = await fetch(
-        "host/revoke-guest/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            // 'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-      // console.log("revoke consent", data);
-      if (response.status === 200) {
-        return "Successfully revoked ";
-      } else {
-        return data.message || "An error occurred while revoking consent.";
-      }
-    } catch (error) {
-      console.error("Error:", error);
-
-      return "An error occurred while revoking consent.";
-    }
-  };
 
   const handleCloseConnection = async (connection_id) => {
     const formData = new FormData();
@@ -2491,8 +2560,8 @@ export const Guesttermsreview = () => {
                       onClose={handleCloseModal}
                       type={modalMessage.type}
                       revoke={revokeState}
-                      onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
-                      viewTerms={() => navigateToConnectionDetails(connectionType)}
+                      onRevoke={() => onRevokeButtonClick()}
+                      viewTerms={() => navigateToConnectionDetails(connection)}
                     />
                   )}
 
@@ -2503,7 +2572,7 @@ export const Guesttermsreview = () => {
                       type={modalMessage.type}
                       closeConnection={closeState}
                       onCloseConnection={() => onCloseButtonClick(conndetails.connection_id)}
-                      viewTerms={() => navigateToConnectionDetails(connectionType)}
+                      viewTerms={() => navigateToConnectionDetails(conndetails)}
                     />
                   )}
 

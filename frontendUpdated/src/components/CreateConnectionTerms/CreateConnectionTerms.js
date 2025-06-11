@@ -860,7 +860,7 @@ export const CreateConnectionTerms = () => {
       console.error(error);
     }
   };
-
+console.log("dddddd", showConsent, Iagree === "1", !agrees)
   useEffect(() => {
     if (!curruser) {
       navigate("/");
@@ -1195,11 +1195,10 @@ export const CreateConnectionTerms = () => {
   };
   console.log("showConsent", agrees)
   console.log("showConsent", Iagree)
+
+  
   const handleRevokebutton = async () => {
     const token = Cookies.get("authToken");
-    const revoke_guest = false;
-    const revoke_host = false;
-    const consent = false;
     const formData = new FormData();
     // formData.append("connection_name", connectionName);
     // formData.append("connection_type_name", connectionTypeName);
@@ -1213,12 +1212,17 @@ export const CreateConnectionTerms = () => {
     console.log(guest_locker_id);
     // formData.append("guest_locker_id", guest_locker_id);
     // formData.append("host_locker_id", host_locker_id);
-    formData.append("connection_id", connection_id);
+    formData.append("connection_name", connectionDetails?.connection_name);
+    formData.append("connection_type_name", connectionDetails?.connection_type_name);
+    formData.append("guest_username", connectionDetails?.guest_user?.username);
+    formData.append("guest_lockername", connectionDetails?.guest_locker?.name);
+    formData.append("host_username", connectionDetails?.host_user?.username);
+    formData.append("host_lockername", connectionDetails?.host_locker?.name);
 
-
+console.log("formData", formData);
     try {
       const response = await fetch(
-        "host/revoke-guest/".replace(/host/, frontend_host),
+        "host/revoke-consent/".replace(/host/, frontend_host),
         {
           method: "POST",
           headers: {
@@ -1234,7 +1238,7 @@ export const CreateConnectionTerms = () => {
       if (response.status === 200) {
         // setMessage("Consent revoked successfully.");
         setModalMessage({
-          message: "Consent revoked successfully." + data.message,
+          message: data.message || "Consent revoked successfully.",
           type: "success",
         });
         // console.log(message);
@@ -1242,15 +1246,15 @@ export const CreateConnectionTerms = () => {
         setIagree("0");
       } else {
         setModalMessage({
-          message: data.message || "An error occurred while revoking consent.",
-          type: "failure",
+          message: data?.error,
+          type: "info",
         });
       }
     } catch (error) {
       console.error("Error:", error);
       setModalMessage({
-        messgae: "An error occurred while revoking consent.",
-        type: "failure",
+        messgae: error,
+        type: "error",
       });
     }
     setIsModalOpen(true);
@@ -1970,7 +1974,7 @@ export const CreateConnectionTerms = () => {
           )}
           {showRevokeConfirmationModal && (
             <Modal
-              message={<>{renderGuest()}</>} // Wrap in JSX fragment
+              message={<>{renderGuest()}</>}
               type="confirmation"
               onClose={() => setShowRevokeConfirmationModal(false)} // Close modal on "No"
               onConfirm={handleRevokeConfirm} // Call the confirmation action

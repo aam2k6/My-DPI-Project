@@ -578,6 +578,7 @@ export const ViewTermsByType = () => {
   const [loading, setLoading] = useState(true);
   const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpens, setIsModalOpens] = useState(false);
   const [isReactModalOpen, setIsReactModalOpen] = useState(false);
   const [moreDataTerms, setMoreDataTerms] = useState([]);
   const [xnodes, setXnodes] = useState([]);
@@ -627,6 +628,7 @@ export const ViewTermsByType = () => {
     pdfData?.validity_until?.split('T')?.[0] || ""
   );
   const [remarks, setRemarks] = useState("");
+  const [revokeState, setRevokeState] = useState(true);
 
 
 
@@ -1369,16 +1371,32 @@ export const ViewTermsByType = () => {
   useEffect(() => {
     if (connectionDetails) {
       const { revoke_guest, revoke_host } = connectionDetails;
-      // console.log(revoke_host, revoke_guest);
+      console.log(revoke_host, revoke_guest);
       if (revoke_guest === true && revoke_host === false) {
         setModalMessage({
-          message: 'You have revoked the connection, but the host is yet to approve your revoke.',
+          message: 'You revoked the connection waiting for host to revoke the connection.',
           type: 'info',
         });
         setIsModalOpen(true);
       }
     }
   }, [connectionDetails]);
+
+  useEffect(() => {
+      if (connectionDetails) {
+        const { revoke_guest, revoke_host } = connectionDetails;
+        //   console.log(revoke_host, revoke_guest);
+        if (revoke_guest === false && revoke_host === true ) {
+          setModalMessage({
+            message:
+              "The host has revoked the connection, click Revoke to revoke the connection",
+            type: "info",
+          });
+          setIsModalOpens(true);
+        }
+      }
+    }, [connectionDetails]);
+
   console.log("ismod", isModalOpen)
   useEffect(() => {
     if (connectionDetails) {
@@ -2983,6 +3001,65 @@ export const ViewTermsByType = () => {
   const handleLockerClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   }
+ const onRevokeButtonClick = async () => {
+    setRevokeState(false);
+    handleRevoke();
+    setIsModalOpens(false);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpen(true);
+  };
+
+  
+    const handleRevoke = async () => {
+      const token = Cookies.get("authToken");
+      const formData = new FormData();
+      formData.append("connection_name", connectionDetails?.connection_name);
+      formData.append("connection_type_name", connectionDetails?.connection_type_name);
+      formData.append("guest_username", connectionDetails?.guest_user?.username);
+      formData.append("guest_lockername", connectionDetails?.guest_locker?.name);
+      formData.append("host_username", connectionDetails?.host_user?.username);
+      formData.append("host_lockername", connectionDetails?.host_locker?.name);
+  
+  console.log("formData", formData);
+      try {
+        const response = await fetch(
+          "host/revoke-consent/".replace(/host/, frontend_host),
+          {
+            method: "POST",
+            headers: {
+              // 'Content-Type': 'application/json',
+              Authorization: `Basic ${token}`,
+            },
+            body: formData,
+          }
+        );
+  
+        const data = await response.json();
+        console.log("revoke consent", data);
+        if (response.status === 200) {
+          // setMessage("Consent revoked successfully.");
+          setModalMessage({
+            message:  data.message || "Consent revoked successfully.",
+            type: "success",
+          });
+          setIsModalOpen(true);
+        } else {
+          setModalMessage({
+            message: data?.error,
+            type: "info",
+          });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setModalMessage({
+          messgae: error,
+          type: "error",
+        });
+      }
+      setIsModalOpen(true);
+      // navigate(`/target-locker-view`);
+  
+    };
 
   const breadcrumbs = (
     <div className="breadcrumbs">
@@ -4726,9 +4803,20 @@ export const ViewTermsByType = () => {
           type={modalMessage.type}
           closeConnection={closeState}
           onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
-          viewTerms={() => navigateToConnectionTerms(connectionName)}
+          viewTerms={() => navigateToConnectionTerms(connection)}
         />
       )}
+
+      {isModalOpens && (
+                          <Modal
+                            message={modalMessage.message}
+                            onClose={handleCloseModal}
+                            type={modalMessage.type}
+                            revoke={revokeState}
+                            onRevoke={() => onRevokeButtonClick()}
+                            viewTerms={() => navigateToConnectionTerms(connection)}
+                          />
+                        )}
     </div>
 
   );

@@ -276,11 +276,12 @@ export const ViewLocker = () => {
       if (connectionsData.success) {
         setAllOutgoingConnections(connectionsData.connections.outgoing_connections)
         const filteredIncoming = connectionsData.connections.incoming_connections.filter(
-          (connection) => connection.connection_status !== "closed"
+          (connection) => connection.connection_status !== "closed" && connection.connection_status !== "revoked"
         );
         const filteredOutgoing = connectionsData.connections.outgoing_connections.filter(
-          (connection) => connection.connection_status !== "closed"
+          (connection) => connection.connection_status !== "closed" && connection.connection_status !== "revoked"
         );
+
         setConnections({
           incoming_connections: filteredIncoming,
           outgoing_connections: filteredOutgoing,

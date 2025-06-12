@@ -44,6 +44,8 @@ export const Guestusers = () => {
   const [trackerDataReverse, setTrackerDataReverse] = useState({});
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [filteredStatusConnections, setFilteredStatusConnections] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // New
+
 
   // Destructure connection and locker from location.state with fallback to empty object
   const { connection: connectionType = null, locker = null } = location.state || {};
@@ -107,23 +109,42 @@ export const Guestusers = () => {
       });
   }, [curruser, navigate, locker, connectionType]);
 
+  // const filterConnections = () => {
+  //   let results = filteredConnections;
+
+  //   // Filter by status (skip if 'All')
+  //   if (selectedStatus !== 'All') {
+  //     results = results.filter(connection => connection.connection_status === selectedStatus.toLowerCase());
+  //   }
+
+  //   // Filter by search term
+  //   if (searchTerm.trim() !== '') {
+  //     results = results.filter(connection =>
+  //       connection.guest_user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //   }
+
+  //   setFilteredStatusConnections(results);
+  // };
+
   const filterConnections = () => {
-    let results = filteredConnections;
+  let results = filteredConnections;
 
-    // Filter by status (skip if 'All')
-    if (selectedStatus !== 'All') {
-      results = results.filter(connection => connection.connection_status === selectedStatus.toLowerCase());
-    }
+  if (selectedStatus !== 'All') {
+    results = results.filter(
+      (connection) => connection.connection_status === selectedStatus.toLowerCase()
+    );
+  }
 
-    // Filter by search term
-    if (searchTerm.trim() !== '') {
-      results = results.filter(connection =>
-        connection.guest_user.username.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  if (searchQuery.trim() !== '') {
+    results = results.filter((connection) =>
+      connection.guest_user.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
 
-    setFilteredStatusConnections(results);
-  };
+  setFilteredStatusConnections(results);
+};
+
 
   const handleFilterClick = (status) => {
     setSelectedStatus(status);
@@ -131,13 +152,14 @@ export const Guestusers = () => {
 
   useEffect(() => {
     filterConnections();
-  }, [searchTerm, selectedStatus, filteredConnections]);
+  }, [searchQuery, selectedStatus, filteredConnections]);
 
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    filterConnections();
-  };
+ const handleSearch = (event) => {
+  event.preventDefault();
+  setSearchQuery(searchTerm); // Only set the value when user submits
+};
+
 
 
   const fetchAllTrackerData = (outgoingConnections) => {

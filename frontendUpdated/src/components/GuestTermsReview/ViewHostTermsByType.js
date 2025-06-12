@@ -110,6 +110,9 @@ export const ViewHostTermsByType = () => {
   );
   const [remarks, setRemarks] = useState("");
   const [isReactModalOpen, setIsReactModalOpen] = useState(false);
+  const [isModalOpens, setIsModalOpens] = useState(false);
+  const [revokeState, setRevokeState] = useState(true);
+  
 
   const {
     connectionName,
@@ -155,7 +158,37 @@ export const ViewHostTermsByType = () => {
       setRemarks(pdfData.node_information.remarks);
     }
   }, [pdfData]);
-  
+
+  useEffect(() => {
+    if (connectionDetails) {
+      const { revoke_guest, revoke_host } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (revoke_guest === true && revoke_host === false) {
+        setModalMessage({
+          message:
+            "The guest has revoked the connection, click Revoke to revoke the connection",
+          type: "info",
+        });
+        setIsModalOpen(true);
+      }
+    }
+  }, [connectionDetails]);
+
+  useEffect(() => {
+    if (connectionDetails) {
+      const { revoke_guest, revoke_host } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (revoke_host === true && revoke_guest === false) {
+        setModalMessage({
+          message:
+            "You revoked  the connection waiting for guest to revoke the connection",
+          type: "info",
+        });
+        setIsModalOpens(true);
+      }
+    }
+  }, [connectionDetails]);
+
   const connectionsData = connection
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -200,6 +233,14 @@ export const ViewHostTermsByType = () => {
     };
     connectionLifeCycle();
   })
+
+  const onRevokeButtonClick = async (connection_id) => {
+    setRevokeState(false);
+    handleRevoke();
+    setIsModalOpen(false);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpen(true);
+  };
   useEffect(() => {
     if (connectionDetails) {
       fetchTrackerData(connectionDetails)
@@ -372,6 +413,11 @@ export const ViewHostTermsByType = () => {
       : "0/0";
   };
   const handleCloseModal = () => {
+    if(isModalOpen || isModalOpens) {
+      setIsModalOpen(false);
+      setIsModalOpens(false);
+    }
+    navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
     setPostModal(false);
     setModalMessage({ message: "", type: "" });
     // navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
@@ -853,19 +899,22 @@ export const ViewHostTermsByType = () => {
     fetchVnodeResources();
   }, [curruser, navigate, hostUserUsername, guestLockerName, connectionName, selectedLocker]);
 
-  useEffect(() => {
-    if (connectionDetails) {
-      const { revoke_guest, revoke_host } = connectionDetails;
-      // console.log(revoke_host, revoke_guest);
-      if (revoke_guest === true && revoke_host === false) {
-        setModalMessage({
-          message: 'You have closed the connection, but the host is yet to approve your revoke.',
-          type: 'info',
-        });
-        setIsModalOpen(true);
-      }
-    }
-  }, [connectionDetails]);
+  // useEffect(() => {
+  //   if (connectionDetails) {
+  //     const { revoke_guest, revoke_host } = connectionDetails;
+  //     // console.log(revoke_host, revoke_guest);
+  //     if (revoke_guest === true && revoke_host === false) {
+  //       setModalMessage({
+  //         message: 'You have closed the connection, but the host is yet to approve your revoke.',
+  //         type: 'info',
+  //       });
+  //       setIsModalOpen(true);
+  //     }
+  //   }
+  // }, [connectionDetails]);
+
+
+
   const handleClicks = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
@@ -1359,6 +1408,60 @@ export const ViewHostTermsByType = () => {
       setPostModal(true);
     }
   }
+
+  const handleRevoke = async () => {
+          const token = Cookies.get("authToken");
+          const formData = new FormData();
+          formData.append("connection_name", connectionDetails?.connection_name);
+          formData.append("connection_type_name", connectionDetails?.connection_type_name);
+          formData.append("guest_username", connectionDetails?.guest_user?.username);
+          formData.append("guest_lockername", connectionDetails?.guest_locker?.name);
+          formData.append("host_username", connectionDetails?.host_user?.username);
+          formData.append("host_lockername", connectionDetails?.host_locker?.name);
+      
+      console.log("formData", formData);
+          try {
+            const response = await fetch(
+              "host/revoke-consent/".replace(/host/, frontend_host),
+              {
+                method: "POST",
+                headers: {
+                  // 'Content-Type': 'application/json',
+                  Authorization: `Basic ${token}`,
+                },
+                body: formData,
+              }
+            );
+            setIsModalOpens(false)
+            setIsModalOpen(false)
+            const data = await response.json();
+            console.log("revoke consent", data);
+            if (response.status === 200) {
+              // setMessage("Consent revoked successfully.");
+              setModalMessage({
+                message:  data.message || "Consent revoked successfully.",
+                type: "success",
+              });
+              setIsModalOpen(true);
+            } else {
+              setModalMessage({
+                message: data?.error,
+                type: "info",
+              });
+              setIsModalOpen(true);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            setModalMessage({
+              messgae: error,
+              type: "error",
+            });
+            setIsModalOpen(true);
+          }
+          // setIsModalOpens(true);
+          // navigate(`/target-locker-view`);
+      
+        };
 
   const handleRevokeConsentConfirm = () => {
     setShowRevokeConsentModal(false); // Close the modal
@@ -3392,8 +3495,8 @@ setToPage('');
                               <div>
                                 <label className="form-label fw-bold mt-1">Type of Share: </label>
                                 <span className="tooltips">
-                                {selectedRowData.typeOfSharing}
-                                {renderTooltip(selectedRowData.typeOfSharing)}
+                                  {selectedRowData.typeOfSharing}
+                                  {renderTooltip(selectedRowData.typeOfSharing)}
                                 </span>
                               </div>
                               <div>
@@ -3884,10 +3987,10 @@ setToPage('');
                                 <div>
                                   <label className="form-label fw-bold mt-1">Type of Share: </label>
                                   <span className="tooltips">
-                                   {selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
-                                   {renderTooltip(selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing)}
+                                    {selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
+                                    {renderTooltip(selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing)}
                                   </span>
-                                 
+
                                 </div>
                                 <div>
                                   <label className="form-label fw-bold mt-1">Valid until:{" "}</label>
@@ -4055,7 +4158,7 @@ setToPage('');
                                 <div className="d-flex justify-content-between border-bottom py-2">
                                   <span className="fw-bold">Type of Share:</span>
                                   <span className="tooltips">{selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
-                                  {renderTooltip(selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing)}
+                                    {renderTooltip(selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing)}
                                   </span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
@@ -4085,6 +4188,24 @@ setToPage('');
           </div>
         </div>
       </div>
+      {isModalOpens && (
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModal}
+          type={modalMessage.type}
+        />
+      )}
+
+      {isModalOpen && (
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModal}
+          type={modalMessage.type}
+          revoke={revokeState}
+          onRevoke={() => onRevokeButtonClick()}
+          viewTerms={() => navigateToConnectionTerms(connectionName)}
+        />
+      )}
     </div>
 
   );

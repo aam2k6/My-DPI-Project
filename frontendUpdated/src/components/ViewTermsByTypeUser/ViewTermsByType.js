@@ -3048,6 +3048,7 @@ export const ViewTermsByType = () => {
             message: data?.error,
             type: "info",
           });
+          setIsModalOpen(true);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -3055,8 +3056,9 @@ export const ViewTermsByType = () => {
           messgae: error,
           type: "error",
         });
+        setIsModalOpen(true);
       }
-      setIsModalOpen(true);
+      // setIsModalOpen(true);
       // navigate(`/target-locker-view`);
   
     };
@@ -4803,7 +4805,7 @@ export const ViewTermsByType = () => {
           type={modalMessage.type}
           closeConnection={closeState}
           onCloseConnection={() => onCloseButtonClick(connection.connection_id)}
-          viewTerms={() => navigateToConnectionTerms(connection)}
+          viewTerms={() => navigateToConnectionTerms(connectionName)}
         />
       )}
 
@@ -4814,7 +4816,7 @@ export const ViewTermsByType = () => {
                             type={modalMessage.type}
                             revoke={revokeState}
                             onRevoke={() => onRevokeButtonClick()}
-                            viewTerms={() => navigateToConnectionTerms(connection)}
+                            viewTerms={() => navigateToConnectionTerms(connectionName)}
                           />
                         )}
     </div>

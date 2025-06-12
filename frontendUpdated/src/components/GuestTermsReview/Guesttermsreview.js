@@ -870,6 +870,7 @@ useEffect(() => {
               message: data?.error,
               type: "info",
             });
+            setIsModalOpen(true);
           }
         } catch (error) {
           console.error("Error:", error);
@@ -877,8 +878,9 @@ useEffect(() => {
             messgae: error,
             type: "error",
           });
+          setIsModalOpen(true);
         }
-        setIsModalOpens(true);
+        // setIsModalOpens(true);
         // navigate(`/target-locker-view`);
     
       };

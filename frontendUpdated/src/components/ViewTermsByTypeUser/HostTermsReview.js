@@ -69,6 +69,8 @@ export const HostTermsReview = () => {
   const [rejectedStatuses, setRejectedStatuses] = useState({});
   const [showRejectionPopup, setShowRejectionPopup] = useState(false);
   const [rejectionComment, setRejectionComment] = useState("");
+  const [isReactModalOpen, setIsReactModalOpen] = useState(false);
+  const [isModalOpens, setIsModalOpens] = useState(false);
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -120,10 +122,10 @@ export const HostTermsReview = () => {
 
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
-    const message = await handleRevoke(connection_id);
+    handleRevoke();
     setIsModalOpen(false);
-    setModalMessage({ message: message, type: "info" });
-    setIsModalOpen(true);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpen(true);
   };
 
   useEffect(() => {
@@ -346,20 +348,49 @@ export const HostTermsReview = () => {
 
   useEffect(() => {
     if (connectionDetails) {
-      const { revoke_guest, revoke_host } = connectionDetails;
-      //   console.log(revoke_host, revoke_guest);
-      if (revoke_guest === true || revoke_host === true) {
-        setModalMessage({
-          message:
-            "The guest has closed the connection, click Revoke to revoke the connection",
-          type: "info",
-        });
-        setIsModalOpen(true);
-      }
+      // const { revoke_guest, revoke_host } = connectionDetails;
+      // //   console.log(revoke_host, revoke_guest);
+      // if (revoke_guest === true || revoke_host === true) {
+      //   setModalMessage({
+      //     message:
+      //       "The guest has closed the connection, click Revoke to revoke the connection",
+      //     type: "info",
+      //   });
+      //   setIsModalOpen(true);
+      // }
       fetchTrackerData(connectionDetails)
       fetchTrackerDataReverse(connectionDetails);
     }
   }, [connectionDetails]);
+
+   useEffect(() => {
+      if (connectionDetails) {
+        const { revoke_guest, revoke_host } = connectionDetails;
+        console.log(revoke_host, revoke_guest);
+        if (revoke_guest === true && revoke_host === false) {
+          setModalMessage({
+            message: 'You revoked the connection waiting for host to revoke the connection.',
+            type: 'info',
+          });
+          setIsModalOpens(true);
+        }
+      }
+    }, [connectionDetails]);
+  
+    useEffect(() => {
+        if (connectionDetails) {
+          const { revoke_guest, revoke_host } = connectionDetails;
+          //   console.log(revoke_host, revoke_guest);
+          if (revoke_guest === false && revoke_host === true ) {
+            setModalMessage({
+              message:
+                "The host has revoked the connection, click Revoke to revoke the connection",
+              type: "info",
+            });
+            setIsModalOpen(true);
+          }
+        }
+      }, [connectionDetails]);
 
   // const handleStatusChange = (index, status, value, type, isFile) => {
   //     if (value !== "") {
@@ -537,9 +568,10 @@ export const HostTermsReview = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsModalOpens(false);
     setModalMessage({ message: "", type: "" });
     navigate(`/view-locker?param=${Date.now()}`, {
-      state: { locker: conndetails.host_locker },
+      state: { locker: conndetails.guest_locker },
     });
   };
 
@@ -590,7 +622,7 @@ export const HostTermsReview = () => {
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        setIsReactModalOpen(true);// Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -605,6 +637,7 @@ export const HostTermsReview = () => {
 
   const handleClose = () => {
     setIsModalOpen(false);
+    setIsReactModalOpen(false);
     setPdfUrl(null);
     setXnodeToDownload(null);
   };
@@ -703,63 +736,59 @@ export const HostTermsReview = () => {
       .map(([key]) => key);
   };
   const postConditionsKeys = getTrueKeys(pdfData?.post_conditions || {});
-  const handleRevoke = async (connection_id) => {
-    const formData = new FormData();
-    formData.append("connection_id", connection_id);
-    formData.append("revoke_host_bool", "True");
-
-    // console.log(connection_id ,"id");
-    const token = Cookies.get("authToken");
-    try {
-      // Step 1: Call revoke_host API using fetch
-      const revokeHostResponse = await fetch(
-        "host/revoke-host/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
-
-          body: formData,
-        }
-      );
-
-      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
-
-      if (revokeHostResponse.ok) {
-        // console.log("Revoke host successful: ", revokeHostData.message);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-
-    // Step 2: Call revoke API using fetch
-    try {
-      const response = await fetch(
-        "host/revoke-guest/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            // 'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-      // console.log("revoke consent", data);
-      if (response.status === 200) {
-        return "Successfully revoked ";
-      } else {
-        return data.message || "An error occurred while revoking consent.";
-      }
-    } catch (error) {
-      console.error("Error:", error);
-
-      return "An error occurred while revoking consent.";
-    }
-  };
+   const handleRevoke = async () => {
+            const token = Cookies.get("authToken");
+            const formData = new FormData();
+            formData.append("connection_name", connectionDetails?.connection_name);
+            formData.append("connection_type_name", connectionDetails?.connection_type_name);
+            formData.append("guest_username", connectionDetails?.guest_user?.username);
+            formData.append("guest_lockername", connectionDetails?.guest_locker?.name);
+            formData.append("host_username", connectionDetails?.host_user?.username);
+            formData.append("host_lockername", connectionDetails?.host_locker?.name);
+        
+        console.log("formData", formData);
+            try {
+              const response = await fetch(
+                "host/revoke-consent/".replace(/host/, frontend_host),
+                {
+                  method: "POST",
+                  headers: {
+                    // 'Content-Type': 'application/json',
+                    Authorization: `Basic ${token}`,
+                  },
+                  body: formData,
+                }
+              );
+              setIsModalOpens(false)
+              setIsModalOpen(false)
+              const data = await response.json();
+              console.log("revoke consent", data);
+              if (response.status === 200) {
+                // setMessage("Consent revoked successfully.");
+                setModalMessage({
+                  message:  data.message || "Consent revoked successfully.",
+                  type: "success",
+                });
+                setIsModalOpens(true);
+              } else {
+                setModalMessage({
+                  message: data?.error,
+                  type: "info",
+                });
+                setIsModalOpens(true);
+              }
+            } catch (error) {
+              console.error("Error:", error);
+              setModalMessage({
+                messgae: error,
+                type: "error",
+              });
+              setIsModalOpens(true);
+            }
+            // setIsModalOpens(true);
+            // navigate(`/target-locker-view`);
+        
+          };
 
   const handleStatusChange = (index, status, value, type, isFile) => {
     if (value !== "") {
@@ -2203,7 +2232,7 @@ export const HostTermsReview = () => {
                                   "None"
                                 )}
                                 <ReactModal
-                                  isOpen={isModalOpen}
+                                  isOpen={isReactModalOpen}
                                   onRequestClose={handleClose}
                                   contentLabel="PDF Viewer"
                                   style={{
@@ -2347,7 +2376,7 @@ export const HostTermsReview = () => {
                       type={modalMessage.type}
                       revoke={revokeState}
                       onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
-                      viewTerms={() => navigateToConnectionDetails(connectionType)}
+                      viewTerms={() => navigateToConnectionTerms(conndetails)}
                     />
                   )}
 
@@ -2650,6 +2679,14 @@ export const HostTermsReview = () => {
             </div>
           </div>
         )}
+
+        {isModalOpens && (
+                <Modal
+                  message={modalMessage.message}
+                  onClose={handleCloseModal}
+                  type={modalMessage.type}
+                />
+              )}
 
       </div>
 

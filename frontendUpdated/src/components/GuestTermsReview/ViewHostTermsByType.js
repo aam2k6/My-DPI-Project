@@ -112,6 +112,9 @@ export const ViewHostTermsByType = () => {
   const [isReactModalOpen, setIsReactModalOpen] = useState(false);
   const [isModalOpens, setIsModalOpens] = useState(false);
   const [revokeState, setRevokeState] = useState(true);
+  const [isModalOpenClose, setIsModalOpenClose] = useState(false);
+  const [closeState, setCloseState] = useState(true);
+  
   
 
   const {
@@ -158,6 +161,36 @@ export const ViewHostTermsByType = () => {
       setRemarks(pdfData.node_information.remarks);
     }
   }, [pdfData]);
+
+   useEffect(() => {
+      if (connectionDetails) {
+        const { close_guest, close_host } = connectionDetails;
+        //   console.log(revoke_host, revoke_guest);
+        if (close_host === true && close_guest === false) {
+          setModalMessage({
+            message:
+              "You closed  the connection waiting for guest to close connection",
+            type: "info",
+          });
+          setIsModalOpens(true);
+        }
+      }
+    }, [connectionDetails]);
+
+    useEffect(() => {
+    if (connectionDetails) {
+      const { close_guest, close_host } = connectionDetails;
+      //   console.log(revoke_host, revoke_guest);
+      if (close_host === false && close_guest === true) {
+        setModalMessage({
+          message:
+            "The guest has closed the connection, click Close connection to close the connection",
+          type: "info",
+        });
+        setIsModalOpenClose(true);
+      }
+    }
+  }, [connectionDetails]);
 
   useEffect(() => {
     if (connectionDetails) {
@@ -242,11 +275,11 @@ export const ViewHostTermsByType = () => {
     // setIsModalOpen(true);
   };
   useEffect(() => {
-    if (connectionDetails) {
-      fetchTrackerData(connectionDetails)
-      fetchTrackerDataReverse(connectionDetails);
+    if (connection || connectionDetails) {
+      fetchTrackerData(connection || connectionDetails)
+      fetchTrackerDataReverse(connection || connectionDetails);
     }
-  }, [connectionDetails]);
+  }, [connection, connectionDetails]);
 
   const fetchTrackerData = async (connection) => {
     try {
@@ -421,6 +454,24 @@ export const ViewHostTermsByType = () => {
     setPostModal(false);
     setModalMessage({ message: "", type: "" });
     // navigate(`/view-locker?param=${Date.now()}`, { state: { locker: locker } });
+  };
+
+  const handleCloseModalClose = () => {
+    setIsModalOpenClose(false);
+    setModalMessage({ message: "", type: "" });
+    navigate(`/view-locker?param=${Date.now()}`, {
+      state: { locker: connectionDetails.host_locker },
+    });
+  };
+
+    const onCloseButtonClick = async (connection_id) => {
+    setCloseState(false);
+    handleCloseConnection(connection_id);
+    setIsModalOpenClose(false);
+    setIsModalOpen(false);
+    setIsModalOpens(false);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpenClose(true);
   };
 
   const handleCloseResourceModal = () => {
@@ -2246,6 +2297,50 @@ export const ViewHostTermsByType = () => {
       },
     })
   }
+
+  const handleCloseConnection = async (connection_id) => {
+    const formData = new FormData();
+    formData.append("connection_id", connection_id);
+    // formData.append("close_host_bool", "True");
+
+    // console.log(connection_id ,"id");
+    const token = Cookies.get("authToken");
+    try {
+      // Step 1: Call close_connection_host API using fetch
+      const revokeHostResponse = await fetch(
+        "host/close_connection_host/".replace(/host/, frontend_host),
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+
+          body: formData,
+        }
+      );
+
+      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
+
+      if (revokeHostResponse.ok) {
+       setIsModalOpenClose(false);
+        setModalMessage({
+          message: 'Successfully Connection closed',
+          type: 'success',
+        });
+        setIsModalOpens(true)
+      } else {
+        setModalMessage({
+          message: revokeHostResponse.message || "Failed to close the connection.",
+          type: "failure",
+        });
+        setIsModalOpens(true)
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    // Step 2: Call close API using fetch
+  };
 
   console.log("selection", selection);
   const content = (
@@ -4195,6 +4290,17 @@ setToPage('');
           type={modalMessage.type}
         />
       )}
+
+      {isModalOpenClose && (
+                    <Modal
+                      message={modalMessage.message}
+                      onClose={handleCloseModalClose}
+                      type={modalMessage.type}
+                      closeConnection={closeState}
+                      onCloseConnection={() => onCloseButtonClick(connectionDetails.connection_id)}
+                      viewTerms={() => navigateToConnectionTerms(connectionName)}
+                    />
+                  )}
 
       {isModalOpen && (
         <Modal

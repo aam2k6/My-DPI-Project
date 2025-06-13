@@ -1022,47 +1022,47 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
     setIsModalOpen(true)
   };
 
-  useEffect(() => {
-    if (connectionDetails) {
-      const { revoke_guest, revoke_host } = connectionDetails;
+  // useEffect(() => {
+  //   if (connectionDetails) {
+  //     const { revoke_guest, revoke_host } = connectionDetails;
 
-      if (revoke_guest === true && revoke_host === false) {
-        setModalMessage({
-          message: 'You have closed the connection, but the host is yet to approve your revoke.',
-          type: 'info',
-        });
-        setIsModalOpen(true);
-      }
-    }
-  }, [connectionDetails]);
+  //     if (revoke_guest === true && revoke_host === false) {
+  //       setModalMessage({
+  //         message: 'You have closed the connection, but the host is yet to approve your revoke.',
+  //         type: 'info',
+  //       });
+  //       setIsModalOpen(true);
+  //     }
+  //   }
+  // }, [connectionDetails]);
 
-  useEffect(() => {
-    if (connectionDetails) {
-      const { close_guest, close_host } = connectionDetails;
+  // useEffect(() => {
+  //   if (connectionDetails) {
+  //     const { close_guest, close_host } = connectionDetails;
 
-      if (close_guest === true && close_host === false) {
-        setModalMessage({
-          message: 'You have closed the connection, but the host is yet to approve your close.',
-          type: 'info',
-        });
-        setIsModalOpen(true);
-      }
-    }
-  }, [connectionDetails]);
+  //     if (close_guest === true && close_host === false) {
+  //       setModalMessage({
+  //         message: 'You have closed the connection, but the host is yet to approve your close.',
+  //         type: 'info',
+  //       });
+  //       setIsModalOpen(true);
+  //     }
+  //   }
+  // }, [connectionDetails]);
 
-  useEffect(() => {
-    if (connectionDetails) {
-      const { close_guest, close_host } = connectionDetails;
+  // useEffect(() => {
+  //   if (connectionDetails) {
+  //     const { close_guest, close_host } = connectionDetails;
 
-      if (close_guest === false && close_host === true) {
-        setModalMessage({
-          message: 'The host has closed the connection, click Close connection to close the connection',
-          type: 'info',
-        });
-        setIsModalOpenClose(true);
-      }
-    }
-  }, [connectionDetails]);
+  //     if (close_guest === false && close_host === true) {
+  //       setModalMessage({
+  //         message: 'The host has closed the connection, click Close connection to close the connection',
+  //         type: 'info',
+  //       });
+  //       setIsModalOpenClose(true);
+  //     }
+  //   }
+  // }, [connectionDetails]);
 
   const onCloseButtonClick = async (connection_id) => {
     setCloseState(false);
@@ -1289,7 +1289,7 @@ console.log("formData", formData);
       const data = await response.json();
       if (response.ok) {
         setModalMessage({
-          message: "You have closed the connection!," + data.message,
+          message: data.message,
           type: "success",
         });
         setIagree("0");

@@ -124,6 +124,13 @@ export const Guesttermsreview = () => {
     connectionLifeCycle();
   })
 
+  useEffect(() => {
+    if (connection || connectionDetails) {
+      fetchTrackerData(connection || connectionDetails)
+      fetchTrackerDataReverse(connection || connectionDetails);
+    }
+  }, [connection, connectionDetails]);
+
   const onRevokeButtonClick = async (connection_id) => {
     setRevokeState(false);
     handleRevoke();
@@ -134,10 +141,12 @@ export const Guesttermsreview = () => {
 
   const onCloseButtonClick = async (connection_id) => {
     setCloseState(false);
-    const message = await handleCloseConnection(connection_id);
+    handleCloseConnection(connection_id);
     setIsModalOpenClose(false);
-    setModalMessage({ message: message, type: "info" });
-    setIsModalOpenClose(true);
+    setIsModalOpen(false);
+    setIsModalOpens(false);
+    // setModalMessage({ message: message, type: "info" });
+    // setIsModalOpenClose(true);
   };
 
   useEffect(() => {
@@ -440,12 +449,7 @@ useEffect(() => {
     }
   }, [connectionDetails]);
 
-  useEffect(() => {
-    if (connectionDetails) {
-      fetchTrackerData(connectionDetails)
-      fetchTrackerDataReverse(connectionDetails);
-    }
-  }, [connectionDetails]);
+  
 
   const fetchTrackerData = async (connection) => {
     try {
@@ -910,38 +914,24 @@ useEffect(() => {
       const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
 
       if (revokeHostResponse.ok) {
-        // console.log("Revoke host successful: ", revokeHostData.message);
+       setIsModalOpenClose(false);
+        setModalMessage({
+          message: 'Successfully Connection closed',
+          type: 'success',
+        });
+        setIsModalOpens(true)
+      } else {
+        setModalMessage({
+          message: revokeHostResponse.message || "Failed to close the connection.",
+          type: "failure",
+        });
+        setIsModalOpens(true)
       }
     } catch (error) {
       console.error("Error:", error);
     }
 
     // Step 2: Call close API using fetch
-    try {
-      const response = await fetch(
-        "host/close_connection_guest/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            // 'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-      // console.log("revoke consent", data);
-      if (response.status === 200) {
-        return "Successfully Connection closed ";
-      } else {
-        return data.message || "An error occurred while Closing connection.";
-      }
-    } catch (error) {
-      console.error("Error:", error);
-
-      return "An error occurred while Closing connection.";
-    }
   };
 
   const handleStatusChange = (index, status, value, type, isFile) => {

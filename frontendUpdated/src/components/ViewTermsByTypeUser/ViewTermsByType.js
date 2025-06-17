@@ -647,6 +647,15 @@ export const ViewTermsByType = () => {
     connection,
     guestLocker
   } = location.state || {};
+
+
+    useEffect(() => {
+    if (connectionDetails || connection) {
+      fetchTrackerData(connectionDetails || connection)
+      fetchTrackerDataReverse(connectionDetails || connection);
+    }
+  }, [connectionDetails, connection]);
+
   useEffect(() => {
     if (pdfData?.validity_until) {
       setEditableValidityUntil(pdfData.validity_until.split('T')[0]);
@@ -691,12 +700,7 @@ export const ViewTermsByType = () => {
     connectionLifeCycle();
   })
 
-  useEffect(() => {
-    if (connectionDetails) {
-      fetchTrackerData(connectionDetails)
-      fetchTrackerDataReverse(connectionDetails);
-    }
-  }, [connectionDetails]);
+
   useEffect(() => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
@@ -2988,16 +2992,16 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
   const handleLockerClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   }
- const onRevokeButtonClick = async () => {
-    setRevokeState(false);
-    handleRevoke();
-    setIsModalOpens(false);
-    // setModalMessage({ message: message, type: "info" });
-    // setIsModalOpen(true);
-  };
+//  const onRevokeButtonClick = async () => {
+//     setRevokeState(false);
+//     handleRevoke();
+//     setIsModalOpens(false);
+//      setModalMessage({ message: "", type: "" });
+//     // setIsModalOpen(true);
+//   };
 
   
-    const handleRevoke = async () => {
+    const onRevokeButtonClick = async () => {
       const token = Cookies.get("authToken");
       const formData = new FormData();
       formData.append("connection_name", connectionDetails?.connection_name);
@@ -3023,6 +3027,8 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
   
         const data = await response.json();
         console.log("revoke consent", data);
+        setIsModalOpens(false)
+        setIsModalOpen(false)
         if (response.status === 200) {
           // setMessage("Consent revoked successfully.");
           setModalMessage({

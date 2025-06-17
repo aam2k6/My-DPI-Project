@@ -272,7 +272,8 @@ export const ViewHostTermsByType = () => {
     handleRevoke();
     setIsModalOpen(false);
     // setModalMessage({ message: message, type: "info" });
-    // setIsModalOpen(true);
+    // setIsModalOpen(false);
+    setIsModalOpens(false);
   };
   useEffect(() => {
     if (connection || connectionDetails) {

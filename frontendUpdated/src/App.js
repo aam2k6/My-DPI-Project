@@ -40,6 +40,7 @@ import { AllLokers } from "./components/ViewLocker/Lockers";
 import { FreezeLocker } from "./components/Freeze/FreezeLocker";
 import { ConnectionTypes } from "./components/ConnectionTypes/ConnectionTypes";
 import { FreezeConnection } from "./components/Freeze/FreezeConnection";
+import { ConsentDashboard } from "./components/ConsentDashboard/ConsentDashboard";
 
 import { ConnectionProvider } from "./ConnectionContext";
 import DirectoryPage from "./components/Directory/directory";
@@ -390,6 +391,15 @@ function App() {
                 }
               />
 
+              <Route
+                path="/consent-dashboard"
+                element={
+                  <ProtectedRoute>
+                    <ConsentDashboard />
+                    <Scanner />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="*" element={<h1>Page Not Found</h1>} />
             </Routes>
           </ConnectionProvider>

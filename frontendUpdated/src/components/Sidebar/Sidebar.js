@@ -188,16 +188,24 @@ const handleSenderUserClick = (user) => {
 
   const handleHostConnectionClick = (connection, connectionType) => {
     console.log("navigate", connection, connectionType);
+    if(connection.connection_status == "established" || connection.connection_status == "live") {
     navigate("/guest-terms-review", { state: { connection, connectionType } });
+    } else {
+      alert("Connection has been " + connection.connection_status + ". You cannot navigate further.");
+    }
   };
 
   const handleRejectConnectionClick = (extraData) => {
     console.log("extraData", extraData);
+    if(extraData.connection_info.connection_status == "established" || extraData.connection_info.connection_status == "live") {
     if (extraData?.rejector_role === "Guest") {
       navigate('/guest-terms-review', { state: { connection:extraData.connection_info, connectionType:extraData.connection_type } });
     } else if (extraData?.rejector_role === "Host") {
       navigate('/host-terms-review', { state: { connection:extraData.connection_info, connectionType:extraData.connection_type } });
     }
+  } else {
+    alert("Connection has been " + extraData.connection_info.connection_status + ". You cannot navigate further.");
+  }
   }
 // Sender user click
   const SenderUserLink = ({ user }) => (
@@ -231,7 +239,7 @@ const handleSenderUserClick = (user) => {
 // Host connection click
 
   const HostConnectionLink =  ({connection, connectionType}) => (
-    <span style={linkStyle}onClick={() => handleHostConnectionClick(connection, connectionType)}>
+    <span style={linkStyle} onClick={() => handleHostConnectionClick(connection, connectionType)}>
       {connection?.connection_type_name}
     </span>
   )

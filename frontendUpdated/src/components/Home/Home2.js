@@ -388,7 +388,7 @@ export const Home2 = () => {
                 {/* Consent Dashboard Button */}
                 <button
                   className="primary-button"
-                  onClick={handleConsentDashboardClick}
+                 onClick={() => navigate("/consent-dashboard")}
                   // Inline styles for dynamic padding/font size on PC
                   style={{
                     fontSize: `${14 * scale}px`,

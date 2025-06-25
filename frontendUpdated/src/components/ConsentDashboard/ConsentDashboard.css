@@ -1,0 +1,238 @@
+/* Main Card Style */
+.consent-dashboard {
+  /* background: linear-gradient(to bottom right,rgb(164, 195, 244),rgb(120, 156, 255)); Deeper blue */
+  background: #fff;
+  color: #fff;
+  border-radius: 20px;
+  padding: 24px;
+ width: 100%;
+max-width: 500px;
+box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+
+
+/* Title */
+.consent-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+  color:rgb(39, 148, 216)
+}
+
+/* Grid for Stat Boxes */
+ .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 3 columns */
+  gap: 16px;
+}
+
+.stat-grids {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  gap: 16px;
+}
+
+/* Applies to the whole heading */
+.consent-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e50; /* Deep navy/gray */
+  text-shadow: 1px 1px 2px #b0bec5; /* Soft cool highlight for depth */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Moves the arrow slightly down */
+.align-arrow {
+  display: inline-block;
+  margin-top: 3px;
+  vertical-align: top;
+}
+
+/* Arrow inherits classic styling too */
+.align-arrow i {
+  font-size: 30px;
+  color: #2c3e50;
+  margin-top: 3px;
+  text-shadow: 1px 1px 2px #b0bec5;
+}
+
+/* Stat Box Base */
+.stat-box {
+  width: 100%;
+  min-height: 80px;
+  background-color: #ffffff;
+  color: #1E293B;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-2px);
+}
+
+/* Full-width Stat Box (spans both columns) */
+.full-width {
+  grid-column: span 4;
+}
+
+/* Labels & Values */
+.stat-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: inherit;
+}
+
+/* Numeric Value + Subtext (like "10 users") */
+
+/* Responsive layout */
+.dashboard-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 64px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+}
+
+/* Custom Color Classes */
+.stat-success {
+  background-color: #10B981; /* emerald-500 */
+  color: #ffffff;
+}
+
+.stat-warning {
+  background-color:rgb(255, 179, 47); /* amber-500 */
+  color: #ffffff;
+}
+
+.stat-secondary {
+  background-color: #6B7280; /* gray-500 */
+  color: #ffffff;
+}
+
+.stat-info {
+  background-color:rgb(94, 155, 252); /* blue-500 */
+  color: #ffffff;
+}
+
+.stat-primary {
+  /* background-color: #007bff; indigo-500 */
+  border: 2px solid #007bff;
+  color: #007bff;
+}
+
+.stat-default {
+  background-color: #F3F4F6; /* gray-100 */
+  color: #111827;
+}
+
+@media screen and (max-width: 1024px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stat-grids {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .full-width {
+    grid-column: span 2;
+  }
+}
+
+/* For mobile (1 per row) */
+@media screen and (max-width: 350px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .stat-grids {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: span 1;
+  }
+}
+.primary-button {
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.primary-button:hover {
+  background-color: #1D4ED8;
+}
+
+.text-button {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.consent-dashboard-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 60px;
+  padding: 20px 40px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+/* .consent-dashboard-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+} */
+
+@media screen and (max-width: 400px) {
+  .consent-dashboard-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+}
+
+.back-button {
+  font-size: 14px;
+  padding: 10px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+}

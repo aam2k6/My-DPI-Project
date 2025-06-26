@@ -15,13 +15,13 @@ box-sizing: border-box;
 
 
 /* Title */
-.consent-title {
-  font-size: 22px;
+/* .consent-title {
+  font-size: 2px;
   font-weight: 600;
   margin-bottom: 20px;
   text-align: center;
   color:rgb(39, 148, 216)
-}
+} */
 
 /* Grid for Stat Boxes */
  .stat-grid {
@@ -38,13 +38,13 @@ box-sizing: border-box;
 
 /* Applies to the whole heading */
 .consent-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   color: #2c3e50; /* Deep navy/gray */
   text-shadow: 1px 1px 2px #b0bec5; /* Soft cool highlight for depth */
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap:4px;
 }
 
 /* Moves the arrow slightly down */
@@ -209,15 +209,15 @@ box-sizing: border-box;
   flex-wrap: wrap;
 }
 
-/* .consent-dashboard-title {
+.consent-dashboard-title {
   font-size: 28px;
   font-weight: 700;
   color: #2c3e50;
-} */
+}
 
 @media screen and (max-width: 400px) {
   .consent-dashboard-title {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
 }
 }
@@ -236,3 +236,12 @@ box-sizing: border-box;
 .back-button:hover {
   background-color: #0056b3;
 }
+
+@media (max-width: 768px) {
+  .filter-bar .input-group,
+  .filter-bar input,
+  .filter-bar .btn-group {
+    width: 100% !important;
+  }
+}
+

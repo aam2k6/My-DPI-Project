@@ -11,6 +11,7 @@ import { Box } from "@mui/material";
 
 export const ConsentDashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("incoming");
   const [activeMenu, setActiveMenu] = useState("Home");
   const [openSubmenus, setOpenSubmenus] = useState({
     directory: false,
@@ -112,7 +113,84 @@ export const ConsentDashboard = () => {
     </div>
   </div>
 </div>
+<div
+  className="container bg-white rounded p-3 mt-4"
+>
 
+  <div className="row g-3 align-items-center">
+
+    {/* Search Input */}
+    <div className="col-lg-3 col-md-6 col-12">
+      <div className="input-group">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search Connections by Name"
+          aria-label="Search Connection"
+        />
+        <span className="input-group-text">
+          <i className="bi bi-search"></i>
+        </span>
+      </div>
+    </div>
+
+    {/* Date Picker */}
+    <div className="col-lg-2 col-md-6 col-12">
+      <div className="input-group">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="dd-mm-yyyy"
+          aria-label="Select Date"
+          onFocus={(e) => (e.target.type = "date")}
+          onBlur={(e) => (e.target.type = "text")}
+        />
+        <span className="input-group-text">
+          <i className="bi bi-calendar3"></i>
+        </span>
+      </div>
+    </div>
+
+    {/* Sort Dropdown */}
+    <div className="col-lg-2 col-md-6 col-12">
+        <div className="input-group">
+             <select className="form-select" aria-label="Sort by locker">
+                <option defaultValue>Sort by Locker</option>
+                <option value="1">Sort by Connection status</option>
+                {/* <option value="2">Sort by Date</option> */}
+             </select>
+             <span className="input-group-text">
+                <i className="bi bi-funnel"></i>
+             </span>
+        </div>
+    </div>
+
+<div className="col-lg-5 col-md-6 col-12">
+  {/* Wrap the buttons in a div with the 'btn-group' class */}
+  <div className="btn-group gap-4 w-100" role="group" aria-label="Connection Type">
+    <button
+      type="button"
+      className={`btn ${activeTab === 'incoming' ? 'btn-primary' : ''}`}
+      onClick={() => setActiveTab('incoming')}
+      style={{borderRadius:"4px", border:"2px solid #007bff"}}
+    >
+      INCOMING CONNECTIONS
+    </button>
+    <button
+      type="button"
+      className={`btn ${activeTab === 'outgoing' ? 'btn-primary' : ''}`}
+      onClick={() => setActiveTab('outgoing')}
+      style={{borderRadius:"4px", border:"2px solid #007bff"}}
+    >
+      OUTGOING CONNECTIONS
+    </button>
+  </div>
+</div>
+
+
+
+  </div>
+</div>
     </>
   );
 };

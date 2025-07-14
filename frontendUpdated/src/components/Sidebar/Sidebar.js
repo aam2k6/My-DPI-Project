@@ -172,14 +172,14 @@ const Sidebar = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isNotificationsOpen]);
 
-    const linkStyle = {
-      color: '#0d6efd',        // Bootstrap primary blue
-      textDecoration: 'none',  // Remove underline
-      fontWeight: '600',  
-      cursor: 'pointer',
-    };
+  const linkStyle = {
+    color: '#0d6efd',        // Bootstrap primary blue
+    textDecoration: 'none',  // Remove underline
+    fontWeight: '600',
+    cursor: 'pointer',
+  };
 
-const handleSenderUserClick = (user) => {
+  const handleSenderUserClick = (user) => {
     navigate('/target-user-view', { state: { user } });
   };
   const handleReceiverLockerClick = (locker, user) => {
@@ -188,8 +188,8 @@ const handleSenderUserClick = (user) => {
 
   const handleHostConnectionClick = (connection, connectionType) => {
     console.log("navigate", connection, connectionType);
-    if(connection.connection_status == "established" || connection.connection_status == "live") {
-    navigate("/guest-terms-review", { state: { connection, connectionType } });
+    if (connection.connection_status == "established" || connection.connection_status == "live") {
+      navigate("/guest-terms-review", { state: { connection, connectionType } });
     } else {
       alert("Connection has been " + connection.connection_status + ". You cannot navigate further.");
     }
@@ -197,24 +197,24 @@ const handleSenderUserClick = (user) => {
 
   const handleRejectConnectionClick = (extraData) => {
     console.log("extraData", extraData);
-    if(extraData.connection_info.connection_status == "established" || extraData.connection_info.connection_status == "live") {
-    if (extraData?.rejector_role === "Guest") {
-      navigate('/guest-terms-review', { state: { connection:extraData.connection_info, connectionType:extraData.connection_type } });
-    } else if (extraData?.rejector_role === "Host") {
-      navigate('/host-terms-review', { state: { connection:extraData.connection_info, connectionType:extraData.connection_type } });
+    if (extraData.connection_info.connection_status == "established" || extraData.connection_info.connection_status == "live") {
+      if (extraData?.rejector_role === "Guest") {
+        navigate('/guest-terms-review', { state: { connection: extraData.connection_info, connectionType: extraData.connection_type } });
+      } else if (extraData?.rejector_role === "Host") {
+        navigate('/host-terms-review', { state: { connection: extraData.connection_info, connectionType: extraData.connection_type } });
+      }
+    } else {
+      alert("Connection has been " + extraData.connection_info.connection_status + ". You cannot navigate further.");
     }
-  } else {
-    alert("Connection has been " + extraData.connection_info.connection_status + ". You cannot navigate further.");
   }
-  }
-// Sender user click
+  // Sender user click
   const SenderUserLink = ({ user }) => (
     <span style={linkStyle} onClick={() => handleSenderUserClick(user)}>
       {user.username}
     </span>
   );
 
-// Reject user click
+  // Reject user click
   const RejectUserLink = ({ extraData }) => (
     <>
       {extraData.rejector_role === "Guest" ? (
@@ -229,60 +229,132 @@ const handleSenderUserClick = (user) => {
     </>
   );
 
-// Receiver locker click
+  // Receiver locker click
   const ReveiverLockerLink = ({ locker, user }) => (
     <span style={linkStyle} onClick={() => handleReceiverLockerClick(locker, user)}>
       {locker.name}
     </span>
   );
 
-// Host connection click
+  // Host connection click
 
-  const HostConnectionLink =  ({connection, connectionType}) => (
+  const HostConnectionLink = ({ connection, connectionType }) => (
     <span style={linkStyle} onClick={() => handleHostConnectionClick(connection, connectionType)}>
       {connection?.connection_type_name}
     </span>
   )
 
-  const RejectConnectionLink =  ({extraData}) => (
+  const RejectConnectionLink = ({ extraData }) => (
     <span style={linkStyle} onClick={() => handleRejectConnectionClick(extraData)}>
       {extraData?.connection_type?.connection_type_name}
     </span>
   )
 
 
-const renderNotificationMessage = (notification) => {
-  const { notification_type, extra_data } = notification;
+  const renderNotificationMessage = (notification) => {
+    const { notification_type, extra_data } = notification;
 
-  switch (notification_type) {
-    case 'connection_created':
-      return (
-        <p>
-          <SenderUserLink user={extra_data.guest_user} /> has connected to the connection type {" "}
-          <HostConnectionLink connection = {extra_data.connection_info} connectionType={extra_data.connection_type} /> associated with Locker{' '}
-          <ReveiverLockerLink locker={extra_data.host_locker} user={extra_data.host_user} />.
-        </p>
-      );
+    switch (notification_type) {
+      case 'connection_created':
+        return (
+          <>
+            <p>
+              <SenderUserLink user={extra_data.guest_user} /> has connected to the connection type {" "}
+              <HostConnectionLink connection={extra_data.connection_info} connectionType={extra_data.connection_type} /> associated with Locker{' '}
+              <ReveiverLockerLink locker={extra_data.host_locker} user={extra_data.host_user} />.
+            </p>
+            <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
+          </>
+        );
 
-    case 'resource_rejected':
-      return (
-        <p>
-          {extra_data?.rejector_role} <RejectUserLink extraData={extra_data} /> has rejected the resource '{extra_data.resource_name}' from the connection <RejectConnectionLink extraData={extra_data}/>.<br/>
+      case 'resource_rejected':
+        return (
+          <p>
+            {extra_data?.rejector_role} <RejectUserLink extraData={extra_data} /> has rejected the resource '{extra_data.resource_name}' from the connection <RejectConnectionLink extraData={extra_data} />.<br />
             Reason: {extra_data?.rejection_reason}
-        </p>
-      );
+          </p>
+        );
 
-    case 'resource_deleted':
-      return (
-        <p>{notification.message}</p>
-      );
+      case 'resource_deleted':
+        return (
+          <>
+            <p>{notification.message}</p>
+            <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
+          </>
+        );
+      case 'revert_approval_pending':
+        return (
+          <>
+            <p className="text-center">{notification.message}</p>
+            {/* <small>{new Date(selectedNotification.created_at).toLocaleString()}</small> */}
 
-    default:
-      return <p>{notification.message}</p>;
-  }
-};
-  console.log("curruser", curruser)
-  console.log("typeof username:", typeof curruser?.username);
+            <div
+              className="d-flex flex-wrap justify-content-center align-items-center gap-2 mt-3"
+              style={{ minWidth: "220px" }}
+            >
+              <button
+                className="btn btn-sm btn-success"
+                style={{ minWidth: "80px", padding: "4px 10px" }}
+                onClick={() => handleRevertClick(notification.extra_data.xnode_id)}
+              >
+                <i className="bi bi-check2-circle"></i> Approve
+              </button>
+              <button
+                className="btn btn-sm btn-danger"
+                style={{ minWidth: "80px", padding: "4px 10px" }}
+                onClick={closePopup}
+              >
+                <i className="bi bi-x-circle"></i> Reject
+              </button>
+            </div>
+
+          </>
+
+
+        )
+
+      default:
+        return <p>{notification.message}</p>;
+    }
+  };
+ const handleRevertClick = async (xnodeId) => {
+     console.log("Revert clicked for xnodeId:", xnodeId);
+    //  const revert_reason = prompt("Enter reason for reverting consent:");
+    //  if (!revert_reason) return;
+ 
+    //  setLoadingResourceId(xnodeId);
+    //  setMessage("");
+ 
+     try {
+       const token = Cookies.get("authToken");
+ 
+       const response = await fetch(`${frontend_host}/revert-consent/`, {
+         method: "POST",
+         headers: {
+           Authorization: `Basic ${token}`,
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           xnode_id: xnodeId,
+          //  revert_reason: revert_reason.trim(),
+         }),
+       });
+ 
+       const data = await response.json();
+ 
+       if (data.success) {
+          alert(data.message)      
+          setSelectedNotification(null);
+ 
+       } else {
+        alert(data.message || "Revert failed");
+       }
+     } catch (error) {
+       alert("An error occurred while reverting consent.");
+     } finally {
+      //  setLoadingResourceId(null);
+     }
+   };
   return (
     <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
       <div className="sidebar-header">
@@ -306,11 +378,11 @@ const renderNotificationMessage = (notification) => {
           {isNotificationsOpen && (
             <div className="notification-modal right">
               <div className="header-div">
-              <h4>Notifications</h4>
-               <Link  to="/view-all-notifications" className="view-all-btn">
+                <h4>Notifications</h4>
+                <Link to="/view-all-notifications" className="view-all-btn">
                   View All
                 </Link>
-                </div>
+              </div>
               <hr style={{ border: "none", margin: "10px 0", borderTop: "2px solid #ccc" }}></hr>
               {/* {error && <p className="error">{error}</p>} */}
               {notifications.length > 0 ? (
@@ -586,8 +658,8 @@ const renderNotificationMessage = (notification) => {
 
             <div className="card p-3 shadow-lg border-0">
               {renderNotificationMessage(selectedNotification)}
-              <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
-              
+              {/* <small>{new Date(selectedNotification.created_at).toLocaleString()}</small> */}
+
               {/* <p>{selectedNotification.message}</p> */}
               {/* <small>{new Date(selectedNotification.created_at).toLocaleString()}</small> */}
             </div>

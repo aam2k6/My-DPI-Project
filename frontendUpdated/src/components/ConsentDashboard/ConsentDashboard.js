@@ -4,6 +4,7 @@ import { usercontext } from "../../usercontext";
 import "./ConsentDashboard.css";
 import Cookies from "js-cookie";
 import { frontend_host } from "../../config";
+import Modal from "../Modal/Modal.jsx";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
@@ -29,30 +30,32 @@ export const ConsentDashboard = () => {
       ...prev,
       [menu]: !prev[menu],
     }));
-const [statsData, setStatsData] = useState({
-  incoming: {
-    total_Users: 0,
-    live: 0,
-    established: 0,
-    closed: 0,
-    total_connections_type: 0
-  },
-  outgoing: {
-    total_Connections: 0,
-    live: 0,
-    established: 0,
-    closed: 0
-  }
-});
-
+  const [statsData, setStatsData] = useState({
+    incoming: {
+      total_Users: 0,
+      live: 0,
+      established: 0,
+      closed: 0,
+      total_connections_type: 0
+    },
+    outgoing: {
+      total_Connections: 0,
+      live: 0,
+      established: 0,
+      closed: 0
+    }
+  });
+  const [loadingResourceId, setLoadingResourceId] = useState(null);
   const [connectionUsers, setConnectionUsers] = useState({});
   const [openUserDetails, setOpenUserDetails] = useState({});
   const [resourceLists, setResourceLists] = useState({});
+  const [resourceViewModal, setResourceViewModal] = useState(false);
+  const [resourceData, setResourceData] = useState(null)
   const [outgoingResourceLists, setOutgoingResourceLists] = useState({});
   const [loadingOutgoingResource, setLoadingOutgoingResource] = useState({});
-
-
-
+  const [message, setMessage] = useState("");
+  const [modalMessage, setModalMessage] = useState({ message: "", type: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { curruser } = useContext(usercontext);
@@ -64,45 +67,42 @@ const [statsData, setStatsData] = useState({
   };
 
   useEffect(() => {
-  fetchStats();
-}, []);
+    fetchStats();
+  }, []);
 
 
-const fetchStats = async () => {
-  try {
-    const token = Cookies.get("authToken");
-    const response = await fetch(`${frontend_host}/stats/`, {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+  const fetchStats = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`${frontend_host}/stats/`, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    const data = await response.json();
-    console.log("Response status:", response.status);
-    console.log("Raw stats data:", data);
+      const data = await response.json();
+      console.log("Response status:", response.status);
+      console.log("Raw stats data:", data);
 
-    // ✅ Only check for response.ok
-    if (!response.ok) {
-      console.warn("Stats fetch failed with status:", response.status);
-      return;
+      // ✅ Only check for response.ok
+      if (!response.ok) {
+        console.warn("Stats fetch failed with status:", response.status);
+        return;
+      }
+
+      // ✅ Update state directly
+      setStatsData({
+        incoming: data.incoming,
+        outgoing: data.outgoing
+      });
+
+    } catch (error) {
+      console.error("Error fetching stats:", error);
     }
+  };
 
-    // ✅ Update state directly
-    setStatsData({
-      incoming: data.incoming,
-      outgoing: data.outgoing
-    });
-
-  } catch (error) {
-    console.error("Error fetching stats:", error);
-  }
-};
-
-
-
-console.log("cczc", statsData);
   const handleToggleOutgoing = (index) => {
     setOpenOutgoingCards((prev) => ({
       ...prev,
@@ -154,8 +154,8 @@ console.log("cczc", statsData);
 
   useEffect(() => {
 
-   
-    
+
+
     const fetchIncomingConnections = async () => {
       try {
         const token = Cookies.get("authToken");
@@ -223,6 +223,7 @@ console.log("cczc", statsData);
   };
 
   const fetchResources = async (user, connectionIndex, userIndex) => {
+    console.log("Calling fetchResources with:", user, connectionIndex, userIndex);
     const key = `${connectionIndex}-${userIndex}`;
     const connectionId = user.connection_id;
     setLoadingResources(prev => ({ ...prev, [key]: true }));
@@ -303,7 +304,233 @@ console.log("cczc", statsData);
     }
   };
 
+  const handleRevertClick = async (xnodeId, conn, index) => {
+    console.log("Revert clicked for xnodeId:", xnodeId, conn, index);
+    const revert_reason = prompt("Enter reason for reverting consent:");
+    if (!revert_reason) return;
 
+    setLoadingResourceId(xnodeId);
+    setMessage("");
+
+    try {
+      const token = Cookies.get("authToken");
+
+      const response = await fetch(`${frontend_host}/revert-consent/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          xnode_id: xnodeId,
+          revert_reason: revert_reason.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setModalMessage({
+          message: data.message || "Revert successful",
+          type: 'success',
+        });
+        setIsModalOpen(true);
+        console.log("activeTab", activeTab)
+
+        fetchOutgoingResources(conn, index)
+
+
+      } else {
+        setModalMessage({
+          message: data.error || "Failed to revert consent",
+          type: 'failure',
+        });
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      // console.error("Error during revert request:", error);
+      setModalMessage({
+        message: error || "Error during revert request",
+        type: 'failure',
+      });
+      setIsModalOpen(true);
+    } finally {
+      setLoadingResourceId(null);
+    }
+  };
+
+  const handleIncomingRevertClick = async (xnodeId, user, index, uIdx) => {
+    console.log("Revert clicked for xnodeId:", xnodeId, user, index, uIdx);
+    const revert_reason = prompt("Enter reason for reverting consent:");
+    if (!revert_reason) return;
+
+    setLoadingResourceId(xnodeId);
+    setMessage("");
+
+    try {
+      const token = Cookies.get("authToken");
+
+      const response = await fetch(`${frontend_host}/revert-consent/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          xnode_id: xnodeId,
+          revert_reason: revert_reason.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setModalMessage({
+          message: data.message || "Revert successful",
+          type: 'success',
+        });
+        setIsModalOpen(true);
+        console.log("activeTab", activeTab)
+
+        // console.log("Calling fetchResources withss:", user, index, uIdx);
+        fetchResources(user, index, uIdx)
+
+      } else {
+        setModalMessage({
+          message: data.error || "Failed to revert consent",
+          type: 'failure',
+        });
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      // console.error("Error during revert request:", error);
+      setModalMessage({
+        message: error || "Error during revert request",
+        type: 'failure',
+      });
+      setIsModalOpen(true);
+    } finally {
+      setLoadingResourceId(null);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalMessage({ message: "", type: "" });
+  }
+
+  const getTrueKeys = (obj) => {
+    return Object.entries(obj)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+  };
+
+  const handleViewDetails = async (xnode_id) => {
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
+        /host/,
+        frontend_host
+      ), {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        // throw new Error(errorData.message || 'Failed to access the resource');
+      }
+
+      const data = await response.json();
+      console.log(data);
+      const { xnode } = data;
+      if (xnode) {
+        setResourceData(xnode)
+        setResourceViewModal(true)
+      } else {
+        // setError('Unable to retrieve the file link.');
+        // console.log(error);
+      }
+    } catch (err) {
+      // setError(`Error: ${err.message}`);
+      console.log(err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  const postConditionsKeys = getTrueKeys(resourceData?.post_conditions || {});
+
+  const handleViewClose = () => {
+    setResourceViewModal(false);
+    setResourceData(null);
+  };
+
+  const handleuserclick = (user) => {
+    if (curruser && curruser.username && user.username === curruser.username) {
+      navigate('/home');
+    } else {
+      navigate(`/target-user-view`, { state: { user } });
+    }
+  };
+
+  const navigateDisplayTerms = (user, connection) => {
+    console.log("Navigating to display terms for connection:", connection);
+    console.log("Navigating to display terms for connection:", user);
+    console.log("Navigating to display terms for connection:", connection.connection_type_name,
+      user.host_locker.name,
+      connection.connection_description,
+      user.created_time,
+      user.validity_time,
+      user.host_user.username,
+      user.host_locker,
+      user.host_locker.name,
+      connection
+    );
+
+    navigate("/display-terms", {
+      state: {
+        connectionTypeName: connection.connection_type_name, // Extracted from connection object
+        hostLockerName: user?.host_locker?.name,
+        // connectionTypeName: connection.connection_type_name,
+        connectionDescription: connection.connection_description,
+        createdtime: user.created_time,
+        validitytime: user.validity_time,
+        hostUserUsername: user.host_user.username,
+        locker: user.host_locker,
+        hostLocker: user.host_locker.name,
+        // connectionType: connectionType,
+        connection: connection,
+        viewConsentDashboard: true,
+      }
+    })
+
+  }
+
+  const handleIncomingConsent = (user, connection) => {
+    navigate("/show-connection-terms", {
+      state: {
+        connectionTypeName: connection.connection_type_name, // Extracted from connection object
+        hostLockerName: user?.host_locker?.name,
+        connectionName: user?.connection_name,
+        // connectionTypeName: connection.connection_type_name,
+        connectionDescription: connection.connection_description,
+        createdtime: user.created_time,
+        validitytime: user.validity_time,
+        hostUserUsername: user.host_user.username,
+        locker: user.host_locker,
+        guestLockerName: user?.guest_locker.name,
+        guestUserUsername: user.guest_user.username,
+        hostLocker: user.host_locker.name,
+        // connectionType: connectionType,
+        connection: connection,
+        viewConsentDashboard: true,
+      }
+    })
+  }
 
 
   return (
@@ -441,7 +668,7 @@ console.log("cczc", statsData);
 
           <div className="col-lg-3 col-md-6 col-12">
           </div>
-          
+
 
           <div className="col-lg-5 col-md-6 col-12">
             {/* Wrap the buttons in a div with the 'btn-group' class */}
@@ -550,11 +777,13 @@ console.log("cczc", statsData);
                                             <p className="mb-3"><strong>Valid Till:</strong> {new Date(user.validity_time).toLocaleString()}</p>
                                           </div>
 
-                                          <div className="col-md-2">
+                                          {/* <div className="col-md-2">
                                             <span className="me-2 mb-3">Actions:</span>
-                                            <button className="btn btn-sm btn-light rounded-circle me-2">I</button>
-                                            <button className="btn btn-sm btn-light rounded-circle">C</button>
-                                          </div>
+                                            <button className="btn btn-sm btn-light rounded-circle me-2" onClick={() => navigateDisplayTerms(user, conn)}>I</button>
+                                            {user.connection_status !== "closed" && user.connection_status !== "revoked" && (
+                                              <button className="btn btn-sm btn-light rounded-circle" onClick={() => handleIncomingConsent(user, conn)}>C</button>
+                                            )}
+                                          </div> */}
                                         </div>
                                         <div className="row mt-3">
                                           <div className="col-sm-12 col-md-6 mb-3">
@@ -577,15 +806,15 @@ console.log("cczc", statsData);
                                                   {resourceLists[`${index}-${uIdx}`].length > 0 ? (
                                                     resourceLists[`${index}-${uIdx}`].map((resource, rIdx) => (
                                                       <li key={rIdx} className="list-group-item"
-                                                        style={{ marginLeft: "-2px", marginBottom: "0"}}
 
-                                                        id={
-                                                          resource.xnode_Type === "INODE"
-                                                            ? "documents"
-                                                            : resource.xnode_Type === "SNODE"
-                                                              ? "documents-byConfer"
-                                                              : "documents-byShare"
-                                                        }
+
+                                                      // id={
+                                                      //   resource.xnode_Type === "INODE"
+                                                      //     ? "documents"
+                                                      //     : resource.xnode_Type === "SNODE"
+                                                      //       ? "documents-byConfer"
+                                                      //       : "documents-byShare"
+                                                      // }
 
                                                       // onMouseEnter={() => setHovered(xnode.id)}
                                                       // onMouseLeave={() => setHovered(null)}
@@ -593,13 +822,32 @@ console.log("cczc", statsData);
                                                         <div>
                                                           <span
                                                             // onClick={() => handleClick(xnode.id)}
-                                                            style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px" }}
+                                                            style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px", marginLeft: "-2px" }}
+                                                            id={
+                                                              resource.xnode_Type === "INODE"
+                                                                ? "documents"
+                                                                : resource.xnode_Type === "SNODE"
+                                                                  ? "documents-byConfer"
+                                                                  : "documents-byShare"
+                                                            }
                                                           >
                                                             {resource.resource_name}
                                                           </span>
-                                                          <button type="button" className="btn btn-outline-primary float-end" style={{ borderRadius: "4px", border: "2px solid #007bff", fontSize: "70%", padding: "3px 10px" }}>
-                                                            Revert
-                                                          </button>
+                                                          <span className="float-end mt-1">
+                                                            <i className="bi bi-info-square "
+                                                              data-tooltip-id="tooltip"
+                                                              data-tooltip-content="View Details"
+                                                              style={{ cursor: "pointer", fontSize: "20px", color: "#007bff" }}
+                                                              onClick={() => handleViewDetails(resource.id)}
+                                                            />{" "} &nbsp;
+
+                                                            <button type="button" className="btn btn-outline-primary" onClick={() => handleIncomingRevertClick(resource.id, user, index, uIdx)} style={{ borderRadius: "4px", border: "2px solid #007bff", fontSize: "80%", padding: "3px 10px" }} disabled={loadingResourceId === resource.id}>
+                                                              {loadingResourceId === resource.id ? "Reverting..." : "Revert"}
+
+                                                            </button>
+
+                                                          </span>
+
 
 
 
@@ -680,7 +928,7 @@ console.log("cczc", statsData);
                       </div>
 
                       {openOutgoingCards[index] && (
-                        <div className="card-body bg-white p-4 rounded-3" style={{marginBottom:"15px"}}>
+                        <div className="card-body bg-white p-4 rounded-3" style={{ marginBottom: "15px" }}>
                           <div className="row">
                             <div className="col-md-5">
                               <p className="mb-3"><strong>Connection Type:</strong> {conn.connection_type_name}</p>
@@ -714,11 +962,11 @@ console.log("cczc", statsData);
                               <p className="mb-3"><strong>Valid Till:</strong> {new Date(conn.validity_time).toLocaleString()}</p>
                             </div>
 
-                            <div className="col-md-2">
+                            {/* <div className="col-md-2">
                               <span className="me-2 mb-3">Actions:</span>
                               <button className="btn btn-sm btn-light rounded-circle me-2">I</button>
                               <button className="btn btn-sm btn-light rounded-circle">C</button>
-                            </div>
+                            </div> */}
                           </div>
                           <div className="row mt-3">
                             <div className="col-sm-12 col-md-6 mb-3">
@@ -754,7 +1002,7 @@ console.log("cczc", statsData);
                                             <span style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px" }}>
                                               {resource.resource_name}
                                             </span>
-                                            <button
+                                            {/* <button
                                               type="button"
                                               className="btn btn-outline-primary float-end"
                                               style={{
@@ -765,7 +1013,32 @@ console.log("cczc", statsData);
                                               }}
                                             >
                                               Revert
-                                            </button>
+                                            </button> */}
+                                            <>
+                                              <span className="float-end mt-1">
+                                                <i className="bi bi-info-square "
+                                                  data-tooltip-id="tooltip"
+                                                  data-tooltip-content="View Details"
+                                                  style={{ cursor: "pointer", fontSize: "20px", color: "#007bff" }}
+                                                  onClick={() => handleViewDetails(resource.id)}
+                                                />{" "} &nbsp;
+                                                <button
+                                                  type="button"
+                                                  className="btn btn-outline-primary float-end"
+                                                  style={{
+                                                    borderRadius: "4px",
+                                                    border: "2px solid #007bff",
+                                                    fontSize: "70%",
+                                                    padding: "3px 10px",
+                                                  }}
+                                                  onClick={() => handleRevertClick(resource.id, conn, index)}
+                                                  disabled={loadingResourceId === resource.id}
+                                                >
+
+                                                  {loadingResourceId === resource.id ? "Reverting..." : "Revert"}
+                                                </button>
+                                              </span>
+                                            </>
                                           </div>
                                         </li>
                                       ))
@@ -796,6 +1069,81 @@ console.log("cczc", statsData);
           </div>
         )}
       </div>
+      {isModalOpen && (
+        <Modal
+          message={modalMessage.message}
+          onClose={handleCloseModal}
+          type={modalMessage.type}
+        // revoke={revokeState}
+        // onRevoke={() => onRevokeButtonClick(conndetails.connection_id)}
+        // viewTerms={() => navigateToConnectionTerms(conndetails)}
+        />
+      )}
+
+      {resourceViewModal && (
+        <div className="edit-modal ">
+          <div className="modal-content">
+            {/* Close Button */}
+            <div className="close-detail">
+              <button
+                type="button"
+                className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center border-0 bg-transparent"
+                onClick={handleViewClose}
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  backgroundColor: "#f8d7da", // Light red for a subtle look
+                  color: "#721c24", // Darker red for contrast
+                  boxShadow: "0 3px 10px rgba(0, 0, 0, 0.2)",
+                  cursor: "pointer",
+                  transition: "0.3s ease-in-out",
+                }}
+                aria-label="Close"
+              >
+                <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
+              </button>
+            </div>
+            <h5 className="fw-bold  mb-1">Resource Details</h5>
+
+            <div className="card p-3 shadow-lg border-0">
+              <div className="d-flex justify-content-between border-bottom pb-2">
+                <span className="fw-bold">Resource Name:</span>
+                <span>{resourceData.resource_name}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Created at:</span>
+                <span>{new Date(resourceData.created_at).toLocaleString()}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Validity until:</span>
+                <span>{new Date(resourceData.validity_until).toLocaleString()}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Creator:</span>
+                <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleuserclick(resourceData.creator_details)}>{capitalizeFirstLetter(resourceData.creator_username)}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Current owner:</span>
+                <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleuserclick(resourceData.current_owner_details)}>{capitalizeFirstLetter(resourceData.current_owner_username)}</span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2">
+                <span className="fw-bold">Connection Type:</span>
+                <span>{resourceData?.connection?.connection_type_name ? resourceData.connection.connection_type_name : "N/A"}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between border-bottom py-2 align-items-center">
+                <span className="fw-bold">Post Conditions:</span>
+                <span className=" text-end">
+                  {postConditionsKeys.length > 0 ? postConditionsKeys.join(", ") : "No conditions found"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      )}
+
     </>
   );
 };

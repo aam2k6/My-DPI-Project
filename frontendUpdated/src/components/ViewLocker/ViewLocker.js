@@ -91,6 +91,8 @@ export const ViewLocker = () => {
   const [allpostConditions, setAllPostConditions] = useState();
   const [postConditions, setPostConditions] = useState();
   const [isLockedPostConditions, setIsLockedPostConditions] = useState();
+  const [notifications, setNotifications] = useState([]);
+
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
   console.log("allOutgoingConnectionsr", allOutgoingConnections)
@@ -99,6 +101,35 @@ export const ViewLocker = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/get-notifications/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setNotifications(data.notifications || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching notifications");
+      }
+    };
+
+    if (curruser) {
+      fetchNotifications();
+    }
+  }, [curruser, isSidebarOpen]);
+
   console.log("connections", connections.outgoing_connections)
   useEffect(() => {
     // const token = Cookies.get("authToken");
@@ -135,10 +166,10 @@ export const ViewLocker = () => {
     if (locker) {
       // First update expired connection statuses
       // checkAndUpdateConnectionStatus().then(() => {
-        // Then fetch other dependent data
-        fetchConnectionsAndOtherConnections();
-        fetchResources();
-        fetchXnodes();
+      // Then fetch other dependent data
+      fetchConnectionsAndOtherConnections();
+      fetchResources();
+      fetchXnodes();
       // });
     }
 
@@ -166,6 +197,32 @@ export const ViewLocker = () => {
 
     if (selectedResourceId) fetchData();
   }, [selectedResourceId]);
+
+  const fetchNotifications = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`${frontend_host}/get-notifications/`, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setNotifications(data.notifications || []);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching notifications");
+    }
+  };
+
+
+
+
   const legendItems = [
     { color: "blue", label: "Your resource" },
     { color: "rgb(255, 38, 0)", label: "Shared resource" },
@@ -1524,17 +1581,20 @@ export const ViewLocker = () => {
     <div id="viewLocker">
       {/* <Navbar content={content} lockerAdmin={true} lockerObj={locker} breadcrumbs={breadcrumbs} /> */}
 
-<div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
-  <button
-    className="hamburger-btn me-2"
-    onClick={toggleSidebar}
-  >
-    <FontAwesomeIcon icon={faBars} />
-  </button>
-  <span className="fw-semibold fs-6 text-dark">
-    Hi, {capitalizeFirstLetter(curruser.username)}
-  </span>
-</div>
+      <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
+        <button
+          className="hamburger-btn me-2 position-relative"
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon icon={faBars} />
+          {notifications.some((n) => !n.is_read) && (
+            <span className="notification-dot"></span>
+          )}
+        </button>
+        <span className="fw-semibold fs-6 text-dark">
+          Hi, {capitalizeFirstLetter(curruser.username)}
+        </span>
+      </div>
 
 
       {/* <span className="fw-medium">Hi, Meghana</span> */}
@@ -1549,18 +1609,18 @@ export const ViewLocker = () => {
         locker_on={true}
       />
 
-       <div className="locker-header">
+      <div className="locker-header">
         <div className="locker-text">
           <div className="navbar-content">{content}</div>
         </div>
         <div className="navbar-breadcrumbs">{breadcrumbs}</div>
-    </div>
+      </div>
 
-      
-      
+
+
       <div className="containers" style={{ marginTop: "50px" }}>
-        
-    
+
+
         {/* <div className="locker-description">
           {locker ? ` ${locker.description}` : "Description"}
         </div> */}
@@ -2684,7 +2744,7 @@ export const ViewLocker = () => {
                                   [key]: e.target.checked,
                                 }));
                               }}
-                              style={{cursor:"pointer"}}
+                              style={{ cursor: "pointer" }}
                             />
                             <label className="form-check-label" htmlFor={key}>
                               {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -3039,7 +3099,7 @@ export const ViewLocker = () => {
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Creator:</span>
-                <span style={{color:"blue", cursor:"pointer", textDecoration:"underline"}} onClick={() => handleuserclick(resourceData.creator_details)}>{capitalizeFirstLetter(resourceData.creator_username)}</span>
+                <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => handleuserclick(resourceData.creator_details)}>{capitalizeFirstLetter(resourceData.creator_username)}</span>
               </div>
               <div className="d-flex justify-content-between border-bottom py-2">
                 <span className="fw-bold">Current owner:</span>
@@ -3061,7 +3121,7 @@ export const ViewLocker = () => {
         </div>
 
       )}
-      <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
+      // <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} />
 
     </div>
 

@@ -8,7 +8,7 @@ import Modal from "../Modal/Modal.jsx";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { Box } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import { FaUnlink } from 'react-icons/fa';
 
 
@@ -25,6 +25,12 @@ export const ConsentDashboard = () => {
   const [openCards, setOpenCards] = useState({});
   const [openOutgoingCards, setOpenOutgoingCards] = useState({});
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  // const[incomingRevertComment, setIncomingRevertComment] = useState("");
+  const [showIncomingRevertPopup, setShowIncomingRevertPopup] = useState(false);
+  const [showOutgoingRevertPopup, setShowOutgoingRevertPopup] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
+  const [revertReason, setRevertReason] = useState("");
+  const [currentData, setCurrentData] = useState({});
   const toggleSubmenu = (menu) =>
     setOpenSubmenus((prev) => ({
       ...prev,
@@ -60,6 +66,36 @@ export const ConsentDashboard = () => {
   const location = useLocation();
   const { curruser } = useContext(usercontext);
   const [loadingResources, setLoadingResources] = useState({});
+  const [notifications, setNotifications] = useState([]);
+  
+useEffect(() => {
+    const fetchNotifications = async () => {
+        try {
+            const token = Cookies.get("authToken");
+            const response = await fetch(`${frontend_host}/get-notifications/`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Basic ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    setNotifications(data.notifications || []);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching notifications");
+        }
+    };
+
+    if (curruser) {
+        fetchNotifications();
+    }
+}, [curruser, isSidebarOpen]);
+
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -304,12 +340,18 @@ export const ConsentDashboard = () => {
     }
   };
 
-  const handleRevertClick = async (xnodeId, conn, index) => {
-    console.log("Revert clicked for xnodeId:", xnodeId, conn, index);
-    const revert_reason = prompt("Enter reason for reverting consent:");
+  const outgoingRevertModal = (xnodeId, conn, index) => {
+    setCurrentData({ xnodeId, conn, index });
+    setShowOutgoingRevertPopup(true);
+    console.log("Outgoing Revert Modal Data:", { xnodeId, conn, index });
+  }
+
+  const handleOutgoingRevertClick = async () => {
+    console.log("Revert clicked for xnodeId:", currentData);
+    const revert_reason = revertReason;
     if (!revert_reason) return;
 
-    setLoadingResourceId(xnodeId);
+    setLoadingResourceId(currentData.xnodeId);
     setMessage("");
 
     try {
@@ -322,7 +364,7 @@ export const ConsentDashboard = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          xnode_id: xnodeId,
+          xnode_id: currentData.xnodeId,
           revert_reason: revert_reason.trim(),
         }),
       });
@@ -334,10 +376,13 @@ export const ConsentDashboard = () => {
           message: data.message || "Revert successful",
           type: 'success',
         });
+        setShowOutgoingRevertPopup(false);
+        setRevertReason("");
+        setCurrentData({});
         setIsModalOpen(true);
-        console.log("activeTab", activeTab)
+        // console.log("activeTab", activeTab)
 
-        fetchOutgoingResources(conn, index)
+        fetchOutgoingResources(currentData.conn, currentData.index)
 
 
       } else {
@@ -345,6 +390,9 @@ export const ConsentDashboard = () => {
           message: data.error || "Failed to revert consent",
           type: 'failure',
         });
+        setShowOutgoingRevertPopup(false);
+        setRevertReason("");
+        setCurrentData({});
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -353,18 +401,26 @@ export const ConsentDashboard = () => {
         message: error || "Error during revert request",
         type: 'failure',
       });
+      setShowOutgoingRevertPopup(false);
+      setRevertReason("");
+      setCurrentData({});
       setIsModalOpen(true);
     } finally {
       setLoadingResourceId(null);
     }
   };
-
-  const handleIncomingRevertClick = async (xnodeId, user, index, uIdx) => {
-    console.log("Revert clicked for xnodeId:", xnodeId, user, index, uIdx);
-    const revert_reason = prompt("Enter reason for reverting consent:");
+  const incomingRevertModal = (xnodeId, user, index, uIdx) => {
+    setCurrentData({ xnodeId, user, index, uIdx });
+    setShowIncomingRevertPopup(true);
+  }
+  const handleIncomingRevertClick = async () => {
+    console.log("Revert clicked for xnodeId:", currentData);
+    // const revert_reason = prompt("Enter reason for reverting consent:");
+    const revert_reason = revertReason;
+    console.log("Revert reason:", revert_reason);
     if (!revert_reason) return;
 
-    setLoadingResourceId(xnodeId);
+    setLoadingResourceId(currentData.xnodeId);
     setMessage("");
 
     try {
@@ -377,7 +433,7 @@ export const ConsentDashboard = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          xnode_id: xnodeId,
+          xnode_id: currentData?.xnodeId,
           revert_reason: revert_reason.trim(),
         }),
       });
@@ -389,17 +445,24 @@ export const ConsentDashboard = () => {
           message: data.message || "Revert successful",
           type: 'success',
         });
+        setShowIncomingRevertPopup(false);
+        setRevertReason("");
+        setCurrentData({});
         setIsModalOpen(true);
+
         console.log("activeTab", activeTab)
 
         // console.log("Calling fetchResources withss:", user, index, uIdx);
-        fetchResources(user, index, uIdx)
+        fetchResources(currentData.user, currentData.index, currentData.uIdx)
 
       } else {
         setModalMessage({
           message: data.error || "Failed to revert consent",
           type: 'failure',
         });
+        setShowIncomingRevertPopup(false);
+        setRevertReason("");
+        setCurrentData({});
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -408,6 +471,9 @@ export const ConsentDashboard = () => {
         message: error || "Error during revert request",
         type: 'failure',
       });
+      setShowIncomingRevertPopup(false);
+      setRevertReason("");
+      setCurrentData({});
       setIsModalOpen(true);
     } finally {
       setLoadingResourceId(null);
@@ -537,10 +603,13 @@ export const ConsentDashboard = () => {
     <>
       <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className="hamburger-btn me-2"
+          className="hamburger-btn me-2 position-relative"
           onClick={toggleSidebar}
         >
           <FontAwesomeIcon icon={faBars} />
+          {notifications.some((n) => !n.is_read) && (
+            <span className="notification-dot"></span>
+          )}
         </button>
         <span className="fw-semibold fs-6 text-dark">
           Hi, {capitalizeFirstLetter(curruser.username)}
@@ -841,7 +910,7 @@ export const ConsentDashboard = () => {
                                                               onClick={() => handleViewDetails(resource.id)}
                                                             />{" "} &nbsp;
 
-                                                            <button type="button" className="btn btn-outline-primary" onClick={() => handleIncomingRevertClick(resource.id, user, index, uIdx)} style={{ borderRadius: "4px", border: "2px solid #007bff", fontSize: "80%", padding: "3px 10px" }} disabled={loadingResourceId === resource.id}>
+                                                            <button type="button" className="btn btn-outline-primary" onClick={() => incomingRevertModal(resource.id, user, index, uIdx)} style={{ borderRadius: "4px", border: "2px solid #007bff", fontSize: "80%", padding: "3px 10px" }} disabled={loadingResourceId === resource.id}>
                                                               {loadingResourceId === resource.id ? "Reverting..." : "Revert"}
 
                                                             </button>
@@ -1031,7 +1100,7 @@ export const ConsentDashboard = () => {
                                                     fontSize: "70%",
                                                     padding: "3px 10px",
                                                   }}
-                                                  onClick={() => handleRevertClick(resource.id, conn, index)}
+                                                  onClick={() => outgoingRevertModal(resource.id, conn, index)}
                                                   disabled={loadingResourceId === resource.id}
                                                 >
 
@@ -1104,7 +1173,30 @@ export const ConsentDashboard = () => {
                 <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
               </button>
             </div>
-            <h5 className="fw-bold  mb-1">Resource Details</h5>
+            <div
+              className="fw-bold  mb-1"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "15px",
+                marginBottom: "15px",
+                marginTop: "4px",
+                fontSize: "1.5rem",
+                fontWeight: "bold"
+              }}
+            >
+              Resource Details
+              {resourceData?.xnode_Type !== "VNODE" && (
+                <>
+                  {resourceData?.current_owner_username === resourceData?.primary_owner_username ? (
+                    <i className="bi bi-unlock-fill"></i>
+                  ) : (
+                    <i className="bi bi-lock-fill"></i>
+                  )}
+                </>
+              )}
+            </div>
 
             <div className="card p-3 shadow-lg border-0">
               <div className="d-flex justify-content-between border-bottom pb-2">
@@ -1143,6 +1235,69 @@ export const ConsentDashboard = () => {
         </div>
 
       )}
+
+      {showIncomingRevertPopup && (
+        <div className="edit-modal ">
+          <div className="modal-content">
+            <h4>Enter reason for reverting consent</h4>
+            <div style={{ marginBottom: "1rem" }}>
+              <TextField
+                fullWidth
+                multiline
+                type="text"
+                rows={3}
+                value={revertReason}
+                onChange={(e) => setRevertReason(e.target.value)}
+                placeholder="Enter reason here..."
+
+                style={{ width: "100%", marginTop: "0.5rem", borderRadius: "5px" }}
+              />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+              <button className="btn btn-primary p-2" onClick={() => handleIncomingRevertClick(currentData)}>Submit</button>
+              <button className="btn btn-primary p-2" onClick={() => {
+                setShowIncomingRevertPopup(false);
+                setRevertReason("");
+                setCurrentData({});
+              }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {showOutgoingRevertPopup && (
+        <div className="edit-modal ">
+          <div className="modal-content">
+            <h4>Enter reason for reverting consent</h4>
+            <div style={{ marginBottom: "1rem" }}>
+              <TextField
+                fullWidth
+                multiline
+                type="text"
+                rows={3}
+                value={revertReason}
+                onChange={(e) => setRevertReason(e.target.value)}
+
+                placeholder="Enter reason here..."
+
+                style={{ width: "100%", marginTop: "0.5rem", borderRadius: "5px" }}
+              />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+              <button className="btn btn-primary p-2" onClick={() => handleOutgoingRevertClick(currentData)}>Submit</button>
+              <button className="btn btn-primary p-2" onClick={() => {
+                setShowOutgoingRevertPopup(false);
+                setRevertReason("");
+                setCurrentData({});
+              }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
     </>
   );

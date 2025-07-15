@@ -44,6 +44,7 @@ const Sidebar = ({
   const notificationsRef = useRef(null);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [hoveredNotificationId, setHoveredNotificationId] = useState(null);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 
   const handleLogout = () => {
     Cookies.remove("authToken");
@@ -53,6 +54,14 @@ const Sidebar = ({
     window.location.reload();
     setUser(null);
   };
+
+  useEffect(() => {
+    if (setHasUnreadNotifications) {
+        const hasUnread = notifications.some((n) => !n.is_read);
+        setHasUnreadNotifications(hasUnread);
+    }
+}, [notifications]);
+
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";

@@ -577,12 +577,13 @@ useEffect(() => {
   }
 
   const handleIncomingConsent = (user, connection) => {
+    console.log("connections...",user, connection)
     navigate("/show-connection-terms", {
       state: {
         connectionTypeName: connection.connection_type_name, // Extracted from connection object
         hostLockerName: user?.host_locker?.name,
         connectionName: user?.connection_name,
-        // connectionTypeName: connection.connection_type_name,
+        connectionTypeName: connection.connection_type_name,
         connectionDescription: connection.connection_description,
         createdtime: user.created_time,
         validitytime: user.validity_time,
@@ -590,10 +591,74 @@ useEffect(() => {
         locker: user.host_locker,
         guestLockerName: user?.guest_locker.name,
         guestUserUsername: user.guest_user.username,
-        hostLocker: user.host_locker.name,
+        hostLockerName: user.host_locker.name,
+        connectionTypeID: connection?.connection_type_id,
+        // connectionType: connectionType,
+        showConsent: true,
+        connection: connection,
+        viewConsentDashboard: true,
+        guest_locker_id : user?.guest_locker.locker_id,
+        host_locker_id : user?.host_locker.locker_id,
+        connection_id : user.connection_id,
+        hostLocker : user?.host_locker,
+        guestLocker : user?.guest_locker,
+        lockerComplete: user?.host_locker,
+        consentDashboard : true
+
+      }
+    })
+  }
+
+  const navigateConnectionTerms = (connection) => {
+    console.log("Dispaly connections", connection)
+
+    navigate("/display-terms", {
+      state: {
+        connectionTypeName: connection.connection_type_name, // Extracted from connection object
+        hostLockerName: connection?.host_locker?.name,
+        // connectionTypeName: connection.connection_type_name,
+        connectionDescription: connection.connection_description,
+        createdtime: connection.created_time,
+        validitytime: connection.validity_time,
+        hostUserUsername: connection.host_user.username,
+        locker: connection.host_locker,
+        hostLocker: connection.host_locker.name,
         // connectionType: connectionType,
         connection: connection,
         viewConsentDashboard: true,
+      }
+    })
+  }
+
+  const handleOutgoingConsent = (connection) => {
+    console.log("connections...", connection)
+    navigate("/show-connection-terms", {
+      state: {
+        connectionTypeName: connection.connection_type_name, // Extracted from connection object
+        hostLockerName: connection?.host_locker?.name,
+        connectionName: connection?.connection_name,
+        connectionTypeName: connection.connection_type_name,
+        connectionDescription: connection.connection_description,
+        createdtime: connection.created_time,
+        validitytime: connection.validity_time,
+        hostUserUsername: connection.host_user.username,
+        locker: connection.host_locker,
+        guestLockerName: connection?.guest_locker.name,
+        guestUserUsername: connection.guest_user.username,
+        hostLockerName: connection.host_locker.name,
+        connectionTypeID: connection?.connection_type,
+        // connectionType: connectionType,
+        showConsent: true,
+        connection: connection,
+        viewConsentDashboard: true,
+        guest_locker_id : connection?.guest_locker.locker_id,
+        host_locker_id : connection?.host_locker.locker_id,
+        connection_id : connection.connection_id,
+        hostLocker : connection?.host_locker,
+        guestLocker : connection?.guest_locker,
+        lockerComplete: connection?.host_locker,
+        consentDashboard : true
+
       }
     })
   }
@@ -846,13 +911,13 @@ useEffect(() => {
                                             <p className="mb-3"><strong>Valid Till:</strong> {new Date(user.validity_time).toLocaleString()}</p>
                                           </div>
 
-                                          {/* <div className="col-md-2">
+                                          <div className="col-md-2">
                                             <span className="me-2 mb-3">Actions:</span>
                                             <button className="btn btn-sm btn-light rounded-circle me-2" onClick={() => navigateDisplayTerms(user, conn)}>I</button>
                                             {user.connection_status !== "closed" && user.connection_status !== "revoked" && (
                                               <button className="btn btn-sm btn-light rounded-circle" onClick={() => handleIncomingConsent(user, conn)}>C</button>
                                             )}
-                                          </div> */}
+                                          </div>
                                         </div>
                                         <div className="row mt-3">
                                           <div className="col-sm-12 col-md-6 mb-3">
@@ -1031,11 +1096,13 @@ useEffect(() => {
                               <p className="mb-3"><strong>Valid Till:</strong> {new Date(conn.validity_time).toLocaleString()}</p>
                             </div>
 
-                            {/* <div className="col-md-2">
+                            <div className="col-md-2">
                               <span className="me-2 mb-3">Actions:</span>
-                              <button className="btn btn-sm btn-light rounded-circle me-2">I</button>
-                              <button className="btn btn-sm btn-light rounded-circle">C</button>
-                            </div> */}
+                              <button className="btn btn-sm btn-light rounded-circle me-2" onClick = {() => navigateConnectionTerms(conn)} >I</button>
+                              {conn.connection_status !== "closed" && conn.connection_status !== "revoked" && (
+                              <button className="btn btn-sm btn-light rounded-circle" onClick={() => handleOutgoingConsent(conn)}>C</button>
+                              )}
+                            </div>
                           </div>
                           <div className="row mt-3">
                             <div className="col-sm-12 col-md-6 mb-3">

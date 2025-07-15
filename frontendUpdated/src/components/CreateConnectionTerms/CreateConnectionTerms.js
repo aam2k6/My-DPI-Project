@@ -807,7 +807,8 @@ export const CreateConnectionTerms = () => {
     viewHost,
     viewGuest,
     viewConsentGuest,
-    homeConsent
+    homeConsent,
+    consentDashboard
 
   } = location.state || {};
   console.log("data",
@@ -829,7 +830,8 @@ export const CreateConnectionTerms = () => {
     agrees,
     viewHost,
     viewGuest,
-    connectionType
+    connectionType,
+    consentDashboard
   );
 
   console.log("ssssssss", agrees, Iagree, showConsent, consentData, connection, connectionTypeID)
@@ -1843,6 +1845,16 @@ console.log("formData", formData);
       )}
       {homeConsent && (
         <>
+          <span className="breadcrumb-item current">ShowConnectionTerms</span>
+        </>
+      )}
+
+      {consentDashboard && (
+        <>
+          <a href="/consent-dashboard" className="breadcrumb-item">
+            Consent Dashboard
+          </a>
+          <span className="breadcrumb-separator">▶</span>
           <span className="breadcrumb-item current">ShowConnectionTerms</span>
         </>
       )}

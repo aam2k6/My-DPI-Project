@@ -3082,7 +3082,30 @@ export const ViewLocker = () => {
                 <i className="bi bi-x-lg" style={{ fontSize: "18px" }}></i>
               </button>
             </div>
-            <h5 className="fw-bold  mb-1">Resource Details</h5>
+            <div
+              className="fw-bold  mb-1"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "15px",
+                marginBottom: "15px",
+                marginTop: "4px",
+                fontSize: "1.5rem",
+                fontWeight: "bold"
+              }}
+            >
+              Resource Details
+              {resourceData?.xnode_Type !== "VNODE" && (
+                <>
+                  {resourceData?.current_owner_username === resourceData?.primary_owner_username ? (
+                    <i className="bi bi-unlock-fill"></i>
+                  ) : (
+                    <i className="bi bi-lock-fill"></i>
+                  )}
+                </>
+              )}
+            </div>
 
             <div className="card p-3 shadow-lg border-0">
               <div className="d-flex justify-content-between border-bottom pb-2">

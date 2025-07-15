@@ -75,7 +75,8 @@ export const Guesttermsreview = () => {
   const [rejectedStatuses, setRejectedStatuses] = useState({});
   const [showRejectionPopup, setShowRejectionPopup] = useState(false);
   const [rejectionComment, setRejectionComment] = useState("");
-  const [proceedWithSave, setProceedWithSave] = useState(false); // To continue flow after rejection
+  const [proceedWithSave, setProceedWithSave] = useState(false); 
+  const [notifications, setNotifications] = useState([]);
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -89,7 +90,33 @@ export const Guesttermsreview = () => {
   //     </div>
   // );
 
-  console.log("resourcesDatass", curruser)
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/get-notifications/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setNotifications(data.notifications || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching notifications");
+      }
+    };
+
+    if (curruser) {
+      fetchNotifications();
+    }
+  }, [curruser, isSidebarOpen]);
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -2142,11 +2169,14 @@ useEffect(() => {
     <div>
       <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className="hamburger-btn me-2"
+          className="hamburger-btn me-2 position-relative"
           onClick={toggleSidebar}
-        >
+      >
           <FontAwesomeIcon icon={faBars} />
-        </button>
+          {notifications.some((n) => !n.is_read) && (
+              <span className="notification-dot"></span>
+          )}
+      </button>
         <span className="fw-semibold fs-6 text-dark">
           Hi, {capitalizeFirstLetter(curruser.username)}
         </span>

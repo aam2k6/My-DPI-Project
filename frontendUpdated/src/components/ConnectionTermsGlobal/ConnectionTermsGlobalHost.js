@@ -26,6 +26,7 @@ export const ConnectionTermsGlobalHost = () => {
       [menu]: !prev[menu],
     }));
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
   const location = useLocation(); // Get the state passed from the previous page
   const { connectionTypeName, connectionTypeDescription, existingTerms, globalTemplateData } =
     location.state || {};
@@ -74,7 +75,34 @@ export const ConnectionTermsGlobalHost = () => {
   // const globalTemplateData = location.state?.globalTemplateData;
 
   // console.log("Received Data:", connectionTermsData);
-  // console.log("globalTemplateData", connectionTermsData, connectionData)s
+  // console.log("globalTemplateData", connectionTermsData, connectionData)
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/get-notifications/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setNotifications(data.notifications || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching notifications");
+      }
+    };
+
+    if (curruser) {
+      fetchNotifications();
+    }
+  }, [curruser, isSidebarOpen]);
   useEffect(() => {
     if (location.state) {
       // setGlobalFormData(
@@ -372,10 +400,13 @@ export const ConnectionTermsGlobalHost = () => {
     <div id="connectionTerms">
       <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className="hamburger-btn me-2"
-          onClick={toggleSidebar}
+            className="hamburger-btn me-2 position-relative"
+            onClick={toggleSidebar}
         >
-          <FontAwesomeIcon icon={faBars} />
+            <FontAwesomeIcon icon={faBars} />
+            {notifications.some((n) => !n.is_read) && (
+                <span className="notification-dot"></span>
+            )}
         </button>
         <span className="fw-semibold fs-6 text-dark">
           Hi, {capitalizeFirstLetter(curruser.username)}

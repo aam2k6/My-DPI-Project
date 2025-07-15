@@ -32,6 +32,7 @@ export const Connection = () => {
   const location = useLocation();
   const { locker_conn, setConnectionData } = useContext(ConnectionContext);
   const [lockers, setLockers] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   // Local state for connection fields
   const [connectionName, setConnectionName] = useState(null);
@@ -46,6 +47,34 @@ export const Connection = () => {
     collateral: true,
     transfer: true
   });
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/get-notifications/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setNotifications(data.notifications || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching notifications");
+      }
+    };
+
+    if (curruser) {
+      fetchNotifications();
+    }
+  }, [curruser, isSidebarOpen]);
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -149,10 +178,13 @@ export const Connection = () => {
     <>
       <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className="hamburger-btn me-2"
+          className="hamburger-btn me-2 position-relative"
           onClick={toggleSidebar}
         >
           <FontAwesomeIcon icon={faBars} />
+          {notifications.some((n) => !n.is_read) && (
+              <span className="notification-dot"></span>
+          )}
         </button>
         <span className="fw-semibold fs-6 text-dark">
           Hi, {capitalizeFirstLetter(curruser.username)}

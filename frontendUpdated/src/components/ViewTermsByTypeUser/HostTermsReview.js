@@ -73,11 +73,39 @@ export const HostTermsReview = () => {
   const [isModalOpens, setIsModalOpens] = useState(false);
   const [isModalOpenClose, setIsModalOpenClose] = useState(false);
   const [closeState, setCloseState] = useState(true);
+  const [notifications, setNotifications] = useState([]);
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
   console.log("pdfData", pdfData)
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/get-notifications/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setNotifications(data.notifications || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching notifications");
+      }
+    };
+
+    if (curruser) {
+      fetchNotifications();
+    }
+  }, [curruser, isSidebarOpen]);
 
 useEffect(() => {
     if (connectionDetails) {
@@ -2056,10 +2084,13 @@ const handleCloseModalClose = () => {
     <div>
       <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className="hamburger-btn me-2"
-          onClick={toggleSidebar}
+            className="hamburger-btn me-2 position-relative"
+            onClick={toggleSidebar}
         >
-          <FontAwesomeIcon icon={faBars} />
+            <FontAwesomeIcon icon={faBars} />
+            {notifications.some((n) => !n.is_read) && (
+                <span className="notification-dot"></span>
+            )}
         </button>
         <span className="fw-semibold fs-6 text-dark">
           Hi, {capitalizeFirstLetter(curruser.username)}

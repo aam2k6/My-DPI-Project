@@ -13,11 +13,11 @@ import { frontend_host } from "../../config";
 import Modal from "../Modal/Modal.jsx";
 import { Grid, Box } from '@mui/material'
 import { Tooltip } from 'react-tooltip';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import Typography from "@mui/material/Typography";
+// import Radio from '@mui/material/Radio';
+// import RadioGroup from '@mui/material/RadioGroup';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import FormControl from '@mui/material/FormControl';
+// import Typography from "@mui/material/Typography";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
@@ -35,6 +35,7 @@ export const ConnectionTermsHost = () => {
       ...prev,
       [menu]: !prev[menu],
     }));
+    
   const navigate = useNavigate();
   const { locker_conn, connectionData, connectionTermsData } =
     useContext(ConnectionContext);
@@ -62,7 +63,7 @@ export const ConnectionTermsHost = () => {
   const [obligations, setObligations] = useState([]); // Change to an array
   const [error, setError] = useState(null);
   const { curruser } = useContext(usercontext);
-
+  const [notifications, setNotifications] = useState([]);
   const [globalTemplates, setGlobalTemplates] = useState([]); // To store global templates
   const [selectedTemplateIds, setSelectedTemplateIds] = useState([]); // To store selected template IDs
   const [isDropdownVisible, setDropdownVisible] = useState(false); // To toggle dropdown visibility
@@ -76,6 +77,34 @@ export const ConnectionTermsHost = () => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/get-notifications/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setNotifications(data.notifications || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching notifications");
+      }
+    };
+
+    if (curruser) {
+      fetchNotifications();
+    }
+  }, [curruser, isSidebarOpen]);
+
   const fetchGlobalTemplates = () => {
     const token = Cookies.get("authToken");
     fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
@@ -538,10 +567,13 @@ export const ConnectionTermsHost = () => {
 
       <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
-          className="hamburger-btn me-2"
-          onClick={toggleSidebar}
+            className="hamburger-btn me-2 position-relative"
+            onClick={toggleSidebar}
         >
-          <FontAwesomeIcon icon={faBars} />
+            <FontAwesomeIcon icon={faBars} />
+            {notifications.some((n) => !n.is_read) && (
+                <span className="notification-dot"></span>
+            )}
         </button>
         <span className="fw-semibold fs-6 text-dark">
           Hi, {capitalizeFirstLetter(curruser.username)}

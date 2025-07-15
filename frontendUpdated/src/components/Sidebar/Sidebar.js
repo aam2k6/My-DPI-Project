@@ -44,8 +44,7 @@ const Sidebar = ({
   const notificationsRef = useRef(null);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [hoveredNotificationId, setHoveredNotificationId] = useState(null);
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-
+  
   const handleLogout = () => {
     Cookies.remove("authToken");
     localStorage.removeItem("curruser");
@@ -54,13 +53,6 @@ const Sidebar = ({
     window.location.reload();
     setUser(null);
   };
-
-  useEffect(() => {
-    if (setHasUnreadNotifications) {
-        const hasUnread = notifications.some((n) => !n.is_read);
-        setHasUnreadNotifications(hasUnread);
-    }
-}, [notifications]);
 
 
   const capitalizeFirstLetter = (string) => {
@@ -462,6 +454,15 @@ const Sidebar = ({
             >
               <i className="bi bi-house-door" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
               <span>Home</span>
+            </button>
+          </li>
+          <li>
+            <button
+              className="nav-item"
+              onClick={() => handleNavigate("Consent Dashboard", "/consent-dashboard")}
+            >
+              <i className="bi bi-grid" style={{ color: "#0D6EFD", fontSize: "20px" }}></i>
+              <span>Consent Dashboard</span>
             </button>
           </li>
           <li>

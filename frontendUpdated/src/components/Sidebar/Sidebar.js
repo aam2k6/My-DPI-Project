@@ -315,7 +315,12 @@ const Sidebar = ({
         )
 
       default:
-        return <p>{notification.message}</p>;
+        return (
+        <>
+          <p>{notification.message}</p>;
+          <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
+        </>
+        )
     }
   };
  const handleRevertClick = async (xnodeId) => {

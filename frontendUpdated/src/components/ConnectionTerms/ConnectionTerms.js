@@ -588,33 +588,7 @@ export const ConnectionTerms = () => {
     forbidden: false,
     resharePermission: ""
   };
-  useEffect(() => {
-      const fetchNotifications = async () => {
-        try {
-          const token = Cookies.get("authToken");
-          const response = await fetch(`${frontend_host}/get-notifications/`, {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-  
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-              setNotifications(data.notifications || []);
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching notifications");
-        }
-      };
-  
-      if (curruser) {
-        fetchNotifications();
-      }
-    }, [curruser, isSidebarOpen]);
+ 
   const [formData, setFormData] = useState(initialFormData);
   const [obligations, setObligations] = useState([]); // Change to an array
   const [error, setError] = useState(null);
@@ -655,6 +629,34 @@ export const ConnectionTerms = () => {
         setError("Failed to fetch templates");
       });
   };
+
+   useEffect(() => {
+      const fetchNotifications = async () => {
+        try {
+          const token = Cookies.get("authToken");
+          const response = await fetch(`${frontend_host}/get-notifications/`, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setNotifications(data.notifications || []);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching notifications");
+        }
+      };
+  
+      if (curruser) {
+        fetchNotifications();
+      }
+    }, [curruser, isSidebarOpen]);
 
   const handleTemplateSelection = (template) => {
     const { global_connection_type_template_id, global_connection_type_name, global_connection_type_description } = template;

@@ -31,6 +31,18 @@ export const ConsentDashboard = () => {
   // const [showModal, setShowModal] = useState(false);
   const [revertReason, setRevertReason] = useState("");
   const [currentData, setCurrentData] = useState({});
+  // const [showFilters, setShowFilters] = useState(false);
+  const [lockers, setLockers] = useState([]);
+  const [error, setError] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showLockers, setShowLockers] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [searchValue, setSearchValue] = useState(""); // Triggered search
+
+  // const [error] = useState("");
+
   const toggleSubmenu = (menu) =>
     setOpenSubmenus((prev) => ({
       ...prev,
@@ -67,35 +79,43 @@ export const ConsentDashboard = () => {
   const { curruser } = useContext(usercontext);
   const [loadingResources, setLoadingResources] = useState({});
   const [notifications, setNotifications] = useState([]);
-  
-useEffect(() => {
-    const fetchNotifications = async () => {
-        try {
-            const token = Cookies.get("authToken");
-            const response = await fetch(`${frontend_host}/get-notifications/`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Basic ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
+  const [tempSelectedStatus, setTempSelectedStatus] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [tempSelectedLockers, setTempSelectedLockers] = useState([]);
+  const [selectedLockers, setSelectedLockers] = useState([]);
+  const [filteredConnections, setFilteredConnections] = useState([])
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    setNotifications(data.notifications || []);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching notifications");
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const response = await fetch(`${frontend_host}/get-notifications/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setNotifications(data.notifications || []);
+          }
         }
+      } catch (error) {
+        console.error("Error fetching notifications");
+      }
     };
 
     if (curruser) {
-        fetchNotifications();
+      fetchNotifications();
     }
-}, [curruser, isSidebarOpen]);
+  }, [curruser, isSidebarOpen]);
 
+  useEffect(() => {
+    fetchLockers();
+  }, []);
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return '';
@@ -105,6 +125,56 @@ useEffect(() => {
   useEffect(() => {
     fetchStats();
   }, []);
+
+useEffect(() => {
+  if (selectedLockers.length > 0 || selectedStatus.length > 0) {
+    handleApplyFilter();
+  } else {
+    if (activeTab === "incoming") {
+      setFilteredConnections(incomingConnections);
+    } else {
+      setFilteredConnections(outgoingConnections);
+    }
+  }
+}, [
+  activeTab,
+  incomingConnections,
+  outgoingConnections,
+  selectedLockers,
+  selectedStatus,
+]);
+
+useEffect(() => {
+  if (selectedLockers.length > 0 || selectedStatus.length > 0) {
+    handleApplyFilter();
+  } else if (!searchQuery.trim()) {
+    if (activeTab === "incoming") {
+      setFilteredConnections(incomingConnections);
+    } else {
+      setFilteredConnections(outgoingConnections);
+    }
+  }
+}, [
+  searchQuery,
+  activeTab,
+  incomingConnections,
+  outgoingConnections,
+  selectedLockers,
+  selectedStatus,
+]);
+
+ 
+
+// useEffect(() => {
+//   if (!searchQuery.trim()) {
+//     if (activeTab === "incoming") {
+//       setFilteredConnections(incomingConnections);
+//     } else {
+//       setFilteredConnections(outgoingConnections);
+//     }
+//   }
+// }, [searchQuery, activeTab, incomingConnections, outgoingConnections]);
+
 
 
   const fetchStats = async () => {
@@ -577,7 +647,7 @@ useEffect(() => {
   }
 
   const handleIncomingConsent = (user, connection) => {
-    console.log("connections...",user, connection)
+    console.log("connections...", user, connection)
     navigate("/show-connection-terms", {
       state: {
         connectionTypeName: connection.connection_type_name, // Extracted from connection object
@@ -597,13 +667,13 @@ useEffect(() => {
         showConsent: true,
         connection: connection,
         viewConsentDashboard: true,
-        guest_locker_id : user?.guest_locker.locker_id,
-        host_locker_id : user?.host_locker.locker_id,
-        connection_id : user.connection_id,
-        hostLocker : user?.host_locker,
-        guestLocker : user?.guest_locker,
+        guest_locker_id: user?.guest_locker.locker_id,
+        host_locker_id: user?.host_locker.locker_id,
+        connection_id: user.connection_id,
+        hostLocker: user?.host_locker,
+        guestLocker: user?.guest_locker,
         lockerComplete: user?.host_locker,
-        consentDashboard : true
+        consentDashboard: true
 
       }
     })
@@ -651,21 +721,125 @@ useEffect(() => {
         showConsent: true,
         connection: connection,
         viewConsentDashboard: true,
-        guest_locker_id : connection?.guest_locker.locker_id,
-        host_locker_id : connection?.host_locker.locker_id,
-        connection_id : connection.connection_id,
-        hostLocker : connection?.host_locker,
-        guestLocker : connection?.guest_locker,
+        guest_locker_id: connection?.guest_locker.locker_id,
+        host_locker_id: connection?.host_locker.locker_id,
+        connection_id: connection.connection_id,
+        hostLocker: connection?.host_locker,
+        guestLocker: connection?.guest_locker,
         lockerComplete: connection?.host_locker,
-        consentDashboard : true
+        consentDashboard: true
 
       }
     })
   }
 
+  const handleLockerChange = (lockerID) => {
+  setTempSelectedLockers((prev) =>
+    prev.includes(lockerID)
+      ? prev.filter((name) => name !== lockerID)
+      : [...prev, lockerID]
+  );
+};
+
+const handleStatusChange = (status) => {
+  setTempSelectedStatus((prev) =>
+    prev.includes(status)
+      ? prev.filter((s) => s !== status)
+      : [...prev, status]
+  );
+};
+
+const handleApplyFilter = () => {
+  setSelectedLockers(tempSelectedLockers);
+  setSelectedStatus(tempSelectedStatus);
+
+  if (activeTab === "incoming") {
+    console.log("out...incoming", incomingConnections)
+
+    const filtered = incomingConnections.filter((conn) => {
+      const lockerMatch =
+        tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.owner_locker);
+      // const statusMatch =
+        // tempSelectedStatus.length === 0 ||  tempSelectedStatus.includes(conn.status);
+      return lockerMatch;
+    });
+    setFilteredConnections(filtered);
+    setShowFilters(false);
+    // setSearchQuery("");
+
+  } else {
+    console.log("out...outgoing", outgoingConnections)
+    const filtered = outgoingConnections.filter((conn) => {
+      const lockerMatch =
+        tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.guest_locker.locker_id);
+      const statusMatch =
+        tempSelectedStatus.length === 0 || tempSelectedStatus.includes(conn.connection_status);
+      return lockerMatch && statusMatch;
+    });
+    setFilteredConnections(filtered);
+    setShowFilters(false);
+    // setSearchQuery("");
+
+  }
+};
+
+console.log("selected", selectedLockers, selectedStatus)
+const handleClearFilter = () => {
+  setTempSelectedLockers([]);
+  setTempSelectedStatus([]);
+  setSelectedLockers([]);
+  setSelectedStatus([]);
+  setShowFilters(false);
+
+  if (activeTab === "incoming") {
+    setFilteredConnections(incomingConnections);
+  } else {
+    setFilteredConnections(outgoingConnections);
+  }
+};
+const handleSearchClick = () => {
+  if (!searchQuery.trim()) {
+    // If input is empty, reset to show all connections.
+    setFilteredConnections(filteredConnections);
+    return;
+  }
+
+  const filtered = filteredConnections.filter((conn) => {
+    const connectionName = activeTab === "incoming" ? conn.connection_type_name : conn.connection_name;
+    return connectionName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+  setFilteredConnections(filtered);
+};
+
+
+
+console.log("filteredConnections", filteredConnections)
+
+
+
+  const fetchLockers = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const response = await fetch(`${frontend_host}/get-lockers-user/`, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        return;
+      }
+      setLockers(data.lockers || []);
+    } catch (error) {
+      setError("An error occurred while fetching lockers.");
+    }
+  };
 
   return (
-    <>
+    <div style={{ height: "100vh", overflowY: "auto" }}>
       <div className={`user-greeting-container shadow ${isSidebarOpen ? "d-none" : ""}`}>
         <button
           className="hamburger-btn me-2 position-relative"
@@ -755,19 +929,22 @@ useEffect(() => {
         <div className="row g-3 align-items-center">
 
           {/* Search Input */}
-          {/* <div className="col-lg-3 col-md-6 col-12">
+          <div className="col-lg-4 col-md-6 col-12">
             <div className="input-group">
-              <input
+             <input
                 type="text"
                 className="form-control"
                 placeholder="Search Connections by Name"
                 aria-label="Search Connection"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchClick()}
               />
-              <span className="input-group-text">
-                <i className="bi bi-search"></i>
+              <span className="input-group-text" onClick={handleSearchClick}>
+                <i className="bi bi-search" style={{ cursor: "pointer" }}></i>
               </span>
             </div>
-          </div> */}
+          </div>
 
           {/* Date Picker */}
           {/* <div className="col-lg-2 col-md-6 col-12">
@@ -787,21 +964,101 @@ useEffect(() => {
           </div> */}
 
           {/* Sort Dropdown */}
-          {/* <div className="col-lg-2 col-md-6 col-12">
-            <div className="input-group">
-              <select className="form-select" aria-label="Sort by locker">
-                <option defaultValue>Sort by Locker</option>
-                <option value="1">Sort by Connection status</option>
-                
-              </select>
-              <span className="input-group-text">
-                <i className="bi bi-funnel"></i>
-              </span>
-            </div>
-          </div> */}
-
           <div className="col-lg-3 col-md-6 col-12">
+
+            <div className="input-group position-relative" onClick={(e) => { e.stopPropagation(); setShowFilters(!showFilters) }} style={{ cursor: "pointer" }}>
+              <div className="form-control disabled-filter">Filter</div>
+              <span className="input-group-text">
+                <i className="bi bi-sliders"></i>
+              </span>
+
+              {showFilters && (
+                <div className="filter-dropdown" onClick={(e) => e.stopPropagation()}>
+                  <div className="filter-content-scrollable">
+                    <div className="section-header" onClick={() => setShowLockers(!showLockers)}>
+                      <h6>Lockers</h6>
+                      <span>{showLockers ? "▲" : "▼"}</span>
+                    </div>
+
+                    {showLockers && (
+                      <div className="section-content">
+                        <div>
+                          {lockers.map((locker, index) => (
+                            <div key={index}>
+                              <input
+                                type="checkbox"
+                                id={`locker-${index}`}
+                                onChange={() => handleLockerChange(locker.locker_id)}
+                                checked={tempSelectedLockers.includes(locker.locker_id)}
+                              />
+                              <label htmlFor={`locker-${index}`}> {locker.name}</label>
+                            </div>
+                          ))}
+
+                        </div>
+                      </div>
+                    )}
+                    {activeTab === "outgoing" &&(
+                    <div className="section-header" onClick={() => setShowStatus(!showStatus)}>
+                      <h6>Connection Status</h6>
+                      <span>{showStatus ? "▲" : "▼"}</span>
+                    </div>
+)}
+                    {showStatus && activeTab === "outgoing" && (
+                      <div className="section-content">
+                        <div>
+                          <div>
+                            <input
+                              type="checkbox"
+                              id="established"
+                              onChange={() => handleStatusChange("established")}
+                              checked={tempSelectedStatus.includes("established")}
+                            />
+                            <label htmlFor="established"> Established</label>
+                          </div>
+                          <div>
+                            <input
+                              type="checkbox"
+                              id="live"
+                              onChange={() => handleStatusChange("live")}
+                              checked={tempSelectedStatus.includes("live")}
+                            />
+                            <label htmlFor="live"> Live</label>
+                          </div>
+                          <div>
+                            <input
+                              type="checkbox"
+                              id="closed"
+                              onChange={() => handleStatusChange("closed")}
+                              checked={tempSelectedStatus.includes("closed")}
+                            />
+                            <label htmlFor="closed"> Closed</label>
+                          </div>
+
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="filter-actions">
+                    <button className="clear-btn" onClick={handleClearFilter}>
+                      Clear Filter
+                    </button>
+
+                    <button className="apply-btn" onClick={handleApplyFilter}>
+                      Apply Filter
+                    </button>
+
+                  </div>
+                </div>
+
+              )}
+            </div>
+
+
           </div>
+
+
 
 
           <div className="col-lg-5 col-md-6 col-12">
@@ -830,9 +1087,9 @@ useEffect(() => {
       <div>
         {activeTab === "incoming" && (
           <div className="container mt-4">
-            {incomingConnections.length > 0 ? (
+            {filteredConnections.length > 0 ? (
               <div className="row">
-                {incomingConnections.map((conn, index) => (
+                {filteredConnections.map((conn, index) => (
                   <div key={index} className="col-12">
                     <div
                       className="card border-0 shadow rounded-4 px-3 py-2"
@@ -1043,9 +1300,9 @@ useEffect(() => {
 
         {activeTab === "outgoing" && (
           <div className="container mt-4">
-            {outgoingConnections.length > 0 ? (
+            {filteredConnections.length > 0 ? (
               <div className="row">
-                {outgoingConnections.map((conn, index) => (
+                {filteredConnections.map((conn, index) => (
                   <div key={conn.connection_id} className="col-12">
                     <div className="card border-0 shadow rounded-4 px-3 py-2" style={{ backgroundColor: "#f8f9fa" }}>
                       <div className="card-body d-flex justify-content-between align-items-center px-2">
@@ -1098,9 +1355,9 @@ useEffect(() => {
 
                             <div className="col-md-2">
                               <span className="me-2 mb-3">Actions:</span>
-                              <button className="btn btn-sm btn-light rounded-circle me-2" onClick = {() => navigateConnectionTerms(conn)} >I</button>
+                              <button className="btn btn-sm btn-light rounded-circle me-2" onClick={() => navigateConnectionTerms(conn)} >I</button>
                               {conn.connection_status !== "closed" && conn.connection_status !== "revoked" && (
-                              <button className="btn btn-sm btn-light rounded-circle" onClick={() => handleOutgoingConsent(conn)}>C</button>
+                                <button className="btn btn-sm btn-light rounded-circle" onClick={() => handleOutgoingConsent(conn)}>C</button>
                               )}
                             </div>
                           </div>
@@ -1366,7 +1623,7 @@ useEffect(() => {
       )}
 
 
-    </>
+    </div>
   );
 };
 

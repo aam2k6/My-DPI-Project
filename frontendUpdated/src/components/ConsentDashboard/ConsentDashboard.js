@@ -40,6 +40,12 @@ export const ConsentDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [searchValue, setSearchValue] = useState(""); // Triggered search
+  const [responseMessage, setResponseMessage] = useState("");
+  const [responseModal, setResponseModal] = useState(false);
+  const [allIncomingConnections, setAllIncomingConnections] = useState([]);
+  const [allOutgoingConnections, setAllOutgoingConnections] = useState([]);
+  const [revertRejectReason, setRevertRejectReason] = useState("");
+
 
   // const [error] = useState("");
 
@@ -126,54 +132,67 @@ export const ConsentDashboard = () => {
     fetchStats();
   }, []);
 
-useEffect(() => {
-  if (selectedLockers.length > 0 || selectedStatus.length > 0) {
-    handleApplyFilter();
-  } else {
-    if (activeTab === "incoming") {
-      setFilteredConnections(incomingConnections);
+  useEffect(() => {
+    if (selectedLockers.length > 0 || selectedStatus.length > 0) {
+      handleApplyFilter();
     } else {
-      setFilteredConnections(outgoingConnections);
+      if (activeTab === "incoming") {
+        setFilteredConnections(incomingConnections);
+      } else {
+        setFilteredConnections(outgoingConnections);
+      }
     }
-  }
-}, [
-  activeTab,
-  incomingConnections,
-  outgoingConnections,
-  selectedLockers,
-  selectedStatus,
-]);
+  }, [
+    activeTab,
+    incomingConnections,
+    outgoingConnections,
+    selectedLockers,
+    selectedStatus,
+  ]);
 
-useEffect(() => {
-  if (selectedLockers.length > 0 || selectedStatus.length > 0) {
-    handleApplyFilter();
-  } else if (!searchQuery.trim()) {
-    if (activeTab === "incoming") {
-      setFilteredConnections(incomingConnections);
-    } else {
-      setFilteredConnections(outgoingConnections);
+  useEffect(() => {
+    if (selectedLockers.length > 0 || selectedStatus.length > 0) {
+      handleApplyFilter();
+    } else if (!searchQuery.trim()) {
+      if (activeTab === "incoming") {
+        setFilteredConnections(incomingConnections);
+      } else {
+        setFilteredConnections(outgoingConnections);
+      }
     }
-  }
-}, [
-  searchQuery,
-  activeTab,
-  incomingConnections,
-  outgoingConnections,
-  selectedLockers,
-  selectedStatus,
-]);
+  }, [
+    searchQuery,
+    activeTab,
+    incomingConnections,
+    outgoingConnections,
+    selectedLockers,
+    selectedStatus,
+  ]);
 
- 
+  useEffect(() => {
 
-// useEffect(() => {
-//   if (!searchQuery.trim()) {
-//     if (activeTab === "incoming") {
-//       setFilteredConnections(incomingConnections);
-//     } else {
-//       setFilteredConnections(outgoingConnections);
-//     }
-//   }
-// }, [searchQuery, activeTab, incomingConnections, outgoingConnections]);
+  }, [searchQuery])
+
+  // useEffect(() => {
+  //   const activeConnections =
+  //     activeTab === "incoming" ? allIncomingConnections : allOutgoingConnections;
+
+  //   setFilteredConnections(activeConnections);
+  //   setSearchQuery(""); // clear search on tab change
+  // }, [activeTab]);
+
+
+  console.log("searchQuery", searchQuery)
+
+  // useEffect(() => {
+  //   if (!searchQuery.trim()) {
+  //     if (activeTab === "incoming") {
+  //       setFilteredConnections(incomingConnections);
+  //     } else {
+  //       setFilteredConnections(outgoingConnections);
+  //     }
+  //   }
+  // }, [searchQuery, activeTab, incomingConnections, outgoingConnections]);
 
 
 
@@ -280,7 +299,10 @@ useEffect(() => {
           return;
         }
 
+        // setIncomingConnections(data.connection_types || []);
         setIncomingConnections(data.connection_types || []);
+        setAllIncomingConnections(data.connection_types || []);
+
       } catch (error) {
         console.error("Error fetching connections:", error);
       }
@@ -304,7 +326,10 @@ useEffect(() => {
           return;
         }
 
+        // setOutgoingConnections(data.outgoing_connections || []);
         setOutgoingConnections(data.outgoing_connections || []);
+        setAllOutgoingConnections(data.outgoing_connections || []);
+
       } catch (error) {
         console.error("Error fetching connections:", error);
       }
@@ -416,10 +441,13 @@ useEffect(() => {
     console.log("Outgoing Revert Modal Data:", { xnodeId, conn, index });
   }
 
+console.log("currentData", currentData)
+
+
   const handleOutgoingRevertClick = async () => {
     console.log("Revert clicked for xnodeId:", currentData);
     const revert_reason = revertReason;
-    if (!revert_reason) return;
+    // if (!revert_reason) return;
 
     setLoadingResourceId(currentData.xnodeId);
     setMessage("");
@@ -450,7 +478,8 @@ useEffect(() => {
         setRevertReason("");
         setCurrentData({});
         setIsModalOpen(true);
-        // console.log("activeTab", activeTab)
+        setResponseModal(false)
+        setResponseMessage("")
 
         fetchOutgoingResources(currentData.conn, currentData.index)
 
@@ -463,6 +492,8 @@ useEffect(() => {
         setShowOutgoingRevertPopup(false);
         setRevertReason("");
         setCurrentData({});
+        setResponseModal(false)
+        setResponseMessage("")
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -474,6 +505,8 @@ useEffect(() => {
       setShowOutgoingRevertPopup(false);
       setRevertReason("");
       setCurrentData({});
+      setResponseModal(false)
+      setResponseMessage("")
       setIsModalOpen(true);
     } finally {
       setLoadingResourceId(null);
@@ -488,7 +521,7 @@ useEffect(() => {
     // const revert_reason = prompt("Enter reason for reverting consent:");
     const revert_reason = revertReason;
     console.log("Revert reason:", revert_reason);
-    if (!revert_reason) return;
+    // if (!revert_reason) return;
 
     setLoadingResourceId(currentData.xnodeId);
     setMessage("");
@@ -518,6 +551,8 @@ useEffect(() => {
         setShowIncomingRevertPopup(false);
         setRevertReason("");
         setCurrentData({});
+        setResponseModal(false)
+        setResponseMessage("")
         setIsModalOpen(true);
 
         console.log("activeTab", activeTab)
@@ -533,6 +568,8 @@ useEffect(() => {
         setShowIncomingRevertPopup(false);
         setRevertReason("");
         setCurrentData({});
+        setResponseModal(false)
+        setResponseMessage("")
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -544,6 +581,8 @@ useEffect(() => {
       setShowIncomingRevertPopup(false);
       setRevertReason("");
       setCurrentData({});
+      setResponseModal(false)
+      setResponseMessage("")
       setIsModalOpen(true);
     } finally {
       setLoadingResourceId(null);
@@ -734,86 +773,192 @@ useEffect(() => {
   }
 
   const handleLockerChange = (lockerID) => {
-  setTempSelectedLockers((prev) =>
-    prev.includes(lockerID)
-      ? prev.filter((name) => name !== lockerID)
-      : [...prev, lockerID]
-  );
-};
+    setTempSelectedLockers((prev) =>
+      prev.includes(lockerID)
+        ? prev.filter((name) => name !== lockerID)
+        : [...prev, lockerID]
+    );
+  };
 
-const handleStatusChange = (status) => {
-  setTempSelectedStatus((prev) =>
-    prev.includes(status)
-      ? prev.filter((s) => s !== status)
-      : [...prev, status]
-  );
-};
+  const handleStatusChange = (status) => {
+    setTempSelectedStatus((prev) =>
+      prev.includes(status)
+        ? prev.filter((s) => s !== status)
+        : [...prev, status]
+    );
+  };
 
-const handleApplyFilter = () => {
-  setSelectedLockers(tempSelectedLockers);
-  setSelectedStatus(tempSelectedStatus);
+  // const handleApplyFilter = () => {
+  //   setSelectedLockers(tempSelectedLockers);
+  //   setSelectedStatus(tempSelectedStatus);
 
-  if (activeTab === "incoming") {
-    console.log("out...incoming", incomingConnections)
+  //   if (activeTab === "incoming") {
+  //     console.log("out...incoming", incomingConnections)
 
-    const filtered = incomingConnections.filter((conn) => {
-      const lockerMatch =
-        tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.owner_locker);
-      // const statusMatch =
-        // tempSelectedStatus.length === 0 ||  tempSelectedStatus.includes(conn.status);
-      return lockerMatch;
-    });
-    setFilteredConnections(filtered);
+  //     const filtered = incomingConnections.filter((conn) => {
+  //       const lockerMatch =
+  //         tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.owner_locker);
+  //       // const statusMatch =
+  //         // tempSelectedStatus.length === 0 ||  tempSelectedStatus.includes(conn.status);
+  //       return lockerMatch;
+  //     });
+  //     setFilteredConnections(filtered);
+  //     setShowFilters(false);
+  //     // setSearchQuery("");
+
+  //   } else {
+  //     console.log("out...outgoing", outgoingConnections)
+  //     const filtered = outgoingConnections.filter((conn) => {
+  //       const lockerMatch =
+  //         tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.guest_locker.locker_id);
+  //       const statusMatch =
+  //         tempSelectedStatus.length === 0 || tempSelectedStatus.includes(conn.connection_status);
+  //       return lockerMatch && statusMatch;
+  //     });
+  //     setFilteredConnections(filtered);
+  //     setShowFilters(false);
+  //     // setSearchQuery("");
+
+  //   }
+  // };
+
+
+  const handleApplyFilter = () => {
+    setSelectedLockers(tempSelectedLockers);
+    setSelectedStatus(tempSelectedStatus);
+
+    if (activeTab === "incoming") {
+      const filtered = allIncomingConnections.filter((conn) => {
+        const lockerMatch =
+          tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.owner_locker);
+
+        const searchMatch =
+          !searchQuery.trim() ||
+          conn.connection_type_name.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return lockerMatch && searchMatch;
+      });
+
+      setFilteredConnections(filtered);
+      setShowFilters(false);
+
+    } else {
+      const filtered = allOutgoingConnections.filter((conn) => {
+        const lockerMatch =
+          tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.guest_locker.locker_id);
+
+        const statusMatch =
+          tempSelectedStatus.length === 0 || tempSelectedStatus.includes(conn.connection_status);
+
+        const searchMatch =
+          !searchQuery.trim() ||
+          conn.connection_name.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return lockerMatch && statusMatch && searchMatch;
+      });
+
+      setFilteredConnections(filtered);
+      setShowFilters(false);
+    }
+  };
+
+  console.log("selected", selectedLockers, selectedStatus)
+  const handleClearFilter = () => {
+    setTempSelectedLockers([]);
+    setTempSelectedStatus([]);
+    setSelectedLockers([]);
+    setSelectedStatus([]);
     setShowFilters(false);
-    // setSearchQuery("");
+    setSearchQuery("");
 
-  } else {
-    console.log("out...outgoing", outgoingConnections)
-    const filtered = outgoingConnections.filter((conn) => {
+    const baseList =
+      activeTab === "incoming" ? allIncomingConnections : allOutgoingConnections;
+
+    // Reapply current search query
+    const filtered = baseList.filter((conn) => {
+      const connectionName =
+        activeTab === "incoming"
+          ? conn.connection_type_name
+          : conn.connection_name;
+
+      return connectionName.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
+    setFilteredConnections(filtered);
+  };
+
+
+  // const handleClearFilter = () => {
+  //   setTempSelectedLockers([]);
+  //   setTempSelectedStatus([]);
+  //   setSelectedLockers([]);
+  //   setSelectedStatus([]);
+  //   setShowFilters(false);
+
+  //   if (activeTab === "incoming") {
+  //     setFilteredConnections(incomingConnections);
+  //   } else {
+  //     setFilteredConnections(outgoingConnections);
+  //   }
+  // };
+  // const handleSearchClick = () => {
+  //   if (!searchQuery.trim()) {
+  //     // If input is empty, reset to show all connections.
+  //     setFilteredConnections(filteredConnections);
+  //     return;
+  //   }
+
+  //   const filtered = filteredConnections.filter((conn) => {
+  //     const connectionName = activeTab === "incoming" ? conn.connection_type_name : conn.connection_name;
+  //     return connectionName.toLowerCase().includes(searchQuery.toLowerCase());
+  //   });
+  //   setFilteredConnections(filtered);
+  // };
+
+  const handleSearchClick = () => {
+    const baseList =
+      activeTab === "incoming" ? allIncomingConnections : allOutgoingConnections;
+
+    const filtered = baseList.filter((conn) => {
+      // --- Search match ---
+      const connectionName =
+        activeTab === "incoming" ? conn.connection_type_name : conn.connection_name;
+      const searchMatch = !searchQuery.trim() || connectionName.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // --- Locker match ---
       const lockerMatch =
-        tempSelectedLockers.length === 0 || tempSelectedLockers.includes(conn.guest_locker.locker_id);
+        tempSelectedLockers.length === 0 ||
+        (activeTab === "incoming"
+          ? tempSelectedLockers.includes(conn.owner_locker)
+          : tempSelectedLockers.includes(conn.guest_locker.locker_id));
+
+      // --- Status match (only for outgoing) ---
       const statusMatch =
-        tempSelectedStatus.length === 0 || tempSelectedStatus.includes(conn.connection_status);
-      return lockerMatch && statusMatch;
+        activeTab === "incoming" ||
+        tempSelectedStatus.length === 0 ||
+        tempSelectedStatus.includes(conn.connection_status);
+
+      return searchMatch && lockerMatch && statusMatch;
     });
+
     setFilteredConnections(filtered);
-    setShowFilters(false);
-    // setSearchQuery("");
+  };
 
-  }
-};
 
-console.log("selected", selectedLockers, selectedStatus)
-const handleClearFilter = () => {
-  setTempSelectedLockers([]);
-  setTempSelectedStatus([]);
-  setSelectedLockers([]);
-  setSelectedStatus([]);
-  setShowFilters(false);
 
-  if (activeTab === "incoming") {
-    setFilteredConnections(incomingConnections);
-  } else {
-    setFilteredConnections(outgoingConnections);
-  }
-};
-const handleSearchClick = () => {
-  if (!searchQuery.trim()) {
-    // If input is empty, reset to show all connections.
-    setFilteredConnections(filteredConnections);
-    return;
+  const handleOutgoingApproveRevert = (xnodeId, conn, index) => {
+    setCurrentData({ xnodeId, conn, index });
+    setResponseMessage("Are you sure you want to approve the revert")
+    setResponseModal(true);
   }
 
-  const filtered = filteredConnections.filter((conn) => {
-    const connectionName = activeTab === "incoming" ? conn.connection_type_name : conn.connection_name;
-    return connectionName.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-  setFilteredConnections(filtered);
-};
+  const handleIncomingApproveRevert = (xnodeId, user, index, uIdx) => {
+    setCurrentData({ xnodeId, user, index, uIdx });
+    setResponseMessage("Are you sure you want to approve the revert")
+    setResponseModal(true);
+  }
 
-
-
-console.log("filteredConnections", filteredConnections)
+  console.log("filteredConnections", filteredConnections)
 
 
 
@@ -931,7 +1076,7 @@ console.log("filteredConnections", filteredConnections)
           {/* Search Input */}
           <div className="col-lg-4 col-md-6 col-12">
             <div className="input-group">
-             <input
+              <input
                 type="text"
                 className="form-control"
                 placeholder="Search Connections by Name"
@@ -998,12 +1143,12 @@ console.log("filteredConnections", filteredConnections)
                         </div>
                       </div>
                     )}
-                    {activeTab === "outgoing" &&(
-                    <div className="section-header" onClick={() => setShowStatus(!showStatus)}>
-                      <h6>Connection Status</h6>
-                      <span>{showStatus ? "▲" : "▼"}</span>
-                    </div>
-)}
+                    {activeTab === "outgoing" && (
+                      <div className="section-header" onClick={() => setShowStatus(!showStatus)}>
+                        <h6>Connection Status</h6>
+                        <span>{showStatus ? "▲" : "▼"}</span>
+                      </div>
+                    )}
                     {showStatus && activeTab === "outgoing" && (
                       <div className="section-content">
                         <div>
@@ -1232,10 +1377,30 @@ console.log("filteredConnections", filteredConnections)
                                                               onClick={() => handleViewDetails(resource.id)}
                                                             />{" "} &nbsp;
 
-                                                            <button type="button" className="btn btn-outline-primary" onClick={() => incomingRevertModal(resource.id, user, index, uIdx)} style={{ borderRadius: "4px", border: "2px solid #007bff", fontSize: "80%", padding: "3px 10px" }} disabled={loadingResourceId === resource.id}>
+
+                                                            {/* <button type="button" className="btn btn-outline-primary" onClick={() => incomingRevertModal(resource.id, user, index, uIdx)} style={{ borderRadius: "4px", border: "2px solid #007bff", fontSize: "80%", padding: "3px 10px" }} disabled={loadingResourceId === resource.id}>
                                                               {loadingResourceId === resource.id ? "Reverting..." : "Revert"}
 
-                                                            </button>
+                                                            </button> */}
+                                                            {resource.guest_revert_status === 0 && resource.host_revert_status === 1 ? (
+                                                              <button className="btn btn-outline-secondary" disabled style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }}>Pending</button>
+                                                            ) : resource.guest_revert_status === 1 && resource.host_revert_status === 0 ? (
+                                                              <>
+                                                                <button className="btn btn-success me-2" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }} onClick={() => handleIncomingApproveRevert(resource.id, user, index, uIdx)}>Approve</button>
+                                                                <button className="btn btn-danger" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }}>Reject</button>
+                                                              </>
+                                                            ) : (
+                                                              <button
+                                                                type="button"
+                                                                className="btn btn-outline-primary"
+                                                                onClick={() => incomingRevertModal(resource.id, user, index, uIdx)}
+                                                                style={{ borderRadius: "4px", border: "2px solid #007bff", fontSize: "80%", padding: "3px 10px" }}
+                                                                disabled={loadingResourceId === resource.id}
+                                                              >
+                                                                {loadingResourceId === resource.id ? "Reverting..." : "Revert"}
+                                                              </button>
+                                                            )}
+
 
                                                           </span>
 
@@ -1415,7 +1580,32 @@ console.log("filteredConnections", filteredConnections)
                                                   style={{ cursor: "pointer", fontSize: "20px", color: "#007bff" }}
                                                   onClick={() => handleViewDetails(resource.id)}
                                                 />{" "} &nbsp;
-                                                <button
+
+                                                {resource.guest_revert_status === 1 && resource.host_revert_status === 0 ? (
+                                                  <button className="btn btn-outline-secondary" disabled style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }}>Pending</button>
+                                                ) : resource.guest_revert_status === 0 && resource.host_revert_status === 1 ? (
+                                                  <>
+                                                    <button className="btn btn-success me-2" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }} onClick={() => handleOutgoingApproveRevert(resource.id, conn, index)}>Approve</button>
+                                                    <button className="btn btn-danger" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 12px" }}>Reject</button>
+                                                  </>
+                                                ) : (
+                                                  <button
+                                                    type="button"
+                                                    className="btn btn-outline-primary float-end"
+                                                    style={{
+                                                      borderRadius: "4px",
+                                                      border: "2px solid #007bff",
+                                                      fontSize: "70%",
+                                                      padding: "3px 10px",
+                                                    }}
+                                                    onClick={() => outgoingRevertModal(resource.id, conn, index)}
+                                                    disabled={loadingResourceId === resource.id}
+                                                  >
+
+                                                    {loadingResourceId === resource.id ? "Reverting..." : "Revert"}
+                                                  </button>
+                                                )}
+                                                {/* <button
                                                   type="button"
                                                   className="btn btn-outline-primary float-end"
                                                   style={{
@@ -1429,7 +1619,7 @@ console.log("filteredConnections", filteredConnections)
                                                 >
 
                                                   {loadingResourceId === resource.id ? "Reverting..." : "Revert"}
-                                                </button>
+                                                </button> */}
                                               </span>
                                             </>
                                           </div>
@@ -1590,6 +1780,33 @@ console.log("filteredConnections", filteredConnections)
         </div>
       )}
 
+      {responseModal && (
+        <div id="revert-response" className="modal-backdrop">
+          <div className="modal-content">
+            <p className="modal-message">{responseMessage}</p>
+            <div className="modal-actions">
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  activeTab === "incoming"
+                    ? handleIncomingRevertClick()
+                    : handleOutgoingRevertClick();
+                }}
+              >
+                Yes
+              </button>
+
+              <button className="btn btn-primary" onClick={() => {
+                setCurrentData({});
+                setResponseMessage("");
+                setResponseModal(false);
+                }}>
+                No
+                </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showOutgoingRevertPopup && (
         <div className="edit-modal ">

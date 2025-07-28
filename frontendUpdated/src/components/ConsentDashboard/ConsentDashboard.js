@@ -1269,10 +1269,16 @@ console.log("currentData", currentData)
 
             <div className="input-group position-relative" onClick={(e) => { e.stopPropagation(); setShowFilters(!showFilters) }} style={{ cursor: "pointer" }}>
               <div className="form-control disabled-filter">Filter</div>
-              <span className="input-group-text">
-                <i className="bi bi-sliders"></i>
-              </span>
+              
+              <div style={{ position: "relative" }}>
+                <span className="input-group-text">
+                  <i className="bi bi-sliders"></i>
+                </span>
 
+                {(selectedLockers.length > 0 || selectedStatus.length > 0) && (
+                  <span className="filter-indicator-dot"></span>
+                )}
+              </div>
               {showFilters && (
                 <div className="filter-dropdown" onClick={(e) => e.stopPropagation()}>
                   <div className="filter-content-scrollable">

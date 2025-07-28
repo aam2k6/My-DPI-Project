@@ -477,6 +477,18 @@ box-sizing: border-box;
   gap: 2rem;
 }
 
+.filter-indicator-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background-color: #007bff;
+  border-radius: 50%;
+  border: 1.5px solid white;
+  z-index: 10;
+}
+
 
 
 

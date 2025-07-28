@@ -23,6 +23,7 @@ import Cookies from "js-cookie";
 import { frontend_host } from "../../config";
 import { usercontext } from "../../usercontext";
 import { Link } from "react-router-dom";
+import { TextField } from "@mui/material";
 // const frontend_host = "http://your-backend-api.com"; // Replace with actual host
 
 const Sidebar = ({
@@ -44,7 +45,9 @@ const Sidebar = ({
   const notificationsRef = useRef(null);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [hoveredNotificationId, setHoveredNotificationId] = useState(null);
-  
+  const [revertRejectReason, setRevertRejectReason ] = useState("");
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [revertXnode, setRevertXnode] = useState();
   const handleLogout = () => {
     Cookies.remove("authToken");
     localStorage.removeItem("curruser");
@@ -153,6 +156,53 @@ const Sidebar = ({
       await fetchNotifications();
     }
   };
+
+  const handleRevertRejectClick = (xnodeId) => {
+    setShowRejectModal(true);
+    setRevertXnode(xnodeId);
+  }
+
+  const handleReject = async () => {
+    const xnodeId = revertXnode;
+    const reject_reason = revertRejectReason;
+    if (!reject_reason || reject_reason.trim() === "") {
+      alert("Reason is required to reject the revert request");
+      return;
+    }
+
+    try {
+       const token = Cookies.get("authToken");
+ 
+       const response = await fetch(`${frontend_host}/reject_revert_consent/`, {
+         method: "POST",
+         headers: {
+           Authorization: `Basic ${token}`,
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           xnode_id: xnodeId,
+           revert_reject_reason: revertRejectReason.trim(),
+         }),
+       });
+ 
+       const data = await response.json();
+ 
+       if (data.success) {
+          alert(data.message)      
+          setSelectedNotification(null);
+          setRevertXnode();
+          setRevertRejectReason("");
+          setShowRejectModal(false);
+ 
+       } else {
+        alert(data.message || "Revert failed");
+       }
+     } catch (error) {
+       alert("An error occurred while reverting consent.");
+     } finally {
+      //  setLoadingResourceId(null);
+     }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -286,8 +336,12 @@ const Sidebar = ({
       case 'revert_approval_pending':
         return (
           <>
-            <p className="text-center">{notification.message}</p>
-            {/* <small>{new Date(selectedNotification.created_at).toLocaleString()}</small> */}
+            {/* <p className="text-center">{notification.message}</p> */}
+            <p> 
+              User '<SenderUserLink user={extra_data.user_details} />' has requested to withdraw the collateral provided for the consent '{extra_data.resource_name}'. Please review and approve or reject the request. <br />
+            Reason: {extra_data?.revert_reason}
+            </p>
+            <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
 
             <div
               className="d-flex flex-wrap justify-content-center align-items-center gap-2 mt-3"
@@ -303,7 +357,7 @@ const Sidebar = ({
               <button
                 className="btn btn-sm btn-danger"
                 style={{ minWidth: "80px", padding: "4px 10px" }}
-                onClick={closePopup}
+                onClick={() => handleRevertRejectClick(notification.extra_data.xnode_id)}
               >
                 <i className="bi bi-x-circle"></i> Reject
               </button>
@@ -312,8 +366,28 @@ const Sidebar = ({
           </>
 
 
-        )
+        );
 
+      case 'revert_approved_or_rejected':
+        return (
+          <>
+            <p> 
+              User '<SenderUserLink user={extra_data.user_details} />' has requested to withdraw the collateral provided for the consent '{extra_data.resource_name}'. Please review and approve or reject the request. <br />
+              Reason: {extra_data?.revert_reason}
+            </p>
+            <small>{new Date(selectedNotification.created_at).toLocaleString()}</small>
+          </>
+        );
+
+      case 'revert_rejected':
+        return (
+          <>
+            <p>
+               User '<SenderUserLink user={extra_data.user_details} />' has rejected the request to revert the collateral consent for '{extra_data.resource_name}'.<br />
+               Reason: {extra_data?.revert_reject_reason}
+            </p>
+          </>
+        )  
       default:
         return (
         <>
@@ -681,6 +755,36 @@ const Sidebar = ({
           </div>
         </div>
       )}
+
+      {showRejectModal && (
+              <div className="edit-modal ">
+                <div className="modal-content">
+                  <h4>Enter reason for rejecting revert consent</h4>
+                  <div style={{ marginBottom: "1rem" }}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      type="text"
+                      rows={3}
+                      value={revertRejectReason}
+                      onChange={(e) => setRevertRejectReason(e.target.value)}
+                      placeholder="Enter reason here..."
+      
+                      style={{ width: "100%", marginTop: "0.5rem", borderRadius: "5px" }}
+                    />
+                  </div>
+      
+                  <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+                    <button className="btn btn-primary p-2" onClick={() => handleReject()}>Submit</button>
+                    <button className="btn btn-primary p-2" onClick={() => {
+                      setShowRejectModal(false);
+                      setRevertRejectReason("");
+                      setRevertXnode();
+                    }}>Cancel</button>
+                  </div>
+                </div>
+              </div>
+            )}
 
     </div>
   );

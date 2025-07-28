@@ -45,6 +45,7 @@ export const ConsentDashboard = () => {
   const [allIncomingConnections, setAllIncomingConnections] = useState([]);
   const [allOutgoingConnections, setAllOutgoingConnections] = useState([]);
   const [revertRejectReason, setRevertRejectReason] = useState("");
+  const [showRejectModal, setShowRejectModal] = useState(false)
 
 
   // const [error] = useState("");
@@ -447,7 +448,12 @@ console.log("currentData", currentData)
   const handleOutgoingRevertClick = async () => {
     console.log("Revert clicked for xnodeId:", currentData);
     const revert_reason = revertReason;
-    // if (!revert_reason) return;
+    // if (!revert_reason) alert("Reason is required to revert the consent");
+
+    if (!revert_reason || revert_reason.trim() === "") {
+    alert("Reason is required to revert the consent.");
+    return; // Stop execution if no reason is provided
+  }
 
     setLoadingResourceId(currentData.xnodeId);
     setMessage("");
@@ -521,7 +527,12 @@ console.log("currentData", currentData)
     // const revert_reason = prompt("Enter reason for reverting consent:");
     const revert_reason = revertReason;
     console.log("Revert reason:", revert_reason);
-    // if (!revert_reason) return;
+    // if (!revert_reason) alert("Reason is required to revert the consent.");
+
+    if (!revert_reason || revert_reason.trim() === "") {
+    alert("Reason is required to revert the consent.");
+    return; // Stop execution if no reason is provided
+  }
 
     setLoadingResourceId(currentData.xnodeId);
     setMessage("");
@@ -960,7 +971,152 @@ console.log("currentData", currentData)
 
   console.log("filteredConnections", filteredConnections)
 
+  const handleIncomingRejectRevert = async () => {
+    console.log("Reject incoming clicked for xnodeId:", currentData);
+    const reject_reason = revertRejectReason;
+    console.log("Revert reason:", reject_reason);
+    if (!reject_reason || reject_reason.trim() === "") {
+      alert("Reason is required to reject the revert request");
+      return;
+    }
+     try {
+      const token = Cookies.get("authToken");
 
+      const response = await fetch(`${frontend_host}/reject_revert_consent/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          xnode_id: currentData?.xnodeId,
+          revert_reject_reason: reject_reason.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setModalMessage({
+          message: data.message || "Revert successful",
+          type: 'success',
+        });
+        
+        
+        setShowRejectModal(false);
+        setRevertRejectReason("");
+        setCurrentData({});
+        setIsModalOpen(true);
+
+        console.log("activeTab", activeTab)
+
+        // console.log("Calling fetchResources withss:", user, index, uIdx);
+        fetchResources(currentData.user, currentData.index, currentData.uIdx)
+
+      } else {
+        setModalMessage({
+          message: data.error || "Failed to revert consent",
+          type: 'failure',
+        });
+        setShowRejectModal(false);
+        setRevertRejectReason("");
+        setCurrentData({});
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      // console.error("Error during revert request:", error);
+      setModalMessage({
+        message: error || "Error during revert request",
+        type: 'failure',
+      });
+      setShowRejectModal(false);
+      setRevertRejectReason("");
+      setCurrentData({});
+      setIsModalOpen(true);
+    } finally {
+      setLoadingResourceId(null);
+    }
+
+  }
+
+  const handleOutgoingRejectRevert = async () => {
+    console.log("Reject outgoing clicked for xnodeId:", currentData);
+    const reject_reason = revertRejectReason;
+    // console.log("Revert reason:", reject_reason);
+      if (!reject_reason || reject_reason.trim() === "") {
+      alert("Reason is required to reject the revert request");
+      return;
+    }
+
+
+    try {
+      const token = Cookies.get("authToken");
+
+      const response = await fetch(`${frontend_host}/reject_revert_consent/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          xnode_id: currentData.xnodeId,
+          revert_reject_reason: reject_reason.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setModalMessage({
+          message: data.message || "Revert successful",
+          type: 'success',
+        });
+        setShowRejectModal(false);
+        setRevertRejectReason("");
+        setCurrentData({});
+        setIsModalOpen(true);
+
+        fetchOutgoingResources(currentData.conn, currentData.index)
+
+
+      } else {
+        setModalMessage({
+          message: data.error || "Failed to revert consent",
+          type: 'failure',
+        });
+        setShowRejectModal(false);
+        setRevertRejectReason("");
+        setCurrentData({});
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      // console.error("Error during revert request:", error);
+      setModalMessage({
+        message: error || "Error during revert request",
+        type: 'failure',
+      });
+      setShowRejectModal(false);
+      setRevertRejectReason("");
+      setCurrentData({});
+      setIsModalOpen(true);
+    } finally {
+      setLoadingResourceId(null);
+    }
+  
+
+  };
+  
+
+  const handleIncomingRejectRevertModal = (xnodeId, user, index, uIdx) => {
+    setCurrentData({ xnodeId, user, index, uIdx });
+    setShowRejectModal(true);
+  };
+
+  const handleOutgoingRejectRevertModal = (xnodeId, conn, index) => {
+    setCurrentData({ xnodeId, conn, index });
+    setShowRejectModal(true);
+    console.log("Outgoing Revert Modal Data:", { xnodeId, conn, index });
+  };
 
   const fetchLockers = async () => {
     try {
@@ -1387,7 +1543,7 @@ console.log("currentData", currentData)
                                                             ) : resource.guest_revert_status === 1 && resource.host_revert_status === 0 ? (
                                                               <>
                                                                 <button className="btn btn-success me-2" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }} onClick={() => handleIncomingApproveRevert(resource.id, user, index, uIdx)}>Approve</button>
-                                                                <button className="btn btn-danger" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }}>Reject</button>
+                                                                <button className="btn btn-danger" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }} onClick={() => handleIncomingRejectRevertModal(resource.id, user, index, uIdx)}>Reject</button>
                                                               </>
                                                             ) : (
                                                               <button
@@ -1586,7 +1742,7 @@ console.log("currentData", currentData)
                                                 ) : resource.guest_revert_status === 0 && resource.host_revert_status === 1 ? (
                                                   <>
                                                     <button className="btn btn-success me-2" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 10px" }} onClick={() => handleOutgoingApproveRevert(resource.id, conn, index)}>Approve</button>
-                                                    <button className="btn btn-danger" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 12px" }}>Reject</button>
+                                                    <button className="btn btn-danger" style={{ borderRadius: "4px", fontSize: "80%", padding: "3px 12px" }} onClick={() => handleOutgoingRejectRevertModal(resource.id, conn, index)}>Reject</button>
                                                   </>
                                                 ) : (
                                                   <button
@@ -1832,6 +1988,40 @@ console.log("currentData", currentData)
               <button className="btn btn-primary p-2" onClick={() => {
                 setShowOutgoingRevertPopup(false);
                 setRevertReason("");
+                setCurrentData({});
+              }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRejectModal && (
+        <div className="edit-modal ">
+          <div className="modal-content">
+            <h4>Enter the reason for rejecting the revert request</h4>
+            <div style={{ marginBottom: "1rem" }}>
+              <TextField
+                fullWidth
+                multiline
+                type="text"
+                rows={3}
+                value={revertRejectReason}
+                onChange={(e) => setRevertRejectReason(e.target.value)}
+                placeholder="Enter reason here..."
+
+                style={{ width: "100%", marginTop: "0.5rem", borderRadius: "5px" }}
+              />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+              <button className="btn btn-primary p-2" onClick={() => {
+                  activeTab === "incoming"
+                    ? handleIncomingRejectRevert()
+                    : handleOutgoingRejectRevert();
+                }}>Submit</button>
+              <button className="btn btn-primary p-2" onClick={() => {
+                setShowRejectModal(false);
+                setRevertRejectReason("");
                 setCurrentData({});
               }}>Cancel</button>
             </div>

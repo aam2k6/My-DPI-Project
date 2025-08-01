@@ -1832,9 +1832,12 @@ useEffect(() => {
                   <td>
                     <select
                       value={statuses2[permission.labelName] || ""}
+                      disabled={
+                          permission.dataElement?.endsWith("T") ||
+                          permission.dataElement?.endsWith("R")
+                        }
                       onChange={(e) =>
                         handleStatusChange2(permission.labelName, e.target.value, permission.dataElement?.split(";")[0])
-
                       }
                     >
                       <option value="">Select Status</option>
@@ -2511,6 +2514,10 @@ useEffect(() => {
                               <td>
                                 <select
                                   value={statuses[obligation.labelName] || ""}
+                                  disabled={
+                                    termsValue[obligation.labelName]?.endsWith("T") ||
+                                    termsValue[obligation.labelName]?.endsWith("R")
+                                  }
                                   onChange={(e) =>
                                     handleStatusChange(
                                       obligation.labelName,

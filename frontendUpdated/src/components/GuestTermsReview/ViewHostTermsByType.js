@@ -2590,6 +2590,19 @@ export const ViewHostTermsByType = () => {
     }
   };
 
+  const getStatusClass = (status) => {
+  switch (status) {
+    case "Approved":
+      return "text-success"; // Green color
+    case "Rejected":
+      return "text-danger"; // Red color
+    case "Pending":
+      return "text-warning"; // Yellow/Orange color
+    default:
+      return "";
+  }
+};
+
   return (
 
     <div>
@@ -2864,7 +2877,7 @@ export const ViewHostTermsByType = () => {
                               </td> */}
 
                               <td> <button onClick={() => openPopup(obligation)}>View</button></td>
-                              <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
+                              <td className={getStatusClass(statuses[obligation.labelName])}>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
                               {/* <td>{obligation.labelDescription}</td> */}
                             </tr>
@@ -3204,7 +3217,7 @@ export const ViewHostTermsByType = () => {
                                   {/* Display "None" if empty */}
                                 </td>
                                 <td><button onClick={() => openPopup1(permission)}>View</button></td>
-                                <td>{statuses2[permission.labelName]}</td>
+                                <td className={getStatusClass(statuses2[permission.labelName])}>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
                             {moreDataTerms.map((term, index) => (

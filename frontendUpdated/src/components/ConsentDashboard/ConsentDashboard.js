@@ -449,11 +449,12 @@ console.log("currentData", currentData)
     console.log("Revert clicked for xnodeId:", currentData);
     const revert_reason = revertReason;
     // if (!revert_reason) alert("Reason is required to revert the consent");
+    if(responseModal){
 
-    if (!revert_reason || revert_reason.trim() === "") {
-    alert("Reason is required to revert the consent.");
-    return; // Stop execution if no reason is provided
-  }
+    } else if (!revert_reason || revert_reason.trim() === "") {
+      alert("Reason is required to revert the consent.");
+      return; // Stop execution if no reason is provided
+    }
 
     setLoadingResourceId(currentData.xnodeId);
     setMessage("");
@@ -529,10 +530,12 @@ console.log("currentData", currentData)
     console.log("Revert reason:", revert_reason);
     // if (!revert_reason) alert("Reason is required to revert the consent.");
 
-    if (!revert_reason || revert_reason.trim() === "") {
-    alert("Reason is required to revert the consent.");
-    return; // Stop execution if no reason is provided
-  }
+    if(responseModal){
+
+    } else if (!revert_reason || revert_reason.trim() === "") {
+      alert("Reason is required to revert the consent.");
+      return; // Stop execution if no reason is provided
+    }
 
     setLoadingResourceId(currentData.xnodeId);
     setMessage("");

@@ -7,6 +7,8 @@ import { frontend_host } from '../../config';
 import { Box, Grid } from '@mui/material';
 import IIITLogo from '../../assets/iiitb_image.png';
 import WebScienceLogo from '../../assets/Web_science_image.png';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleLoginComponent from '../GooogleLogin/GoogleLogin';
 
 export const Login = () => {
     const [username, setUsername] = useState("");
@@ -15,8 +17,7 @@ export const Login = () => {
     const [message, setMessage] = useState('');
     const [isSignup, setIsSignup] = useState(false); // To toggle between login and signup
     const navigate = useNavigate();
-    const { setUser } = useContext(usercontext);
-
+    const { setUser } = useContext(usercontext)
     // const handleSubmit = async (event) => {
     //     event.preventDefault();
 
@@ -78,56 +79,118 @@ export const Login = () => {
     //         });
     // };
 
+    // const handleSubmit = async (event) => {
+    //     event.preventDefault();
+
+    //     const data = new FormData();
+    //     data.append('username', username);
+    //     data.append('password', password);
+
+    //     if (isSignup) {
+    //         data.append('description', description);
+    //     }
+
+    //     // Log form values to ensure they're being set correctly
+    //     console.log("Form Values: ", { username, password, description });
+
+    //     const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
+    //     const headers = {};
+
+    //     if (!isSignup) {
+    //         headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
+    //     }
+
+    //     fetch(url, {
+    //         method: 'POST',
+    //         headers: headers,
+    //         body: data,
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.success) {
+    //                 console.log(isSignup ? "Signup successful:" : "Login successful:", data);
+    //                 if (isSignup) {
+    //                     setIsSignup(false); // Switch to login form after successful signup
+    //                     alert("Signup successful. Please log in.");
+    //                 } else {
+    //                     Cookies.set('authToken', btoa(`${username}:${password}`));
+    //                     setUser(data.user);
+    //                     localStorage.setItem('curruser', JSON.stringify(data.user));
+    //                     navigate('/home');
+    //                 }
+    //             } else {
+    //                 console.error("Error:", data.error);
+    //                 alert("Invalid Credentials" || data.error);
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error("Error:", error);
+    //             alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
+    //         });
+    // };
+
     const handleSubmit = async (event) => {
-        event.preventDefault();
+    event.preventDefault();
 
-        const data = new FormData();
-        data.append('username', username);
-        data.append('password', password);
+    const data = new FormData();
+    data.append('username', username);
+    data.append('password', password);
 
-        if (isSignup) {
-            data.append('description', description);
-        }
+    if (isSignup) {
+        data.append('description', description);
+    }
 
-        // Log form values to ensure they're being set correctly
-        console.log("Form Values: ", { username, password, description });
+    const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
+    const headers = {};
 
-        const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
-        const headers = {};
+    if (!isSignup) {
+        headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
+    }
 
-        if (!isSignup) {
-            headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
-        }
-
-        fetch(url, {
+    try {
+        const response = await fetch(url, {
             method: 'POST',
             headers: headers,
             body: data,
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log(isSignup ? "Signup successful:" : "Login successful:", data);
-                    if (isSignup) {
-                        setIsSignup(false); // Switch to login form after successful signup
-                        alert("Signup successful. Please log in.");
-                    } else {
-                        Cookies.set('authToken', btoa(`${username}:${password}`));
-                        setUser(data.user);
-                        localStorage.setItem('curruser', JSON.stringify(data.user));
-                        navigate('/home');
-                    }
-                } else {
-                    console.error("Error:", data.error);
-                    alert("Invalid Credentials" || data.error);
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
-            });
-    };
+        });
 
+        const responseData = await response.json();
+
+        if (response.ok && responseData.success) {
+            console.log(isSignup ? "Signup successful:" : "Login successful:", responseData);
+            if (isSignup) {
+                setIsSignup(false);
+                alert("Signup successful. Please log in.");
+            } else {
+                // Correctly store the authentication type and credentials
+                const basicAuthToken = btoa(`${username}:${password}`);
+                
+                // Set the cookie with the Basic Auth string
+                Cookies.set('authToken', basicAuthToken, { expires: 7 }); 
+                
+                // Set the authentication type in localStorage
+                localStorage.setItem('authType', 'Basic');
+
+                // Assuming the login response contains user data directly
+                // If not, you'd need to make another API call to get it
+                if (responseData.user) {
+                    setUser(responseData.user);
+                    localStorage.setItem('curruser', JSON.stringify(responseData.user));
+                    navigate('/home');
+                } else {
+                    console.error("Login successful, but user data is missing in the response.");
+                    alert("Login successful, but a problem occurred.");
+                }
+            }
+        } else {
+            console.error("Error:", responseData.error);
+            alert("Invalid Credentials" || responseData.error);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
+    }
+};
 
     return (
         <>
@@ -143,6 +206,7 @@ export const Login = () => {
                         <div className="form-headers">
                             <h1><u>{isSignup ? 'SIGN UP' : 'SIGN IN'}</u></h1>
                         </div>
+                       
                         {message && <div className="error-message" style={{ color: 'red' }}>{message}</div>}
                         <div className="form-input" id='form-inplogin1'>
                             <label>USERNAME :</label>
@@ -188,6 +252,10 @@ export const Login = () => {
                         </Box>
 
                     </form>
+
+                     <GoogleOAuthProvider clientId="191215085646-hngqosqgf5nhn648vqekr1tulslmofjb.apps.googleusercontent.com">
+  <GoogleLoginComponent ></GoogleLoginComponent>
+</GoogleOAuthProvider>
 
                 </div>
 

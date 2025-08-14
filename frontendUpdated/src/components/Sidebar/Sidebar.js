@@ -48,14 +48,39 @@ const Sidebar = ({
   const [revertRejectReason, setRevertRejectReason ] = useState("");
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [revertXnode, setRevertXnode] = useState();
-  const handleLogout = () => {
-    Cookies.remove("authToken");
-    localStorage.removeItem("curruser");
-    console.log("Logged out");
-    navigate("/");
-    window.location.reload();
-    setUser(null);
-  };
+  // const handleLogout = () => {
+  //   Cookies.remove("authToken");
+  //   localStorage.removeItem("curruser");
+  //   console.log("Logged out");
+  //   navigate("/");
+  //   window.location.reload();
+  //   setUser(null);
+  // };
+const handleLogout = () => {
+  // Remove JWT tokens stored as JS cookies
+  Cookies.remove("access_token");
+  Cookies.remove("refresh_token");
+
+  // Clear any legacy or alternate auth tokens if present
+  Cookies.remove("authToken");
+
+  // Remove user data stored locally
+  localStorage.removeItem("curruser");
+
+  // Optional: You may also clear user context/state
+  setUser && setUser(null);
+
+  // Optionally, notify server to invalidate blacklisted/expired tokens (if using a logout API)
+  // await apiFetch.post('/dj-rest-auth/logout/').catch(() => {});
+
+  // Navigate to login (or landing) page
+  navigate("/");
+
+  // Completely reload the app to ensure all state/caches are cleared
+  window.location.reload();
+
+  console.log("Logged out");
+};
 
 
   const capitalizeFirstLetter = (string) => {

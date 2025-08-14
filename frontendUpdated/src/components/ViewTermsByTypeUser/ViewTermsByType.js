@@ -1213,8 +1213,6 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       }
     };
 
-
-
     // const fetchPermissionsData = async () => {
     //   // Placeholder for future implementation
     // };
@@ -2949,6 +2947,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     });
   };
 
+
   // const tooltips = {
   //   share: "You are not transferring ownership of this resource, but the recipient can view your resource. The recipient cannot do anything else.",
   //   transfer: "You are transferring ownership of this resource. You will no longer have access to this resource after this operation.",
@@ -3093,6 +3092,21 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       <span className="breadcrumb-item current">ViewGuestTermsByType</span>
     </div>
   )
+
+// statusMap[obligation.labelName] = status;
+
+  const getStatusClass = (status) => {
+  switch (status) {
+    case "Approved":
+      return "text-success"; // Green color
+    case "Rejected":
+      return "text-danger"; // Red color
+    case "Pending":
+      return "text-warning"; // Yellow/Orange color
+    default:
+      return "";
+  }
+};
 
 
 
@@ -3375,7 +3389,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                               <td><button onClick={() => openPopup(obligation)}>View</button></td>
 
 
-                              <td>{statuses[obligation.labelName] || "Pending"}</td>{" "}
+                              <td className={getStatusClass(statuses[obligation.labelName])}>{statuses[obligation.labelName] || "Pending"}</td>{" "}
                               {/* Display status */}
                               {/* <td>{obligation.labelDescription}</td> */}
                             </tr>
@@ -3827,7 +3841,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                                 </td>
                                 <td><button onClick={() => openPopup1(permission)}>View</button></td>
 
-                                <td>{statuses2[permission.labelName]}</td>
+                                <td className={getStatusClass(statuses2[permission.labelName])}>{statuses2[permission.labelName]}</td>
                               </tr>
                             ))}
                             {moreDataTerms.map((term, index) => (

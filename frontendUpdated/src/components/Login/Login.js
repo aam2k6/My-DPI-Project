@@ -9,186 +9,113 @@ import IIITLogo from '../../assets/iiitb_image.png';
 import WebScienceLogo from '../../assets/Web_science_image.png';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLoginComponent from '../GooogleLogin/GoogleLogin';
+import GoogleSignupComponent from '../GooogleLogin/GoogleSignup';
+import { apiFetch } from '../../utils/api';
 
 export const Login = () => {
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [description, setDescription] = useState(""); // Added for signup
     const [message, setMessage] = useState('');
     const [isSignup, setIsSignup] = useState(false); // To toggle between login and signup
     const navigate = useNavigate();
     const { setUser } = useContext(usercontext)
-    // const handleSubmit = async (event) => {
-    //     event.preventDefault();
+   
+//     const handleSubmit = async (event) => {
+//     event.preventDefault();
 
-    //     const data = new FormData();
-    //     data.append('username', username);
-    //     data.append('password', password);
+//     const data = new FormData();
+//     data.append('username', username);
+//     data.append('password', password);
 
-    //     if (isSignup) {
-    //         data.append('description', description);
-    //     }
+//     if (isSignup) {
+//         data.append('description', description);
+//     }
 
-    //     // Log form values to ensure they're being set correctly
-    //     console.log("Form Values: ", { username, password, description });
+//     const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
+//     const headers = {};
 
-    //     const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
-    //     // const headers = {};
+//     if (!isSignup) {
+//         headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
+//     }
 
-    //     // console.log(url);
+//     try {
+//         const response = await fetch(url, {
+//             method: 'POST',
+//             headers: headers,
+//             body: data,
+//         });
 
+//         const responseData = await response.json();
 
-    //     // if (!isSignup) {
-    //     //     headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
-    //     // }
+//         if (response.ok && responseData.success) {
+//             console.log(isSignup ? "Signup successful:" : "Login successful:", responseData);
+//             if (isSignup) {
+//                 setIsSignup(false);
+//                 alert("Signup successful. Please log in.");
+//             } else {
+//                 // Correctly store the authentication type and credentials
+//                 const basicAuthToken = btoa(`${username}:${password}`);
+                
+//                 // Set the cookie with the Basic Auth string
+//                 Cookies.set('authToken', basicAuthToken, { expires: 7 }); 
+                
+//                 // Set the authentication type in localStorage
+//                 localStorage.setItem('authType', 'Basic');
 
-    //     const headers = {
-    //         'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
-    //         'Content-Type': 'application/json',
-    //     };
-
-    //     console.log(headers);
-
-
-    //     fetch(url, {
-    //         method: 'POST',
-    //         headers: headers,
-    //         body: data,
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             if (data.success) {
-    //                 console.log(isSignup ? "Signup successful:" : "Login successful:", data);
-    //                 if (isSignup) {
-    //                     setIsSignup(false); // Switch to login form after successful signup
-    //                     alert("Signup successful. Please log in.");
-    //                 } else {
-    //                     Cookies.set('authToken', btoa(`${username}:${password}`));
-    //                     setUser(data.user);
-    //                     localStorage.setItem('curruser', JSON.stringify(data.user));
-    //                     navigate('/home');
-    //                 }
-    //             } else {
-    //                 console.error("Error:", data.error);
-    //                 alert("Invalid Credentials" || data.error);
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error("Error:", error);
-    //             alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
-    //         });
-    // };
-
-    // const handleSubmit = async (event) => {
-    //     event.preventDefault();
-
-    //     const data = new FormData();
-    //     data.append('username', username);
-    //     data.append('password', password);
-
-    //     if (isSignup) {
-    //         data.append('description', description);
-    //     }
-
-    //     // Log form values to ensure they're being set correctly
-    //     console.log("Form Values: ", { username, password, description });
-
-    //     const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
-    //     const headers = {};
-
-    //     if (!isSignup) {
-    //         headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
-    //     }
-
-    //     fetch(url, {
-    //         method: 'POST',
-    //         headers: headers,
-    //         body: data,
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             if (data.success) {
-    //                 console.log(isSignup ? "Signup successful:" : "Login successful:", data);
-    //                 if (isSignup) {
-    //                     setIsSignup(false); // Switch to login form after successful signup
-    //                     alert("Signup successful. Please log in.");
-    //                 } else {
-    //                     Cookies.set('authToken', btoa(`${username}:${password}`));
-    //                     setUser(data.user);
-    //                     localStorage.setItem('curruser', JSON.stringify(data.user));
-    //                     navigate('/home');
-    //                 }
-    //             } else {
-    //                 console.error("Error:", data.error);
-    //                 alert("Invalid Credentials" || data.error);
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error("Error:", error);
-    //             alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
-    //         });
-    // };
-
-    const handleSubmit = async (event) => {
+//                 // Assuming the login response contains user data directly
+//                 // If not, you'd need to make another API call to get it
+//                 if (responseData.user) {
+//                     setUser(responseData.user);
+//                     localStorage.setItem('curruser', JSON.stringify(responseData.user));
+//                     navigate('/home');
+//                 } else {
+//                     console.error("Login successful, but user data is missing in the response.");
+//                     alert("Login successful, but a problem occurred.");
+//                 }
+//             }
+//         } else {
+//             console.error("Error:", responseData.error);
+//             alert("Invalid Credentials" || responseData.error);
+//         }
+//     } catch (error) {
+//         console.error("Error:", error);
+//         alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
+//     }
+// };
+const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const data = new FormData();
-    data.append('username', username);
-    data.append('password', password);
-
-    if (isSignup) {
-        data.append('description', description);
-    }
-
-    const url = isSignup ? 'host/signup-user/'.replace(/host/, frontend_host) : 'host/login-user/'.replace(/host/, frontend_host);
-    const headers = {};
-
-    if (!isSignup) {
-        headers['Authorization'] = `Basic ${btoa(`${username}:${password}`)}`;
-    }
+    const url = isSignup ? '/signup-user/' : '/login-user/';
+    
+    // Send credentials in the request body, not a header.
+    const requestData = {
+        username: username,
+        password: password,
+        ...(isSignup && { email: email, description: description })
+    };
 
     try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: data,
-        });
+        const response = await apiFetch.post(url, requestData);
 
-        const responseData = await response.json();
-
-        if (response.ok && responseData.success) {
-            console.log(isSignup ? "Signup successful:" : "Login successful:", responseData);
-            if (isSignup) {
-                setIsSignup(false);
-                alert("Signup successful. Please log in.");
-            } else {
-                // Correctly store the authentication type and credentials
-                const basicAuthToken = btoa(`${username}:${password}`);
-                
-                // Set the cookie with the Basic Auth string
-                Cookies.set('authToken', basicAuthToken, { expires: 7 }); 
-                
-                // Set the authentication type in localStorage
-                localStorage.setItem('authType', 'Basic');
-
-                // Assuming the login response contains user data directly
-                // If not, you'd need to make another API call to get it
-                if (responseData.user) {
-                    setUser(responseData.user);
-                    localStorage.setItem('curruser', JSON.stringify(responseData.user));
-                    navigate('/home');
-                } else {
-                    console.error("Login successful, but user data is missing in the response.");
-                    alert("Login successful, but a problem occurred.");
-                }
-            }
-        } else {
-            console.error("Error:", responseData.error);
-            alert("Invalid Credentials" || responseData.error);
+        if (response.status === 200) {
+            console.log("Login successful:", response.data);
+            
+            // Assuming your backend returns access and refresh tokens
+            const { access, refresh, user } = response.data;
+            
+            // Store the JWTs from the backend response
+            Cookies.set('access_token', access, { expires: 1 / 24 });
+            Cookies.set('refresh_token', refresh, { expires: 7 }); 
+            localStorage.setItem('curruser', JSON.stringify(user));
+            setUser(user);
+            
+            navigate('/home');
         }
     } catch (error) {
-        console.error("Error:", error);
-        alert(`An error occurred during ${isSignup ? 'signup' : 'login'}`);
+        console.error("Login Error:", error.response?.data || error.message);
+        alert(error.response?.data?.error || "An error occurred during login.");
     }
 };
 
@@ -218,6 +145,18 @@ export const Login = () => {
                                 required
                             />
                         </div>
+                                     {isSignup && (
+                        <div className="form-input" id='form-inplogin-email'>
+                            <label>EMAIL :</label>
+                            <input 
+                                type="email" 
+                                id="email"
+                                value={email} 
+                                onChange={(e) => setEmail(e.target.value)} 
+                                required 
+                            />
+                        </div>
+                    )}
                         <div className="form-input" id='form-inplogin2'>
                             <label>PASSWORD :</label>
                             <input
@@ -254,8 +193,9 @@ export const Login = () => {
                     </form>
 
                      <GoogleOAuthProvider clientId="191215085646-hngqosqgf5nhn648vqekr1tulslmofjb.apps.googleusercontent.com">
-  <GoogleLoginComponent ></GoogleLoginComponent>
-</GoogleOAuthProvider>
+                    <GoogleLoginComponent ></GoogleLoginComponent>
+                    <GoogleSignupComponent></GoogleSignupComponent>
+                    </GoogleOAuthProvider>
 
                 </div>
 

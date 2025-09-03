@@ -45,6 +45,7 @@ import { ConsentDashboard } from "./components/ConsentDashboard/ConsentDashboard
 import { ConnectionProvider } from "./ConnectionContext";
 import DirectoryPage from "./components/Directory/directory";
 import ViewAllNotifications from "./components/ViewAllNotifications/ViewAllNotifications";
+import {CompleteProfile} from "./components/GooogleLogin/profileComplete"
 
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 
@@ -400,6 +401,16 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/complete-profile"
+                element={
+                  <ProtectedRoute>
+                    <CompleteProfile />
+                    {/* <Scanner /> */}
+                  </ProtectedRoute>
+                }
+              />
+              
               <Route path="*" element={<h1>Page Not Found</h1>} />
             </Routes>
           </ConnectionProvider>

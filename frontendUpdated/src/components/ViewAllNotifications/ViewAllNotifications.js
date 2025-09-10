@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Menu, MenuItem, IconButton } from '@mui/material';
+import { apiFetch } from "../../utils/api";
 
 const ViewAllNotifications = () => {
   const navigate = useNavigate();
@@ -33,17 +34,11 @@ const ViewAllNotifications = () => {
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -60,22 +55,16 @@ useEffect(() => {
   useEffect(() => {
     const fetchLockers = async () => {
       try {
-        const token = Cookies.get('authToken');
-        const response = await fetch('host/get-lockers-user/'.replace(/host/, frontend_host), {
-          method: 'GET',
-          headers: {
-            'Authorization': `Basic ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        // const token = Cookies.get('authToken');
+        const response = await apiFetch.get('/get-lockers-user/');
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!response.status >= 200 && !response.status < 300) {
+          const errorData = response.data;
           setError(errorData.error || 'Failed to fetch lockers');
           return;
         }
 
-        const data = await response.json();
+        const data = response.data;
         if (data.success) {
           setLockers(data.lockers || []);
         } else {
@@ -99,21 +88,15 @@ useEffect(() => {
 
   const fetchNotifications = async () => {
     try {
-      const token = Cookies.get('authToken');
-      const response = await fetch('host/get-notifications/'.replace(/host/, frontend_host), {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      // const token = Cookies.get('authToken');
+      const response = await apiFetch.get('/get-notifications/');
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         setError(errorData.error || 'Failed to fetch notifications');
         return;
       }
-      const data = await response.json();
+      const data = response.data;
       console.log("data", data)
       if (data.success) {
         setNotifications(data.notifications || []);
@@ -132,16 +115,9 @@ useEffect(() => {
       const data = {
         notification_id: id,
       };
-      const response = await fetch(`${frontend_host}/mark-notification-read/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await apiFetch.post(`/mark-notification-read/`, data)
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         setNotifications((prev) =>
           prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
 

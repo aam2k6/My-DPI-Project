@@ -9,6 +9,7 @@ import { usercontext } from "../../usercontext";
 import { frontend_host } from "../../config";
 import '../Displayterms/Displayterms.css'; // Make sure to create the relevant CSS file
 import { Grid, Box } from '@mui/material';
+import { apiFetch } from "../../utils/api";
 
 const GlobalTermsView = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -46,22 +47,16 @@ const GlobalTermsView = () => {
 
     const fetchGlobalTerms = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const apiUrl = `${frontend_host}/get-connection-terms-for-global-template/?template_Id=${template_Id}`;
+        // const token = Cookies.get("authToken");
+        const apiUrl = `/get-connection-terms-for-global-template/?template_Id=${template_Id}`;
 
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`,
-          },
-        });
+        const response = await apiFetch.get(apiUrl);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && response.status < 300) {
           throw new Error(`Failed to fetch terms: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = response.data;
         console.log("API Response:", data); // Debugging log
 
         if (data.data) {
@@ -83,17 +78,11 @@ const GlobalTermsView = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }

@@ -9,6 +9,7 @@ import { frontend_host } from '../../config';
 import { Grid, Box, Button } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api";
 
 export const CreateConnectionType = () => {
     const navigate = useNavigate();
@@ -44,17 +45,10 @@ export const CreateConnectionType = () => {
     useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -70,64 +64,70 @@ export const CreateConnectionType = () => {
   }, [curruser, isSidebarOpen]);
 
     useEffect(() => {
-        if (!curruser) {
-            navigate('/');
-            return;
-        }
+  const fetchLockers = async () => {
+    if (!curruser) {
+      navigate("/");
+      return;
+    }
 
-        const token = Cookies.get('authToken');
-        fetch('host/get-lockers-user/'.replace(/host/, frontend_host), {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    setLockers(data.lockers || []); // Ensure array
-                    if (!selectedLocker && data.lockers.length > 0) {
-                        setSelectedLocker(data.lockers[0]);
-                    }
-                } else {
-                    setError(data.message || data.error);
-                }
-            })
-            .catch(error => {
-                setError("An error occurred while fetching lockers.");
-                console.error("Error:", error);
-            });
-    }, [curruser]);
+    try {
+    //   const token = Cookies.get("authToken");
+
+      const response = await apiFetch.get("/get-lockers-user/");
+
+      const data = response.data;
+
+      if (data.success) {
+        setLockers(data.lockers || []);
+        if (!selectedLocker && data.lockers.length > 0) {
+          setSelectedLocker(data.lockers[0]);
+        }
+      } else {
+        setError(data.message || data.error);
+      }
+    } catch (error) {
+      const errorData = error.response?.data || {};
+      setError(errorData.error || "An error occurred while fetching lockers.");
+      console.error("Error fetching lockers:", error);
+    }
+  };
+
+  fetchLockers();
+}, [curruser]);
 
     useEffect(() => {
-        if (parentUser && locker) {
-            const token = Cookies.get('authToken');
-            const params = new URLSearchParams({ guest_locker_name: locker.name, guest_username: parentUser.username });
-            fetch(`host/get-other-connection-types/?${params}`.replace(/host/, frontend_host), {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Basic ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        setConnectionTypes(data.connection_types || []); // Ensure array
-                        if (!selectedConnectionType && data.connection_types.length > 0) {
-                            setSelectedConnectionType(data.connection_types[0]);
-                        }
-                    } else {
-                        setError(data.message || data.error);
-                    }
-                })
-                .catch(error => {
-                    setError("An error occurred while fetching connection types.");
-                    console.error("Error:", error);
-                });
+  const fetchConnectionTypes = async () => {
+    if (!parentUser || !locker) return;
+
+    try {
+
+      const params = new URLSearchParams({
+        guest_locker_name: locker.name,
+        guest_username: parentUser.username,
+      });
+
+      const response = await apiFetch.get(
+        `/get-other-connection-types/?${params.toString()}`);
+
+      const data = response.data;
+
+      if (data.success) {
+        setConnectionTypes(data.connection_types || []);
+        if (!selectedConnectionType && data.connection_types.length > 0) {
+          setSelectedConnectionType(data.connection_types[0]);
         }
-    }, [parentUser, locker]);
+      } else {
+        setError(data.message || data.error);
+      }
+    } catch (error) {
+      const errorData = error.response?.data || {};
+      setError(errorData.error || "An error occurred while fetching connection types.");
+      console.error("Error fetching connection types:", error);
+    }
+  };
+
+  fetchConnectionTypes();
+}, [parentUser, locker]);
 
     const handleLockerChange = (event) => {
         const selectedLockerName = event.target.value;

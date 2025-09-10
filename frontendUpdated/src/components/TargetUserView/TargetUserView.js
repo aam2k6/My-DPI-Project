@@ -10,6 +10,7 @@ import { Button } from '@mui/material'
 import Sidebar from "../Sidebar/Sidebar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api";
 
 export const TargetUserView = () => {
   const navigate = useNavigate();
@@ -41,16 +42,10 @@ export const TargetUserView = () => {
     const fetchNotifications = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -90,24 +85,18 @@ export const TargetUserView = () => {
         console.log('Fetching lockers with params:', params.toString());
         console.log('User object:', user);
 
-        const response = await fetch(`host/get-lockers-user/?${params}`.replace(/host/, frontend_host), {
-          method: 'GET',
-          headers: {
-            'Authorization': `Basic ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await apiFetch.get(`/get-lockers-user/?${params}`);
 
-        console.log('Response status:', response.status);
+        // console.log('Response status:', response.status);
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!response.status >= 200 && !response.status < 300) {
+          const errorData = response.data;
           setError(errorData.error || 'Failed to fetch lockers');
           console.error('Error fetching lockers:', errorData);
           return;
         }
 
-        const data = await response.json();
+        const data = response.data;
         console.log('Response data:', data);
 
         if (data.success) {
@@ -181,7 +170,7 @@ export const TargetUserView = () => {
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "120px" }}>
         <div className="heroContainers">
           <div className="page6-allLockers" style={{ border: "none" }}>
-            {error && <div className="error">{error}</div>}
+            {/* {error && <div className="error">{error}</div>} */}
             {Array.isArray(allLockers) && allLockers.length > 0 ? (
               allLockers.map(lockers => (
                 <div key={lockers.locker_id} className="page6-locker" style={{ borderRadius: "5px" }}>
@@ -196,7 +185,7 @@ export const TargetUserView = () => {
                 </div>
               ))
             ) : (
-              <p style={{ marginTop: "1.30rem" }}>No lockers found.</p>
+              <p style={{ marginTop: "1.30rem" }}>No lockers found for this user.</p>
             )}
           </div>
         </div>

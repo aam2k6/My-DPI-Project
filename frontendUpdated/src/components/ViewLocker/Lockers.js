@@ -18,6 +18,7 @@ import {
   Grid,
   TextField,
 } from '@mui/material';
+import { apiFetch } from "../../utils/api";
 
 
 export const AllLokers = () => {
@@ -47,17 +48,11 @@ export const AllLokers = () => {
     useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -75,22 +70,16 @@ export const AllLokers = () => {
   useEffect(() => {
     const fetchLockers = async () => {
       try {
-        const token = Cookies.get('authToken');
-        const response = await fetch('host/get-lockers-user/'.replace(/host/, frontend_host), {
-          method: 'GET',
-          headers: {
-            'Authorization': `Basic ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        // const token = Cookies.get('authToken');
+        const response = await apiFetch.get('/get-lockers-user/');
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!response.status >= 200 && !response.status < 300) {
+          const errorData = response.data;
           setError(errorData.error || 'Failed to fetch lockers');
           return;
         }
 
-        const data = await response.json();
+        const data = response.data;
         if (data.success) {
           setLockers(data.lockers || []);
         } else {
@@ -117,21 +106,15 @@ export const AllLokers = () => {
   const fetchNotifications = async () => {
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch('host/get-notifications/'.replace(/host/, frontend_host), {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await apiFetch.get('/get-notifications/');
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         setError(errorData.error || 'Failed to fetch notifications');
         return;
       }
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setNotifications(data.notifications || []);
       } else {
@@ -144,18 +127,9 @@ export const AllLokers = () => {
 
   const fetchUserLockers = async () => {
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(
-        `host/get-lockers-user/`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/get-lockers-user/`);
+      const data = response.data;
       if (data.success) {
         setLockers(data.lockers);
       } else {
@@ -175,7 +149,7 @@ export const AllLokers = () => {
 
   const handleSaveClick = async () => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
       const lockerToUpdate = lockers.find(
         (locker) => locker.locker_id === editingLocker
@@ -185,25 +159,18 @@ export const AllLokers = () => {
         return;
       }
 
-      const response = await fetch(
-        `host/update-delete-locker/`.replace(/host/, frontend_host),
+      const response = await apiFetch.put(
+        `/update-delete-locker/`,
         {
-          method: "PUT",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
             locker_name: lockerToUpdate.name,
             new_locker_name: newLockerName,
             description: description,
-          }),
-        }
+        },
       );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         if (data.message === "Locker updated successfully.") {
           fetchUserLockers();
           setEditingLocker(null);
@@ -248,35 +215,26 @@ export const AllLokers = () => {
       )
     ) {
       try {
-        const token = Cookies.get("authToken");
-        fetch(`host/update-delete-locker/`.replace(/host/, frontend_host), {
-          method: "DELETE",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            locker_name: lockerToDelete.name,
-          }),
-        }).then(async (response) => {
-          const data = await response.json();
-          if (data.message.includes("successfully deleted")) {
-            fetchUserLockers();
-            setEditingLocker(null);
-            setShowEditModal(false);
-            setModalMessage({
-              message: "Locker deleted successfully!",
-              type: "success",
-            });
-          } else {
-            console.error(data.message);
-            setModalMessage({
-              message: "Failed to delete locker.",
-              type: "failure",
-            });
-          }
-        });
-      } catch (error) {
+        // const token = Cookies.get("authToken");
+        apiFetch.delete(`/update-delete-locker/`, {
+  data: { locker_name: lockerToDelete.name },
+}).then(async (response) => {
+  if (response.status >= 200 && response.status < 300) {
+    await fetchUserLockers();
+    setEditingLocker(null);
+    setShowEditModal(false);
+    setModalMessage({
+      message: "Locker deleted successfully!",
+      type: "success",
+    });
+  } else {
+    console.error(response.data.message);
+    setModalMessage({
+      message: "Failed to delete locker.",
+      type: "failure",
+    });
+  }
+})} catch (error) {
         console.error("An error occurred while deleting the locker.");
         setModalMessage({
           message: "An error occurred while deleting the locker.",
@@ -351,7 +309,7 @@ export const AllLokers = () => {
             <h3>All Lockers</h3>
           </Grid>
         </Grid>
-        {error && <p>{error}</p>}
+        {/* {error && <p>{error}</p>} */}
         <Grid container spacing={3} className="page5container" padding={{ md: 10, sm: 2, xs: 2 }}>
           {lockers.length > 0 ? (
             lockers.map((locker) => (

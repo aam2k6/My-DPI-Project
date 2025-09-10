@@ -132,6 +132,7 @@ import { Button, Grid, Box } from '@mui/material'
 import Sidebar from '../Sidebar/Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from '../../utils/api';
 
 export default function SettingsPage() {
     const { curruser, setUser } = useContext(usercontext);
@@ -165,16 +166,10 @@ useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -212,16 +207,9 @@ useEffect(() => {
         };
 
         console.log("Updated User Data: ", updatedUser);
-        const token = Cookies.get('authToken');
-        fetch('host/signup-user/'.replace(/host/, frontend_host), {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updatedUser),
-        })
-            .then(response => response.json())
+        // const token = Cookies.get('authToken');
+        apiFetch.put('/signup-user/', updatedUser)
+            .then(response => response.data)
             .then(data => {
                 if (data.success) {
                     setUser({ ...curruser, username: newUsername, description: description });

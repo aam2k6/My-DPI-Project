@@ -6,6 +6,7 @@ import "./guestuser.css";
 import Navbar from '../Navbar/Navbar';
 import Sidebar from "../Sidebar/Sidebar.js";
 import { frontend_host } from '../../config';
+import { apiFetch } from "../../utils/api"
 import {
   Box,
   Card,
@@ -58,17 +59,11 @@ export const Guestusers = () => {
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -88,52 +83,52 @@ useEffect(() => {
   };
 
   console.log(connectionType, locker);
-  useEffect(() => {
-    if (!curruser) {
-      navigate('/');
-      return;
-    }
+ useEffect(() => {
+  if (!curruser) {
+    navigate('/');
+    return;
+  }
 
-    if (!connectionType || !locker) {
-      setError("Locker or Connection Type information is missing.");
-      return;
-    }
+  if (!connectionType || !locker) {
+    setError("Locker or Connection Type information is missing.");
+    return;
+  }
 
-    const token = Cookies.get('authToken');
-    const params = new URLSearchParams({
-      connection_type_name: connectionType.connection_type_name,
-      host_locker_name: locker.name,
-      host_user_username: curruser.username
-    });
-
-    fetch(`host/get-guest-user-connection/?${params.toString()}`.replace(/host/, frontend_host), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.connections) {
-          setConnections(data.connections);
-          const filteredConnections = data.connections.filter(connection => connection.connection_status !== "revoked")
-          setFilteredConnections(filteredConnections);
-          fetchAllTrackerData(data.connections);
-        } else {
-          setError("No connections found.");
-        }
-      })
-      .catch(error => {
-        setError("An error occurred while fetching connection details.");
-        console.error("Error:", error);
+  const fetchConnections = async () => {
+    try {
+      const token = Cookies.get('authToken');
+      const params = new URLSearchParams({
+        connection_type_name: connectionType.connection_type_name,
+        host_locker_name: locker.name,
+        host_user_username: curruser.username,
       });
-  }, [curruser, navigate, locker, connectionType]);
+
+      const response = await apiFetch.get(
+        `/get-guest-user-connection/?${params}`);
+
+      const data = response.data; // Axios gives response data here
+
+      if (data.connections) {
+        setConnections(data.connections);
+
+        const filteredConnections = data.connections.filter(
+          (connection) => connection.connection_status !== "revoked"
+        );
+        setFilteredConnections(filteredConnections);
+
+        fetchAllTrackerData(data.connections);
+      } else {
+        setError("No connections found.");
+      }
+    } catch (error) {
+      setError("An error occurred while fetching connection details.");
+      console.error("Error:", error);
+    }
+  };
+
+  fetchConnections();
+}, [curruser, navigate, locker, connectionType]);
+
 
   // const filterConnections = () => {
   //   let results = filteredConnections;
@@ -197,7 +192,7 @@ useEffect(() => {
 
   const fetchTrackerData = async (connection) => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         connection_name: connection.connection_name,
         host_locker_name: connection.host_locker.name,
@@ -205,20 +200,12 @@ useEffect(() => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch tracker data");
-      }
-      const data = await response.json();
+      const response = await apiFetch.get(
+        `/get-terms-status/?${params}`);
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch tracker data");
+      // }
+      const data = response.data;
       if (data.success) {
         // console.log("view locker", data);
         setTrackerData((prevState) => ({
@@ -242,7 +229,7 @@ useEffect(() => {
 
   const fetchTrackerDataReverse = async (connection) => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         connection_name: connection.connection_name,
         host_locker_name: connection.host_locker.name,
@@ -250,20 +237,12 @@ useEffect(() => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch tracker data");
-      }
-      const data = await response.json();
+      const response = await apiFetch.get(
+        `/get-terms-status-reverse/?${params}`);
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch tracker data");
+      // }
+      const data = response.data;
       if (data.success) {
         console.log("view locker", data);
         setTrackerDataReverse((prevState) => ({

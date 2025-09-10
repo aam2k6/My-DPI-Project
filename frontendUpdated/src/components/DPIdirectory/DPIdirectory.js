@@ -17,6 +17,7 @@ import {
   Grid,
   TextField,
 } from '@mui/material';
+import { apiFetch } from "../../utils/api";
 
 export const DPIdirectory = () => {
   const navigate = useNavigate();
@@ -49,17 +50,10 @@ export const DPIdirectory = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300 ) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -74,35 +68,34 @@ export const DPIdirectory = () => {
     }
   }, [curruser, isSidebarOpen]);
 
-  useEffect(() => {
-    if (!curruser) {
-      navigate('/');
-      return;
-    }
+useEffect(() => {
+  if (!curruser) {
+    navigate('/');
+    return;
+  }
 
-    const token = Cookies.get('authToken');
+  // const token = Cookies.get('authToken');
 
-    fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json'
+  apiFetch.get(`/dpi-directory/`)
+    .then((response) => {
+      const data = response.data; // axios gives response here
+
+      if (data.success) {
+        const sortedUsers = data.users
+          .slice()
+          .sort((a, b) => a.username.localeCompare(b.username));
+
+        setUsers(sortedUsers);
+        setFilteredUsers(sortedUsers);
+      } else {
+        setError(data.message || data.error);
       }
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          const sortedUsers = data.users.slice().sort((a, b) => a.username.localeCompare(b.username));
-          setUsers(sortedUsers);
-          setFilteredUsers(sortedUsers);
-        } else {
-          setError(data.message || data.error);
-        }
-      })
-      .catch(error => {
-        setError("An error occurred while fetching users.");
-      });
-  }, [curruser, navigate]);
+    .catch(() => {
+      setError("An error occurred while fetching users.");
+    })
+}, [curruser, navigate]);
+
 
   const handleSearch = (event) => {
     event.preventDefault();

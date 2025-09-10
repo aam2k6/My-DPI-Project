@@ -8,6 +8,7 @@ import "./home.css";
 import { frontend_host } from "../../config";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import {apiFetch} from '../../utils/api';
 
 export const Home2 = () => {
   const navigate = useNavigate();
@@ -35,17 +36,11 @@ export const Home2 = () => {
  useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -80,21 +75,15 @@ export const Home2 = () => {
         }
 
         // Fetch outgoing connections
-        const response = await fetch(`host/get-outgoing-connections-user/?guest_username=${guestUsername}`.replace(/host/, frontend_host), {
-          method: 'GET',
-          headers: {
-            'Authorization': `Basic ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await apiFetch.get(`/get-outgoing-connections-user/?guest_username=${guestUsername}`);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           const errorData = await response.json();
           // setError(errorData.error || 'Failed to fetch outgoing connections');
           return;
         }
 
-        const data = await response.json();
+        const data = response.data;
         console.log(data)
         if (data.success) {
           const filteredOutgoing = data.outgoing_connections.filter(
@@ -254,15 +243,9 @@ export const Home2 = () => {
     const checkAndUpdateConnectionStatus = async () => {
       try {
         const token = Cookies.get('authToken');
-        const response = await fetch("host/update_connection_status_if_expired_onlogin/".replace(/host/, frontend_host), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`
-          }
-        });
+        const response = await apiFetch.post("/update_connection_status_if_expired_onlogin/");
 
-        const result = await response.json();
+        const result = response.data;
         if (result.success) {
           console.log("Expired connections updated:", result.updated_connection_ids);
         } else {
@@ -275,16 +258,10 @@ export const Home2 = () => {
 
     const checkAndUpdateXnodeStatus = async () => {
       try {
-        const token = Cookies.get('authToken');
-        const response = await fetch("host/update_xnode_v2_status/".replace(/host/, frontend_host), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`
-          }
-        });
+        // const token = Cookies.get('authToken');
+        const response = await apiFetch.post("/update_xnode_v2_status/");
 
-        const result = await response.json();
+        const result = response.data;
         if (result.success) {
           console.log("Expired xnode updated");
         } else {
@@ -297,20 +274,16 @@ export const Home2 = () => {
 
     const fetchLockers = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-lockers-user/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-lockers-user/`);
+        console.log("lock", response)
 
-        const data = await response.json();
-        if (!response.ok || !data.success) {
-          // setError(data.error || data.message || "Failed to fetch lockers");
-          return;
-        }
+        const data = response.data;
+
+        // if (!response.ok) {
+        //   // setError(data.error || data.message || "Failed to fetch lockers");
+        //   return;
+        // }
 
         setLockers(data.lockers || []);
       } catch (error) {
@@ -327,7 +300,7 @@ export const Home2 = () => {
   }, [curruser]);
 
 
-
+console.log("lockk",lockers)
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   };

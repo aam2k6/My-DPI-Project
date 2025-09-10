@@ -1130,6 +1130,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 // import pdfWorker from "pdfjs-dist/build/pdf.worker.min.js"
 import { Viewer, Worker } from "@react-pdf-viewer/core"; // PDF Viewer
+import { apiFetch } from "../../utils/api";
 
 export const TargetLockerView = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -1178,16 +1179,10 @@ export const TargetLockerView = () => {
     const fetchNotifications = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300 ) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -1227,25 +1222,16 @@ export const TargetLockerView = () => {
   };
   const fetchXnodes = async () => {
     try {
-      const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_id: locker.locker_id });
 
-      const response = await fetch(
-        `host/get_all_xnodes_for_locker_v2/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await apiFetch.get(
+        `/get_all_xnodes_for_locker_v2/?${params}`);
 
-      if (!response.ok) {
+      if (!response.status >=200 && !response.status < 300 ) {
         throw new Error("Failed to fetch Xnodes");
       }
 
-      const data = await response.json();
+      const data = response.data;
       console.log("xnode data", data);
 
       if (data.xnode_list) {
@@ -1265,22 +1251,13 @@ export const TargetLockerView = () => {
 
   const fetchResources = async () => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         locker_name: locker.name,
         username: parentUser.username,
       });
-      const response = await fetch(
-        `host/get-public-resources?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
+      const response = await apiFetch.get(`/get-public-resources?${params}`);
+      const data = response.data;
       if (data.success) {
         setResources(data.resources);
       } else {
@@ -1293,22 +1270,13 @@ export const TargetLockerView = () => {
 
   const fetchOtherConnections = async () => {
     try {
-      const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         guest_username: parentUser.username,
         guest_locker_name: locker.name,
       });
-      const response = await fetch(
-        `host/get-other-connection-types/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
+      const response = await apiFetch.get(
+        `/get-other-connection-types/?${params}`);
+      const data = response.data;
       if (data.success) {
         setOtherConnections(data.connection_types);
       } else {
@@ -1328,22 +1296,14 @@ export const TargetLockerView = () => {
         host_username: parentUser.username,
         host_locker_name: locker.name,
       });
-      const response = await fetch(
-        `host/get-outgoing-connections/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await apiFetch.get(
+        `/get-outgoing-connections/?${params}`);
 
-      if (!response.ok) {
+      if (!response.status >= 200 && !response.status < 300 ) {
         throw new Error("Failed to fetch connections");
       }
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         // const filteredOutgoing = data.connections.filter(
         //   (connection) => connection.closed === false
@@ -1375,20 +1335,11 @@ export const TargetLockerView = () => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
+      const response = await apiFetch.get(`/get-terms-status/?${params}`);
+      if (!response.status >= 200 && !response.status < 300 ) {
         throw new Error("Failed to fetch tracker data");
       }
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setTrackerData((prevState) => ({
           ...prevState,
@@ -1421,20 +1372,12 @@ export const TargetLockerView = () => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
+      const response = await apiFetch.get(
+        `/get-terms-status-reverse/?${params}`);
+      if (!response.status > 200 && !response.status < 300 ) {
         throw new Error("Failed to fetch tracker data");
       }
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         console.log("view locker", data);
         setTrackerDataReverse((prevState) => ({
@@ -1628,23 +1571,14 @@ export const TargetLockerView = () => {
 
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiFetch.get(`/access-resource-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300 ) {
+        const errorData = response.data;
         throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data;
       console.log(data);
       const { link_To_File } = data;
 

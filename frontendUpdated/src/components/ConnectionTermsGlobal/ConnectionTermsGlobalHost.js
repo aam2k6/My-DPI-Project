@@ -11,6 +11,7 @@ import { ConnectionContext } from "../../ConnectionContext";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api";
 
 export const ConnectionTermsGlobalHost = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -79,17 +80,11 @@ export const ConnectionTermsGlobalHost = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -256,16 +251,9 @@ export const ConnectionTermsGlobalHost = () => {
     console.log("newConnectionTermsData", finalData);
     // console.log(globalName);
     // console.log(globalDescription);
-    fetch(`${frontend_host}/create-global-terms/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${token}`, // Corrected template literal
-      },
-      body: JSON.stringify(finalData),
-    })
+    apiFetch.post(`/create-global-terms/`, finalData)
       .then(async (response) => {
-        const data = await response.json();
+        const data = response.data;
         console.log("datas", data)
         if (data.success) {
           // setError("Connection Type successfully created!");

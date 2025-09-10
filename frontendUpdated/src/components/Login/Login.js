@@ -124,7 +124,7 @@ const handleSubmit = async (event) => {
             <div className='loginpage'>
                 <div className="headerlogin" >
                     <h1>
-                        Consent Management System
+                       Anumati - Consent Management System
                     </h1>
                 </div>
 

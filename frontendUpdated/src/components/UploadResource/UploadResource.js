@@ -11,6 +11,7 @@ import { Padding } from '@mui/icons-material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from '../Sidebar/Sidebar';
+import { apiFetch } from "../../utils/api"
 
 export const UploadResource = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -54,16 +55,11 @@ useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
         if (response.ok) {
-          const data = await response.json();
+          console.log("response", response.data)
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -86,14 +82,14 @@ useEffect(() => {
 
   console.log("JSON Data", JSON.stringify(permissions))
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (document && document.type !== 'application/pdf') {
       setErrorModalMessage('Only PDF files are allowed.');
       setIsErrorModalOpen(true);
       return;
     }
-
+ try {
     const data = new FormData();
     data.append('locker_name', locker.name);
     data.append('resource_name', resourceName);
@@ -104,29 +100,20 @@ useEffect(() => {
     // data.append("download", permissions.download);
     // data.append("aggregate", permissions.aggregate);
     data.append('post_conditions', JSON.stringify(permissions))
-    const token = Cookies.get('authToken');
-
-    fetch('host/upload-resource_v2/'.replace(/host/, frontend_host), {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${token}`
-      },
-      body: data,
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          console.log("Resource uploaded:", data);
+   
+    const response =  await apiFetch.post('/upload-resource_v2/', data)
+     const resData = response.data
+      if (resData.success) {
+          console.log("Resource uploaded:", resData);
           navigate("/view-locker", { state: { locker } });
         } else {
-          console.error("Error:", data.error);
-          alert(data.error);
+          console.error("Error:", resData.error);
+          alert(resData.error);
         }
-      })
-      .catch(error => {
+      } catch(error) {
         console.error("Error:", error);
         alert("An error occurred while uploading the resource");
-      });
+      };
   };
 
   const handleChange = (event) => {

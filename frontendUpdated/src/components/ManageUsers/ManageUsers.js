@@ -9,6 +9,7 @@ import Modal from '../Modal/Modal';
 import { frontend_host } from '../../config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api";
 
 export default function ManageUsers({ role }) {  // Role can be 'moderator' or 'admin'
   const [users, setUsers] = useState([]);
@@ -41,17 +42,11 @@ export default function ManageUsers({ role }) {  // Role can be 'moderator' or '
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -81,19 +76,13 @@ useEffect(() => {
 
     const token = Cookies.get('authToken');
 
-    fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    apiFetch.get('/dpi-directory/')
       .then(response => {
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           // Handle non-200 responses
-          return response.json().then(err => { throw new Error(err.message || 'Failed to fetch users') });
+          return response.data.then(err => { throw new Error(err.message || 'Failed to fetch users') });
         }
-        return response.json();
+        return response.data;
       })
       .then(data => {
         if (data.success) {
@@ -139,26 +128,21 @@ useEffect(() => {
     const typeOfRole = (role === "sys_admin" || role === "system_admin") ? "admin/" : "moderator/";
     const token = Cookies.get('authToken');
 
-    const url = `host/${typeOfAction}${typeOfRole}`.replace(/host/, frontend_host);
+    const url = `/${typeOfAction}${typeOfRole}`;
     console.log("Role change URL:", url);
     console.log("Sending payload:", { username: user.username });
 
-    fetch(url, {
-      method: 'PUT', // Or 'POST' depending on your backend API design
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    apiFetch.put(url, 
+      {
         username: user.username,
         // Note: user_type might not be needed in the payload if the endpoint is role-specific (e.g., /create-admin/)
-      }),
-    })
+      },
+    )
       .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => { throw new Error(err.message || `Failed to ${action} user role`) });
+        if (!response.status >= 200 && !response.status < 300) {
+          return response.data.then(err => { throw new Error(err.message || `Failed to ${action} user role`) });
         }
-        return response.json();
+        return response.data;
       })
       .then(data => {
         if (data.success) {

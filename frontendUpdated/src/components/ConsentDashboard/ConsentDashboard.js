@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Box, TextField } from "@mui/material";
 import { FaUnlink } from 'react-icons/fa';
-
+import { apiFetch } from "../../utils/api";
 
 export const ConsentDashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -95,17 +95,11 @@ export const ConsentDashboard = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -199,21 +193,15 @@ export const ConsentDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/stats/`, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/stats/`);
 
-      const data = await response.json();
+      const data = response.data;
       console.log("Response status:", response.status);
       console.log("Raw stats data:", data);
 
       // ✅ Only check for response.ok
-      if (!response.ok) {
+      if (!response.status >= 200 && !response.status < 300) {
         console.warn("Stats fetch failed with status:", response.status);
         return;
       }
@@ -244,38 +232,35 @@ export const ConsentDashboard = () => {
 
 
     // Only fetch if not already fetched
-    if (!connectionUsers[index]) {
-      try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(
-          `${frontend_host}/get-guest-user-connection-id/?connection_type_id=${conn.connection_type_id}&locker_id=${conn.owner_locker}&user_id=${conn.owner_user}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+   if (!connectionUsers[index]) {
+  try {
+    const response = await apiFetch.get(
+      `/get-guest-user-connection-id/?connection_type_id=${conn.connection_type_id}&locker_id=${conn.owner_locker}&user_id=${conn.owner_user}`
+    );
 
-        const data = await response.json();
+    const data = response.data;
 
-        if (response.ok && data.connections) {
-          setConnectionUsers((prev) => ({
-            ...prev,
-            [index]: data.connections,
-          }));
-        } else {
-          console.error("Error fetching users:", data.error);
-          setConnectionUsers((prev) => ({
-            ...prev,
-            [index]: [],
-          }));
-        }
-      } catch (err) {
-        console.error("Fetch failed:", err);
-      }
+    if (response.status >= 200 && response.status < 300) {
+      setConnectionUsers((prev) => ({
+        ...prev,
+        [index]: data.connections || [], // ✅ always set array
+      }));
+    } else {
+      console.error("Error fetching users:", data.error);
+      setConnectionUsers((prev) => ({
+        ...prev,
+        [index]: [], // ✅ ensure array
+      }));
     }
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    setConnectionUsers((prev) => ({
+      ...prev,
+      [index]: [], // ✅ still set empty array
+    }));
+  }
+}
+
   };
 
   useEffect(() => {
@@ -285,18 +270,12 @@ export const ConsentDashboard = () => {
     const fetchIncomingConnections = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/all_connection_types/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/all_connection_types/`);
 
-        const data = await response.json();
+        const data = response.data;
         console.log("Fetched data:", data);
 
-        if (!response.ok || !data.success) {
+        if (!response.status >= 200 && !response.status < 300) {
           return;
         }
 
@@ -312,18 +291,12 @@ export const ConsentDashboard = () => {
     const fetchOutgoingConnections = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-outgoing-connections-by-user/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-outgoing-connections-by-user/`);
 
-        const data = await response.json();
+        const data = response.data;
         console.log("Fetched outgoing data:", data);
 
-        if (!response.ok || !data.success) {
+        if (!response.status >= 200 && !response.status < 300) {
           return;
         }
 
@@ -361,19 +334,11 @@ export const ConsentDashboard = () => {
     setLoadingResources(prev => ({ ...prev, [key]: true }));
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(
-        `${frontend_host}/all_incoming_connection_resource/?connection_id=${connectionId}&guest_user_id=${user.guest_user.user_id}&guest_locker_id=${user.guest_locker.locker_id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(
+        `/all_incoming_connection_resource/?connection_id=${connectionId}&guest_user_id=${user.guest_user.user_id}&guest_locker_id=${user.guest_locker.locker_id}`);
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success && data.data) {
         setResourceLists(prev => ({
           ...prev,
@@ -403,19 +368,12 @@ export const ConsentDashboard = () => {
     setLoadingOutgoingResource((prev) => ({ ...prev, [key]: true }));
 
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
-      const res = await fetch(
-        `${frontend_host}/all_outgoing_connection_resource/?connection_id=${user.connection_id}&host_user_id=${user.host_user.user_id}&host_locker_id=${user.host_locker.locker_id}`,
-        {
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await apiFetch.get(
+        `/all_outgoing_connection_resource/?connection_id=${user.connection_id}&host_user_id=${user.host_user.user_id}&host_locker_id=${user.host_locker.locker_id}`);
 
-      const data = await res.json();
+      const data = res.data;
       console.log("Outgoing Resources:", data);
 
       if (data.success) {
@@ -460,21 +418,16 @@ console.log("currentData", currentData)
     setMessage("");
 
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
-      const response = await fetch(`${frontend_host}/revert-consent/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await apiFetch.post(`/revert-consent/`,
+        {
           xnode_id: currentData.xnodeId,
           revert_reason: revert_reason.trim(),
-        }),
-      });
+        },
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         setModalMessage({
@@ -541,21 +494,16 @@ console.log("currentData", currentData)
     setMessage("");
 
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
-      const response = await fetch(`${frontend_host}/revert-consent/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await apiFetch.post(`/revert-consent/`, 
+        {
           xnode_id: currentData?.xnodeId,
           revert_reason: revert_reason.trim(),
-        }),
-      });
+        },
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         setModalMessage({
@@ -616,24 +564,16 @@ console.log("currentData", currentData)
 
   const handleViewDetails = async (xnode_id) => {
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/access-resource-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
+        console.log(errorData.message)
         // throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data;
       console.log(data);
       const { xnode } = data;
       if (xnode) {
@@ -983,21 +923,16 @@ console.log("currentData", currentData)
       return;
     }
      try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
-      const response = await fetch(`${frontend_host}/reject_revert_consent/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await apiFetch.post(`/reject_revert_consent/`, 
+        {
           xnode_id: currentData?.xnodeId,
           revert_reject_reason: reject_reason.trim(),
-        }),
-      });
+        },
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         setModalMessage({
@@ -1053,21 +988,16 @@ console.log("currentData", currentData)
 
 
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
-      const response = await fetch(`${frontend_host}/reject_revert_consent/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await apiFetch.post(`/reject_revert_consent/`, 
+        {
           xnode_id: currentData.xnodeId,
           revert_reject_reason: reject_reason.trim(),
-        }),
-      });
+        },
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         setModalMessage({
@@ -1123,17 +1053,11 @@ console.log("currentData", currentData)
 
   const fetchLockers = async () => {
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/get-lockers-user/`, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/get-lockers-user/`);
 
-      const data = await response.json();
-      if (!response.ok || !data.success) {
+      const data = response.data;
+      if (!response.status >= 200 && !response.status < 300) {
         return;
       }
       setLockers(data.lockers || []);

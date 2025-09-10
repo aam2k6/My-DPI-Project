@@ -18,6 +18,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import { ConnectionContext } from "../../ConnectionContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api";
 // import { Menu } from "lucide-react";
 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
@@ -105,18 +106,12 @@ export const ViewLocker = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
+        if (response) {
+          const data = response.data;
+          if (response.status >= 200 && response.status < 300) {
             setNotifications(data.notifications || []);
           }
         }
@@ -185,7 +180,7 @@ export const ViewLocker = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // Get the token from Cookies
-      if (!token) return alert("Authentication token is missing.");
+      // if (!token) return alert("Authentication token is missing.");
 
       try {
         const pages = await fetchTotalPages(selectedResourceId, token);
@@ -198,28 +193,8 @@ export const ViewLocker = () => {
     if (selectedResourceId) fetchData();
   }, [selectedResourceId]);
 
-  const fetchNotifications = async () => {
-    try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/get-notifications/`, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setNotifications(data.notifications || []);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching notifications");
-    }
-  };
-
+  
+console.log("allOutgoingConnections", allOutgoingConnections)
 
 
 
@@ -231,29 +206,18 @@ export const ViewLocker = () => {
 
   const fetchXnodes = async () => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_id: locker.locker_id });
 
-      const response = await fetch(
-        `host/get_all_xnodes_for_locker_v2/?${params}`.replace(
-          /host/,
-          frontend_host
-        ),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await apiFetch.get(
+        `/get_all_xnodes_for_locker_v2/?${params}`);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch Xnodes");
-      }
-
-      const data = await response.json();
-      console.log(data.message || data.error, "mssg");
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch Xnodes");
+      // }
+// console.log("response", response)
+      const data = response.data;
+      // console.log(data.message || data.error, "mssg");
       console.log("xnode data", data);
 
       if (data.xnode_list) {
@@ -269,22 +233,16 @@ export const ViewLocker = () => {
     }
   };
   const fetchTotalPages = async (selectedResourceId, token) => {
-    const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${selectedResourceId}`;
+    const url = `/get_total_pages_v2/?xnode_id=${selectedResourceId}`;
     console.log("Fetching data from URL:", url); // Log the URL
 
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
-        },
-      });
+      const response = await apiFetch.get(url);
 
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || "Failed to fetch total pages.");
-      }
+      const data = response.data;
+      // if (!response.ok || !data.success) {
+      //   throw new Error(data.error || "Failed to fetch total pages.");
+      // }
       return data.total_pages;
     } catch (error) {
       console.error("Error details:", error); // Log the error details
@@ -294,88 +252,89 @@ export const ViewLocker = () => {
   // console.log("locker", locker);
   // console.log("resources", resources);
   const fetchConnectionsAndOtherConnections = async () => {
-    try {
-      const token = Cookies.get("authToken");
-      const params = new URLSearchParams({ locker_name: locker.name });
+  try {
+    // const token = Cookies.get("authToken");
+    const params = new URLSearchParams({ locker_name: locker.name });
 
-      const [connectionsResponse, otherConnectionsResponse] = await Promise.all(
-        [
-          fetch(
-            `host/get-connections-user-locker/?${params}`.replace(
-              /host/,
-              frontend_host
-            ),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          ),
-          fetch(
-            `host/connection_types/?${params}`.replace(/host/, frontend_host),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          ),
-        ]
+    // Run both API calls in parallel
+    const [connectionsResponse, otherConnectionsResponse] = await  Promise.allSettled([
+      apiFetch.get(`/get-connections-user-locker/?${params}`),
+      apiFetch.get(`/connection_types/?${params}`),
+    ]);
+
+    console.log(
+      "connectionsResponse, otherConnectionsResponse",
+      connectionsResponse,
+      otherConnectionsResponse
+    );
+
+    // Axios: data is already parsed JSON
+    const connectionsData = connectionsResponse?.value?.data;
+console.log("connectionsDatas", connectionsData)
+console.log("connectionsData", connectionsResponse)
+    if (connectionsData.success) {
+console.log("connectionsDatasss", connectionsData)
+      
+      setAllOutgoingConnections(
+        connectionsData.connections.outgoing_connections
       );
 
-      if (!connectionsResponse.ok)
-        throw new Error("Failed to fetch connections");
-      const connectionsData = await connectionsResponse.json();
-
-      if (connectionsData.success) {
-        setAllOutgoingConnections(connectionsData.connections.outgoing_connections)
-        const filteredIncoming = connectionsData.connections.incoming_connections.filter(
-          (connection) => connection.connection_status !== "closed" && connection.connection_status !== "revoked"
-        );
-        const filteredOutgoing = connectionsData.connections.outgoing_connections.filter(
-          (connection) => connection.connection_status !== "closed" && connection.connection_status !== "revoked"
+      const filteredIncoming =
+        connectionsData.connections.incoming_connections.filter(
+          (connection) =>
+            connection.connection_status !== "closed" &&
+            connection.connection_status !== "revoked"
         );
 
-        setConnections({
-          incoming_connections: filteredIncoming,
-          outgoing_connections: filteredOutgoing,
-        });
-        fetchAllTrackerData(connectionsData.connections.outgoing_connections);
+      const filteredOutgoing =
+        connectionsData.connections.outgoing_connections.filter(
+          (connection) =>
+            connection.connection_status !== "closed" &&
+            connection.connection_status !== "revoked"
+        );
 
-        const incomingConnectionCounts = {};
-        filteredIncoming.forEach((connection) => {
-          const typeId = connection.connection_type;
-          incomingConnectionCounts[typeId] =
-            (incomingConnectionCounts[typeId] || 0) + 1;
-        });
+      setConnections({
+        incoming_connections: filteredIncoming,
+        outgoing_connections: filteredOutgoing,
+      });
 
-        if (!otherConnectionsResponse.ok)
-          throw new Error("Failed to fetch other connections");
-        const otherConnectionsData = await otherConnectionsResponse.json();
+      fetchAllTrackerData(connectionsData.connections.outgoing_connections);
 
-        if (otherConnectionsData.success) {
-          setOtherConnections(
-            otherConnectionsData.connection_types.map((connection) => ({
-              ...connection,
-              incoming_count:
-                incomingConnectionCounts[connection.connection_type_id] || 0,
-            }))
-          );
-        } else {
-          setError(
-            otherConnectionsData.message || "Failed to fetch other connections"
-          );
-        }
+      // count incoming connections per type
+      const incomingConnectionCounts = {};
+      filteredIncoming.forEach((connection) => {
+        const typeId = connection.connection_type;
+        incomingConnectionCounts[typeId] =
+          (incomingConnectionCounts[typeId] || 0) + 1;
+      });
+
+      const otherConnectionsData = otherConnectionsResponse?.value?.data;
+      console.log("otherConnectionsData", otherConnectionsData);
+      if (otherConnectionsData.success) {
+        setOtherConnections(
+          otherConnectionsData.connection_types.map((connection) => ({
+            ...connection,
+            incoming_count:
+              incomingConnectionCounts[connection.connection_type_id] || 0,
+          }))
+        );
       } else {
-        setError(connectionsData.message || "Failed to fetch connections");
+        setError( 
+          otherConnectionsData.message || "Failed to fetch other connections"
+        );
       }
-    } catch (error) {
-      console.error("Error fetching connections and other connections:", error);
+    } else {
+      setError(connectionsData.message || "Failed to fetch connections");
     }
-  };
+  } catch (error) {
+    console.error(
+      "Error fetching connections and other connections:",
+      error
+    );
+    setError("Error fetching connections and other connections.");
+  }
+};
+
 
   useEffect(() => {
     fetchConnectionsAndOtherConnections();
@@ -390,27 +349,16 @@ export const ViewLocker = () => {
   }, [allOutgoingConnections]);
   const fetchResources = async () => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({ locker_name: locker.name });
-      const response = await fetch(
-        `host/get-resources-user-locker/?${params}`.replace(
-          /host/,
-          frontend_host
-        ),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch resources");
-      }
-      const data = await response.json();
-      console.log("resour", data);
-      if (data.success) {
+      const response = await apiFetch.get(
+        `/get-resources-user-locker/?${params}`);
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch resources");
+      // }
+      const data = response.data;
+      // console.log("resour", data);
+      if (response.status >= 200 && response.status < 300) {
         setResources(data.resources);
       } else {
         setError(data.message || "Failed to fetch resources");
@@ -500,7 +448,7 @@ export const ViewLocker = () => {
 
   const fetchTrackerData = async (connection) => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         connection_name: connection.connection_name,
         host_locker_name: connection.host_locker.name,
@@ -508,21 +456,13 @@ export const ViewLocker = () => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch tracker data");
-      }
-      const data = await response.json();
-      if (data.success) {
+      const response = await apiFetch.get(
+        `/get-terms-status/?${params}`);
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch tracker data");
+      // }
+      const data =  response.data;
+      if (response.status >= 200 && response.status < 300) {
         console.log("view locker", data);
         setTrackerData((prevState) => ({
           ...prevState,
@@ -545,7 +485,7 @@ export const ViewLocker = () => {
 
   const fetchTrackerDataReverse = async (connection) => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         connection_name: connection.connection_name,
         host_locker_name: connection.host_locker.name,
@@ -553,21 +493,14 @@ export const ViewLocker = () => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch tracker data");
-      }
-      const data = await response.json();
-      if (data.success) {
+      const response = await apiFetch.get(
+        `/get-terms-status-reverse/?${params}`);
+      // if (!response.ok) {
+      //   throw new Error("Failed to fetch tracker data");
+      // }
+      // const data = await response.json();
+      const data = response.data;
+      if (response.status >= 200 && response.status < 300) {
         console.log("view locker", data);
         setTrackerDataReverse((prevState) => ({
           ...prevState,
@@ -889,24 +822,15 @@ export const ViewLocker = () => {
   const handleClick = async (xnode_id) => {
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/access-resource-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to access the resource');
-      }
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.message || 'Failed to access the resource');
+      // }
 
-      const data = await response.json();
+      const data = response.data;
       console.log(data);
       const { link_To_File } = data;
       console.log("link to file", link_To_File);
@@ -934,25 +858,17 @@ export const ViewLocker = () => {
   const handleViewDetails = async (xnode_id) => {
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/access-resource-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to access the resource');
-      }
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.message || 'Failed to access the resource');
+      // }
 
-      const data = await response.json();
-      console.log(data);
+      const data = response.data;
+      console.log("data", data);
+      // console.log(data);
       const { xnode } = data;
       if (xnode) {
         setResourceData(xnode)
@@ -1054,21 +970,14 @@ export const ViewLocker = () => {
     console.log("Payload:", payload);
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/edit-delete-resource-v2/`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.put(`/edit-delete-resource-v2/`, payload);
 
-      console.log("Response Status:", response.status);
-      const data = await response.json();
+      console.log("Response Status:", response);
+      const data = response.data;
       console.log("Response Data:", data);
 
-      if (response.ok) {
+      if ( response.status >= 200 && response.status < 300 ) {
 
         setXnodes((prevXnodes) =>
           prevXnodes.map((item) =>
@@ -1097,30 +1006,23 @@ export const ViewLocker = () => {
     // }
 
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       console.log("Sending request with:", {
         xnode_id: selectedResourceId,
         from_page: parseInt(fromPage, 10),  // Convert to integer
         to_page: parseInt(toPage, 10),      // Convert to integer
         resource_name: inodeName,
       });
+      const payload = {
+        xnode_id: selectedResourceId,
+        from_page: parseInt(fromPage, 10), // Ensure integers are sent
+        to_page: parseInt(toPage, 10),     // Ensure integers are sent
+        resource_name: inodeName,
+      }
+      const response = await apiFetch.post(`/create-subset-resource/`, payload);
 
-      const response = await fetch(`${frontend_host}/create-subset-resource/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          xnode_id: selectedResourceId,
-          from_page: parseInt(fromPage, 10), // Ensure integers are sent
-          to_page: parseInt(toPage, 10),     // Ensure integers are sent
-          resource_name: inodeName,
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
+      const data = response.data;
+      if (response.status >= 200 && response.status < 300) {
         alert("Subset resource created successfully!");
         setTimeout(() => {
           setShowSubsetModal(false);
@@ -1140,8 +1042,8 @@ export const ViewLocker = () => {
         // console.error("API Error:", data);
       }
     } catch (error) {
-      setSubsetError(error);
-      // alert("Something went wrong. Please try again.");
+      console.error("API Error:", error);
+      setSubsetError(error.response?.data?.error || error.message || "Something went wrong");
     }
   };
 
@@ -1185,76 +1087,17 @@ export const ViewLocker = () => {
       console.log("Payload to be sent:", payload);
 
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/edit-delete-resource-v2/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.delete(`/edit-delete-resource-v2/`,  { data: payload });
 
         console.log("Response from backend:", response);
-        const data = await response.json();
+        const data = response.data;
         console.log("Response data:", data);
 
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
 
           setXnodes((prevXnodes) =>
             prevXnodes.filter((item) => item.id !== xnode.id)
-          );
-
-          setModalMessage({ message: "Resource deleted successfully!", type: "success" });
-        } else {
-          setModalMessage({ message: data.message || "Failed to delete resource.", type: "failure" });
-        }
-      } catch (error) {
-        setModalMessage({ message: "An error occurred while deleting the resource.", type: "failure" });
-        console.error("Error during delete:", error);
-      }
-    }
-  };
-  const handleDeleteClicks = async (resource) => {
-    console.log("Xnode to be deleted:", resource);  // Log the entire xnode object
-
-    if (!resource.resource_name) {
-      console.error("Document name is missing in xnode!");
-      return;  // Exit the function if resource_name is missing
-    }
-
-    if (window.confirm("Do you want to delete this resource?")) {
-      const lockerName = locker.name;
-      const documentName = resource.resource_name;
-      const ownerName = curruser.username;
-
-      const payload = {
-        locker_name: lockerName,
-        owner_name: ownerName,
-        document_name: documentName,
-      };
-
-      console.log("Payload to be sent:", payload);
-
-      try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/edit-delete-resource-v2/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        console.log("Response from backend:", response);
-        const data = await response.json();
-        console.log("Response data:", data);
-
-        if (response.ok) {
-
-          setXnodes((prevXnodes) =>
-            prevXnodes.filter((item) => item.id !== resource.xnode.id)
           );
 
           setModalMessage({ message: "Resource deleted successfully!", type: "success" });
@@ -1277,9 +1120,6 @@ export const ViewLocker = () => {
     setResourceData(null);
   };
 
-  const handleFileChange = (e) => {
-    setResourceFile(e.target.files[0]);
-  };
 
   const handleCloseModal = () => {
     setModalMessage(null);
@@ -1408,35 +1248,29 @@ export const ViewLocker = () => {
     console.log("connection_type_id:", connection_type_id);
 
     // Construct the URL for the API call
-    const url = `${frontend_host}/get-guest-user-connection?connection_type_name=${encodeURIComponent(connection_type_name)}&host_user_username=${encodeURIComponent(curruser.username)}&host_locker_name=${encodeURIComponent(locker.name)}`;
+    const url = `/get-guest-user-connection?connection_type_name=${encodeURIComponent(connection_type_name)}&host_user_username=${encodeURIComponent(curruser.username)}&host_locker_name=${encodeURIComponent(locker.name)}`;
 
     // Log the constructed URL for debugging
     console.log("Constructed URL:", url);
 
     try {
       // Get the authentication token (assumed to be stored in cookies)
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
-      if (!token) {
-        throw new Error("Authentication token is missing.");
-      }
+      // if (!token) {
+      //   throw new Error("Authentication token is missing.");
+      // }
 
       // Fetch the data from the backend with the token in the Authorization header
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiFetch.get(url);
 
       // Check if the response is successful
-      if (!response.ok) {
-        throw new Error(`API call failed with status ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`API call failed with status ${response.status}`);
+      // }
 
       // Parse the response data (users)
-      const users = await response.json();
+      const users = response.data;
       console.log("Fetched users:", users);
 
       // Store the users in state for this specific connection type
@@ -1458,31 +1292,25 @@ export const ViewLocker = () => {
     console.log("username:", username);
 
 
-    const url = `${frontend_host}/get_user_resources_by_connection_type_2/?connection_type_id=${encodeURIComponent(connectionTypeId)}&username=${encodeURIComponent(username)}&locker_id=${encodeURIComponent(locker.locker_id)}`;
+    const url = `/get_user_resources_by_connection_type_2/?connection_type_id=${encodeURIComponent(connectionTypeId)}&username=${encodeURIComponent(username)}&locker_id=${encodeURIComponent(locker.locker_id)}`;
     console.log("Constructed URL:", url);
 
     try {
-      const token = Cookies.get("authToken");
-      if (!token) {
-        throw new Error("Authentication token is missing.");
-      }
+      // const token = Cookies.get("authToken");
+      // if (!token) {
+      //   throw new Error("Authentication token is missing.");
+      // }
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiFetch.get(url);
 
-      if (!response.ok) {
-        throw new Error(`API call failed with status ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`API call failed with status ${response.status}`);
+      // }
 
-      const responseData = await response.json();
+      const responseData = response.data;
       console.log("Fetched resources:", responseData);
 
-      if (responseData.success) {
+      if (responseData) {
         setUserResources((prevResources) => ({
           ...prevResources,
           [`${username}-${connectionTypeId}`]: responseData.data, // Ensure key format
@@ -1505,22 +1333,16 @@ export const ViewLocker = () => {
     // console.log("username:", username);
 
 
-    const url = `${frontend_host}/get_outgoing_connection_xnode_details_v2/?connection_id=${encodeURIComponent(connectionId)}&locker_id=${encodeURIComponent(locker.locker_id)}`;
+    const url = `/get_outgoing_connection_xnode_details_v2/?connection_id=${encodeURIComponent(connectionId)}&locker_id=${encodeURIComponent(locker.locker_id)}`;
     console.log("Constructed URL:", url);
 
     try {
-      const token = Cookies.get("authToken");
-      if (!token) {
-        throw new Error("Authentication token is missing.");
-      }
+      // const token = Cookies.get("authToken");
+      // if (!token) {
+      //   throw new Error("Authentication token is missing.");
+      // }
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiFetch.get(url);
 
       if (!response.ok) {
         throw new Error(`API call failed with status ${response.status}`);
@@ -1597,7 +1419,6 @@ export const ViewLocker = () => {
       </div>
 
 
-      {/* <span className="fw-medium">Hi, Meghana</span> */}
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}

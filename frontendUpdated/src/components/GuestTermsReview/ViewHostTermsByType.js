@@ -16,6 +16,7 @@ import { Grid } from "@mui/material"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
+import { apiFetch } from "../../utils/api.js";
 
 export const ViewHostTermsByType = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -154,17 +155,11 @@ export const ViewHostTermsByType = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -269,21 +264,16 @@ export const ViewHostTermsByType = () => {
   useEffect(() => {
     const token = Cookies.get("authToken");
     const connectionLifeCycle = () => {
-      fetch("host/update_connection_status_tolive/".replace(/host/, frontend_host), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${token}`
-        },
-        body: JSON.stringify({
+      apiFetch.post("/update_connection_status_tolive/",
+        {
           connection_name: connectionName,
           host_locker_name: hostLockerName,
           guest_locker_name: guestLockerName,
           host_user_username: hostUserUsername,
           guest_user_username: guestUserUsername
-        }),
-      })
-        .then((res) => res.json())
+        },
+      )
+        .then((res) => res.data)
         .then((data) => {
           console.log("Response:", data);
         })
@@ -320,20 +310,12 @@ export const ViewHostTermsByType = () => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
+      const response = await apiFetch.get(
+        `/get-terms-status/?${params}`);
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error("Failed to fetch tracker data");
       }
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         console.log("view locker", data);
         setTrackerData((prevState) => ({
@@ -364,20 +346,12 @@ export const ViewHostTermsByType = () => {
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
+      const response = await apiFetch.get(
+        `/get-terms-status-reverse/?${params}`);
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error("Failed to fetch tracker data");
       }
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         console.log("view locker", data);
         setTrackerDataReverse((prevState) => ({
@@ -597,20 +571,12 @@ export const ViewHostTermsByType = () => {
       const token = Cookies.get("authToken");
 
       try {
-        const response = await fetch(
-          `host/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await apiFetch.get(
+          `/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`);
 
-        const data = await response.json();
+        const data = response.data;
         console.log("data conn", data.connections);
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           setConnectionDetails(data.connections);
           setPostConditions(data.post_conditions)
         } else {
@@ -625,14 +591,9 @@ export const ViewHostTermsByType = () => {
 
 
     const fetchGlobalTemplates = () => {
-      const token = Cookies.get("authToken");
-      fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-        },
-      })
-        .then((response) => response.json())
+      // const token = Cookies.get("authToken");
+      apiFetch.get("/get-template-or-templates/")
+        .then((response) => response.data)
         .then((data) => {
           // console.log("Fetched Templates:", data); // Log the fetched data
           setGlobalTemplates(data.data); // Store fetched templates
@@ -647,23 +608,17 @@ export const ViewHostTermsByType = () => {
     //fetch terms from the api
     const fetchObligations = async () => {
       try {
-        const token = Cookies.get("authToken");
+        // const token = Cookies.get("authToken");
         const connectionTypeName = connectionName.split("-").shift().trim();
-        const apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
+        const apiUrl = `/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
 
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`,
-          },
-        });
+        const response = await apiFetch.get(apiUrl);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch terms");
         }
 
-        const data = await response.json();
+        const data = response.data;
 
         if (data.success) {
           console.log("Fetched data by connection type:", data.data); // Log to confirm structure
@@ -698,22 +653,14 @@ export const ViewHostTermsByType = () => {
     const fetchTerms = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(
-          `${frontend_host}/get-terms-value/?host_user_username=${hostUserUsername}&guest_user_username=${guestUserUsername}&host_locker_name=${hostLockerName}&connection_name=${connectionName}&guest_locker_name=${guestLockerName}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
+        const response = await apiFetch.get(
+          `/get-terms-value/?host_user_username=${hostUserUsername}&guest_user_username=${guestUserUsername}&host_locker_name=${hostLockerName}&connection_name=${connectionName}&guest_locker_name=${guestLockerName}`);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch terms");
         }
 
-        const data = await response.json();
+        const data = response.data;
         console.log("Fetched data:", data); // Log entire data to check its structure
 
         if (data.success) {
@@ -794,28 +741,17 @@ export const ViewHostTermsByType = () => {
     // };
     const fetchPermissionsData = async () => {
       try {
-        const token = Cookies.get("authToken");
+        // const token = Cookies.get("authToken");
         const connectionId = connection_id;
-        const response = await fetch(
-          `host/get-extra-data?connection_id=${connectionId}`.replace(
-            /host/,
-            frontend_host
-          ),
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
-        if (!response.ok) {
+        const response = await apiFetch.get(
+          `/get-extra-data?connection_id=${connectionId}`);
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("");
         }
-        const data = await response.json();
+        const data = response.data;
         if (data.success) {
           // Create an array from the shared_more_data_terms object
-          console.log(data.shared_more_data_terms);
+          // console.log(data.shared_more_data_terms);
           const sharedData = Object.entries(data.shared_more_data_terms_reverse).map(
             ([key, value], index) => ({
               sno: index + 1,
@@ -853,25 +789,14 @@ export const ViewHostTermsByType = () => {
     const fetchResources = async () => {
       if (selectedLocker) {
         try {
-          const token = Cookies.get("authToken");
-          const response = await fetch(
-            `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(
-              /host/,
-              frontend_host
-            ),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (!response.ok) {
+          // const token = Cookies.get("authToken");
+          const response = await apiFetch.get(
+            `/get-resources-user-locker/?locker_name=${selectedLocker}`);
+          if (!response.status >= 200 && !response.status < 300) {
             throw new Error("Failed to fetch resources");
           }
 
-          const data = await response.json();
+          const data = response.data;
           if (data.success) {
             setResources(data.resources);
           } else {
@@ -886,26 +811,18 @@ export const ViewHostTermsByType = () => {
     const fetchVnodeResources = async () => {
       if (selectedLocker) {
         try {
-          const token = Cookies.get("authToken");
+          // const token = Cookies.get("authToken");
           const params = new URLSearchParams({
             host_locker_id: locker.locker_id,
           });
 
-          const response = await fetch(
-            `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (!response.ok) {
+          const response = await apiFetch.get(
+            `/get-vnodes/?${params}`);
+          if (!response.status >= 200 && !response.status < 300) {
             throw new Error("Failed to fetch resources");
           }
 
-          const data = await response.json();
+          const data = response.data;
           //   console.log("data", data);
           //   console.log("vnodes", data.data);
 
@@ -927,25 +844,14 @@ export const ViewHostTermsByType = () => {
         const token = Cookies.get("authToken");
         const params = new URLSearchParams({ locker_id: locker.locker_id });
 
-        const response = await fetch(
-          `host/get_all_xnodes_for_locker_v2/?${params}`.replace(
-            /host/,
-            frontend_host
-          ),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await apiFetch.get(
+          `/get_all_xnodes_for_locker_v2/?${params}`);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch Xnodes");
         }
 
-        const data = await response.json();
+        const data = response.data;
         console.log("xnode data", data);
 
         if (data.xnode_list) {
@@ -1003,23 +909,14 @@ export const ViewHostTermsByType = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiFetch.get(`/consent-artefact-view-edit/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data;
       console.log("datass", data);
       const { xnode } = data;
 
@@ -1074,23 +971,14 @@ export const ViewHostTermsByType = () => {
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiFetch.get(`/access-res-submitted-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data;
       console.log(data);
       const { link_To_File } = data;
 
@@ -1441,21 +1329,10 @@ export const ViewHostTermsByType = () => {
       };
       console.log("payload for post", data)
       try {
-        const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
-          /host/,
-          frontend_host
-        ), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
+        const response = await apiFetch.post('/share_confer_resource_reverse_v2/', data);
 
-          },
-          body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-        if (response.ok) {
+        const result = response.data;
+        if (response.status >= 200 && response.status < 300) {
           // alert(result.message);
           console.log("New Xnode ID:", result.new_xnode_id);
           const new_xnode_id = result.new_xnode_id
@@ -1501,22 +1378,13 @@ export const ViewHostTermsByType = () => {
       
       console.log("formData", formData);
           try {
-            const response = await fetch(
-              "host/revoke-consent/".replace(/host/, frontend_host),
-              {
-                method: "POST",
-                headers: {
-                  // 'Content-Type': 'application/json',
-                  Authorization: `Basic ${token}`,
-                },
-                body: formData,
-              }
-            );
+            const response = await apiFetch.post(
+              "/revoke-consent/", formData);
             setIsModalOpens(false)
             setIsModalOpen(false)
-            const data = await response.json();
+            const data = response.data;
             console.log("revoke consent", data);
-            if (response.status === 200) {
+            if (response.status >=200 && response.status < 300) {
               // setMessage("Consent revoked successfully.");
               setModalMessage({
                 message:  data.message || "Consent revoked successfully.",
@@ -1657,21 +1525,10 @@ export const ViewHostTermsByType = () => {
       };
       console.log("payload for post", data)
       try {
-        const response = await fetch('host/share_confer_resource_reverse_v2/'.replace(
-          /host/,
-          frontend_host
-        ), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
+        const response = await apiFetch.post('/share_confer_resource_reverse_v2/', data);
 
-          },
-          body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-        if (response.ok) {
+        const result = response.data;
+        if (response.status >= 200 && response.status < 300) {
           // alert(result.message);
           console.log("New Xnode ID:", result.new_xnode_id);
           const new_xnode_id = result.new_xnode_id
@@ -1933,23 +1790,14 @@ export const ViewHostTermsByType = () => {
       //     }
       // }
 
-      const updateResponse = await fetch(
-        `host/update_connection_terms_v2/`.replace(/host/, frontend_host),
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const updateResponse = await apiFetch.patch(
+        `/update_connection_terms_v2/`, payload);
 
-      if (!updateResponse.ok) {
+      if (!updateResponse.status >= 200 && !updateResponse.status < 300) {
         throw new Error("Failed to update terms");
       }
 
-      const data = await updateResponse.json();
+      const data = updateResponse.data;
       if (data.success) {
         navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
       } else {
@@ -2011,21 +1859,14 @@ export const ViewHostTermsByType = () => {
     console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/update-extra-data-v2/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${token}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.patch(`/update-extra-data-v2/`, requestBody);
 
-      if (!response.ok) {
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error("Failed to update extra data");
       }
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         alert("Data updated successfully!");
         navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
@@ -2213,24 +2054,15 @@ export const ViewHostTermsByType = () => {
   const handleClick = async (xnode_id) => {
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/access-resource-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data;
       // console.log(data);
       const { link_To_File } = data;
 
@@ -2336,21 +2168,12 @@ export const ViewHostTermsByType = () => {
     const token = Cookies.get("authToken");
     try {
       // Step 1: Call close_connection_host API using fetch
-      const revokeHostResponse = await fetch(
-        "host/close_connection_host/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
+      const revokeHostResponse = await apiFetch.post(
+        "/close_connection_host/", formData);
 
-          body: formData,
-        }
-      );
+      const revokeHostData = revokeHostResponse.data; // Parse JSON response
 
-      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
-
-      if (revokeHostResponse.ok) {
+      if (revokeHostResponse.status >= 200 && revokeHostResponse.status < 300) {
        setIsModalOpenClose(false);
         setModalMessage({
           message: 'Successfully Connection closed',
@@ -2557,21 +2380,11 @@ export const ViewHostTermsByType = () => {
 
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(`host/consent-artefact-view-edit/`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: "PATCH",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await apiFetch.patch(`/consent-artefact-view-edit/`, payload);
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         alert("Updated successfully!");
         closeOpenPopup();
       } else {

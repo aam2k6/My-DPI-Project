@@ -24,6 +24,7 @@ import { frontend_host } from "../../config";
 import { usercontext } from "../../usercontext";
 import { Link } from "react-router-dom";
 import { TextField } from "@mui/material";
+import { apiFetch } from "../../utils/api";
 // const frontend_host = "http://your-backend-api.com"; // Replace with actual host
 
 const Sidebar = ({
@@ -101,22 +102,16 @@ const handleLogout = () => {
 
   const fetchNotifications = async () => {
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/get-notifications/`, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/get-notifications/`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         setError(errorData.error || "Failed to fetch notifications");
         return;
       }
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         console.log(data);
         setNotifications(data.notifications || []);
@@ -142,20 +137,13 @@ const handleLogout = () => {
 
   const markNotificationAsRead = async (id) => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const data = {
         notification_id: id,
       };
-      const response = await fetch(`${frontend_host}/mark-notification-read/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await apiFetch.post(`/mark-notification-read/`, data);
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         setNotifications((prev) =>
           prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
         );
@@ -198,19 +186,14 @@ const handleLogout = () => {
     try {
        const token = Cookies.get("authToken");
  
-       const response = await fetch(`${frontend_host}/reject_revert_consent/`, {
-         method: "POST",
-         headers: {
-           Authorization: `Basic ${token}`,
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
+       const response = await apiFetch.post(`/reject_revert_consent/`, 
+         {
            xnode_id: xnodeId,
            revert_reject_reason: revertRejectReason.trim(),
-         }),
-       });
+         },
+        );
  
-       const data = await response.json();
+       const data = response.data;
  
        if (data.success) {
           alert(data.message)      
@@ -431,21 +414,16 @@ const handleLogout = () => {
     //  setMessage("");
  
      try {
-       const token = Cookies.get("authToken");
+      //  const token = Cookies.get("authToken");
  
-       const response = await fetch(`${frontend_host}/revert-consent/`, {
-         method: "POST",
-         headers: {
-           Authorization: `Basic ${token}`,
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
+       const response = await apiFetch.post(`/revert-consent/`, 
+         {
            xnode_id: xnodeId,
           //  revert_reason: revert_reason.trim(),
-         }),
-       });
+         },
+       );
  
-       const data = await response.json();
+       const data = response.data;
  
        if (data.success) {
           alert(data.message)      

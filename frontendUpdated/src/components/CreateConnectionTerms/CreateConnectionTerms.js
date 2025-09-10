@@ -709,7 +709,7 @@ import { Grid } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
-
+import { apiFetch } from "../../utils/api";
 // import res from "./object";
 
 export const CreateConnectionTerms = () => {
@@ -751,17 +751,11 @@ export const CreateConnectionTerms = () => {
   useEffect(() => {
       const fetchNotifications = async () => {
         try {
-          const token = Cookies.get("authToken");
-          const response = await fetch(`${frontend_host}/get-notifications/`, {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-
-          if (response.ok) {
-            const data = await response.json();
+          // const token = Cookies.get("authToken");
+          const response = await apiFetch.get(`/get-notifications/`);
+console.log("response", response)
+          if (response.status >= 200 && response.status < 300) {
+            const data = response.data;
             if (data.success) {
               setNotifications(data.notifications || []);
             }
@@ -852,7 +846,7 @@ export const CreateConnectionTerms = () => {
     console.log("guestlocker", locker)
     console.log("host", hostLockerName)
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const queryParams = new URLSearchParams({
         connection_name: connectionName,
         connection_type_id: connectionTypeID,
@@ -863,20 +857,10 @@ export const CreateConnectionTerms = () => {
         host_lockername: hostLockerName,
       });
       console.log("queryParams", queryParams)
-      const response = await fetch(
-        `host/get-consent/?${queryParams.toString()}`.replace(
-          /host/,
-          frontend_host
-        ),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
-        }
-      );
+      const response = await apiFetch.get(
+        `/get-consent/?${queryParams}`);
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setConsentData(data);
         console.log("data", data);
@@ -896,25 +880,26 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
       return;
     }
 
-    const fetchGlobalTemplates = () => {
-      const token = Cookies.get("authToken");
-      fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // console.log("Fetched Templates:", data); // Log the fetched data
-          setGlobalTemplates(data.data); // Store fetched templates
-          // console.log("global data", data.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching templates:", error);
-          setError("Failed to fetch templates");
-        });
-    };
+    const fetchGlobalTemplates = async () => {
+  try {
+    // const token = Cookies.get("authToken");
+
+    const response = await apiFetch.get("/get-template-or-templates/");
+
+    const data = response.data;
+
+    if (data.success) {
+      setGlobalTemplates(data.data || []);
+    } else {
+      setError(data.message || data.error || "Failed to fetch templates");
+    }
+  } catch (error) {
+    const errorData = error.response?.data || {};
+    setError(errorData.error || "Error while fetching templates.");
+    console.error("Error fetching templates:", error);
+  }
+};
+
 
 
     const fetchConnectionDetails = async () => {
@@ -928,20 +913,12 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
       const token = Cookies.get("authToken");
 
       try {
-        const response = await fetch(
-          `host/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await apiFetch.get(
+          `/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`);
 
-        const data = await response.json();
+        const data = response.data;
         console.log("data conn", data);
-        if (response.ok) {
+        if (data.success) {
           setConnectionDetails(data.connections);
           setTermsValue(data.connections.terms_value || {})
           setTermsValueReverse(data.connections.terms_value_reverse || {})
@@ -961,24 +938,18 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
     const fetchTerms = async () => {
       console.log("Inside fetch terms");
       try {
-        const token = Cookies.get("authToken");
+        // const token = Cookies.get("authToken");
 
-        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
+        let apiUrl = `/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
         console.log("Final API URL:", apiUrl);
 
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`,
-          },
-        });
+        const response = await apiFetch.get(apiUrl);
 
-        if (!response.ok) {
+        if (!response.status >=200 && !response.status < 300) {
           throw new Error("Failed to fetch terms");
         }
 
-        const data = await response.json();
+        const data = response.data;
 
         if (data.success) {
           setRes(data.data);
@@ -1017,24 +988,15 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
     // formData.append("close_host_bool", "True");
 
     // console.log(connection_id ,"id");
-    const token = Cookies.get("authToken");
+    // const token = Cookies.get("authToken");
     try {
       // Step 1: Call close_connection_host API using fetch
-      const revokeHostResponse = await fetch(
-        "host/close_connection_guest/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
+      const revokeHostResponse = await apiFetch.post(
+        "/close_connection_guest/", formData);
 
-          body: formData,
-        }
-      );
+      const revokeHostData = revokeHostResponse.data; // Parse JSON response
 
-      const revokeHostData = await revokeHostResponse.json(); // Parse JSON response
-
-      if (revokeHostResponse.ok) {
+      if (revokeHostData.success) {
         setModalMessage({
           message: 'Successfully Connection closed',
           type: 'success',
@@ -1147,12 +1109,8 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
     }
     try {
       // First, create the connection
-      const createResponse = await fetch('host/create-new-connection/'.replace(/host/, frontend_host), {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${token}`,
-        },
-        body: new URLSearchParams({
+      const createResponse = await apiFetch.post('/create-new-connection/', 
+        new URLSearchParams({
           // connection_type_name: connectionTypeName,
           connection_type_id: connectionTypeID,
           connection_name: connectionName,
@@ -1162,20 +1120,16 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
           host_user_username: hostUserUsername,
           guest_user_username: curruser.username
         })
-      });
+      );
 
-      const createData = await createResponse.json();
+      const createData = createResponse.data;
       if (!createData.success) {
         throw new Error(createData.error || 'Failed to create connection.');
       }
 
       // Now give consent
-      const consentResponse = await fetch('host/give-consent/'.replace(/host/, frontend_host), {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${token}`,
-        },
-        body: new URLSearchParams({
+      const consentResponse = await apiFetch.post('/give-consent/', 
+        new URLSearchParams({
           connection_name: connectionName,
           connection_type_id: connectionTypeID,
           // connection_type_name: connectionTypeName,
@@ -1185,7 +1139,7 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
           host_lockername: hostLockerName,
           consent: consent.toString()
         })
-      });
+      );
       console.log("give-consent body", {
         connection_name: connectionName,
         connection_type_name: connectionTypeName,
@@ -1196,7 +1150,7 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
         consent: consent.toString()
       });
 
-      const consentData = await consentResponse.json();
+      const consentData = consentResponse.data;
       if (consentData.success) {
         setModalMessage({
           message: 'Consent given and connection created successfully.',
@@ -1250,19 +1204,10 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
 
 console.log("formData", formData);
     try {
-      const response = await fetch(
-        "host/revoke-consent/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            // 'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await apiFetch.post(
+        "/revoke-consent/", formData);
 
-      const data = await response.json();
+      const data = response.data;
       console.log("revoke consent", data);
       if (response.status === 200) {
         // setMessage("Consent revoked successfully.");
@@ -1305,18 +1250,12 @@ console.log("formData", formData);
     formData.append("connection_id", connection_id);
     console.log("formData", formData);
     const endpoint = userRole
-      ? "host/close_connection_guest/"
-      : "host/close_connection_host/";
+      ? "/close_connection_guest/"
+      : "/close_connection_host/";
     try {
-      const response = await fetch(endpoint.replace(/host/, frontend_host), {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${token}`,
-        },
-        body: formData,
-      });
-      const data = await response.json();
-      if (response.ok) {
+      const response = await apiFetch.post(endpoint, formData);
+      const data = response.data;
+      if (response.status >= 200 && response.status < 300) {
         setModalMessage({
           message: data.message,
           type: "success",

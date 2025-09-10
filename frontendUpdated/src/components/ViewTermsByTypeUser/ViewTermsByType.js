@@ -530,6 +530,7 @@ import Sidebar from "../Sidebar/Sidebar.js";
 import { Grid } from "@mui/material"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api";
 
 export const ViewTermsByType = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -647,20 +648,18 @@ export const ViewTermsByType = () => {
     connection,
     guestLocker
   } = location.state || {};
+
+
+
+  console.log("connectionDetails", connectionDetails)
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -698,42 +697,38 @@ useEffect(() => {
   console.log("datass", connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername, connection)
   const connectionsData = connection
   useEffect(() => {
-    const token = Cookies.get("authToken");
-    const connectionLifeCycle = () => {
-      fetch("host/update_connection_status_tolive/".replace(/host/, frontend_host), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${token}`
-        },
-        body: JSON.stringify({
+  const connectionLifeCycle = async () => {
+    try {
+
+      const response = await apiFetch.post(
+        `/update_connection_status_tolive/`,
+        {
           connection_name: connectionName,
           host_locker_name: hostLockerName,
           guest_locker_name: guestLockerName,
           host_user_username: hostUserUsername,
-          guest_user_username: guestUserUsername
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("Response:", data);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+          guest_user_username: guestUserUsername,
+        },
+      );
 
-    };
-    connectionLifeCycle();
-  })
+      console.log("Response:", response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  connectionLifeCycle();
+}, [connectionName, hostLockerName, guestLockerName, hostUserUsername, guestUserUsername]);
+
 
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = Cookies.get("authToken"); // Get the token from Cookies
-      if (!token) return setErrorMessage("Authentication token is missing.");
+      // const token = Cookies.get("authToken"); // Get the token from Cookies
+      // if (!token) return setErrorMessage("Authentication token is missing.");
 
       try {
-        const pages = await fetchTotalPages(selectedResourceId, token);
+        const pages = await fetchTotalPages(selectedResourceId);
         setTotalPages(pages); // Set the total pages in state
       } catch (error) {
         setErrorMessage(error.message || "Failed to fetch total pages.");
@@ -745,11 +740,11 @@ useEffect(() => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = Cookies.get("authToken"); // Get the token from Cookies
-      if (!token) return setErrorMessage("Authentication token is missing.");
+      // const token = Cookies.get("authToken"); // Get the token from Cookies
+      // if (!token) return setErrorMessage("Authentication token is missing.");
 
       try {
-        const pages = await fetchTotalPages2(selectedResourceId2, token);
+        const pages = await fetchTotalPages2(selectedResourceId2);
         setTotalPages(pages); // Set the total pages in state
       } catch (error) {
         setErrorMessage(error.message || "Failed to fetch total pages.");
@@ -824,7 +819,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
   const fetchTrackerData = async (connection) => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         connection_name: connection.connection_name,
         host_locker_name: connection.host_locker.name,
@@ -832,20 +827,12 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
+      const response = await apiFetch.get(
+        `/get-terms-status/?${params}`);
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error("Failed to fetch tracker data");
       }
-      const data = await response.json();
+      const data = response.data
       if (data.success) {
         console.log("view locker", data);
         setTrackerData((prevState) => ({
@@ -868,7 +855,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
   };
   const fetchTrackerDataReverse = async (connection) => {
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const params = new URLSearchParams({
         connection_name: connection.connection_name,
         host_locker_name: connection.host_locker.name,
@@ -876,20 +863,12 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
         host_user_username: connection.host_user.username,
         guest_user_username: connection.guest_user.username,
       });
-      const response = await fetch(
-        `host/get-terms-status-reverse/?${params}`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
+      const response = await apiFetch.get(
+        `/get-terms-status-reverse/?${params}`);
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error("Failed to fetch tracker data");
       }
-      const data = await response.json();
+      const data = response.data
       if (data.success) {
         console.log("view locker", data);
         setTrackerDataReverse((prevState) => ({
@@ -1022,23 +1001,13 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       const host_user_username = hostUserUsername;
       const guest_user_username = curruser.username;
 
-      const token = Cookies.get("authToken");
 
       try {
-        const response = await fetch(
-          `host/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`.replace(/host/, frontend_host),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await apiFetch.get(`/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`);
 
-        const data = await response.json();
-        console.log("data conn", data.connections);
-        if (response.ok) {
+        const data = response.data
+        console.log("data conn....", data);
+        if (response.status >= 200 && response.status < 300) {
           setConnectionDetails(data.connections);
           setPostConditions(data.post_conditions)
         } else {
@@ -1052,46 +1021,35 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     };
 
 
-    const fetchGlobalTemplates = () => {
-      const token = Cookies.get("authToken");
-      fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // console.log("Fetched Templates:", data); // Log the fetched data
-          setGlobalTemplates(data.data); // Store fetched templates
-          // console.log("global data", data.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching templates:", error);
-          setError("Failed to fetch templates");
-        });
-    };
+    const fetchGlobalTemplates = async () => {
+      try {
+        // const token = Cookies.get("authToken");
 
+        const response = await apiFetch.get("/get-template-or-templates/");
+        const data = response.data
+        if(data.success){
+          setGlobalTemplates(data.data);
+        }
+        // console.log("Fetched Templates:", response.data.data);
+      } catch (error) {
+        console.error("Error fetching templates:", error);
+        setError("Failed to fetch templates");
+      }
+    };
     //fetch terms from the api
     const fetchObligations = async () => {
       try {
-        const token = Cookies.get("authToken");
+        // const token = Cookies.get("authToken");
         const connectionTypeName = connectionName.split("-").shift().trim();
-        const apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
+        const apiUrl = `/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${hostUserUsername}&host_locker_name=${hostLockerName}`;
 
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`,
-          },
-        });
+        const response = await apiFetch.get(apiUrl);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch terms");
         }
 
-        const data = await response.json();
+        const data = response.data
 
         if (data.success) {
           console.log("Fetched data by connection type:", data.data); // Log to confirm structure
@@ -1125,23 +1083,14 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
     const fetchTerms = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(
-          `${frontend_host}/get-terms-value/?host_user_username=${hostUserUsername}&guest_user_username=${guestUserUsername}&host_locker_name=${hostLockerName}&connection_name=${connectionName}&guest_locker_name=${guestLockerName}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-terms-value/?host_user_username=${hostUserUsername}&guest_user_username=${guestUserUsername}&host_locker_name=${hostLockerName}&connection_name=${connectionName}&guest_locker_name=${guestLockerName}`);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch terms");
         }
 
-        const data = await response.json();
+        const data = response.data
         console.log("Fetched data:", data); // Log entire data to check its structure
 
         if (data.success) {
@@ -1218,25 +1167,13 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     // };
     const fetchPermissionsData = async () => {
       try {
-        const token = Cookies.get("authToken");
+        // const token = Cookies.get("authToken");
         const connectionId = connection_id;
-        const response = await fetch(
-          `host/get-extra-data?connection_id=${connectionId}`.replace(
-            /host/,
-            frontend_host
-          ),
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("");
+        const response = await apiFetch.get(`/get-extra-data?connection_id=${connectionId}`);
+        if (!response.status >= 200 && !response.status < 300) {
+          throw new Error("Error");
         }
-        const data = await response.json();
+        const data = response.data
         if (data.success) {
           // Create an array from the shared_more_data_terms object
           console.log(data.shared_more_data_terms);
@@ -1277,25 +1214,13 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     const fetchResources = async () => {
       if (selectedLocker) {
         try {
-          const token = Cookies.get("authToken");
-          const response = await fetch(
-            `host/get-resources-user-locker/?locker_name=${selectedLocker}`.replace(
-              /host/,
-              frontend_host
-            ),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (!response.ok) {
+          // const token = Cookies.get("authToken");
+          const response = await apiFetch.get(`/get-resources-user-locker/?locker_name=${selectedLocker}`);
+          if (!response.status >= 200 && !response.status < 300) {
             throw new Error("Failed to fetch resources");
           }
 
-          const data = await response.json();
+          const data = response.data
           if (data.success) {
             setResources(data.resources);
           } else {
@@ -1310,26 +1235,17 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     const fetchVnodeResources = async () => {
       if (selectedLocker) {
         try {
-          const token = Cookies.get("authToken");
+          // const token = Cookies.get("authToken");
           const params = new URLSearchParams({
             host_locker_id: locker.locker_id,
           });
 
-          const response = await fetch(
-            `host/get-vnodes/?${params}`.replace(/host/, frontend_host),
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (!response.ok) {
+          const response = await apiFetch.get(`/get-vnodes/?${params}`);
+          if (!response.status >= 200 && !response.status < 300) {
             throw new Error("Failed to fetch resources");
           }
 
-          const data = await response.json();
+          const data = response.data
           //   console.log("data", data);
           //   console.log("vnodes", data.data);
 
@@ -1348,28 +1264,17 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
     const fetchXnodes = async () => {
       try {
-        const token = Cookies.get("authToken");
+        // const token = Cookies.get("authToken");
         const params = new URLSearchParams({ locker_id: locker.locker_id });
 
-        const response = await fetch(
-          `host/get_all_xnodes_for_locker_v2/?${params}`.replace(
-            /host/,
-            frontend_host
-          ),
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await apiFetch.get(
+          `/get_all_xnodes_for_locker_v2/?${params}`);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch Xnodes");
         }
 
-        const data = await response.json();
+        const data = response.data
         // console.log("xnode data", data);
 
         if (data.xnode_list) {
@@ -1451,24 +1356,15 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/consent-artefact-view-edit/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/consent-artefact-view-edit/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data
         throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data
       console.log("datass", data);
       const { xnode } = data;
 
@@ -1508,22 +1404,12 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     console.log("Sending PATCH request with:", payload);
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/consent-artefact-view-edit/`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: "PATCH",
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.patch(`/consent-artefact-view-edit/`, payload);
 
-      const data = await response.json();
+      const data = response.data
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         alert("Updated successfully!");
         closeOpenPopup();
       } else {
@@ -1564,24 +1450,15 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     const to_page = parseInt(pages?.split(':')[1].replace(")")[0], 10);
     console.log(xnode_id, "pages", pages, "from", from_page, "to_page", to_page);
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-res-submitted-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/access-res-submitted-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data
         throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data
       console.log(data);
       const { link_To_File } = data;
 
@@ -1829,7 +1706,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
   const handlePageSubmit2 = async () => {
     const resource = selection2[currentLabelName];
-    const token = Cookies.get("authToken");
+    // const token = Cookies.get("authToken");
     if (resource) {
       const data = {
         connection_name: connectionName,
@@ -1842,21 +1719,10 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       console.log("typesss", typeofShare)
       console.log("typesss", data)
       try {
-        const response = await fetch('host/share_confer_resource_v2/'.replace(
-          /host/,
-          frontend_host
-        ), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
+        const response = await apiFetch.post('/share_confer_resource_v2/', data);
 
-          },
-          body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-        if (response.ok) {
+        const result = response.data
+        if (response.status >= 200 && response.status < 300) {
           // alert(result.message);
           console.log("New Xnode ID:", result.new_xnode_id);
           const new_xnode_id = result.new_xnode_id
@@ -2029,7 +1895,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
   // };
 
   const handlePageSubmit = async () => {
-    const token = Cookies.get("authToken");
+    // const token = Cookies.get("authToken");
     const resource = selection[currentLabelName];
     if (resource) {
       const data = {
@@ -2043,21 +1909,10 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       console.log("payload for post", data)
 
       try {
-        const response = await fetch('host/share_confer_resource_v2/'.replace(
-          /host/,
-          frontend_host
-        ), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
+        const response = await apiFetch.post('/share_confer_resource_v2/', data);
 
-          },
-          body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-        if (response.ok) {
+        const result = response.data
+        if (response.status >= 200 && response.status < 300) {
           // alert(result.message);
           console.log("New Xnode ID:", result.new_xnode_id);
           const new_xnode_id = result.new_xnode_id
@@ -2252,7 +2107,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
         canShareMoreData: canShareMoreData, // Keep canShareMoreData intact
       };
 
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       // setResourcesData(updatedResourcesData);
       const payload = {
         connection_name: connectionName,
@@ -2298,23 +2153,14 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       //     }
       // }
 
-      const updateResponse = await fetch(
-        `host/update_connection_terms_v2/`.replace(/host/, frontend_host),
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const updateResponse = await apiFetch.patch(
+        `/update_connection_terms_v2/`, payload);
 
-      if (!updateResponse.ok) {
+      if (!updateResponse.status >= 200 && !updateResponse.status < 300) {
         throw new Error("Failed to update terms");
       }
 
-      const data = await updateResponse.json();
+      const data = updateResponse.data
       if (data.success) {
         navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
       } else {
@@ -2375,21 +2221,14 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`${frontend_host}/update-extra-data-v2/`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${token}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.patch(`/update-extra-data-v2/`, requestBody);
 
-      if (!response.ok) {
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error("Failed to update extra data");
       }
 
-      const data = await response.json();
+      const data = response.data
       if (data.success) {
         alert("Data updated successfully!");
         navigate(`/view-locker?param=${Date.now()}`, { state: { locker } });
@@ -2587,24 +2426,15 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
   const handleClick = async (xnode_id) => {
     console.log("xnode_id", xnode_id)
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(`host/access-resource-v2/?xnode_id=${xnode_id}`.replace(
-        /host/,
-        frontend_host
-      ), {
-        method: 'GET',
-        headers: {
-          Authorization: `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(`/access-resource-v2/?xnode_id=${xnode_id}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data
         throw new Error(errorData.message || 'Failed to access the resource');
       }
 
-      const data = await response.json();
+      const data = response.data
       // console.log(data);
       const { link_To_File } = data;
 
@@ -2681,21 +2511,15 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     handleConsentAndInfo(connectionName); // Execute revoke consent action
   };
 
-  const fetchTotalPages = async (selectedResourceId, token) => {
-    const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${selectedResourceId}`;
+  const fetchTotalPages = async (selectedResourceId) => {
+    const url = `/get_total_pages_v2/?xnode_id=${selectedResourceId}`;
     console.log("Fetching data from URL:", url); // Log the URL
 
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
-        },
-      });
+      const response = await apiFetch.get(url);
 
-      const data = await response.json();
-      if (!response.ok || !data.success) {
+      const data = response.data
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error(data.error || "Failed to fetch total pages.");
       }
       return data.total_pages;
@@ -2712,26 +2536,17 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     // formData.append("close_host_bool", "True");
 
     // console.log(connection_id ,"id");
-    const token = Cookies.get("authToken");
+    // const token = Cookies.get("authToken");
     try {
-      const response = await fetch(
-        "host/close_connection_guest/".replace(/host/, frontend_host),
-        {
-          method: "POST",
-          headers: {
-            // 'Content-Type': 'application/json',
-            Authorization: `Basic ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await apiFetch.post(
+        "/close_connection_guest/", formData);
 
-      const data = await response.json();
+      const data = response.data
       setIsModalOpen(false)
       setIsModalOpens(false)
       setIsModalOpenClose(false);
       // console.log("revoke consent", data);
-      if (response.status === 200) {
+      if (response.status >= 200 && response.status < 300) {
         setIsModalOpenClose(false);
         setModalMessage({
           message: 'Successfully Connection closed',
@@ -2753,21 +2568,15 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
     // setIsModalOpen(true)
   };
 
-  const fetchTotalPages2 = async (selectedResourceId2, token) => {
-    const url = `${frontend_host}/get_total_pages_v2/?xnode_id=${selectedResourceId2}`;
+  const fetchTotalPages2 = async (selectedResourceId2) => {
+    const url = `/get_total_pages_v2/?xnode_id=${selectedResourceId2}`;
     console.log("Fetching data from URL:", url); // Log the URL
 
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${token}`,
-        },
-      });
+      const response = await apiFetch.get(url);
 
-      const data = await response.json();
-      if (!response.ok || !data.success) {
+      const data = response.data
+      if (!response.status >= 200 && !response.status < 300) {
         throw new Error(data.error || "Failed to fetch total pages.");
       }
       return data.total_pages;
@@ -3027,7 +2836,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
   
     const onRevokeButtonClick = async () => {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
       const formData = new FormData();
       formData.append("connection_name", connectionDetails?.connection_name);
       formData.append("connection_type_name", connectionDetails?.connection_type_name);
@@ -3038,23 +2847,13 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
   
   console.log("formData", formData);
       try {
-        const response = await fetch(
-          "host/revoke-consent/".replace(/host/, frontend_host),
-          {
-            method: "POST",
-            headers: {
-              // 'Content-Type': 'application/json',
-              Authorization: `Basic ${token}`,
-            },
-            body: formData,
-          }
-        );
+        const response = await apiFetch.post("/revoke-consent/", formData);
   
-        const data = await response.json();
+        const data = response.data
         console.log("revoke consent", data);
         setIsModalOpens(false)
         setIsModalOpen(false)
-        if (response.status === 200) {
+        if (response.status >= 200 && response.status < 300) {
           // setMessage("Consent revoked successfully.");
           setModalMessage({
             message:  data.message || "Consent revoked successfully.",

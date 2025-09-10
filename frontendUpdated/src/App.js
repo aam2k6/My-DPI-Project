@@ -45,7 +45,8 @@ import { ConsentDashboard } from "./components/ConsentDashboard/ConsentDashboard
 import { ConnectionProvider } from "./ConnectionContext";
 import DirectoryPage from "./components/Directory/directory";
 import ViewAllNotifications from "./components/ViewAllNotifications/ViewAllNotifications";
-import {CompleteProfile} from "./components/GooogleLogin/profileComplete"
+import {CompleteProfile} from "./components/GooogleLogin/profileComplete";
+import New from "./components/New/New";
 
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 
@@ -83,7 +84,7 @@ function App() {
         <usercontext.Provider value={{ curruser, setUser }}>
           <ConnectionProvider>
             <Routes>
-              <Route path="/" element={<Login />} />
+              <Route path="/" element={<New />} />
               <Route
                 path="/home"
                 element={

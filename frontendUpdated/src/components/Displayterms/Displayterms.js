@@ -157,6 +157,7 @@ import { Grid } from "@mui/material"
 import Sidebar from "../Sidebar/Sidebar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api";
 
 export const Displayterms = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -213,17 +214,11 @@ export const Displayterms = () => {
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -244,14 +239,9 @@ useEffect(() => {
     }
 
     const fetchGlobalTemplates = () => {
-      const token = Cookies.get("authToken");
-      fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${token}`,
-        },
-      })
-        .then((response) => response.json())
+      // const token = Cookies.get("authToken");
+      apiFetch.get("/get-template-or-templates/")
+        .then((response) => response.data)
         .then((data) => {
           // console.log("Fetched Templates:", data); // Log the fetched data
           setGlobalTemplates(data.data); // Store fetched templates
@@ -267,9 +257,9 @@ useEffect(() => {
     const fetchTerms = async () => {
       console.log("Inside fetch terms");
       try {
-        const token = Cookies.get("authToken");
+        // const token = Cookies.get("authToken");
 
-        let apiUrl = `${frontend_host}/get-terms-by-conntype/?connection_type_name=${connectionTypeName}`;
+        let apiUrl = `/get-terms-by-conntype/?connection_type_name=${connectionTypeName}`;
         // console.log("Final API URL:", apiUrl);
         console.log(curruser.username, "curr", hostUserUsername)
         // Determine which username to use
@@ -288,19 +278,13 @@ useEffect(() => {
 
         console.log("Final API URL:", apiUrl);
 
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${token}`,
-          },
-        });
+        const response = await apiFetch.get(apiUrl);
 
-        if (!response.ok) {
+        if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch terms");
         }
 
-        const data = await response.json();
+        const data = response.data;
 
         if (data.success) {
           setRes(data.data);

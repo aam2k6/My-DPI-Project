@@ -8,7 +8,8 @@ import { Container, Grid, TextField, Button, Typography, Box } from "@mui/materi
 import Sidebar from "../Sidebar/Sidebar"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import "./page2.css"
+import { apiFetch } from "../../utils/api";
+import "./page2.css";
 
 export const CreateLocker = () => {
 
@@ -36,17 +37,11 @@ export const CreateLocker = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -60,45 +55,74 @@ export const CreateLocker = () => {
       fetchNotifications();
     }
   }, [curruser, isSidebarOpen]);
-  const handleSubmit = (event) => {
-    event.preventDefault()
+  // const handleSubmit = (event) => {
+  //   event.preventDefault()
 
-    const token = Cookies.get("authToken")
+  //   const token = Cookies.get("authToken")
 
-    // Prepare data to send
-    const data = new FormData()
-    data.append("name", lockerName.trim())
-    data.append("description", description)
+  //   // Prepare data to send
+  //   const data = new FormData()
+  //   data.append("name", lockerName.trim())
+  //   data.append("description", description)
 
-    // Send data to the backend
-    fetch("host/create-locker/".replace(/host/, frontend_host), {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${token}`, // Add token to the headers
-      },
-      body: data,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          console.log("Locker created:", data)
-          // Redirect to another page or show success message
-          navigate("/home")
-        } else if (data.error === "Locker with this name already exists") {
-          // Handle case where locker with same name exists
-          alert("A locker with this name already exists. Please choose a different name.")
-        } else {
-          console.error("Error:", data.error)
-          // Show error message for other cases
-          alert(data.error)
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error)
-        // Show error message
-        alert("An error occurred while creating the locker")
-      })
+  //   // Send data to the backend
+  //   fetch("host/create-locker/".replace(/host/, frontend_host), {
+  //     method: "POST",
+  //     headers: {
+  //       Authorization: `Basic ${token}`, // Add token to the headers
+  //     },
+  //     body: data,
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.success) {
+  //         console.log("Locker created:", data)
+  //         // Redirect to another page or show success message
+  //         navigate("/home")
+  //       } else if (data.error === "Locker with this name already exists") {
+  //         // Handle case where locker with same name exists
+  //         alert("A locker with this name already exists. Please choose a different name.")
+  //       } else {
+  //         console.error("Error:", data.error)
+  //         // Show error message for other cases
+  //         alert(data.error)
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error)
+  //       // Show error message
+  //       alert("An error occurred while creating the locker")
+  //     })
+  // }
+
+  const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  try {
+    // Prepare form data
+    const data = new FormData();
+    data.append("name", lockerName.trim());
+    data.append("description", description);
+
+    // Send request using apiFetch
+    const response = await apiFetch.post("/create-locker/", data);
+
+    const resData = response.data;
+
+    if (resData.success) {
+      console.log("Locker created:", resData);
+      navigate("/home");
+    } else if (resData.error === "Locker with this name already exists") {
+      alert("A locker with this name already exists. Please choose a different name.");
+    } else {
+      console.error("Error:", resData.error);
+      alert(resData.error);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred while creating the locker");
   }
+};
 
   useEffect(() => {
     if (!curruser) {

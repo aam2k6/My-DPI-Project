@@ -551,6 +551,7 @@ import Typography from "@mui/material/Typography";
 import Sidebar from "../Sidebar/Sidebar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api.js";
 
 export const ConnectionTerms = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -611,13 +612,8 @@ export const ConnectionTerms = () => {
   };
   const fetchGlobalTemplates = () => {
     const token = Cookies.get("authToken");
-    fetch("host/get-template-or-templates/".replace(/host/, frontend_host), {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${token}`,
-      },
-    })
-      .then((response) => response.json())
+    apiFetch.get("/get-template-or-templates/")
+      .then((response) => response.data)
       .then((data) => {
         console.log("Fetched Templates:", data); // Log the fetched data
         setGlobalTemplates(data.data); // Store fetched templates
@@ -634,16 +630,10 @@ export const ConnectionTerms = () => {
       const fetchNotifications = async () => {
         try {
           const token = Cookies.get("authToken");
-          const response = await fetch(`${frontend_host}/get-notifications/`, {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
+          const response = await apiFetch.get(`/get-notifications/`);
   
-          if (response.ok) {
-            const data = await response.json();
+          if (response.status >=200 && response.status < 300) {
+            const data = response.data;
             if (data.success) {
               setNotifications(data.notifications || []);
             }
@@ -707,19 +697,9 @@ export const ConnectionTerms = () => {
   const handleFetchObligations = () => {
     const token = Cookies.get("authToken");
     selectedTemplateIds.forEach((templateId) => {
-      fetch(
-        `host/get-connection-terms-for-global-template/?template_Id=${templateId}`.replace(
-          /host/,
-          frontend_host
-        ),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
-        }
-      )
-        .then((response) => response.json())
+      apiFetch.get(
+        `/get-connection-terms-for-global-template/?template_Id=${templateId}`)
+        .then((response) => response.data)
         .then((data) => {
           if (data.success) {
             const { obligations, permissions, forbidden } = data.data;

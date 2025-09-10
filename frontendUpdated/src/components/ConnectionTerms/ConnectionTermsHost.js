@@ -21,6 +21,7 @@ import { Tooltip } from 'react-tooltip';
 import Sidebar from "../Sidebar/Sidebar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api"
 
 export const ConnectionTermsHost = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -81,16 +82,10 @@ export const ConnectionTermsHost = () => {
     const fetchNotifications = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -198,19 +193,9 @@ export const ConnectionTermsHost = () => {
   const handleFetchObligations = () => {
     const token = Cookies.get("authToken");
     selectedTemplateIds.forEach((templateId) => {
-      fetch(
-        `host/get-connection-terms-for-global-template/?template_Id=${templateId}`.replace(
-          /host/,
-          frontend_host
-        ),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-          },
-        }
-      )
-        .then((response) => response.json())
+      apiFetch.get(
+        `/get-connection-terms-for-global-template/?template_Id=${templateId}`)
+        .then((response) => response.data)
         .then((data) => {
           if (data.success) {
             const { obligations, permissions, forbidden } = data.data;
@@ -432,89 +417,82 @@ export const ConnectionTermsHost = () => {
   // };
 
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (obligations.length === 0) {
-      setError("At least one obligation must be added.");
-      setModalMessage({
-        message: "At least one obligation must be added.",
-        type: "info",
-      });
-      setIsModalOpen(true); // Open modal with info message.
-      return;
-    }
-    const token = Cookies.get("authToken");
+ const handleSubmit = async (event) => {
+  event.preventDefault();
 
-    const GuestData = {
-      from: "GUEST",
-      to: "HOST",
-      ...connectionTermsData
-    }
+  if (obligations.length === 0) {
+    setError("At least one obligation must be added.");
+    setModalMessage({
+      message: "At least one obligation must be added.",
+      type: "info",
+    });
+    setIsModalOpen(true);
+    return;
+  }
 
-    const HostData = {
-      from: "HOST",
-      to: "GUEST",
-      obligations: obligations.map(obligation => ({
-        ...obligation,
-        hostPermissions: formData.hostPermissions,
-        global_conn_type_id: obligation.global_conn_type_id || null,  // Optional field if needed by the API
-      })),
-      permissions: {
-        canShareMoreData: formData.canShareMore,
-        canDownloadData: formData.canDownload,
-      },
-      // hostPermissions: formData.hostPermissions,
-      forbidden: formData.forbidden ? ["Cannot close unilaterally"] : ["can unilaterally close connection"]
+  const GuestData = {
+    from: "GUEST",
+    to: "HOST",
+    ...connectionTermsData,
+  };
 
-    };
+  const HostData = {
+    from: "HOST",
+    to: "GUEST",
+    obligations: obligations.map((obligation) => ({
+      ...obligation,
+      hostPermissions: formData.hostPermissions,
+      global_conn_type_id: obligation.global_conn_type_id || null,
+    })),
+    permissions: {
+      canShareMoreData: formData.canShareMore,
+      canDownloadData: formData.canDownload,
+    },
+    forbidden: formData.forbidden
+      ? ["Cannot close unilaterally"]
+      : ["can unilaterally close connection"],
+  };
 
+
+  try {
     const finalData = {
       ...connectionData,
-      directions: [
-        GuestData,
-        HostData
-      ]
-    }
+      directions: [GuestData, HostData],
+    };
 
-    fetch("host/create-connection-type-and-terms/".replace(/host/, frontend_host), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${token}`,
-      },
-      body: JSON.stringify(finalData),
-    })
-      .then(async (response) => {
-        const data = await response.json();
-        if (response.ok) {
-          // setError("Connection Type successfully created!");
-          setModalMessage({
-            message: "Connection Type successfully created!",
-            type: "success",
-          });
-          setIsModalOpen(true);
-          setNavigateHome(true);
-        } else {
-          // General error handling.
-          console.error("Error:", data.error);
-          setError(data.error);
-          setModalMessage({
-            message: data.error,
-            type: "error",
-          });
-          setIsModalOpen(true); // Open modal with error message.
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setError("An error occurred while submitting the data.");
-        setModalMessage({
-          message: "An error occurred while submitting the data.",
-          type: "error",
-        });
-        setIsModalOpen(true); // Open modal with error message.
+    // Axios: must await the promise
+    const response = await apiFetch.post("/create-connection-type-and-terms/", finalData);
+
+    // Axios gives parsed JSON directly
+    const data = response.data;
+
+    if (data.success) {
+      setModalMessage({
+        message: "Connection Type successfully created!",
+        type: "success",
       });
-  };
+      setIsModalOpen(true);
+      setNavigateHome(true);
+    } else {
+      console.error("Error:", data.error);
+      setError(data.error);
+      setModalMessage({
+        message: data.error,
+        type: "error",
+      });
+      setIsModalOpen(true);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    setError("An error occurred while submitting the data.");
+    setModalMessage({
+      message: "An error occurred while submitting the data.",
+      type: "error",
+    });
+    setIsModalOpen(true);
+  }
+
+};
 
 
   const handleHostPermissionsChange = (event) => {

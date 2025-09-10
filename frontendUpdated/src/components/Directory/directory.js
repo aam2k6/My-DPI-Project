@@ -10,6 +10,7 @@ import { frontend_host } from "../../config"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
+import { apiFetch } from "../../utils/api";
 
 export const DirectoryPage = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -34,17 +35,11 @@ const capitalizeFirstLetter = (string) => {
     useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }

@@ -8,6 +8,7 @@ import Sidebar from "../Sidebar/Sidebar.js";
 import { frontend_host } from "../../config.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { apiFetch } from "../../utils/api.js";
 
 
 export default function FreezeLockerConnection() {
@@ -46,17 +47,11 @@ export default function FreezeLockerConnection() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -73,14 +68,8 @@ export default function FreezeLockerConnection() {
 
   useEffect(() => {
     const token = Cookies.get('authToken');
-    fetch('host/dpi-directory/'.replace(/host/, frontend_host), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
+    apiFetch.get('/dpi-directory/')
+      .then(response => response.data)
       .then(data => {
         if (data.success) {
           console.log("dpi ", data);
@@ -98,26 +87,20 @@ export default function FreezeLockerConnection() {
 
   const fetchLockers = async () => {
     if (!selectedUser) return;
-    const token = Cookies.get('authToken');
+    // const token = Cookies.get('authToken');
     const params = new URLSearchParams({ username: selectedUser.username });
 
     try {
-      const response = await fetch(`host/get-lockers-user/?${params}`.replace(/host/, frontend_host), {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch.get(`/get-lockers-user/?${params}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         setError(errorData.error || 'Failed to fetch lockers');
         console.error('Error fetching lockers:', errorData);
         return;
       }
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setUserLockers(data.lockers.filter(locker => locker.is_frozen === !freezeMode));
       } else {
@@ -130,24 +113,18 @@ export default function FreezeLockerConnection() {
   };
 
   const fetchConnections = async () => {
-    const token = Cookies.get('authToken');
+    // const token = Cookies.get('authToken');
     try {
-      const response = await fetch('host/get-all-connections/'.replace(/host/, frontend_host), {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch.get('/get-all-connections/');
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const errorData = response.data;
         setError(errorData.error || 'Failed to fetch connections');
         console.error('Error fetching connections:', errorData);
         return;
       }
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setConnections(data.connections.filter(connection => connection.is_frozen === !freezeMode));
       } else {
@@ -190,16 +167,15 @@ export default function FreezeLockerConnection() {
     const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("host/freeze-unfreeze-locker/".replace(/host/, frontend_host), {
-        method: "PUT",
-        body: JSON.stringify({ locker_name: lockerName, username: selectedUser.username, action }),
-        headers: {
-          'Authorization': `Basic ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      if (response.ok) {
+      const response = await apiFetch.put("/freeze-unfreeze-locker/", 
+        {
+          locker_name: lockerName, 
+          username: selectedUser.username, 
+          action 
+        }
+      );
+      const data = response.data;
+      if (response.status >= 200 && response.status < 300) {
         setModalMessage({ message: data.message || 'Locker freeze request successful', type: 'success' });
         //to clear input fields
         setLockerName("");
@@ -232,20 +208,18 @@ export default function FreezeLockerConnection() {
 
     setIsLoading((prevState) => ({ ...prevState, connection: true }));
 
-    const token = Cookies.get('authToken');
+    // const token = Cookies.get('authToken');
 
     try {
-      const response = await fetch("host/freeze-unfreeze-connection/".replace(/host/, frontend_host), {
-        method: "PUT",
-        //curruser is user obj
-        body: JSON.stringify({ connection_id: connectionId, connection_name: connectionName, action }),
-        headers: {
-          'Authorization': `Basic ${token}`,
-          "Content-Type": "application/json",
+      const response = await apiFetch.put("/freeze-unfreeze-connection/", 
+        {
+          connection_id: connectionId, 
+          connection_name: connectionName, 
+          action 
         },
-      });
-      const data = await response.json();
-      if (response.ok) {
+      );
+      const data = response.data;
+      if (response.status >= 200 && response.status < 300) {
         setModalMessage({ message: data.message || 'Connection freeze request successful', type: 'success' });
         //to clear input fields 
         setConnectionName("");
@@ -264,7 +238,7 @@ export default function FreezeLockerConnection() {
     } finally {
       setIsLoading((prevState) => ({ ...prevState, connection: false }));
     }
-    console.log("id", connectionId);
+    // console.log("id", connectionId);
   };
 
   const toggleFreezeMode = () => {

@@ -11,7 +11,7 @@ import { Grid, Button } from '@mui/material'
 import Sidebar from "../Sidebar/Sidebar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-// import { Menu } from "lucide-react";
+import { apiFetch } from "../../utils/api";
 
 export const Admin = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -76,17 +76,11 @@ export const Admin = () => {
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -137,25 +131,18 @@ useEffect(() => {
         return;
       }
 
-      const response = await fetch(
-        `host/update-delete-locker/`.replace(/host/, frontend_host),
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+      const response = await apiFetch.put(
+        `/update-delete-locker/`,
+          {
             locker_name: lockerToUpdate.name,
             new_locker_name: newLockerName,
             description: description,
-          }),
-        }
+          },
       );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         if (data.message === "Locker updated successfully.") {
           fetchUserLockers();
           setEditingLocker(null);
@@ -200,18 +187,13 @@ useEffect(() => {
       )
     ) {
       try {
-        const token = Cookies.get("authToken");
-        fetch(`host/update-delete-locker/`.replace(/host/, frontend_host), {
-          method: "DELETE",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        // const token = Cookies.get("authToken");
+        apiFetch.delete(`/update-delete-locker/`,
+          {
             locker_name: lockerToDelete.name,
-          }),
-        }).then(async (response) => {
-          const data = await response.json();
+          },
+        ).then(async (response) => {
+          const data = response.data;
           if (data.message.includes("successfully deleted")) {
             fetchUserLockers();
             setEditingLocker(null);
@@ -240,18 +222,10 @@ useEffect(() => {
 
   const fetchOtherConnections = async () => {
     try {
-      const token = Cookies.get("authToken");
-      const response = await fetch(
-        `host/get-connection-type/`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
+      // const token = Cookies.get("authToken");
+      const response = await apiFetch.get(
+        `/get-connection-type/`);
+      const data = response.data;
       console.log(data);
       if (data.success) {
         setOtherConnections(data.connection_types);
@@ -266,17 +240,8 @@ useEffect(() => {
   const fetchUserLockers = async () => {
     try {
       const token = Cookies.get("authToken");
-      const response = await fetch(
-        `host/get-lockers-user/`.replace(/host/, frontend_host),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
+      const response = await apiFetch.get(`/get-lockers-user/`);
+      const data = response.data;
       if (data.success) {
         setLockers(data.lockers);
       } else {
@@ -338,21 +303,14 @@ useEffect(() => {
       )
     ) {
       try {
-        const token = Cookies.get("authToken");
-        const response = await fetch(
-          `host/edit-delete-connectiontype/`.replace(/host/, frontend_host),
+        // const token = Cookies.get("authToken");
+        const response = await apiFetch.delete(
+          `/edit-delete-connectiontype/`,
           {
-            method: "DELETE",
-            headers: {
-              Authorization: `Basic ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              connection_type_id: connection_type_id,
-            }),
-          }
+            connection_type_id: connection_type_id,
+          },
         );
-        const data = await response.json();
+        const data = response.data;
 
         if (data.success) {
           fetchOtherConnections(); // Refresh the list
@@ -392,18 +350,10 @@ useEffect(() => {
   // Function to fetch connection details (terms) by connection type
   const fetchTermsByConnectionType = async (connectionTypeName) => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${curruser.username}&host_locker_name=${locker.name}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${authToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await apiFetch.get(
+        `/get-terms-by-conntype/?connection_type_name=${connectionTypeName}&host_user_username=${curruser.username}&host_locker_name=${locker.name}`);
 
-      const data = await response.json();
+      const data = response.data;
       if (data.success) {
         setConnectionDetails(data.data); // Store the full connection data, not just obligations
         setTerms(data.data.obligations); // Still store obligations separately for dropdown
@@ -439,7 +389,7 @@ useEffect(() => {
     if (!editingConnection) return;
 
     try {
-      const token = Cookies.get("authToken");
+      // const token = Cookies.get("authToken");
 
       // Prepare the connection update data
       const connectionUpdateData = {
@@ -460,19 +410,10 @@ useEffect(() => {
         ];
       }
 
-      const response = await fetch(
-        `host/edit-delete-connectiontype/`.replace(/host/, frontend_host),
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(connectionUpdateData),
-        }
-      );
+      const response = await apiFetch.put(
+        `/edit-delete-connectiontype/`, connectionUpdateData);
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         // Re-fetch connections after saving

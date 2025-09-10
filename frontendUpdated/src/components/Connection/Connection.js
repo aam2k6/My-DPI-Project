@@ -12,6 +12,7 @@ import Navbar from "../Navbar/Navbar";
 import Panel from "../Panel/Panel";
 import { frontend_host } from "../../config";
 import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material";
+import { apiFetch } from "../../utils/api"
 
 export const Connection = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -52,16 +53,10 @@ export const Connection = () => {
     const fetchNotifications = async () => {
       try {
         const token = Cookies.get("authToken");
-        const response = await fetch(`${frontend_host}/get-notifications/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await apiFetch.get(`/get-notifications/`);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           if (data.success) {
             setNotifications(data.notifications || []);
           }
@@ -91,16 +86,13 @@ export const Connection = () => {
 
   useEffect(() => {
     const token = Cookies.get("authToken");
+try {
+const response= apiFetch.get("/get-lockers-user/")
 
-    fetch("host/get-lockers-user/".replace(/host/, frontend_host), {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
+      // .then((response) => response.json())
+      // .then((data) => {
+        console.log("response", response)
+        const data = response.data
         if (data.success) {
           setLockers(data.lockers);
           if (!selectedLocker && data.lockers.length > 0) {
@@ -109,11 +101,11 @@ export const Connection = () => {
         } else {
           setError(data.message || data.error);
         }
-      })
-      .catch((error) => {
+      // })
+} catch(error){
         setError("An error occurred while fetching lockers.");
         console.error("Error:", error);
-      });
+      };
   }, [curruser]);
 
   const handleSubmit = (event) => {

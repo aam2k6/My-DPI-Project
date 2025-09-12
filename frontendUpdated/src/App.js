@@ -46,7 +46,7 @@ import { ConnectionProvider } from "./ConnectionContext";
 import DirectoryPage from "./components/Directory/directory";
 import ViewAllNotifications from "./components/ViewAllNotifications/ViewAllNotifications";
 import {CompleteProfile} from "./components/GooogleLogin/profileComplete";
-import New from "./components/New/New";
+import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
 
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 
@@ -84,7 +84,7 @@ function App() {
         <usercontext.Provider value={{ curruser, setUser }}>
           <ConnectionProvider>
             <Routes>
-              <Route path="/" element={<New />} />
+              <Route path="/" element={<LoginSignUp />} />
               <Route
                 path="/home"
                 element={

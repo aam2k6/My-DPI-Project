@@ -13,9 +13,9 @@
     background-color: #1a1a4e; /* Same dark blue as in screenshot */
     color: white;
     text-align: center; /* Center the text horizontally */
-    padding: 15px 0; /* Add vertical padding */
-    font-size: 1.8rem; /* Adjust the size of the header text */
-    font-weight: 600; /* Optional for bold */
+    /* padding: px 0; Add vertical padding */
+    font-size: 1rem; /* Adjust the size of the header text */
+    font-weight: 400; /* Optional for bold */
 }
 
 
@@ -520,7 +520,19 @@
   color: #0d6efd; /* Bootstrap blue on hover */
 }
 @media (max-width: 576px) {
-  .form-container {
+  .auth-container .form-container {
    gap: 0px;
   }
+}
+
+@media (max-width: 576px) {
+.headerlogins h1{
+    font-size:26px;
+}
+}
+
+@media (max-width: 400px) {
+.headerlogins h1{
+    font-size:24px;
+}
 }

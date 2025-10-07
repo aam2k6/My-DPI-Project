@@ -17,7 +17,6 @@ import WebScienceLogo from '../../assets/WSL.jpg';
 const LoginSignUp = () => {
     const navigate = useNavigate();
     const { user, setUser } = useContext(usercontext);
-    // State management
     const [activeTab, setActiveTab] = useState('signin');
     const [message, setMessage] = useState({ type: '', text: '' });
     const [showGoogleModal, setShowGoogleModal] = useState(false);
@@ -28,15 +27,12 @@ const LoginSignUp = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [username, setUsername] = useState("");
     const [description, setDescription] = useState("");
-    // const { user, setUser } = useContext(usercontext);
-    // Form data states
     const [signInData, setSignInData] = useState({ email: '', password: '' });
     const [signUpData, setSignUpData] = useState({ email: '', username: '', password: '', description: '' });
     const [googleDescription, setGoogleDescription] = useState('');
 
-    // Mock Google accounts data
 
-    console.log("Megha", showDescriptionStep)
+
     useEffect(() => {
         if (user?.is_profile_complete && completeProfile) {
             navigate('/home');
@@ -78,21 +74,6 @@ const LoginSignUp = () => {
         showMessage('error', message);
     }
 
-    // const handleGoogleLogin = (user) => {
-    //     // showMessage('success', `Welcome back, ${user.name}!`);
-    //     if (!user.is_profile_complete) {
-    //         showMessage('info', 'Please complete your profile to continue')
-    //     //   navigate('/complete-profile');
-    //       setCompleteProfile(true)
-    //     } else {
-    //        showMessage('success', `Welcome back, ${user?.username}!`);
-
-    //   setTimeout(() => {
-    //     navigate('/home');
-    //   }, 2000); // waits 2 seconds before navigating
-
-    //     }
-    //   };
     // Message handling
     const showMessage = (type, text) => {
         setMessage({ type, text });
@@ -213,28 +194,6 @@ const LoginSignUp = () => {
     };
 
 
-
-    // const completeGoogleSignup = () => {
-    //     if (!googleDescription.trim()) {
-    //         showMessage('error', 'Please provide a description about yourself.');
-    //         return;
-    //     }
-
-    //     showMessage('success', 'Completing your registration...');
-
-    //     setTimeout(() => {
-    //         showMessage('success', `Welcome ${googleUser.name}! Your account has been created successfully.`);
-
-    //         console.log('Google Signup Complete:', {
-    //             ...googleUser,
-    //             description: googleDescription,
-    //             signupMethod: 'google'
-    //         });
-
-    //         resetGoogleSignup();
-    //     }, 1000);
-    // };
-
     // Cancel Google signup
     const cancelGoogleSignup = () => {
         resetGoogleSignup();
@@ -274,27 +233,7 @@ const LoginSignUp = () => {
                 </Grid>
             </Grid>
 
-            {/* <Grid 
-  container 
-  alignItems="center" 
-  justifyContent="center" 
-  className="logo-container headerlogins"
->
-  
-  <Grid item xs={2} sm={2} md={1} container justifyContent="center">
-    <img className="iiitlogo" src={IIITLogo} alt="IIIT Logo" />
-  </Grid>
-<Grid item xs={2} sm={2} md={1} container justifyContent="center">
-    <img className="websciencelogo" src={WebScienceLogo} alt="Web Science Logo" />
-  </Grid>
-
-  <Grid item xs={8} sm={8} md={10} container justifyContent="center">
-    <h1>Anumati - Consent Management System</h1>
-  </Grid>
-
-  
-  
-</Grid> */}
+            
 
 
 

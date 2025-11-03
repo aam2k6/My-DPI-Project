@@ -19,6 +19,7 @@ import { ConnectionContext } from "../../ConnectionContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { apiFetch } from "../../utils/api";
+import FullscreenIframeModal from "../Modal/IFrameModal.js";
 // import { Menu } from "lucide-react";
 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
@@ -93,7 +94,8 @@ export const ViewLocker = () => {
   const [postConditions, setPostConditions] = useState();
   const [isLockedPostConditions, setIsLockedPostConditions] = useState();
   const [notifications, setNotifications] = useState([]);
-
+  const [showModal, setShowModal] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState("");
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
   console.log("allOutgoingConnectionsr", allOutgoingConnections)
@@ -102,7 +104,7 @@ export const ViewLocker = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-
+console.log("showUrl", iframeUrl, showModal)
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -367,6 +369,16 @@ console.log("connectionsDatasss", connectionsData)
       console.error("Error fetching resources:", error);
       // setError("An error occurred while fetching resources");
     }
+  };
+
+  const openModal = (url) => {
+    setIframeUrl(url);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setIframeUrl("");
   };
   // console.log(locker);
   // const fetchVnodeResources = async () => {
@@ -835,15 +847,19 @@ console.log("connectionsDatasss", connectionsData)
       const { link_To_File } = data;
       console.log("link to file", link_To_File);
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
-        setPdfUrl(secureFileUrl);
+
+        console.log("link_To_File", link_To_File);
+        setIframeUrl(link_To_File);
+        setShowModal(true);
+        // const secureFileUrl = link_To_File.replace('http://', 'https://');
+        // setPdfUrl(secureFileUrl);
 
         // const secureFileUrl =
         //   process.env.NODE_ENV === 'production'
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsModalOpen(true); // Open the modal
+        // setIsModalOpen(true);
       } else {
         // setError('Unable to retrieve the file link.');
         console.log(error);
@@ -2966,7 +2982,7 @@ console.log("connectionsDatasss", connectionsData)
 
       )}
       {/* <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} /> */}
-
+ <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
     </div>
 
   );

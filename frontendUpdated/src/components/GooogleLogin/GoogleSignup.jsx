@@ -11,10 +11,13 @@ const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
     const { setUser } = useContext(usercontext);
 
     const signup = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
+        // flow: 'auth-code',
+        onSuccess: async (codeResponse) => {
             try {
+                localStorage.setItem("googleAccessToken", codeResponse.access_token);
                 const res = await apiFetch.post('/dj-rest-auth/google/signup/', {
-                    access_token: tokenResponse.access_token,
+                    access_token: codeResponse.access_token,
+                    // code: codeResponse.code,
                 });
 
                 const { access, refresh, user } = res.data;

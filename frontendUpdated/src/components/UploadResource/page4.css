@@ -121,3 +121,26 @@
     background-color: #007aff;
     border: none;
   }
+  /* #google-drive-picker .btn{
+    white-space: nowrap;
+  } */
+
+.google-drive-btn {
+  background-color: #f8f9fa;
+  border: 1px solid #dadce0;
+  color: #1967d2;
+  font-weight: 500;
+  border-radius: 0 6px 6px 0;
+  transition: all 0.2s ease;
+}
+
+.google-drive-btn:hover {
+  background-color: #e8f0fe;
+  border-color: #c6dafc;
+  color: #174ea6;
+}
+
+.google-drive-btn img {
+  pointer-events: none;
+}
+

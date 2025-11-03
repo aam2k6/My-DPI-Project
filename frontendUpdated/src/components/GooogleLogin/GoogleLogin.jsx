@@ -130,10 +130,14 @@ const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
 
 
     const login = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
+        // flow: 'auth-code',
+        onSuccess: async (codeResponse) => {
             try {
+                // Store token locally for Google Picker usage
+                localStorage.setItem("googleAccessToken", codeResponse.access_token);
                 const res = await apiFetch.post('/dj-rest-auth/google/login/', {
-                    access_token: tokenResponse.access_token,
+                    access_token: codeResponse.access_token,
+                    // code: codeResponse.code,
                 });
 
                 const { access, refresh, user } = res.data;

@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+// import { gapi } from 'gapi-script';
+import useDrivePicker from 'react-google-drive-picker';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usercontext } from "../../usercontext";
 import "./page4.css";
@@ -45,12 +47,31 @@ export const UploadResource = () => {
     transfer: true,
   });
   const [notifications, setNotifications] = useState([]);
-  console.log("permissions", permissions)
-
+   const [openPicker, authResponse] = useDrivePicker();
+  const [selectFile, setSelectFile] = useState([]);
+  const [token, setToken] = useState(null);
+  
+  const clientId = "191215085646-3hhsj0k4r4u9gbarpvohc6mn2lemb8b5.apps.googleusercontent.com";
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+  useEffect(() => {
+    const storedToken = localStorage.getItem("googleAccessToken");
+    setToken(storedToken);
+  }, []);
+
+  // const getValidGoogleToken = async () => {
+  //   try {
+  //     const res = await apiFetch.get("/auth/google/refresh/");
+  //     return res.data.access_token; // backend returns valid Google token
+  //   } catch (err) {
+  //     console.error("Failed to get Google token:", err);
+  //     alert("Please reconnect your Google account.");
+  //     return null;
+  //   }
+  // };
+  
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -81,7 +102,26 @@ useEffect(() => {
   }, [curruser, navigate]);
 
   console.log("JSON Data", JSON.stringify(permissions))
-
+ const handleOpenPicker = async () => {
+  // const googleToken = await getValidGoogleToken();
+  //   if (!googleToken) return;
+    openPicker({
+      clientId: clientId,
+      developerKey: "AIzaSyCvZMxa3Ki9fSMYUXw6UKHZrzCuQJa5Cbk",
+      token: token,
+      viewId: "PDF",  // ✅ lowercase "viewId", not "viewID"
+      showUploadFolders: true,
+      // showUploadView: true,
+      supportDrives: true,
+      callbackFunction: (data) => {
+        console.log("data:", data);
+        if (data.action === "picked") {
+          console.log("Picked files:", data.docs);
+          setSelectFile(data.docs);
+        }
+      },
+    });
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (document && document.type !== 'application/pdf') {
@@ -94,12 +134,16 @@ useEffect(() => {
     data.append('locker_name', locker.name);
     data.append('resource_name', resourceName);
     data.append('type', visibility);
-    data.append('document', document);
+    // data.append('document', document);
     data.append('validity_time', validityTime); // Add validity time
     // data.append("reshare", permissions.reshare);
     // data.append("download", permissions.download);
     // data.append("aggregate", permissions.aggregate);
     data.append('post_conditions', JSON.stringify(permissions))
+    data.append('drive_file_id', selectFile[0]?.id);
+    data.append('drive_file_name', selectFile[0]?.name);
+    data.append('drive_mime_type', selectFile[0]?.mimeType);
+    data.append('drive_owner_email', curruser?.email);
    
     const response =  await apiFetch.post('/upload-resource_v2/', data)
      const resData = response.data
@@ -209,16 +253,60 @@ useEffect(() => {
                     required
                   />
                 </div>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <label htmlFor="document" className="form-label fw-bold">Select File</label>
+                  <button onClick={handleOpenPicker}>Select from google drive</button>
+                <p>{selectFile[0]?.name}</p>
+                  
+                </div> */}
+              {/* <div className="mb-3">
+                <label htmlFor="document" className="form-label fw-bold">Select File</label>
+                <div className="input-group" id="google-drive-picker">
                   <input
-                    type="file"
-                    className="form-control"
-                    id="document"
-                    onChange={(e) => setDocument(e.target.files[0])}
-                    required
+                  type="text"
+                  className="form-control"
+                  placeholder="No file selected"
+                  value={selectFile[0]?.name || ""}
+                  readOnly
                   />
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleOpenPicker}
+                    >
+                    Select from Google Drive
+                  </button>
                 </div>
+              </div> */}
+
+              <div className="mb-3">
+  <label htmlFor="document" className="form-label fw-bold">Select File</label>
+  <div className="input-group">
+    <input
+      type="text"
+      className="form-control"
+      placeholder="No file selected"
+      value={selectFile[0]?.name || ""}
+      readOnly
+    />
+    <button
+      type="button"
+      className="btn google-drive-btn d-flex align-items-center justify-content-center gap-2"
+      onClick={handleOpenPicker}
+    >
+      <img
+        src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png"
+        alt="Google Drive"
+        width="20"
+        height="20"
+      />
+      <span>Choose from Drive</span>
+    </button>
+  </div>
+</div>
+
+
+
                 <div className="mb-3">
                   <label htmlFor="visibility" className="form-label fw-bold">Visibility</label>
                   <select

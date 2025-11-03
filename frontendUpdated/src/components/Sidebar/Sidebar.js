@@ -64,7 +64,8 @@ const handleLogout = () => {
 
   // Clear any legacy or alternate auth tokens if present
   Cookies.remove("authToken");
-
+  // Remove token stored locally
+  localStorage.removeItem("googleAccessToken");
   // Remove user data stored locally
   localStorage.removeItem("curruser");
 

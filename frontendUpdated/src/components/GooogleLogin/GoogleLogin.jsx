@@ -131,6 +131,7 @@ const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
 
     const login = useGoogleLogin({
         // flow: 'auth-code',
+        scope: 'https://www.googleapis.com/auth/drive.file profile email',
         onSuccess: async (codeResponse) => {
             try {
                 // Store token locally for Google Picker usage

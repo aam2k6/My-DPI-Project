@@ -12,6 +12,7 @@ const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
 
     const signup = useGoogleLogin({
         // flow: 'auth-code',
+        scope: 'https://www.googleapis.com/auth/drive.file profile email',
         onSuccess: async (codeResponse) => {
             try {
                 localStorage.setItem("googleAccessToken", codeResponse.access_token);

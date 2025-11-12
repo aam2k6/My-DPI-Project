@@ -75,6 +75,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { apiFetch } from '../../utils/api';
 import { usercontext } from '../../usercontext';
+import { useAuth } from '../../contexts/Authcontext';
 
 const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
     const navigate = useNavigate();
@@ -128,14 +129,14 @@ const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
     //     },
     // });
 
-
-    const login = useGoogleLogin({
+ const { login } = useAuth(); 
+    const googleLogin = useGoogleLogin({
         // flow: 'auth-code',
-        scope: 'https://www.googleapis.com/auth/drive.file profile email',
+        scope: 'https://www.googleapis.com/auth/drive.file',
         onSuccess: async (codeResponse) => {
             try {
                 // Store token locally for Google Picker usage
-                localStorage.setItem("googleAccessToken", codeResponse.access_token);
+                
                 const res = await apiFetch.post('/dj-rest-auth/google/login/', {
                     access_token: codeResponse.access_token,
                     // code: codeResponse.code,
@@ -146,8 +147,10 @@ const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
                 Cookies.set('refresh_token', refresh, { expires: 7 });
                 setUser(user);
 
-                onLoginSuccess(user);  // ✅ send user back to parent
+                login(user, access);
 
+                onLoginSuccess(user);  // ✅ send user back to parent
+                localStorage.setItem("googleAccessToken", codeResponse.access_token);
             } catch (err) {
                 const message =
                     err.response?.data?.message ||
@@ -175,7 +178,7 @@ const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
         <>
             <button
                             type="button"
-                            onClick={login}
+                            onClick={googleLogin}
                             className="google-button"
                         >
                             <svg className="google-icon" viewBox="0 0 24 24">

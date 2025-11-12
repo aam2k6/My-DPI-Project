@@ -47,7 +47,8 @@ import DirectoryPage from "./components/Directory/directory";
 import ViewAllNotifications from "./components/ViewAllNotifications/ViewAllNotifications";
 import {CompleteProfile} from "./components/GooogleLogin/profileComplete";
 import LoginSignUp from "./components/LoginSignUp/LoginSignUp";
-
+import { AuthProvider } from "./contexts/Authcontext";
+import { useAuth } from "./contexts/Authcontext";
 // import  CreateGlobalConnTypesTerms  from './components/GlobalConnectionType/CreateGlobalConnTypesTerms';
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
 
   return (
     <div className="App">
+      <AuthProvider>
       <Router>
 
         <usercontext.Provider value={{ curruser, setUser }}>
@@ -417,22 +419,52 @@ function App() {
           </ConnectionProvider>
         </usercontext.Provider>
       </Router>
+      </AuthProvider>
     </div>
   );
 }
 
+// function ProtectedRoute({ children }) {
+//   const { curruser } = useContext(usercontext);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     if (!curruser) {
+//       navigate("/");
+//     }
+//   }, [curruser, navigate]);
+
+//   return curruser ? children : null;
+// }
+
+
+// import { useAuth } from "./AuthProvider"; // adjust import path
+
 function ProtectedRoute({ children }) {
-  const { curruser } = useContext(usercontext);
+  const { user } = useAuth(); // using your AuthProvider
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!curruser) {
-      navigate("/");
+    if (!user) {
+      navigate("/", { replace: true });
     }
-  }, [curruser, navigate]);
 
-  return curruser ? children : null;
+    // Prevent navigating back
+    const handlePopState = () => {
+      if (!user) {
+        navigate("/", { replace: true });
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [user, navigate]);
+
+  return user ? children : null;
 }
+
+
+
 
 
 export default App;

@@ -5,17 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { apiFetch } from '../../utils/api';
 import { usercontext } from '../../usercontext';
-
+import { useAuth } from '../../contexts/Authcontext';
 const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
     const navigate = useNavigate();
     const { setUser } = useContext(usercontext);
-
+    const { login } = useAuth();
     const signup = useGoogleLogin({
         // flow: 'auth-code',
-        scope: 'https://www.googleapis.com/auth/drive.file profile email',
+        scope: 'https://www.googleapis.com/auth/drive.file',
         onSuccess: async (codeResponse) => {
             try {
-                localStorage.setItem("googleAccessToken", codeResponse.access_token);
                 const res = await apiFetch.post('/dj-rest-auth/google/signup/', {
                     access_token: codeResponse.access_token,
                     // code: codeResponse.code,
@@ -26,8 +25,9 @@ const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
                 Cookies.set('refresh_token', refresh, { expires: 7 });
                 setUser(user);
 
-
+                login(user, access);
                 onSignupSuccess(user);
+                localStorage.setItem("googleAccessToken", codeResponse.access_token);
 
                 // if (!user.is_profile_complete) {
                 //     navigate('/complete-profile');

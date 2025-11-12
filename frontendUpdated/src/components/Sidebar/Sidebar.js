@@ -67,7 +67,9 @@ const handleLogout = () => {
   // Remove token stored locally
   localStorage.removeItem("googleAccessToken");
   // Remove user data stored locally
-  localStorage.removeItem("curruser");
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
+  localStorage.removeItem("sessionChange");
 
   // Optional: You may also clear user context/state
   setUser && setUser(null);

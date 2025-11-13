@@ -74,21 +74,21 @@ export const UploadResource = () => {
   //   }
   // };
   
-  useEffect(() => {
-    const getToken = async () => {
-      try {
-        const res = await apiFetch.get("dj-rest-auth/google/get-valid-google-access-token/");
-        setToken(res.data.access_token); // backend returns valid Google token
-        console.log("Google token:", res.data.access_token);
-      } catch(err) {
-        console.error("Failed to get Google token:", err);
-        alert("Please reconnect your Google account.");
-    }
-  }
-  if (curruser) {
-      getToken();
-    }
-}, []);
+  // useEffect(() => {
+  //   const getToken = async () => {
+  //     try {
+  //       const res = await apiFetch.get("dj-rest-auth/google/get-valid-google-access-token/");
+  //       setToken(res.data.access_token); // backend returns valid Google token
+  //       console.log("Google token:", res.data.access_token);
+  //     } catch(err) {
+  //       console.error("Failed to get Google token:", err);
+  //       alert("Please reconnect your Google account.");
+  //   }
+  // }
+//   if (curruser) {
+//       getToken();
+//     }
+// }, []);
 useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -119,16 +119,26 @@ useEffect(() => {
   }, [curruser, navigate]);
 
   console.log("JSON Data", JSON.stringify(permissions))
- const handleOpenPicker = async () => {
-  // const googleToken = await getValidGoogleToken();
-  //   if (!googleToken) return;
+
+  const handleOpenPicker = async () => {
+  try {
+    // 1️⃣ Get a fresh valid Google token from backend
+    const res = await apiFetch.get("dj-rest-auth/google/get-valid-google-access-token/");
+    const googleToken = res.data.access_token;
+    console.log("Google token:", googleToken);
+
+    if (!googleToken) {
+      alert("Please reconnect your Google account.");
+      return;
+    }
+
+    // 2️⃣ Open the Google Picker with the valid token
     openPicker({
       clientId: clientId,
       developerKey: "AIzaSyCvZMxa3Ki9fSMYUXw6UKHZrzCuQJa5Cbk",
-      token: token,
-      viewId: "PDF",  // ✅ lowercase "viewId", not "viewID"
+      token: googleToken, // ✅ use fresh token
+      viewId: "PDF", // lowercase
       showUploadFolders: true,
-      // showUploadView: true,
       supportDrives: true,
       callbackFunction: (data) => {
         console.log("data:", data);
@@ -138,7 +148,33 @@ useEffect(() => {
         }
       },
     });
-  };
+
+  } catch (err) {
+    console.error("Failed to get Google token:", err);
+    alert("Please reconnect your Google account.");
+  }
+};
+
+//  const handleOpenPicker = async () => {
+//   // const googleToken = await getValidGoogleToken();
+//   //   if (!googleToken) return;
+//     openPicker({
+//       clientId: clientId,
+//       developerKey: "AIzaSyCvZMxa3Ki9fSMYUXw6UKHZrzCuQJa5Cbk",
+//       token: token,
+//       viewId: "PDF",  // ✅ lowercase "viewId", not "viewID"
+//       showUploadFolders: true,
+//       // showUploadView: true,
+//       supportDrives: true,
+//       callbackFunction: (data) => {
+//         console.log("data:", data);
+//         if (data.action === "picked") {
+//           console.log("Picked files:", data.docs);
+//           setSelectFile(data.docs);
+//         }
+//       },
+//     });
+//   };
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (document && document.type !== 'application/pdf') {

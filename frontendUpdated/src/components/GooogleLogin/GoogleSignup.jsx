@@ -11,13 +11,13 @@ const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
     const { setUser } = useContext(usercontext);
     const { login } = useAuth();
     const signup = useGoogleLogin({
-        // flow: 'auth-code',
-        scope: 'https://www.googleapis.com/auth/drive.file',
+        flow: 'auth-code',
+        // scope: 'https://www.googleapis.com/auth/drive.file',
         onSuccess: async (codeResponse) => {
             try {
                 const res = await apiFetch.post('/dj-rest-auth/google/signup/', {
-                    access_token: codeResponse.access_token,
-                    // code: codeResponse.code,
+                    // access_token: codeResponse.access_token,
+                    code: codeResponse.code,
                 });
 
                 const { access, refresh, user } = res.data;
@@ -27,7 +27,7 @@ const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
 
                 login(user, access);
                 onSignupSuccess(user);
-                localStorage.setItem("googleAccessToken", codeResponse.access_token);
+                // localStorage.setItem("googleAccessToken", codeResponse.access_token);
 
                 // if (!user.is_profile_complete) {
                 //     navigate('/complete-profile');

@@ -131,15 +131,15 @@ const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
 
  const { login } = useAuth(); 
     const googleLogin = useGoogleLogin({
-        // flow: 'auth-code',
-        scope: 'https://www.googleapis.com/auth/drive.file',
+        flow: 'auth-code',
+        // scope: 'https://www.googleapis.com/auth/drive.file',
         onSuccess: async (codeResponse) => {
             try {
                 // Store token locally for Google Picker usage
                 
                 const res = await apiFetch.post('/dj-rest-auth/google/login/', {
-                    access_token: codeResponse.access_token,
-                    // code: codeResponse.code,
+                    // access_token: codeResponse.access_token,
+                    code: codeResponse.code,
                 });
 
                 const { access, refresh, user } = res.data;
@@ -150,7 +150,7 @@ const GoogleLoginComponent = ({ onLoginSuccess, onLoginError  }) => {
                 login(user, access);
 
                 onLoginSuccess(user);  // ✅ send user back to parent
-                localStorage.setItem("googleAccessToken", codeResponse.access_token);
+                // localStorage.setItem("googleAccessToken", codeResponse.access_token);
             } catch (err) {
                 const message =
                     err.response?.data?.message ||

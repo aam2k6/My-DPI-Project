@@ -56,10 +56,12 @@ export const UploadResource = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-  useEffect(() => {
-    const storedToken = localStorage.getItem("googleAccessToken");
-    setToken(storedToken);
-  }, []);
+
+  console.log("setToken", token)
+  // useEffect(() => {
+  //   const storedToken = localStorage.getItem("googleAccessToken");
+  //   setToken(storedToken);
+  // }, []);
 
   // const getValidGoogleToken = async () => {
   //   try {
@@ -72,6 +74,21 @@ export const UploadResource = () => {
   //   }
   // };
   
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const res = await apiFetch.get("dj-rest-auth/google/get-valid-google-access-token/");
+        setToken(res.data.access_token); // backend returns valid Google token
+        console.log("Google token:", res.data.access_token);
+      } catch(err) {
+        console.error("Failed to get Google token:", err);
+        alert("Please reconnect your Google account.");
+    }
+  }
+  if (curruser) {
+      getToken();
+    }
+}, []);
 useEffect(() => {
     const fetchNotifications = async () => {
       try {

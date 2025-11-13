@@ -49,7 +49,7 @@ export const UploadResource = () => {
   const [notifications, setNotifications] = useState([]);
    const [openPicker, authResponse] = useDrivePicker();
   const [selectFile, setSelectFile] = useState([]);
-  const [token, setToken] = useState(null);
+
   
   const clientId = "191215085646-3hhsj0k4r4u9gbarpvohc6mn2lemb8b5.apps.googleusercontent.com";
   const capitalizeFirstLetter = (string) => {
@@ -57,7 +57,7 @@ export const UploadResource = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  console.log("setToken", token)
+
   // useEffect(() => {
   //   const storedToken = localStorage.getItem("googleAccessToken");
   //   setToken(storedToken);
@@ -125,7 +125,7 @@ useEffect(() => {
     // 1️⃣ Get a fresh valid Google token from backend
     const res = await apiFetch.get("dj-rest-auth/google/get-valid-google-access-token/");
     const googleToken = res.data.access_token;
-    console.log("Google token:", googleToken);
+
 
     if (!googleToken) {
       alert("Please reconnect your Google account.");

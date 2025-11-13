@@ -12,7 +12,7 @@ const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
     const { login } = useAuth();
     const signup = useGoogleLogin({
         flow: 'auth-code',
-        // scope: 'https://www.googleapis.com/auth/drive.file',
+        scope: 'https://www.googleapis.com/auth/drive.file',
         onSuccess: async (codeResponse) => {
             try {
                 const res = await apiFetch.post('/dj-rest-auth/google/signup/', {

@@ -1149,22 +1149,22 @@ console.log("connectionsDatasss", connectionsData)
   const [expandedusers, setExpandedusers] = useState([]);
   const [userResources, setUserResources] = useState({});
   // Toggle connection to expand/collapse user list
-  const toggleConnections = (connection) => {
-    const connectionId = connection.connection_type_id
-    setExpandedConnection((prev) => {
-      if (prev.includes(connectionId)) {
-        // If the connection is already expanded, close it
-        return prev.filter((id) => id !== connectionId);
-      } else {
-        // Otherwise, expand it
-        return [...prev, connectionId];
-      }
-    });
+  // const toggleConnections = (connection) => {
+  //   const connectionId = connection.connection_type_id
+  //   setExpandedConnection((prev) => {
+  //     if (prev.includes(connectionId)) {
+  //       // If the connection is already expanded, close it
+  //       return prev.filter((id) => id !== connectionId);
+  //     } else {
+  //       // Otherwise, expand it
+  //       return [...prev, connectionId];
+  //     }
+  //   });
 
-    if (!connectionUsers[connectionId]) {
-      fetchUsersForConnection(connection); // Fetch users if not already fetched
-    }
-  };
+  //   if (!connectionUsers[connectionId]) {
+  //     fetchUsersForConnection(connection); // Fetch users if not already fetched
+  //   }
+  // };
   const toggleConnection = (connection) => {
     const connectionId = connection.connection_type_id;
 
@@ -1360,12 +1360,12 @@ console.log("connectionsDatasss", connectionsData)
 
       const response = await apiFetch.get(url);
 
-      if (!response.ok) {
-        throw new Error(`API call failed with status ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`API call failed with status ${response.status}`);
+      // }
 
-      const responseData = await response.json();
-      console.log("Fetched resources:", responseData);
+      const responseData = response.data;
+      console.log("Fetched resources:", response);
 
       if (responseData.success) {
         setUserResources((prevResources) => ({

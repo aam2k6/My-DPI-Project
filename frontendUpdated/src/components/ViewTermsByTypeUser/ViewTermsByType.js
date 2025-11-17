@@ -531,6 +531,8 @@ import { Grid } from "@mui/material"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { apiFetch } from "../../utils/api";
+import FullscreenIframeModal from "../Modal/IFrameModal.js";
+
 
 export const ViewTermsByType = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -631,7 +633,8 @@ export const ViewTermsByType = () => {
   const [remarks, setRemarks] = useState("");
   const [revokeState, setRevokeState] = useState(true);
   const [notifications, setNotifications] = useState([]);
-
+  const [showModal, setShowModal] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState("");
 
   const {
     connectionName,
@@ -650,7 +653,7 @@ export const ViewTermsByType = () => {
   } = location.state || {};
 
 
-
+console.log("showUrl", iframeUrl, showModal)
   console.log("connectionDetails", connectionDetails)
 useEffect(() => {
     const fetchNotifications = async () => {
@@ -1463,15 +1466,17 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       const { link_To_File } = data;
 
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
-        setPdfUrl(secureFileUrl);
+        setIframeUrl(link_To_File);
+        setShowModal(true);
+        // const secureFileUrl = link_To_File.replace('http://', 'https://');
+        // setPdfUrl(secureFileUrl);
 
         // const secureFileUrl =
         //   process.env.NODE_ENV === 'production'
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsReactModalOpen(true); // Open the modal
+        // setIsReactModalOpen(true);
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -1601,6 +1606,10 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       default:
         return null;
     }
+  };
+  const closeModal = () => {
+    setShowModal(false);
+    setIframeUrl("");
   };
 
   const handleButtonClick = (obligation) => {
@@ -2439,15 +2448,17 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       const { link_To_File } = data;
 
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
-        setPdfUrl(secureFileUrl);
+        setIframeUrl(link_To_File);
+        setShowModal(true);
+        // const secureFileUrl = link_To_File.replace('http://', 'https://');
+        // setPdfUrl(secureFileUrl);
 
         // const secureFileUrl =
         //   process.env.NODE_ENV === 'production'
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsReactModalOpen(true); // Open the modal
+        // setIsReactModalOpen(true);
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -2737,6 +2748,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       guest_locker_id: connection.guest_locker?.locker_id,
       host_locker_id: connection.host_locker?.locker_id,
     });
+    console.log("navigate type",connection,connection.connection_id,connection.connection_name,connection.connection_description,connection.host_locker?.name,connection.guest_locker?.name,connection.host_user?.username,connection.guest_user?.username,locker,connection.guest_locker?.locker_id,connection.host_locker?.locker_id,connection.host_locker,connection.guest_locker);
     navigate("/host-terms-review", {
       state: {
         connection: connection,
@@ -4654,6 +4666,8 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                             viewTerms={() => navigateToConnectionTerms(connectionName)}
                           />
                         )}
+
+                        <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
     </div>
 
   );

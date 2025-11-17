@@ -141,6 +141,7 @@ const LoginSignUp = () => {
             });
 
             if (response.status === 200) {
+                console.log("Login Response:", response);
                 const { access, refresh, user } = response.data;
 
                 Cookies.set("access_token", access, { expires: 1 / 24 });

@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
 import { apiFetch } from "../../utils/api";
+import FullscreenIframeModal from "../Modal/IFrameModal.js";
 
 export const HostTermsReview = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -75,6 +76,8 @@ export const HostTermsReview = () => {
   const [isModalOpenClose, setIsModalOpenClose] = useState(false);
   const [closeState, setCloseState] = useState(true);
   const [notifications, setNotifications] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState("");
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -577,6 +580,10 @@ const handleCloseModalClose = () => {
     });
   };
 
+  const closeModal = () => {
+    setShowModal(false);
+    setIframeUrl("");
+  };
    const handleCloseConnection = async (connection_id) => {
     setIsModalOpenClose(false)
     const formData = new FormData();
@@ -639,21 +646,23 @@ const handleCloseModalClose = () => {
       const data = response.data;
       console.log(data);
       const { link_To_File, xnode } = data;
-      if (xnode) {
-        setXnodeToDownload(xnode);
-      } else {
-        setXnodeToDownload(null);
-      }
+      // if (xnode) {
+      //   setXnodeToDownload(xnode);
+      // } else {
+      //   setXnodeToDownload(null);
+      // }
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
-        setPdfUrl(secureFileUrl);
+        setIframeUrl(link_To_File);
+        setShowModal(true);
+        // const secureFileUrl = link_To_File.replace('http://', 'https://');
+        // setPdfUrl(secureFileUrl);
 
         // const secureFileUrl =
         //   process.env.NODE_ENV === 'production'
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsReactModalOpen(true);// Open the modal
+        // setIsReactModalOpen(true);// Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -2699,6 +2708,7 @@ const handleCloseModalClose = () => {
 
 
       </div>
+                        <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
 
 
     </div>

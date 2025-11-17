@@ -15,6 +15,7 @@ import { TextField } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { apiFetch } from "../../utils/api.js";
+import FullscreenIframeModal from "../Modal/IFrameModal.js";
 
 
 export const Guesttermsreview = () => {
@@ -78,6 +79,8 @@ export const Guesttermsreview = () => {
   const [rejectionComment, setRejectionComment] = useState("");
   const [proceedWithSave, setProceedWithSave] = useState(false); 
   const [notifications, setNotifications] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState("");
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -643,21 +646,23 @@ useEffect(() => {
       const data = response.data;
       console.log(data);
       const { link_To_File, xnode } = data;
-      if (xnode) {
-        setXnodeToDownload(xnode);
-      } else {
-        setXnodeToDownload(null);
-      }
+      // if (link_To_File) {
+      //   setXnodeToDownload(xnode);
+      // } else {
+      //   setXnodeToDownload(null);
+      // }
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
-        setPdfUrl(secureFileUrl);
+        setIframeUrl(link_To_File);
+        setShowModal(true);
+        // const secureFileUrl = link_To_File.replace('http://', 'https://');
+        // setPdfUrl(secureFileUrl);
 
         // const secureFileUrl =
         //   process.env.NODE_ENV === 'production'
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsReactModalOpen(true); // Open the modal
+        // setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -668,6 +673,11 @@ useEffect(() => {
     } finally {
       // setLoading(false);
     }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setIframeUrl("");
   };
   console.log("setXnodeToDownload", xnodeToDownload)
   const handleClicks = async (xnode_id_with_pages) => {
@@ -2795,6 +2805,7 @@ useEffect(() => {
 
       </div>
 
+                        <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
 
     </div>
   );

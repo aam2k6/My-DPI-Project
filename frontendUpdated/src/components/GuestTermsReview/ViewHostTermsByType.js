@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
 import { apiFetch } from "../../utils/api.js";
+import FullscreenIframeModal from "../Modal/IFrameModal.js";
 
 export const ViewHostTermsByType = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -116,7 +117,8 @@ export const ViewHostTermsByType = () => {
   const [isModalOpenClose, setIsModalOpenClose] = useState(false);
   const [closeState, setCloseState] = useState(true);
   const [notifications, setNotifications] = useState([]);
-  
+  const [showModal, setShowModal] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState("");
 
   const {
     connectionName,
@@ -962,7 +964,10 @@ export const ViewHostTermsByType = () => {
       .map(([key]) => key);
   };
   const postConditionsKeysView = getTrueKeysView(pdfData?.post_conditions || {});
-
+const closeModal = () => {
+    setShowModal(false);
+    setIframeUrl("");
+  };
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
     const pages = xnode_id_with_pages?.split(',')[1];
@@ -983,15 +988,17 @@ export const ViewHostTermsByType = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
-        setPdfUrl(secureFileUrl);
+        setIframeUrl(link_To_File);
+        setShowModal(true);
+        // const secureFileUrl = link_To_File.replace('http://', 'https://');
+        // setPdfUrl(secureFileUrl);
 
         // const secureFileUrl =
         //   process.env.NODE_ENV === 'production'
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsReactModalOpen(true); // Open the modal
+        // setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -2067,15 +2074,17 @@ export const ViewHostTermsByType = () => {
       const { link_To_File } = data;
 
       if (link_To_File) {
-        const secureFileUrl = link_To_File.replace('http://', 'https://');
-        setPdfUrl(secureFileUrl);
-
+        setIframeUrl(link_To_File);
+        setShowModal(true);
+        // const secureFileUrl = link_To_File.replace('http://', 'https://');
+        // setPdfUrl(secureFileUrl);
+        
         // const secureFileUrl =
         //   process.env.NODE_ENV === 'production'
         //     ? link_To_File.replace('http://', 'https://')
         //     : link_To_File;
         // setPdfUrl(link_To_File);
-        setIsReactModalOpen(true); // Open the modal
+        // setIsReactModalOpen(true); // Open the modal
       } else {
         setError('Unable to retrieve the file link.');
         console.log(error);
@@ -4170,6 +4179,9 @@ setToPage('');
           viewTerms={() => navigateToConnectionTerms(connectionName)}
         />
       )}
+
+      <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
+
     </div>
 
   );

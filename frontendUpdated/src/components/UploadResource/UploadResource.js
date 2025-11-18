@@ -33,7 +33,7 @@ export const UploadResource = () => {
   const { curruser, setUser } = useContext(usercontext);
   const [resourceName, setResourceName] = useState("");
   const [document, setDocument] = useState(null);
-  const [visibility, setVisibility] = useState("public");
+  const [visibility, setVisibility] = useState("private");
   const [validityTime, setValidityTime] = useState(null);
   const navigate = useNavigate();
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -369,8 +369,9 @@ useEffect(() => {
                     onChange={(e) => setVisibility(e.target.value)}
                     required
                   >
-                    <option value="public">Public</option>
                     <option value="private">Private</option>
+                    <option value="public">Public</option>
+                    
                   </select>
                 </div>
                 <div className="mb-3">

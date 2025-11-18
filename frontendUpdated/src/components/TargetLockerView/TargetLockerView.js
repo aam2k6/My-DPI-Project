@@ -1762,10 +1762,11 @@ export const TargetLockerView = () => {
                               ? "documents"
                               : "documents-byShare"
                           }
-                          style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px", marginLeft: "0rem" }}
-                          onClick={() =>
-                            handleXnodeClick(xnode.id)
-                          }
+                          // style={{ cursor: "pointer", flexGrow: 1, fontSize: "16px", marginLeft: "0rem" }}
+                          style={{flexGrow: 1, fontSize: "16px", marginLeft: "0rem", color:'black', textDecoration: 'none', cursor:"default" }}
+                          // onClick={() =>
+                          //   handleXnodeClick(xnode.id)
+                          // }
                         >
                           {xnode.resource_name}
                         </div>

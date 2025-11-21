@@ -58,6 +58,7 @@ export const CompleteProfile = () => {
                     placeholder="Choose a username"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
+                    onBlur={e => setUsername(e.target.value.trim())}
                     required
                     style={{ width: "100%", padding: 8, marginBottom: 15 }}
                 />

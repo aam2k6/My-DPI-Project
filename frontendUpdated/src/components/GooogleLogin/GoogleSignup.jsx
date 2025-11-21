@@ -42,7 +42,7 @@ const GoogleSignupComponent = ({onSignupSuccess, onSignupError}) => {
                 // }
                 console.log("Error", err);
                  const message =
-                    err.response?.data?.detail ||
+                    err.response?.data?.detail || err.response?.data?.error ||
                     'Sign up failed.';
 
                 Cookies.remove('access_token');

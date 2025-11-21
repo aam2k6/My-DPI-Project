@@ -229,15 +229,24 @@ const response= apiFetch.get("/get-lockers-user/")
                     </Typography>
                   </Grid>
                   <Grid item md={8} sm={8} xs={12}>
-                    <TextField required fullWidth variant="outlined" type="text"
+                    <TextField
+                      required
+                      fullWidth
+                      variant="outlined"
+                      type="text"
                       name="connectionName"
                       placeholder="Connection Type Name"
                       onChange={(e) => {
                         const value = e.target.value;
-                        const filteredValue = value.replace(/[^a-zA-Z0-9 ]/g, ' '); // Allow only letters, numbers, and spaces
+                        const filteredValue = value
+                          .replace(/[^a-zA-Z0-9 ]/g, " ") // allow letters, numbers, space
+                          .trim(); // remove leading and trailing spaces
+                        
                         setConnectionName(filteredValue);
-                      }} />
+                      }}
+                    />
                   </Grid>
+
                 </Grid>
 
                 <Grid container className=" mb-3">

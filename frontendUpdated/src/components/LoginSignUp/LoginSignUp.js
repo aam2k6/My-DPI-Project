@@ -348,6 +348,7 @@ const LoginSignUp = () => {
                                             type="text"
                                             value={username}
                                             onChange={e => setUsername(e.target.value)}
+                                            onBlur={e => setUsername(e.target.value.trim())}
                                             required
                                             placeholder="Enter username"
                                             className="form-input"
@@ -398,6 +399,9 @@ const LoginSignUp = () => {
                                             type="text"
                                             value={signUpData.username}
                                             onChange={(e) => setSignUpData({ ...signUpData, username: e.target.value })}
+                                            onBlur={(e) =>
+                                                setSignUpData({ ...signUpData, username: e.target.value.trim() })
+                                            }
                                             required
                                             placeholder="Enter username"
                                             className="form-input"
@@ -510,6 +514,7 @@ const LoginSignUp = () => {
                                                 type="text"
                                                 value={username}
                                                 onChange={e => setUsername(e.target.value)}
+                                                onBlur={e => setUsername(e.target.value.trim())}
                                                 required
                                                 placeholder="Enter username"
                                                 className="form-input"

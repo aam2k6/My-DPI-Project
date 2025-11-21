@@ -46,6 +46,8 @@ export const UploadResource = () => {
     collateral: true,
     transfer: true,
   });
+  const [visibilityModal, setVisibilityModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const [notifications, setNotifications] = useState([]);
    const [openPicker, authResponse] = useDrivePicker();
   const [selectFile, setSelectFile] = useState([]);
@@ -57,6 +59,7 @@ export const UploadResource = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
+  
 
   // useEffect(() => {
   //   const storedToken = localStorage.getItem("googleAccessToken");
@@ -175,13 +178,32 @@ useEffect(() => {
 //       },
 //     });
 //   };
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (document && document.type !== 'application/pdf') {
-      setErrorModalMessage('Only PDF files are allowed.');
-      setIsErrorModalOpen(true);
-      return;
+const handleSubmit = (e) => {
+  e.preventDefault();
+  uploadResource();  // open popup
+};
+
+const uploadResource = ()=>{
+  if (!selectFile.length) {
+    alert("Please select a file from Google Drive.");
+    return;
+  }
+    if(visibility==="private"){
+      setModalMessage(`Set to ${visibility}? Only permitted users can access this resource.`);
+      setVisibilityModal(true);
+    }else{
+      setModalMessage(`Set to ${visibility}? All users can access this resource.`);
+      setVisibilityModal(true);
     }
+}
+
+  const submitResource = async (event) => {
+    // event.preventDefault();
+    // if (document && document.type !== 'application/pdf') {
+    //   setErrorModalMessage('Only PDF files are allowed.');
+    //   setIsErrorModalOpen(true);
+    //   return;
+    // }
  try {
     const data = new FormData();
     data.append('locker_name', locker.name);
@@ -224,6 +246,16 @@ useEffect(() => {
   const handleClick = (locker) => {
     navigate('/view-locker', { state: { locker } });
   };
+const handleModalSubmit = () => {
+  setVisibilityModal(false);
+  submitResource();   // final submit
+};
+
+
+const handleModalCancel = () => {
+  setVisibilityModal(false);
+};
+
 
 
   const content = (
@@ -341,6 +373,7 @@ useEffect(() => {
       placeholder="No file selected"
       value={selectFile[0]?.name || ""}
       readOnly
+      required
     />
     <button
       type="button"
@@ -479,6 +512,26 @@ useEffect(() => {
           </Box>
         </div>
       </div>
+
+   {visibilityModal && (
+  <div className="edits-modal">
+    <div className="modal-content">
+      <p>{modalMessage}</p>
+
+      <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+        <button className="btn btn-primary p-2" onClick={handleModalSubmit}>
+          Submit
+        </button>
+
+        <button className="btn btn-secondary p-2" onClick={handleModalCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

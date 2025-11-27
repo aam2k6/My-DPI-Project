@@ -114,7 +114,7 @@ useEffect(() => {
   };
   const content = (
     <>
-      <div className="navbarBrands">DPI Directory</div>
+      <div className="navbarBrands">User Directory</div>
     </>
   );
   const breadcrumbs = (

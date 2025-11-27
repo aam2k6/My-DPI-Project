@@ -563,7 +563,7 @@ const handleLogout = () => {
                 className="submenu-item" // Added class for potential styling
                 onClick={() => handleNavigate("DPI Directory", "/dpi-directory")}
               >
-                • DPI Directory
+                • User Directory
               </li>
               <li
                 className="submenu-item" // Added class for potential styling

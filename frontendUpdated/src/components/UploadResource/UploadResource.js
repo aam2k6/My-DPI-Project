@@ -40,7 +40,7 @@ export const UploadResource = () => {
   const [errorModalMessage, setErrorModalMessage] = useState('');
   const [permissions, setPermissions] = useState({
     share: true,
-    download: true,
+    download: false,
     subset: true,
     confer: true,
     collateral: true,
@@ -421,17 +421,17 @@ const handleModalCancel = () => {
                 <div className="mt-3">
                   <label className="form-label fw-bold mb-2">Permissions</label>
                   <Grid container md={8} sm={8} xs={12} style={{ marginLeft: "3px" }}>
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
+                  <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
-                        id="download"
-                        name="download"
-                        checked={permissions.download}
+                        id="transfer"
+                        name="transfer"
+                        checked={permissions.transfer}
                         onChange={handleChange}
                       />
-                      <label className={`custom-checkbox ${permissions.download ? "checked" : ""}`} htmlFor="download">
-                        Download
+                      <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
+                        Transfer
                       </label>
                     </Grid>
                     <Grid item md={4} sm={4} xs={6} className="mb-2">
@@ -486,7 +486,7 @@ const handleModalCancel = () => {
                         Collateral
                       </label>
                     </Grid>
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
+                    {/* <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -498,7 +498,7 @@ const handleModalCancel = () => {
                       <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
                         Transfer
                       </label>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </div>
 

@@ -1381,8 +1381,9 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
         setResourceModal(true);
       }
     } catch (err) {
+      console.log("error", err)
       setModalMessage({
-        message: 'Please select a resource.',
+        message: err?.response?.data?.message || 'Please select a resource.',
         type: 'info',
       });
       setResourceModal(true);
@@ -1458,7 +1459,12 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
       if (!response.status >= 200 && !response.status < 300) {
         const errorData = response.data
-        throw new Error(errorData.message || 'Failed to access the resource');
+        console.log("---", errorData);
+        setModalMessage({
+        message: 'Please select a resource.',
+        type: 'info',
+      });
+      setResourceModal(true);
       }
 
       const data = response.data
@@ -1483,7 +1489,13 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
       }
     } catch (err) {
       // setError(`Error: ${err.message}`);
-      console.log(err);
+      console.log("err", err?.response?.data?.message);
+
+      setModalMessage({
+        message: err?.response?.data?.message || 'Please select a resource.',
+        type: 'info',
+      });
+      setResourceModal(true);
     } finally {
       // setLoading(false);
     }
@@ -3136,7 +3148,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                 // })}
                 onClick={() => handleTrackerHost(connection)}
               >
-                Host Data
+                {hostUserUsername ?`${capitalizeFirstLetter(hostUserUsername)}'s Data` :"Host Data"}
               </div>
             </div>
             <div className="tab-content">

@@ -1889,13 +1889,14 @@ console.log("formData", formData);
                   className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
                   onClick={() => setActiveTab("guest")}
                 >
-                  Guest Data
+                  {/* {showConsent && agrees ?("Your Obligation"): `${capitalizeFirstLetter(guestUserUsername)}'s Obligation`} */}
+                  {curruser?.username === guestUserUsername ? "Your Obligations" : `${capitalizeFirstLetter(guestUserUsername)}'s Obligations`}
                 </div>
                 <div
                   className={`tab-header ${activeTab === "host" ? "active" : ""}`}
                   onClick={() => setActiveTab("host")}
                 >
-                  Host Data
+                   {curruser?.username === hostUserUsername ? "Your Obligations" : `${capitalizeFirstLetter(hostUserUsername)}'s Obligations`}
                 </div>
               </div>
               <div className="tab-content">

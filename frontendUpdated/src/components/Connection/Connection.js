@@ -41,7 +41,7 @@ export const Connection = () => {
   const [validity, setValidity] = useState(null);
   const [selectedLocker, setSelectedLocker] = useState(null);
   const [permissions, setPermissions] = useState({
-    download: true,
+    download: false,
     subset: true,
     share: true,
     confer: true,
@@ -236,7 +236,7 @@ const response= apiFetch.get("/get-lockers-user/")
                       type="text"
                       name="connectionName"
                       placeholder="Connection Type Name"
-                      onChange={(e) => {
+                      onChange={(e)  => {
                         const value = e.target.value;
                         const filteredValue = value
                           .replace(/[^a-zA-Z0-9 ]/g, " ") // allow letters, numbers, space
@@ -282,7 +282,7 @@ const response= apiFetch.get("/get-lockers-user/")
                   </Grid>
                   <Grid container md={8} sm={8} xs={12} style={{ marginLeft: "3px" }}>
 
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
+                    {/* <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -294,8 +294,8 @@ const response= apiFetch.get("/get-lockers-user/")
                       <label className={`custom-checkbox ${permissions.download ? "checked" : ""}`} htmlFor="download">
                         Download
                       </label>
-                    </Grid>
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
+                    </Grid> */}
+                    {/* <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
                         type="checkbox"
@@ -307,7 +307,7 @@ const response= apiFetch.get("/get-lockers-user/")
                       <label className={`custom-checkbox ${permissions.subset ? "checked" : ""}`} htmlFor="subset">
                         Subset
                       </label>
-                    </Grid>
+                    </Grid> */}
                     <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"
@@ -358,6 +358,19 @@ const response= apiFetch.get("/get-lockers-user/")
                       />
                       <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
                         Transfer
+                      </label>
+                    </Grid>
+                    <Grid item md={4} sm={4} xs={6} className="mb-2">
+                      <input
+                        className="hidden-checkbox"
+                        type="checkbox"
+                        id="subset"
+                        name="subset"
+                        checked={permissions.subset}
+                        onChange={handleChange}
+                      />
+                      <label className={`custom-checkbox ${permissions.subset ? "checked" : ""}`} htmlFor="subset">
+                        Subset
                       </label>
                     </Grid>
                   </Grid>

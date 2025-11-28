@@ -629,6 +629,7 @@ console.log("currentData", currentData)
         createdtime: user.created_time,
         validitytime: user.validity_time,
         hostUserUsername: user.host_user.username,
+        guestUserUsername: user.guest_user.username,
         locker: user.host_locker,
         hostLocker: user.host_locker.name,
         // connectionType: connectionType,
@@ -684,6 +685,7 @@ console.log("currentData", currentData)
         createdtime: connection.created_time,
         validitytime: connection.validity_time,
         hostUserUsername: connection.host_user.username,
+        guestUserUsername: connection.guest_user.username,
         locker: connection.host_locker,
         hostLocker: connection.host_locker.name,
         // connectionType: connectionType,
@@ -1789,7 +1791,7 @@ console.log("currentData", currentData)
                 fontWeight: "bold"
               }}
             >
-              Resource Details
+             Consent Artefact Details
               {resourceData?.xnode_Type !== "VNODE" && (
                 <>
                   {resourceData?.current_owner_username === resourceData?.primary_owner_username ? (

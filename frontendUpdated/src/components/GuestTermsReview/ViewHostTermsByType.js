@@ -2629,7 +2629,7 @@ const closeModal = () => {
                   },
                 })}
               >
-                Guest Data
+                {guestUserUsername ?`${capitalizeFirstLetter(guestUserUsername)}'s Data` :"Guest Data"}
               </div>
               <div
                 className={`tab-header ${activeTab === "host" ? "active" : ""

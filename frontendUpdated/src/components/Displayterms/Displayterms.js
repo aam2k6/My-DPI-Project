@@ -555,6 +555,8 @@ useEffect(() => {
     </>
   );
 
+  console.log("curruser", curruser);
+
   const breadcrumbs = (
     <div className="breadcrumbs">
       <a href="/home" className="breadcrumb-item">
@@ -717,13 +719,13 @@ useEffect(() => {
                 className={`tab-header ${activeTab === "guest" ? "active" : ""}`}
                 onClick={() => setActiveTab("guest")}
               >
-                Guest Data
+                {curruser?.username === guestUserUsername ? "Your Obligations" : `${capitalizeFirstLetter(guestUserUsername)}'s Obligations`}
               </div>
               <div
                 className={`tab-header ${activeTab === "host" ? "active" : ""}`}
                 onClick={() => setActiveTab("host")}
               >
-                Host Data
+                {curruser.username === hostUserUsername ? "Your Obligations" : `${capitalizeFirstLetter(hostUserUsername)}'s Obligations`}
               </div>
             </div>
             <div className="tab-content">

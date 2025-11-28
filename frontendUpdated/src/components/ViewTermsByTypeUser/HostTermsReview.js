@@ -2132,7 +2132,7 @@ const handleCloseModalClose = () => {
                   }`}
                 onClick={() => setActiveTab("host")}
               >
-                Host Data
+                {conndetails.host_user?.username ?`${capitalizeFirstLetter(conndetails.host_user?.username)}'s Data` :"Host Data"}
               </div>
             </div>
             {/* Added Tabs */}

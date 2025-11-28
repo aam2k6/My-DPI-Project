@@ -2205,7 +2205,7 @@ useEffect(() => {
                   }`}
                 onClick={() => setActiveTab("guest")}
               >
-                Guest Data
+                {conndetails.guest_user?.username ?`${capitalizeFirstLetter(conndetails.guest_user?.username)}'s Data` :"Guest Data"}
               </div>
               <div
                 className={`tab-header ${activeTab === "host" ? "active" : ""

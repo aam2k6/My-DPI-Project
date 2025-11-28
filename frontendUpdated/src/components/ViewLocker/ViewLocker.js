@@ -2932,7 +2932,7 @@ console.log("connectionsDatasss", connectionsData)
                 fontWeight: "bold"
               }}
             >
-              Resource Details
+              Consent Artefact Details
               {resourceData?.xnode_Type !== "VNODE" && (
                 <>
                   {resourceData?.current_owner_username === resourceData?.primary_owner_username ? (

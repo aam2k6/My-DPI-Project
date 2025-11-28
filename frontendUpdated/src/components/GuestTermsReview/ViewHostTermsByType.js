@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
 import { apiFetch } from "../../utils/api.js";
-import FullscreenIframeModal from "../Modal/IFrameModal.js";
+import ViewerModal from "../Modal/IFrameModal.js";
 
 export const ViewHostTermsByType = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -119,6 +119,8 @@ export const ViewHostTermsByType = () => {
   const [notifications, setNotifications] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [iframeUrl, setIframeUrl] = useState("");
+  const [xnodeId, setXnodeId] = useState(null);
+
 
   const {
     connectionName,
@@ -967,6 +969,7 @@ export const ViewHostTermsByType = () => {
 const closeModal = () => {
     setShowModal(false);
     setIframeUrl("");
+    setXnodeId(null);
   };
   const fetchAndOpenResource = async (xnode_id_with_pages) => {
     const xnode_id = xnode_id_with_pages?.split(',')[0];
@@ -985,9 +988,10 @@ const closeModal = () => {
 
       const data = response.data;
       console.log(data);
-      const { link_To_File } = data;
+      const { link_To_File, xnode } = data;
 
-      if (link_To_File) {
+      if (link_To_File && xnode) {
+        setXnodeId(xnode.id);
         setIframeUrl(link_To_File);
         setShowModal(true);
         // const secureFileUrl = link_To_File.replace('http://', 'https://');
@@ -2071,9 +2075,10 @@ const closeModal = () => {
 
       const data = response.data;
       // console.log(data);
-      const { link_To_File } = data;
+      const { link_To_File, xnode } = data;
 
-      if (link_To_File) {
+      if (link_To_File && xnode) {
+        setXnodeId(xnode.id);
         setIframeUrl(link_To_File);
         setShowModal(true);
         // const secureFileUrl = link_To_File.replace('http://', 'https://');
@@ -4180,7 +4185,7 @@ setToPage('');
         />
       )}
 
-      <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
+      <ViewerModal show={showModal} url={iframeUrl} onClose={closeModal} xnodeId={xnodeId}/>
 
     </div>
 

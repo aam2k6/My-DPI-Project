@@ -15,7 +15,7 @@ import { TextField } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { apiFetch } from "../../utils/api.js";
-import FullscreenIframeModal from "../Modal/IFrameModal.js";
+import ViewerModal from "../Modal/IFrameModal.js";
 
 
 export const Guesttermsreview = () => {
@@ -81,6 +81,9 @@ export const Guesttermsreview = () => {
   const [notifications, setNotifications] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [iframeUrl, setIframeUrl] = useState("");
+  const [xnodeId, setXnodeId] = useState(null);
+
+
   //   const [revokeMessage, setRevokeMessage] = useState(""); // To store the response message
   // const [isRevokeModalOpen, setRevokeModalOpen] = useState(false);
 
@@ -651,7 +654,8 @@ useEffect(() => {
       // } else {
       //   setXnodeToDownload(null);
       // }
-      if (link_To_File) {
+      if (link_To_File && xnode) {
+        setXnodeId(xnode.id);
         setIframeUrl(link_To_File);
         setShowModal(true);
         // const secureFileUrl = link_To_File.replace('http://', 'https://');
@@ -678,6 +682,7 @@ useEffect(() => {
   const closeModal = () => {
     setShowModal(false);
     setIframeUrl("");
+    setXnodeId(null);
   };
   console.log("setXnodeToDownload", xnodeToDownload)
   const handleClicks = async (xnode_id_with_pages) => {
@@ -2805,7 +2810,7 @@ useEffect(() => {
 
       </div>
 
-                        <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
+                        <ViewerModal show={showModal} url={iframeUrl} onClose={closeModal} xnodeId={xnodeId} />
 
     </div>
   );

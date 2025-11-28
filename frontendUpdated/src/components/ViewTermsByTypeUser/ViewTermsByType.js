@@ -635,6 +635,8 @@ export const ViewTermsByType = () => {
   const [notifications, setNotifications] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [iframeUrl, setIframeUrl] = useState("");
+  const [xnodeId, setXnodeId] = useState(null);
+
 
   const {
     connectionName,
@@ -653,7 +655,6 @@ export const ViewTermsByType = () => {
   } = location.state || {};
 
 
-console.log("showUrl", iframeUrl, showModal)
   console.log("connectionDetails", connectionDetails)
 useEffect(() => {
     const fetchNotifications = async () => {
@@ -1469,9 +1470,10 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
       const data = response.data
       console.log(data);
-      const { link_To_File } = data;
+      const { link_To_File,xnode } = data;
 
-      if (link_To_File) {
+      if (link_To_File && xnode) {
+        setXnodeId(xnode.id);
         setIframeUrl(link_To_File);
         setShowModal(true);
         // const secureFileUrl = link_To_File.replace('http://', 'https://');
@@ -1622,6 +1624,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
   const closeModal = () => {
     setShowModal(false);
     setIframeUrl("");
+    setXnodeId(null);
   };
 
   const handleButtonClick = (obligation) => {
@@ -1766,8 +1769,11 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
           // alert(result.error);
         }
       } catch (error) {
-        console.error("Error:", error);
-        alert("Something went wrong!");
+        setModalMessage({
+          message: error?.response?.data.error || `You are not allowed to ${typeofShare} the resource`,
+          type: "error",
+        });
+        setPostModal(true);
       }
       // try {
       //   // const response = await fetch('host/get_total_pages_v2/'.replace(
@@ -1956,8 +1962,11 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
           // alert(result.error);
         }
       } catch (error) {
-        console.error("Error:", error);
-        alert("Something went wrong!");
+        setModalMessage({
+          message: error?.response?.data.error || `You are not allowed to ${typeofShare} the resource`,
+          type: "error",
+        });
+        setPostModal(true);
       }
       // if (typeofShare == 'share' || typeofShare == 'confer') {
 
@@ -2457,9 +2466,10 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
 
       const data = response.data
       // console.log(data);
-      const { link_To_File } = data;
+      const { link_To_File, xnode } = data;
 
-      if (link_To_File) {
+      if (link_To_File && xnode) {
+        setXnodeId(xnode.id);
         setIframeUrl(link_To_File);
         setShowModal(true);
         // const secureFileUrl = link_To_File.replace('http://', 'https://');
@@ -4679,7 +4689,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                           />
                         )}
 
-                        <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
+                        <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} xnodeId={xnodeId} />
     </div>
 
   );

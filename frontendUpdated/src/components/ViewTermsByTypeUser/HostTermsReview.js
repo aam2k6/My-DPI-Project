@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../Sidebar/Sidebar.js";
 import { apiFetch } from "../../utils/api";
-import FullscreenIframeModal from "../Modal/IFrameModal.js";
+import ViewerModal from "../Modal/IFrameModal.js";
 
 export const HostTermsReview = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -78,6 +78,8 @@ export const HostTermsReview = () => {
   const [notifications, setNotifications] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [iframeUrl, setIframeUrl] = useState("");
+  const [xnodeId, setXnodeId] = useState(null);
+
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -583,6 +585,7 @@ const handleCloseModalClose = () => {
   const closeModal = () => {
     setShowModal(false);
     setIframeUrl("");
+    setXnodeId(null);
   };
    const handleCloseConnection = async (connection_id) => {
     setIsModalOpenClose(false)
@@ -651,7 +654,8 @@ const handleCloseModalClose = () => {
       // } else {
       //   setXnodeToDownload(null);
       // }
-      if (link_To_File) {
+      if (link_To_File && xnode) {
+        setXnodeId(xnode.id);
         setIframeUrl(link_To_File);
         setShowModal(true);
         // const secureFileUrl = link_To_File.replace('http://', 'https://');
@@ -2708,7 +2712,7 @@ const handleCloseModalClose = () => {
 
 
       </div>
-                        <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
+                        <ViewerModal show={showModal} url={iframeUrl} onClose={closeModal} xnodeId={xnodeId}/>
 
 
     </div>

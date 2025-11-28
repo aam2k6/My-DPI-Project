@@ -19,7 +19,7 @@ import { ConnectionContext } from "../../ConnectionContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { apiFetch } from "../../utils/api";
-import FullscreenIframeModal from "../Modal/IFrameModal.js";
+import ViewerModal from "../Modal/IFrameModal.js";
 // import { Menu } from "lucide-react";
 
 // import {PDFViewer} from "../PDFViewer/PDFViewer.js";
@@ -96,6 +96,8 @@ export const ViewLocker = () => {
   const [notifications, setNotifications] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [iframeUrl, setIframeUrl] = useState("");
+  const [xnodeId, setXnodeId] = useState(null);
+
   // const [correspondingNames, setCorrespondingNames] = useState([]);
   // const [pdfUrl, setPdfUrl] = useState("");
   console.log("allOutgoingConnectionsr", allOutgoingConnections)
@@ -104,7 +106,6 @@ export const ViewLocker = () => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-console.log("showUrl", iframeUrl, showModal)
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -371,14 +372,11 @@ console.log("connectionsDatasss", connectionsData)
     }
   };
 
-  const openModal = (url) => {
-    setIframeUrl(url);
-    setShowModal(true);
-  };
 
   const closeModal = () => {
     setShowModal(false);
     setIframeUrl("");
+    setXnodeId(null);
   };
   // console.log(locker);
   // const fetchVnodeResources = async () => {
@@ -844,11 +842,11 @@ console.log("connectionsDatasss", connectionsData)
 
       const data = response.data;
       console.log(data);
-      const { link_To_File } = data;
+      const { link_To_File, xnode } = data;
       console.log("link to file", link_To_File);
-      if (link_To_File) {
+      if (link_To_File && xnode) {
 
-        console.log("link_To_File", link_To_File);
+        setXnodeId(xnode.id);
         setIframeUrl(link_To_File);
         setShowModal(true);
         // const secureFileUrl = link_To_File.replace('http://', 'https://');
@@ -2982,7 +2980,7 @@ console.log("connectionsDatasss", connectionsData)
 
       )}
       {/* <Tooltip id="tooltip" style={{ maxWidth: '200px', whiteSpace: 'normal', fontSize: "13px" }} /> */}
- <FullscreenIframeModal show={showModal} url={iframeUrl} onClose={closeModal} />
+ <ViewerModal show={showModal} url={iframeUrl} onClose={closeModal} xnodeId={xnodeId}/>
     </div>
 
   );

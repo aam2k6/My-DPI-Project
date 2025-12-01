@@ -1739,7 +1739,8 @@ useEffect(() => {
         GuestTermDisplay: true,
         connectionType,
         hostLocker: conndetails.host_locker,
-        connectionDetails
+        connectionDetails,
+        guestUserUsername: connectionDetails.guest_user.username,
       },
     });
   };

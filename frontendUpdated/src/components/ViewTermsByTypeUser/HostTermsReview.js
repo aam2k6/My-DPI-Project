@@ -1484,7 +1484,7 @@ const handleCloseModalClose = () => {
                 <th>Label Name</th>
                 <th>Data Element</th>
                 <th>Purpose</th>
-                <th>Type of Share</th>
+                <th>Type of Data Transaction</th>
                 <th>Consent Artefact</th>
                 <th>Status</th> {/* New column for status dropdown */}
               </tr>
@@ -2211,7 +2211,7 @@ const handleCloseModalClose = () => {
                             <th>Name</th>
                             <th>Data Element</th>
                             <th>Purpose</th>
-                            <th>Type of Share</th>
+                            <th>Type of Data Transaction</th>
                             {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
                             <th>Status</th>
@@ -2516,7 +2516,7 @@ const handleCloseModalClose = () => {
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
-                            <span className="fw-bold">Type of Share:</span>
+                            <span className="fw-bold">Type of Data Transaction:</span>
                             <span className="tooltips">
                               {selectedRowData.typeOfSharing}
                               {renderTooltip(selectedRowData.typeOfSharing)}
@@ -2623,7 +2623,7 @@ const handleCloseModalClose = () => {
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
-                            <span className="fw-bold">Type of Share:</span>
+                            <span className="fw-bold">Type of Data Transaction:</span>
                             <span className="tooltips">{selectedRowData1.share}{renderTooltip(selectedRowData1.share)} </span>
                           </div>
                           <div className="d-flex justify-content-between border-bottom py-2">

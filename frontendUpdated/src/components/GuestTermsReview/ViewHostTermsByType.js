@@ -2356,7 +2356,7 @@ const closeModal = () => {
                 <th>Label Name</th>
                 <th>Data Element</th>
                 <th>Purpose</th>
-                <th>Type of Share</th> {/* New column for Type of Share */}
+                <th>Type of Data Transaction</th> {/* New column for Type of Share */}
                 <th>Status</th> {/* New column for status dropdown */}
               </tr>
             </thead>
@@ -2677,7 +2677,7 @@ const closeModal = () => {
                             <th>Sno</th>
                             <th>Name</th>
                             <th>purpose</th>
-                            <th>Type of share</th>
+                            <th>Type of Data Transaction</th>
                             <th>Enter Data</th>
                             {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
@@ -3010,7 +3010,7 @@ const closeModal = () => {
                               <th>Sno</th>
                               <th>Name</th>
                               <th>Purpose</th>
-                              <th>Type of Share</th>
+                              <th>Type of Data Transaction</th>
                               <th>Enter Data</th>
                               <th>Consent Artefact</th>
                               <th>Status</th>
@@ -3460,7 +3460,7 @@ setToPage('');
                                 {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
                               </div> */}
                               <div>
-                                <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                <label className="form-label fw-bold mt-1">Type of Data Transaction: </label>
                                 <span className="tooltips">
                                   {selectedRowData.typeOfSharing}
                                   {renderTooltip(selectedRowData.typeOfSharing)}
@@ -3609,7 +3609,7 @@ setToPage('');
                                   <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                                 </div> */}
                                 <div className="d-flex justify-content-between border-bottom py-2">
-                                  <span className="fw-bold">Type of Share:</span>
+                                  <span className="fw-bold">Type of Data Transaction:</span>
                                   <span className="tooltips">{selectedRowData.typeOfSharing}{renderTooltip(selectedRowData.typeOfSharing)}</span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
@@ -3695,7 +3695,7 @@ setToPage('');
 
                                 </div> */}
                                 <div>
-                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                  <label className="form-label fw-bold mt-1">Type of Data Transaction: </label>
                                   <span className="tooltips">
                                     {selectedRowData1.share}
                                     {renderTooltip(selectedRowData1.share)}
@@ -3866,7 +3866,7 @@ setToPage('');
                                   <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                                 </div> */}
                                 <div className="d-flex justify-content-between border-bottom py-2">
-                                  <span className="fw-bold">Type of Share:</span>
+                                  <span className="fw-bold">Type of Data Transaction:</span>
                                   <span className="tooltips">{selectedRowData1.share} {renderTooltip(selectedRowData1.share)} </span>
                                 </div>
                                 <div className="d-flex justify-content-between border-bottom py-2">
@@ -3952,7 +3952,7 @@ setToPage('');
 
                                 </div> */}
                                 <div>
-                                  <label className="form-label fw-bold mt-1">Type of Share: </label>
+                                  <label className="form-label fw-bold mt-1">Type of Data Transaction: </label>
                                   <span className="tooltips">
                                     {selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
                                     {renderTooltip(selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing)}
@@ -4123,7 +4123,7 @@ setToPage('');
                                   <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                                 </div> */}
                                 <div className="d-flex justify-content-between border-bottom py-2">
-                                  <span className="fw-bold">Type of Share:</span>
+                                  <span className="fw-bold">Type of Data Transaction:</span>
                                   <span className="tooltips">{selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing}
                                     {renderTooltip(selectedRowData2.typeOfShare || selectedRowData2.typeOfSharing)}
                                   </span>

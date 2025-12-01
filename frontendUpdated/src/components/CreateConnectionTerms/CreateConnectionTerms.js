@@ -1290,12 +1290,43 @@ console.log("formData", formData);
                 {userType === "guest"
                   ? term.typeOfSharing === "collateral"
                     ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-                    : `Guest shall ${term.typeOfSharing} ${term.labelName}`
+                    // : `Guest shall ${term.typeOfSharing} ${term.labelName}`
+                     :<>{term.labelDescription?.includes("\n") ? (
+  <>
+    <p style={{marginBottom: "0"}}>
+      Guest shall {term.typeOfSharing} {term.labelName} -
+    </p>
+    <p style={{ whiteSpace: "pre-line", marginLeft: "25px"}}>
+      {term.labelDescription}
+    </p>
+  </>
+) : (
+  <p>
+    Guest shall {term.typeOfSharing} {term.labelName} - {term.labelDescription}
+  </p>
+)}
+</>
                   : term.typeOfSharing === "collateral"
                     ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-                    : `Host will ${term.typeOfSharing} ${term.labelName} `}
+                    // : `Host will ${term.typeOfSharing} ${term.labelName} `}
+                   : <>{term.labelDescription?.includes("\n") ? (
+  <>
+    <p style={{marginBottom: "0"}}>
+      Host will {term.typeOfSharing} {term.labelName} -
+    </p>
+    <p style={{ whiteSpace: "pre-line", marginLeft: "25px"}}>
+      {term.labelDescription}
+    </p>
+  </>
+) : (
+  <p>
+    Host will {term.typeOfSharing} {term.labelName} - {term.labelDescription}
+  </p>
+)}
+</>
+} 
               </strong>
-              - {term.labelDescription}
+              {/* - {term.labelDescription} */}
               {/* (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
                 ? term.hostPermissions.join(", ")
                 : "None"}) */}
@@ -1909,10 +1940,10 @@ console.log("formData", formData);
                       <div className="page13lowerterms">{renderPermissions("guest")}</div> */}
                       <div className="page13headterms">Your Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("guest")}</div>
-                      <div className="page13headterms">Default Host Privileges</div>
+                      {/* <div className="page13headterms">Default Host Privileges</div>
                       <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
                         {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
-                      </span> are disabled unless otherwise mentioned in the terms</li>
+                      </span> are disabled unless otherwise mentioned in the terms</li> */}
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -1923,10 +1954,10 @@ console.log("formData", formData);
                       <div className="page13lowerterms">{renderPermissions("host")}</div> */}
                       <div className="page13headterms" >Host Forbidden Terms</div>
                       <div className="page13lowerterms" style={{ marginLeft: "-40px" }}>{renderForbidden("host")}</div>
-                      <div className="page13headterms">Default Guest Privileges</div>
+                      {/* <div className="page13headterms">Default Guest Privileges</div>
                       <li style={{ fontSize: "18px", marginLeft: "14px" }}>By default <span className=" text-end">
                         {postConditionsKeysView.length > 0 ? postConditionsKeysView.join(", ") : "No conditions found"}
-                      </span> are disabled unless otherwise mentioned in the terms</li>
+                      </span> are disabled unless otherwise mentioned in the terms</li> */}
                     </div>
                   )}
                 </div>

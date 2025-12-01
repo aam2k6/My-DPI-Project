@@ -164,10 +164,44 @@ const GlobalTermsView = () => {
                 {userType === "guest"
                   ? term.typeOfSharing === "collateral"
                     ? `Guest shall provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-                    : `Guest shall ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`
+                    // : `Guest shall ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`
+                    : <>{term.labelDescription?.includes("\n") ? (
+  <>
+    <p style={{marginBottom: "0"}}>
+      Guest shall {term.typeOfSharing} {term.labelName} -
+    </p>
+    <p style={{ whiteSpace: "pre-line", marginLeft: "25px"}}>
+      {term.labelDescription}
+    </p>
+  </>
+) : (
+  <p>
+    Guest shall {term.typeOfSharing} {term.labelName} - {term.labelDescription}
+  </p>
+)}
+</>
+
+
+
                   : term.typeOfSharing === "collateral"
                     ? `Host will provide ${term.labelName} as ${term.typeOfSharing} - ${term.labelDescription}`
-                    : `Host will ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`}
+                    // : `Host will ${term.typeOfSharing} ${term.labelName}-${term.labelDescription}`}
+                    : <>{term.labelDescription?.includes("\n") ? (
+  <>
+    <p style={{marginBottom: "0"}}>
+      Host will {term.typeOfSharing} {term.labelName} -
+    </p>
+    <p style={{ whiteSpace: "pre-line", marginLeft: "25px"}}>
+      {term.labelDescription}
+    </p>
+  </>
+) : (
+  <p>
+    Host will {term.typeOfSharing} {term.labelName} - {term.labelDescription}
+  </p>
+)}
+</>
+}
               </strong>
               {/* (Host Privilege: {term.hostPermissions && term.hostPermissions.length > 0
                 ? term.hostPermissions.join(", ")
@@ -347,8 +381,8 @@ const GlobalTermsView = () => {
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("guest")}</div> */}
                       <div className="page13headterms">Guest Forbidden Terms</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("guest")}</div>
-                      <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
+                      {/* <div className="page13headterms">Default Host Privileges</div>
+                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li> */}
                     </div>
                   )}
                   {activeTab === "host" && (
@@ -359,8 +393,8 @@ const GlobalTermsView = () => {
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderPermissions("host")}</div> */}
                       <div className="page13headterms">Host Forbidden Terms</div>
                       <div style={{ fontSize: "18px" }} className="page13lowerterms">{renderForbidden("host")}</div>
-                      <div className="page13headterms">Default Host Privileges</div>
-                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li>
+                      {/* <div className="page13headterms">Default Host Privileges</div>
+                      <li style={{ fontSize: "18px" }}>By default download, reshare, confer, collateral, transfer, subset are disabled unless otherwise mentioned in the terms</li> */}
                     </div>
                   )}
                 </div>

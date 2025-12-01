@@ -98,7 +98,13 @@
     width: 65%;
     box-sizing: border-box; 
   }
-  
+  .parent-left-heading .connectionTerms-lockerForm textarea{
+    padding: 0.5rem;
+    border: 2px solid rgb(107, 120, 231);
+    border-radius: 0.25rem;
+    width: 65%;
+    box-sizing: border-box; 
+  }
   .parent-left-heading .connectionTerms-lockerForm select {
     padding: 0.5rem;
     border: 2px solid rgb(107, 120, 231);
@@ -283,6 +289,9 @@
 }
 
 #connectionTerms input{
+  width: 98%;
+}
+#connectionTerms textarea{
   width: 98%;
 }
 

@@ -630,7 +630,7 @@ export const ConnectionTermsHost = () => {
                           <input
                             type="text"
                             name="labelName"
-                            placeholder="Label of data shared"
+                            placeholder="Label of Data Transacted"
                             value={formData.labelName}
                             onChange={handleInputChange} className="form-control"
                           />
@@ -659,7 +659,7 @@ export const ConnectionTermsHost = () => {
                       </div>
 
                       <div className="mb-3 row">
-                        <label className="col-sm-2 col-md-2 col-form-label">Type of Sharing</label>
+                        <label className="col-sm-2 col-md-2 col-form-label">Type of Data Transaction</label>
                         <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
                           <select className="form-select form-select-md" aria-label="Small select example"
                             name="typeOfSharing"
@@ -711,7 +711,7 @@ export const ConnectionTermsHost = () => {
                           <input
                             type="text"
                             name="purpose"
-                            placeholder="purpose of collecting data"
+                            placeholder="Purpose of collecting data"
                             value={formData.purpose}
                             onChange={handleInputChange} className="form-control"
                           />
@@ -721,12 +721,12 @@ export const ConnectionTermsHost = () => {
                       <div className="mb-3 row">
                         <label className="col-sm-2 col-md-2 col-form-label">Description</label>
                         <div className="col-md-10 col-sm-10 col-xs-10">
-                          <input
-                            type="text"
+                          <textarea
                             name="labelDescription"
                             placeholder="Description of the obligation"
                             value={formData.labelDescription}
                             onChange={handleInputChange} className="form-control"
+                            rows={3}
                           />
                         </div>
                       </div>

@@ -663,7 +663,7 @@ console.log("connectionsDatasss", connectionsData)
   };
   const handleIncomingInfo = (connection) => {
 
-
+console.log(connections?.incoming_connections?.[0]?.guest_user.username)
     navigate("/display-terms", {
       state: {
         hostLockerName: connections?.incoming_connections?.[0]?.host_locker.name || locker.name,
@@ -675,6 +675,7 @@ console.log("connectionsDatasss", connectionsData)
         locker: locker,
         viewlockerDisplay: true,
         hostLocker: connections?.incoming_connections?.[0]?.host_locker || locker,
+        // guestUserUsername: connections?.incoming_connections?.[0]?.guest_user.username 
       },
     });
   };

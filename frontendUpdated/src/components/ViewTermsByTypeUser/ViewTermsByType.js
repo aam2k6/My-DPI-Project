@@ -2829,7 +2829,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                 <th>Label Name</th>
                 <th>Data Element</th>
                 <th>Purpose</th>
-                <th>Type of Share</th> {/* New column for Type of Share */}
+                <th>Type of Data Transaction</th> {/* New column for Type of Share */}
                 <th>Status</th> {/* New column for status dropdown */}
               </tr>
             </thead>
@@ -3194,7 +3194,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                             <th>Sno</th>
                             <th>Name</th>
                             <th>purpose</th>
-                            <th>Type of share</th>
+                            <th>Type of Data Transaction</th>
                             <th>Enter Data</th>
                             {/* <th>Host Privileges</th> */}
                             <th>Consent Artefact</th>
@@ -3643,7 +3643,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                               <th>Sno</th>
                               <th>Name</th>
                               <th>Purpose</th>
-                              <th>Type of Share</th>
+                              <th>Type of Data Transaction</th>
                               <th>Enter Data</th>
                               <th>Consent Artefact</th>
                               <th>Status</th> {/* Changed "Remove" to "Status" */}
@@ -3901,7 +3901,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                           <th>Name</th>
                           <th>Data Element</th>
                           <th>Purpose</th>
-                          <th>Type of Share</th>
+                          <th>Type of Data Transaction</th>
                           {/* <th>Host Privileges</th> */}
                           <th>Status</th>
                         </tr>
@@ -3994,7 +3994,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                           {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
                         </div> */}
                         <div>
-                          <label className="form-label fw-bold mt-1">Type of Share: </label>
+                          <label className="form-label fw-bold mt-1">Type of Data Transaction: </label>
                           <span className="tooltips">
                             {selectedRowData.typeOfSharing}
                             {renderTooltip(selectedRowData.typeOfSharing)}
@@ -4155,7 +4155,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
-                            <span className="fw-bold">Type of Share:</span>
+                            <span className="fw-bold">Type of Data Transaction:</span>
                             <span className="tooltips">
                               {selectedRowData.typeOfSharing}
                               {renderTooltip(selectedRowData.typeOfSharing)}
@@ -4231,7 +4231,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                           {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
                         </div> */}
                         <div>
-                          <label className="form-label fw-bold mt-1">Type of Share: </label>
+                          <label className="form-label fw-bold mt-1">Type of Data Transaction: </label>
                           <span className="tooltips">
                             {selectedRowData1.share}
                             {renderTooltip(selectedRowData1.share)}
@@ -4391,7 +4391,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
-                            <span className="fw-bold">Type of Share:</span>
+                            <span className="fw-bold">Type of Data Transaction:</span>
                             <span className="tooltips">
                               {selectedRowData1.share}
                               {renderTooltip(selectedRowData1.share)}
@@ -4467,7 +4467,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                           {capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}
                         </div> */}
                         <div>
-                          <label className="form-label fw-bold mt-1">Type of Share: </label>
+                          <label className="form-label fw-bold mt-1">Type of Data Transaction: </label>
                           <span className="tooltips"> 
                              {selectedRowData2.typeOfSharing}
                             {renderTooltip(selectedRowData2.typeOfSharing)}
@@ -4628,7 +4628,7 @@ console.log("testing modals", isModalOpen, isModalOpenClose, isModalOpens)
                             <span>{capitalizeFirstLetter(pdfData.current_owner_username) || "N/A"}</span>
                           </div> */}
                           <div className="d-flex justify-content-between border-bottom py-2">
-                            <span className="fw-bold">Type of Share:</span>
+                            <span className="fw-bold">Type of Data Transaction:</span>
                             <span className="tooltips">
                               {selectedRowData2.typeOfSharing}
                               {renderTooltip(selectedRowData2.typeOfSharing)}

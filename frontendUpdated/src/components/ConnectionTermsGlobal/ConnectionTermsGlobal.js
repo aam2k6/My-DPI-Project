@@ -556,7 +556,7 @@ export const ConnectionTermsGlobal = () => {
                       <input
                         type="text"
                         name="labelName"
-                        placeholder="Label of data shared"
+                        placeholder="Label of Data Transacted"
                         value={obligationFormData.labelName}
                         onChange={handleObligationChange} className="form-control"
                       />
@@ -564,7 +564,7 @@ export const ConnectionTermsGlobal = () => {
                   </div>
 
                   <div className="mb-3 row">
-                    <label className="col-sm-2 col-md-2 col-form-label">Type of Action</label>
+                    <label className="col-sm-2 col-md-2 col-form-label">Type of Data Transaction</label>
                     <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
                       <select className="form-select form-select-md" aria-label="Small select example"
                         name="typeOfAction"
@@ -650,6 +650,21 @@ export const ConnectionTermsGlobal = () => {
                   </div>
 
                   <div className="mb-3 row">
+  <label className="col-sm-2 col-md-2 col-form-label">Description</label>
+
+  <div className="col-md-10 col-sm-10 col-xs-10 d-flex">
+    <textarea
+      name="labelDescription"
+      placeholder="Description of the obligation"
+      value={obligationFormData.labelDescription}
+      onChange={handleObligationChange}
+      className="form-control"
+      rows={4}
+    />
+  </div>
+</div>
+
+                  {/* <div className="mb-3 row">
                     <label className="col-sm-2 col-md-2 col-form-label">Description</label>
                     <div className="col-md-10 col-sm-10 col-xs-10 d-flex" >
                       <input
@@ -661,7 +676,7 @@ export const ConnectionTermsGlobal = () => {
                         className="form-control"
                       />
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* <div className="mb-3 row">
                     <label className="col-sm-12 col-md-2 col-form-label">Host Permissions</label>

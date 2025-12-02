@@ -107,7 +107,7 @@ const LoginSignUp = () => {
             );
 
             if (response.status === 200) {
-                setMessage("Profile updated successfully!");
+                // setMessage("Profile updated successfully!");
                 setUser({ ...user, username, description, is_profile_complete: true });
                 showMessage('success', `Welcome, ${username}!`);
 
@@ -116,7 +116,8 @@ const LoginSignUp = () => {
                 }, 2000); // waits 2 seconds before navigating
             }
         } catch (error) {
-            setMessage(error.response?.data?.error || "Failed to update profile.");
+            console.log(error)
+            showMessage('error', `${error.response?.data?.error}`);
             console.error("Error completing profile:", error.response?.data || error.message);
         }
     };

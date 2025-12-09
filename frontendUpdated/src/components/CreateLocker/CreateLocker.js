@@ -120,7 +120,7 @@ export const CreateLocker = () => {
     }
   } catch (error) {
     console.error("Error:", error);
-    alert("An error occurred while creating the locker");
+    alert(error?.response?.data?.error || "An error occurred while creating the locker");
   }
 };
 

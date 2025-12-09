@@ -13,6 +13,7 @@ import { Box, Grid } from '@mui/material';
 import IIITLogo from '../../assets/iiitb_logo.png';
 // import WebScienceLogo from '../../assets/Web_science_image.png';
 import WebScienceLogo from '../../assets/WSL.jpg';
+import { useAuth } from '../../contexts/Authcontext';
 
 const LoginSignUp = () => {
     const navigate = useNavigate();
@@ -39,7 +40,7 @@ const LoginSignUp = () => {
         }
     }, [user, navigate]);
     
-
+ const { login } = useAuth(); 
     const handleGoogleLogin = (user) => {
         if (!user.is_profile_complete) {
             showMessage('info', 'Please complete your profile to continue');
@@ -133,33 +134,70 @@ const LoginSignUp = () => {
     };
 
     // Handle sign in
+    // const handleLogin = async (event) => {
+    //     event.preventDefault();
+    //     try {
+    //         const response = await apiFetch.post("/login-user/", {
+    //             username: signInData.email,
+    //             password: signInData.password,
+    //         });
+
+    //         if (response.status === 200) {
+    //             console.log("Login Response:", response);
+    //             const { access, refresh, user } = response.data;
+
+    //             Cookies.set("access_token", access, { expires: 1 / 24 });
+    //             Cookies.set("refresh_token", refresh, { expires: 7 });
+    //             localStorage.setItem("curruser", JSON.stringify(user));
+    //             setUser(user);
+
+    //             showMessage('success', `Welcome back, ${user?.username}!`);
+    //             console.log('User after login:', user);
+    //             setTimeout(() => {
+    //                 navigate('/home');
+    //             }, 2000);
+    //             // navigate('/home');
+
+    //         }
+    //     } catch (error) {
+    //         //   console.error("Login Error:", error.response?.data || error.message);
+    //         showMessage("error", error.response?.data?.error || "Invalid credentials.");
+    //     }
+    // };
+
     const handleLogin = async (event) => {
-        event.preventDefault();
-        try {
-            const response = await apiFetch.post("/login-user/", {
-                username: signInData.email,
-                password: signInData.password,
-            });
+    event.preventDefault();
+    try {
+        const response = await apiFetch.post("/login-user/", {
+            username: signInData.email,
+            password: signInData.password,
+        });
 
-            if (response.status === 200) {
-                console.log("Login Response:", response);
-                const { access, refresh, user } = response.data;
+        if (response.status === 200) {
+            const { access, refresh, user } = response.data;
 
-                Cookies.set("access_token", access, { expires: 1 / 24 });
-                Cookies.set("refresh_token", refresh, { expires: 7 });
-                localStorage.setItem("curruser", JSON.stringify(user));
-                setUser(user);
 
-                showMessage('success', `Welcome back, ${user?.username}!`);
-                setTimeout(() => {
-                    navigate('/home');
-                }, 2000);
-            }
-        } catch (error) {
-            //   console.error("Login Error:", error.response?.data || error.message);
-            showMessage("error", error.response?.data?.error || "Invalid credentials.");
+            Cookies.set("access_token", access, { path: "/", expires: 1 / 24 });
+            Cookies.set("refresh_token", refresh, { path: "/", expires: 7 });
+            localStorage.setItem("curruser", JSON.stringify(user));
+            localStorage.setItem("access_token", access);
+
+            login(user, access);
+
+            setUser(user);
+
+            showMessage('success', `Welcome back, ${user?.username}!`);
+
+            setTimeout(() => {
+                navigate('/home', { replace: true });
+            }, 2000);
         }
-    };
+
+    } catch (error) {
+        showMessage("error", error.response?.data?.error || "Invalid credentials.");
+    }
+};
+
 
     // Handle sign up
 
@@ -172,7 +210,7 @@ const LoginSignUp = () => {
             return;
         }
 
-        showMessage('success', 'Creating your account...');
+        showMessage('info', 'Creating your account...');
         setTimeout(async () => {
             try {
                 const response = await apiFetch.post("/signup-user/", {
@@ -182,7 +220,7 @@ const LoginSignUp = () => {
                     description: signUpData.description,
                 });
 
-                if (response.status === 201) {
+                if (response.success == true || response.status === 201) {
                     showMessage('success', 'Sign up successful. Please sign in.');
                     setTimeout(() => {
                         setActiveTab('signin');

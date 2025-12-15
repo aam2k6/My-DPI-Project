@@ -231,7 +231,7 @@ const uploadResource = ()=>{
         }
       } catch(error) {
         console.error("Error:", error);
-        alert("An error occurred while uploading the resource");
+        alert(error?.response?.data?.error || "An error occurred while uploading the resource");
       };
   };
 

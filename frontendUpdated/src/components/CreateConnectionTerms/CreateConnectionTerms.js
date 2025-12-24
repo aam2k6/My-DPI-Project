@@ -914,11 +914,11 @@ console.log("dddddd", showConsent, Iagree === "1", !agrees)
 
       try {
         const response = await apiFetch.get(
-          `/get-connection-details?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`);
+          `/get-connection-details-v2?connection_type_name=${connection_type_name}&host_locker_name=${host_locker_name}&guest_locker_name=${guest_locker_name}&host_user_username=${host_user_username}&guest_user_username=${guest_user_username}`);
 
         const data = response.data;
         console.log("data conn", data);
-        if (data.success) {
+        if (response.status >= 200 && response.status < 300) {
           setConnectionDetails(data.connections);
           setTermsValue(data.connections.terms_value || {})
           setTermsValueReverse(data.connections.terms_value_reverse || {})
@@ -1227,13 +1227,11 @@ console.log("formData", formData);
     } catch (error) {
       console.error("Error:", error);
       setModalMessage({
-        messgae: error,
-        type: "error",
+        message: error?.response?.data?.error,
+        type: "info",
       });
     }
     setIsModalOpen(true);
-    // navigate(`/target-locker-view`);
-
   };
   const userRole = curruser.username === guestUserUsername;
   console.log("userRole", userRole)
@@ -1340,7 +1338,7 @@ console.log("formData", formData);
   );
 
   const renderGuestTerms = (terms, title) => {
-    const canShareMoreData = connectionDetails.terms_value.canShareMoreData
+    const canShareMoreData = connectionDetails.terms_value.canShareMoreData;
     return (
       <div style={{ textAlign: "start", fontSize: "17px" }}>
         {terms && terms.length > 0 && (

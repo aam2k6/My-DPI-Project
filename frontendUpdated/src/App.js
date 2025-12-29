@@ -10,6 +10,7 @@ import { Login } from "./components/Login/Login";
 import { Home2 } from "./components/Home/Home2";
 import { CreateLocker } from "./components/CreateLocker/CreateLocker";
 import { ViewLocker } from "./components/ViewLocker/ViewLocker";
+import { LockerView } from "./components/ViewLocker/LockerView";
 import { UploadResource } from "./components/UploadResource/UploadResource";
 import { DPIdirectory } from "./components/DPIdirectory/DPIdirectory";
 import { TargetUserView } from "./components/TargetUserView/TargetUserView";
@@ -109,7 +110,8 @@ function App() {
                 path="/view-locker"
                 element={
                   <ProtectedRoute>
-                    <ViewLocker />
+                    {/* <ViewLocker /> */}
+                    <LockerView />
                     <Scanner />
                   </ProtectedRoute>
                 }

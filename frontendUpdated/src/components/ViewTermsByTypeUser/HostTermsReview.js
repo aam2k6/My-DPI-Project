@@ -322,7 +322,7 @@ useEffect(() => {
       try {
         // const token = Cookies.get("authToken");
         const response = await apiFetch.get(
-          `/get-connection-details?connection_type_name=${connectionTypeName}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`);
+          `/get-connection-details-v2?connection_type_name=${connectionTypeName}&host_locker_name=${connection.host_locker.name}&host_user_username=${connection.host_user.username}&guest_locker_name=${connection.guest_locker.name}&guest_user_username=${connection.guest_user.username}`);
         if (!response.status >= 200 && !response.status < 300) {
           throw new Error("Failed to fetch connection details");
         }

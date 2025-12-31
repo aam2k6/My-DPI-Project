@@ -24,6 +24,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { Container, Grid, TextField, Button, Typography, Box } from "@mui/material";
 import Modal from "../Modal/Modal";
 import ViewerModal from "../Modal/IFrameModal.js";
+import "./page3.css";
 
 export const LockerView = () => {
     const navigate = useNavigate()
@@ -1560,7 +1561,7 @@ export const LockerView = () => {
                         </button>
                     </div>
                 </Box> */}
-                <div className="dashboard-wrapper m-4">
+                <div className="dashboard-wrapper-locker m-4">
                     <div className="consent-dashboard">
                         {/* <h3 className="consent-title">Incoming Connection <i className="bi bi-arrow-down-short" style={{fontSize:"30px"}}></i></h3> */}
                         <h3 className="consent-title">
@@ -1950,7 +1951,7 @@ export const LockerView = () => {
                             </Button>
                         </Grid>
                     </Grid>
-                    <div className="tabs">
+                    {/* <div className="tabs">
                         <div
                             className={`tab-header ${activeTab === "incoming" ? "active" : ""
                                 }`}
@@ -1958,7 +1959,7 @@ export const LockerView = () => {
                             data-tooltip-id="tooltip" data-tooltip-content=""
                             onClick={() => setActiveTab("incoming")}
                         >
-                            Incoming Connections
+                            Incoming Connections {otherConnections.length}
                         </div>
                         <div
                             className={`tab-header ${activeTab === "outgoing" ? "active" : ""
@@ -1966,7 +1967,7 @@ export const LockerView = () => {
                             data-tooltip-id="tooltip" data-tooltip-content=""
                             onClick={() => setActiveTab("outgoing")}
                         >
-                            Outgoing Connections
+                            Outgoing Connections {connections.outgoing_connections.length}
                         </div>
                         <div
                             className={`tab-header ${activeTab === "archived" ? "active" : ""
@@ -1974,10 +1975,38 @@ export const LockerView = () => {
                             data-tooltip-id="tooltip" data-tooltip-content=""
                             onClick={() => setActiveTab("archived")}
                         >
-                            Archived Connections                 
+                            Archived Connections  {closedConnections.length}               
                         </div>
-                        {/* <Tooltip id="tooltip" style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: "13px" }} /> */}
-                    </div>
+                        <Tooltip id="tooltip" style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: "13px" }} />
+                    </div> */}
+                    <div className="tabs-container">
+  <div
+    className={`tab-item ${activeTab === "incoming" ? "active" : ""}`}
+    onClick={() => setActiveTab("incoming")}
+  >
+    Incoming Connections
+    <span className="tab-count">{otherConnections.length}</span>
+  </div>
+
+  <div
+    className={`tab-item ${activeTab === "outgoing" ? "active" : ""}`}
+    onClick={() => setActiveTab("outgoing")}
+  >
+    Outgoing Connections
+    <span className="tab-count">
+      {connections.outgoing_connections.length}
+    </span>
+  </div>
+
+  <div
+    className={`tab-item ${activeTab === "archived" ? "active" : ""}`}
+    onClick={() => setActiveTab("archived")}
+  >
+    Archived Connections
+    <span className="tab-count">{closedConnections.length}</span>
+  </div>
+</div>
+
                     <div className="tab-content">
                         {activeTab === "incoming" && (
                             //               <div className="tab-panel">
@@ -2033,7 +2062,7 @@ export const LockerView = () => {
                             // </div>
 
                             <div className="tab-panel">
-                                <h4 id="headingconnection">Incoming connection types</h4>
+                                <h4 id="headingconnection">Incoming connection types </h4>
                                 <div className="conn">
                                     {otherConnections.length > 0 ? (
                                         otherConnections.map((connection) => (

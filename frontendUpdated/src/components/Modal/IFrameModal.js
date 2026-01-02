@@ -576,6 +576,28 @@ const ViewerModal = ({ show, xnodeId, onClose }) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [mime, setMime] = useState("");
   const [loading, setLoading] = useState(false);
+// useEffect(() => {
+//   const disableRightClick = (e) => e.preventDefault();
+
+//   const disableKeys = (e) => {
+//     if (
+//       e.key === "PrintScreen" ||
+//       (e.ctrlKey && e.key.toLowerCase() === "p") ||
+//       (e.ctrlKey && e.key.toLowerCase() === "s")
+//     ) {
+//       e.preventDefault();
+//       alert("Action disabled for security reasons");
+//     }
+//   };
+
+//   document.addEventListener("contextmenu", disableRightClick);
+//   document.addEventListener("keydown", disableKeys);
+
+//   return () => {
+//     document.removeEventListener("contextmenu", disableRightClick);
+//     document.removeEventListener("keydown", disableKeys);
+//   };
+// }, []);
 
   useEffect(() => {
     if (!show || !xnodeId) return;
@@ -725,6 +747,31 @@ if (mime === "application/vnd.openxmlformats-officedocument.presentationml.prese
         zIndex: 9999,
       }}
     >
+
+{!loading && fileUrl && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      pointerEvents: "none",
+      zIndex: 10000,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      opacity: 0.35,
+      fontSize: "40px",
+      color: "red",
+      transform: "rotate(-30deg)",
+      textAlign: "center",
+    }}
+  >
+    Anumati <br />
+    {/* {localStorage.getItem("username")} <br /> */}
+    {new Date().toLocaleString()}
+  </div>
+)}
+
+
       <div
         style={{
           position: "relative",
@@ -740,6 +787,7 @@ if (mime === "application/vnd.openxmlformats-officedocument.presentationml.prese
         }}
       >
         <div
+          id="secure-viewer-container"
           style={{
             width: "120vw",
             height: "90vh",

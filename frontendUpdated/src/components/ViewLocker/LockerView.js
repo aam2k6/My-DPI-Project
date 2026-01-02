@@ -2327,8 +2327,8 @@ export const LockerView = () => {
                                                 </button> */}
                                                             <div className="d-flex align-items-center">
 
-                                                                <h6 className="mt-2 me-2">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
-                                                                <i className="bi bi-arrow-right me-2" style={{ fontSize: '1.2rem' }}></i>
+                                                                <h6 className="mt-2 me-1">{capitalizeFirstLetter(connection.guest_user.username)}</h6>
+                                                                <i className="bi bi-arrow-right me-1" style={{ fontSize: '1.2rem' }}></i>
                                                                 <button
                                                                     onClick={() => handleTracker(connection)}
                                                                     style={{
@@ -2345,7 +2345,7 @@ export const LockerView = () => {
                                                             </div>
 
                                                             <div className="d-flex align-items-center mt-1">
-                                                                <button className="me-2"
+                                                                <button className="me-1"
                                                                     onClick={() => handleTrackerHost(connection)}
                                                                     style={{
                                                                         backgroundColor: colorReverse,
@@ -2358,7 +2358,7 @@ export const LockerView = () => {
                                                                 >
                                                                     {ratioReverse}
                                                                 </button>
-                                                                <i className="bi bi-arrow-left me-2" style={{ fontSize: '1.2rem' }}></i>
+                                                                <i className="bi bi-arrow-left me-1" style={{ fontSize: '1.2rem' }}></i>
 
                                                                 <h6 className="mt-2">{capitalizeFirstLetter(connection.host_user.username)}</h6>
 

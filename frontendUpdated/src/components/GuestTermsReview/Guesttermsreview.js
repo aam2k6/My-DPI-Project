@@ -643,8 +643,12 @@ useEffect(() => {
 
       if (!response.status >= 200 && !response.status < 300) {
         const errorData = response.data;
-        throw new Error(errorData.message || 'Failed to access the resource');
-      }
+      setModalMessage({
+        message: errorData.response.data.message,
+        type: 'info',
+      })
+      setResourceModal(true);
+    }
 
       const data = response.data;
       console.log(data);
@@ -715,7 +719,7 @@ useEffect(() => {
       }
     } catch (err) {
       setModalMessage({
-        message: ` ${err.message}`,
+        message: err?.response?.data?.message || 'Please select a resource.',
         type: 'info',
       });
       setResourceModal(true);

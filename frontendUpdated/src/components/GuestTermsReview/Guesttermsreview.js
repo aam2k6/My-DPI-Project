@@ -677,7 +677,11 @@ useEffect(() => {
       }
     } catch (err) {
       // setError(`Error: ${err.message}`);
-      console.log(err);
+      setModalMessage({
+        message: err?.response?.data?.message || 'Please select a resource.',
+        type: 'info',
+      });
+      setResourceModal(true);
     } finally {
       // setLoading(false);
     }

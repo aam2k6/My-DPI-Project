@@ -576,13 +576,14 @@ const ViewerModal = ({ show, xnodeId, onClose }) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [mime, setMime] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 // useEffect(() => {
 //   const disableRightClick = (e) => e.preventDefault();
 
 //   const disableKeys = (e) => {
 //     if (
 //       e.key === "PrintScreen" ||
-//       (e.ctrlKey && e.key.toLowerCase() === "p") ||
+//       (e.ctrlKey && e.key.toLowerCase()  === "p") ||
 //       (e.ctrlKey && e.key.toLowerCase() === "s")
 //     ) {
 //       e.preventDefault();
@@ -607,7 +608,7 @@ const ViewerModal = ({ show, xnodeId, onClose }) => {
       setLoading(true);
       try {
         const res = await apiFetch.get(`/resource/stream/?xnode_id=${xnodeId}`, {
-          responseType: "arraybuffer",
+          responseType: "blob",
         });
         if (cancelled) return;
 
@@ -620,7 +621,9 @@ const ViewerModal = ({ show, xnodeId, onClose }) => {
         const url = URL.createObjectURL(blob);
         setFileUrl(url);
       } catch (e) {
+        console.error("Error loading file:", e.response.data.message);
         console.error("Error loading file:", e);
+        setError("Failed to load file.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -632,6 +635,7 @@ const ViewerModal = ({ show, xnodeId, onClose }) => {
       cancelled = true;
       if (fileUrl) URL.revokeObjectURL(fileUrl);
       setFileUrl(null);
+      setError(null);
     };
   }, [show, xnodeId]);
 
@@ -639,7 +643,7 @@ const ViewerModal = ({ show, xnodeId, onClose }) => {
 
   const renderContent = () => {
     if (loading) return <p>Loading...</p>;
-    if (!fileUrl) return <p>No file loaded.</p>;
+    if (!fileUrl) return <p>{error}</p>;
 
     // PDF
     if (mime.startsWith("application/pdf")) {

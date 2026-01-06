@@ -600,44 +600,113 @@ const ViewerModal = ({ show, xnodeId, onClose }) => {
 //   };
 // }, []);
 
+  // useEffect(() => {
+  //   if (!show || !xnodeId) return;
+  //   let cancelled = false;
+
+  //   const load = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const res = await apiFetch.get(`/resource/stream/?xnode_id=${xnodeId}`, {
+  //         responseType: "blob",
+  //       });
+  //       if (cancelled) return;
+
+  //       const contentType =
+  //         res.headers["content-type"]?.split(";")[0] || "application/octet-stream";
+  //       console.log("MIME from backend:", contentType);
+  //       setMime(contentType);
+
+  //       const blob = new Blob([res.data], { type: contentType });
+  //       const url = URL.createObjectURL(blob);
+  //       setFileUrl(url);
+  //     } catch (e) {
+  //       console.error("Error loading file:", e.response.data.message);
+  //       console.error("Error loading file:", e);
+  //       setError("Failed to load file.");
+  //     } finally {
+  //       if (!cancelled) setLoading(false);
+  //     }
+  //   };
+
+  //   load();
+
+  //   return () => {
+  //     cancelled = true;
+  //     if (fileUrl) URL.revokeObjectURL(fileUrl);
+  //     setFileUrl(null);
+  //     setError(null);
+  //   };
+  // }, [show, xnodeId]);
+
   useEffect(() => {
-    if (!show || !xnodeId) return;
-    let cancelled = false;
+  if (!show || !xnodeId) return;
 
-    const load = async () => {
-      setLoading(true);
-      try {
-        const res = await apiFetch.get(`/resource/stream/?xnode_id=${xnodeId}`, {
-          responseType: "blob",
-        });
-        if (cancelled) return;
+  let cancelled = false;
 
-        const contentType =
-          res.headers["content-type"]?.split(";")[0] || "application/octet-stream";
-        console.log("MIME from backend:", contentType);
-        setMime(contentType);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const res = await apiFetch.get(
+        `/resource/stream/?xnode_id=${xnodeId}`,
+        { responseType: "blob" }
+      );
 
+      if (cancelled) return;
+
+      const contentType =
+        res.headers["content-type"]?.split(";")[0] ||
+        "application/octet-stream";
+
+      console.log("MIME from backend:", contentType);
+
+      // ✅ SUCCESS PATH (actual file)
+      if (!contentType.includes("application/json")) {
         const blob = new Blob([res.data], { type: contentType });
         const url = URL.createObjectURL(blob);
+        setMime(contentType);
         setFileUrl(url);
-      } catch (e) {
-        console.error("Error loading file:", e.response.data.message);
-        console.error("Error loading file:", e);
-        setError("Failed to load file.");
-      } finally {
-        if (!cancelled) setLoading(false);
+        return;
       }
-    };
 
-    load();
+      // ❌ ERROR PATH (JSON blob)
+      const text = await res.data.text();
+      const json = JSON.parse(text);
+      throw new Error(json.message || "File not available");
 
-    return () => {
-      cancelled = true;
-      if (fileUrl) URL.revokeObjectURL(fileUrl);
-      setFileUrl(null);
-      setError(null);
-    };
-  }, [show, xnodeId]);
+    } catch (e) {
+      let message = "Failed to load file";
+
+      // ✅ Decode backend error if blob
+      if (e.response?.data instanceof Blob) {
+        try {
+          const text = await e.response.data.text();
+          const json = JSON.parse(text);
+          message = json.message;
+          console.error("Backend error:", json);
+        } catch {
+          console.error("Blob error could not be parsed");
+        }
+      } else {
+        console.error("Error loading file:", e);
+      }
+
+      setError(message);
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
+  };
+
+  load();
+
+  return () => {
+    cancelled = true;
+    if (fileUrl) URL.revokeObjectURL(fileUrl);
+    setFileUrl(null);
+    setError(null);
+  };
+}, [show, xnodeId]);
+
 
   if (!show) return null;
 

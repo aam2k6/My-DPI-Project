@@ -1655,7 +1655,7 @@ export const LockerView = () => {
                                                 {filteredXnodes.map((xnode) => (
                                                     <TableRow key={xnode.id} style={{ padding: "4px" }}>
                                                         <TableCell
-                                                            onClick={() => handleClick(xnode.id)}
+                                                            // onClick={() => handleClick(xnode.id)}
                                                             id={
                                                                 xnode.xnode_Type === "INODE"
                                                                     ? "documents"
@@ -1802,7 +1802,7 @@ export const LockerView = () => {
                                                                                                                         : "documents-byShare"
                                                                                                             }
                                                                                                         >
-                                                                                                            {xnode.resource_name}
+                                                                                                            <span onClick={() => handleClick(xnode.id)}>{xnode.resource_name}</span>
                                                                                                         </TableCell>
 
                                                                                                         <TableCell align="right">
@@ -1894,7 +1894,7 @@ export const LockerView = () => {
                                                                                                 : "documents-byShare"
                                                                                     }
                                                                                 >
-                                                                                    {xnode.resource_name}
+                                                                                    <span onClick={() => handleClick(xnode.id)}>{xnode.resource_name}</span>
                                                                                 </TableCell>
 
                                                                                 <TableCell align="right">

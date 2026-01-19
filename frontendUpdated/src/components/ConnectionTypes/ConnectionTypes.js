@@ -45,12 +45,25 @@ export const ConnectionTypes = () => {
         directory: false,
         settings: false,
     });
+    const [validityTime, setValidityTime] = useState("");
     const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
     const toggleSubmenu = (menu) =>
         setOpenSubmenus((prev) => ({
             ...prev,
             [menu]: !prev[menu],
         }));
+
+
+        const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    return dateString.split("T")[0];
+};
+
+// when opening edit modal
+// setValidityTime(formatDateForInput(connection.validity_time));
+
+    
+    console.log("Validity", validityTime)
 
 useEffect(() => {
     const fetchNotifications = async () => {
@@ -136,6 +149,7 @@ useEffect(() => {
         setEditingConnection(connection.connection_type_id);
         setNewConnectionTypeName(connection.connection_type_name);
         setNewConnectionDescription(connection.connection_description);
+        setValidityTime(formatDateForInput(connection.validity_time));
         setSelectedConnectionTerm(""); // Clear any previous term selections
         setShowEditConnectionModal(true); // Show the modal
         await fetchConnectionType(connection.connection_type_name); // Fetch terms for this connection type
@@ -152,8 +166,10 @@ useEffect(() => {
                 connection_type_id: editingConnection,
                 connection_type_name: newConnectionTypeName, // Updated name
                 connection_type_description: newConnectionDescription, // Updated description
+                validity_time: validityTime.toString(),
             };
 
+            
             // If a term is selected, include the term update
             if (selectedTerm && labelName) {
                 connectionUpdateData.terms = [
@@ -174,12 +190,15 @@ useEffect(() => {
                 // Re-fetch connections after saving
                 fetchConnectionType();
                 setShowEditConnectionModal(false);
+                setValidityTime("");
                 setModalMessage({
                     message: "Connection type updated successfully!",
                     type: "success",
                 });
             } else {
                 console.error(data.message);
+                setShowEditConnectionModal(false);
+                setValidityTime("");
                 setModalMessage({
                     message: "Failed to update connection.",
                     type: "failure",
@@ -187,6 +206,8 @@ useEffect(() => {
             }
         } catch (error) {
             console.error("An error occurred while updating the connection:", error);
+            setShowEditConnectionModal(false);
+            setValidityTime("");
             setModalMessage({
                 message: "An error occurred while updating the connection.",
                 type: "failure",
@@ -441,6 +462,19 @@ useEffect(() => {
                                                     />
                                                 </div>
 
+                                                <div className="form-group">
+                                                    <label >Validity Date</label>
+                                                    <input
+                                                        type="date"
+                                                        // className="form-control"
+                                                        value={validityTime}
+                                                        min={new Date().toISOString().split("T")[0]} // disable past dates
+                                                        onChange={(e) => setValidityTime(e.target.value)}
+                                                        // required
+                                                    />
+                                                </div>
+
+
                                                 {terms.length > 0 && (
                                                     <div>
                                                         <label htmlFor="termsDropdown">Select Term:</label>
@@ -500,7 +534,9 @@ useEffect(() => {
                                                 <div className="modal-buttons">
                                                     <button
                                                         className="cancel-btn"
-                                                        onClick={() => setShowEditConnectionModal(false)}
+                                                        onClick={() => {setShowEditConnectionModal(false);
+                                                                        setValidityTime("");
+                                                        }}
                                                     >
                                                         Cancel
                                                     </button>

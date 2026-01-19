@@ -126,6 +126,7 @@ export const Guesttermsreview = () => {
   useEffect(() => {
     // const token = Cookies.get("authToken");
     const connectionLifeCycle = () => {
+      console.log("connection lifecycle", connection);
       apiFetch.post("/update_connection_status_tolive/",
         {
           connection_name: connection?.connection_name,
@@ -133,6 +134,7 @@ export const Guesttermsreview = () => {
           guest_locker_name: connection?.guest_locker?.name,
           host_user_username: connection?.host_user?.username,
           guest_user_username: connection?.guest_user?.username
+          
         },
       ).then((res) => res.data)
         .then((data) => {

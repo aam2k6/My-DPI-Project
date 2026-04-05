@@ -1,0 +1,217 @@
+.navbarLockerName, .navbarLockerOwner {
+    font-weight: bolder;
+    font-size: 1.5625rem;
+    margin-left: 2rem;
+  }
+
+.descriptionLocker{
+    margin: 3rem; 
+    font-size: 1.195rem;                          
+}
+
+.uploadDescriptions{
+  font-size: 18px;
+  padding-left: 50px;
+}
+
+.page4heroContainer {
+    border: 2px solid rgb(107, 120, 231);
+    display: flex;
+    margin: 3rem;
+    justify-content: center;
+    align-items: center;
+    height: calc(80vh - 4rem); /* Adjusting for the navbar height */
+    flex-direction: column;
+  }
+
+  .page4resourceHeading {
+    font-size: 1.5rem;
+    margin-bottom: 4rem;
+    /* margin-top: 0.1rem; */
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .page4lockerForm {
+    
+    display: flex;
+    flex-direction: column;
+    width: 85%; /* Adjust as needed */
+    /* max-width: 600px; */
+  }
+  
+  .page4lockerForm label {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5rem;
+   
+  }
+
+  .page4lockerForm input {
+    padding: 0.5rem ;
+    /* margin-top: 0.5rem; */
+    border: 2px solid rgb(107, 120, 231);
+    margin-left: 3rem;
+    border-radius: 0.25rem; 
+    width: 55%;
+    
+  }
+  
+  .page4lockerForm button {
+    background-color: #007bff;
+    color: #fff;
+    width: auto;
+    border: none;
+    padding: 1rem 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: bolder;
+    /* padding: 0.5rem 0.25rem;  */
+    max-width: 200px;
+
+  }
+
+  .page4lockerForm label span {
+    margin-right: 5rem; /* Space between label text and input */
+    font-size: 1.45rem;
+    font-weight: bolder;
+    flex: 0.3;
+  }
+  
+  .page4lockerForm button:hover {
+    background-color: #0056b3;
+  }
+
+  .hidden-checkbox {
+    display: none; /* Hide default checkbox */
+  }
+  
+  .custom-checkbox {
+    display: flex;
+    align-items: center;
+    /* padding: 3px 4px; */
+    border-radius: 20px;
+    /* background-color: #f0f0f0; */
+    /* width: 20%; */
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .custom-checkbox::before {
+    content: "";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 10%;
+    background-color: rgb(255, 255, 255);
+    border: 2px solid #ccc;
+    margin-right: 10px;
+    transition: background-color 0.3s, border 0.3s;
+  }
+  
+  
+  .checked::before {
+    content: "✔"; /* Display tick mark */
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background-color: #007aff;
+    border: none;
+  }
+  /* #google-drive-picker .btn{
+    white-space: nowrap;
+  } */
+
+.google-drive-btn {
+  background-color: #f8f9fa;
+  border: 1px solid #dadce0;
+  color: #1967d2;
+  font-weight: 500;
+  border-radius: 0 6px 6px 0;
+  transition: all 0.2s ease;
+}
+
+.google-drive-btn:hover {
+  background-color: #e8f0fe;
+  border-color: #c6dafc;
+  color: #174ea6;
+}
+
+.google-drive-btn img {
+  pointer-events: none;
+}
+
+
+.edits-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.edits-modal .modal-content {
+  width: 420px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.edits-modal h4 {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.edits-modal textarea {
+  width: 100%;
+  height: 100px;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #d1d1d1;
+  outline: none;
+  resize: none;
+}
+.edits-modal textarea:focus {
+  border: 1px solid #0d6efd;
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.4);
+}
+
+.edits-modal .btn {
+  width: 120px;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.edits-modal .btn-cancel {
+  background: #e9ecef;
+  color: #333;
+  transition: 0.2s;
+}
+
+.edits-modal .btn-cancel:hover {
+  background: #d4d4d4;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+

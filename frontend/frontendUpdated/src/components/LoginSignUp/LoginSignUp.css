@@ -1,0 +1,538 @@
+/* Authentication Component Styles */
+
+.auth-container {
+    min-height: 0vh;
+    /* background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899); */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.headerlogins {
+    width: 100%;
+    background-color: #1a1a4e; /* Same dark blue as in screenshot */
+    color: white;
+    text-align: center; /* Center the text horizontally */
+    /* padding: px 0; Add vertical padding */
+    font-size: 1rem; /* Adjust the size of the header text */
+    font-weight: 400; /* Optional for bold */
+}
+
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 32rem;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    border: 1rem solid rgba(23, 22, 75)
+}
+
+/* .card-header-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0.25rem;
+    background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);
+} */
+
+.auth-container .header-text {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-container .header-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    margin: 0;
+}
+
+.auth-container .header-subtitle {
+    color: #4b5563;
+    margin: 0;
+}
+
+.auth-container .tabs-container {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 0.75rem;
+    padding: 0.25rem;
+    margin-bottom: 2rem;
+}
+
+.auth-container .tab {
+    flex: 1;
+    /* padding: 0.75rem 0; */
+    text-align: center;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 300ms;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+}
+
+.auth-container .tab:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.auth-container .tab.active {
+    background-color: #fff;
+    color: #4f46e5;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.auth-container .message-box {
+    margin-bottom: 1.25rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    font-weight: 500;
+    color: #fff;
+}
+
+.auth-container .message-box.success {
+    background-color: #22c55e;
+}
+
+.auth-container .message-box.error {
+    background-color: #ef4444;
+}
+
+.auth-container .message-box.info {
+    background-color: #3b82f6;
+}
+
+.auth-container .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.20rem;
+}
+
+.auth-container .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-container .col-form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.auth-container .form-input,
+.auth-container .form-textarea {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    /* background-color: #f9fafb; */
+    transition: all 300ms;
+    font-family: inherit;
+    font-size: inherit;
+    box-sizing: border-box;
+}
+
+.auth-container .form-input:focus,
+.auth-container .form-textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.auth-container .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.auth-container .primary-button {
+    width: 100%;
+    /* padding: 1rem; */
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 300ms;
+    background: linear-gradient(to right, #6366f1, #a855f7);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.auth-container .primary-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.auth-container .primary-button:active {
+    transform: translateY(0);
+}
+
+.auth-container .secondary-button {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 300ms;
+    background-color: #e5e7eb;
+    color: #374151;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.auth-container .secondary-button:hover {
+    background-color: #d1d5db;
+}
+
+.google-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    /* padding: 1rem; */
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    background-color: #fff;
+    transition: all 300ms;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.google-button:hover {
+    border-color: #d1d5db;
+    background-color: #f9fafb;
+}
+
+.google-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}
+
+.auth-container .divider {
+    position: relative;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.auth-container .divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #e5e7eb;
+}
+
+.auth-container .divider-text {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 0 1.25rem;
+    color: #4b5563;
+    font-size: 0.875rem;
+}
+
+.auth-container .dot-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-container .dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background-color: #6366f1;
+}
+
+.google-user-info {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-info-flex {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user-image {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.user-email {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+/* Modal Styles */
+.auth-container .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.25rem;
+}
+
+.auth-container .modal {
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 28rem;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.auth-container .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.modal-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.auth-container .modal-header-text {
+    font-size: 1.125rem;
+    color: #4b5563;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+.modal-subtitle {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+.app-name {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.modal-accounts-list {
+    max-height: 20rem;
+    overflow-y: auto;
+}
+
+.account-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    transition: background-color 200ms;
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: inherit;
+}
+
+.account-button:hover {
+    background-color: #f9fafb;
+}
+
+.auth-container .avatar-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.account-details {
+    text-align: left;
+    flex: 1;
+}
+
+.account-name {
+    font-weight: 500;
+    color: #1f2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.account-email {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+.add-account-button {
+    border-top: 1px solid #f3f4f6;
+}
+
+.add-icon-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4b5563;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.add-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-card {
+        padding: 2rem;
+    }
+    
+    .header-title {
+        font-size: 1.5rem;
+    }
+    
+    .modal {
+        margin: 1rem;
+    }
+}
+
+/* Focus and accessibility improvements */
+.tab:focus,
+.auth-container .primary-button:focus,
+.auth-container .secondary-button:focus,
+.google-button:focus,
+.account-button:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* Loading states */
+.auth-container .primary-button:disabled,
+.auth-container .secondary-button:disabled,
+.google-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-container .primary-button:disabled:hover,
+.auth-container .secondary-button:disabled:hover,
+.auth-container .google-button:disabled:hover {
+    transform: none;
+}
+
+/* Smooth transitions for better UX */
+* {
+    box-sizing: border-box;
+}
+
+.form-container > * {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.input-with-icon {
+  padding-right: 2.5rem; /* reserve space for eye */
+}
+
+.icon-eye {
+  position: absolute;
+  top: 50%;               /* always center vertically */
+  right: 0.75rem;         /* fixed distance from right */
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.icon-eye:hover {
+  color: #0d6efd; /* Bootstrap blue on hover */
+}
+@media (max-width: 576px) {
+  .auth-container .form-container {
+   gap: 0px;
+  }
+}
+
+@media (max-width: 576px) {
+.headerlogins h1{
+    font-size:26px;
+}
+}
+
+@media (max-width: 400px) {
+.headerlogins h1{
+    font-size:24px;
+}
+}

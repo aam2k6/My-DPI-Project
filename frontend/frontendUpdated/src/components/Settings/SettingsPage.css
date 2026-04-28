@@ -11,8 +11,8 @@
     .settings-page {
         width: 90%;
         padding: 15px;
-        font-size: 14px; /* Optional: adjust font size if needed */
-        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1); /* Optional: reduce shadow intensity */
+        font-size: 14px; 
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
     }
 }
 
@@ -48,6 +48,16 @@
     border-radius: 4px;
 }
 
+.custom-select {
+    width: 80%;
+    padding: 8px;
+    font-size: 1.2rem;
+    border: 2px solid rgb(107, 120, 231);
+    border-radius: 4px;
+    background-color: white;
+    color: #333;
+}
+
 .profile-actions {
     display: flex;
     justify-content: space-between;
@@ -75,12 +85,12 @@
     position: relative;
     display: flex;
     align-items: center;
-    width: 80%; /* Ensure the wrapper has the same width as the input */
+    width: 80%; 
 }
 
 .password-wrapper input {
-    width: 100%; /* Full width to fit inside the wrapper */
-    padding: 8px 2.5rem 8px 8px; /* Add padding on the right for the eye icon */
+    width: 100%; 
+    padding: 8px 2.5rem 8px 8px; 
     font-size: 1.2rem;
     border: 2px solid rgb(107, 120, 231);
     border-radius: 4px;
@@ -92,6 +102,67 @@
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    z-index: 1; /* Ensure the icon is clickable and above other elements */
-    color: rgb(107, 120, 231); /* Optional: change the color to match the input border */
+    z-index: 1; 
+    color: rgb(107, 120, 231); 
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Tooltip Dropdown CSS */
+.tooltip-container {
+    position: relative;
+    display: flex; /* Ensures alignment inside flex container */
+    align-items: center;
+}
+
+.tooltip-dropdown {
+    visibility: hidden;
+    opacity: 0;
+    width: 350px;
+    background-color: #5d9bd5; /* Updated blue color */
+    color: #fff;
+    text-align: left;
+    border-radius: 8px;
+    padding: 14px 18px;
+    position: absolute;
+    z-index: 100;
+    
+    /* Position tooltip to the right of the button */
+    top: -40%;
+    left: 100%;
+    margin-left: 12px; /* Gap between button and tooltip */
+    
+    /* Center it vertically and pull slightly left for the animation */
+    transform: translateY(-50%) translateX(-10px); 
+    
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    font-size: 0.9rem;
+    font-weight: 400;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    line-height: 1.5;
+    pointer-events: none; /* Prevents cursor interference */
+}
+
+/* Arrow pointing left from the tooltip to the button */
+.tooltip-dropdown::after {
+    content: "";
+    position: absolute;
+    top: 80%;
+    right: 100%; /* Position on the left edge of the tooltip */
+    margin-top: -8px; /* Centers the 8px arrow */
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent #5d9bd5 transparent transparent; /* Match the new background color */
+}
+
+/* Hover sway effect */
+.tooltip-container:hover .tooltip-dropdown {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(-50%) translateX(0); /* Sway perfectly into place */
 }

@@ -375,26 +375,61 @@ const handleModalCancel = () => {
       readOnly
       required
     />
-    <button
-      type="button"
-      className="btn google-drive-btn d-flex align-items-center justify-content-center gap-2"
-      onClick={handleOpenPicker}
-    >
-      <img
-        src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png"
-        alt="Google Drive"
-        width="20"
-        height="20"
-      />
-      <span>Choose from Drive</span>
-    </button>
+    <div className="upload-hover-wrap file-wrap">
+
+  <button
+    type="button"
+    className="btn google-drive-btn d-flex align-items-center justify-content-center gap-2"
+    onClick={handleOpenPicker}
+  >
+    <img
+      src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png"
+      alt="Google Drive"
+      width="20"
+      height="20"
+    />
+    <span>Choose from Drive</span>
+  </button>
+
+  <div className="upload-hover-box file-box">
+    This data is fetched from an external source (e.g., Google Drive)
+    and shared only with your explicit permission.
+
+
+    This satisfies <strong>Section 4(1)</strong> (lawful processing with
+    consent) and <strong>Section 6(1)</strong> (free, specific, informed
+    consent for a defined purpose).
+
+
+    Only necessary data is accessed and shared, ensuring purpose
+    limitation and user control under the Act.
+  </div>
+
+</div>
   </div>
 </div>
 
 
 
                 <div className="mb-3">
-                  <label htmlFor="visibility" className="form-label fw-bold">Visibility</label>
+                  <div className="upload-hover-wrap visibility-wrap">
+  <label htmlFor="visibility" className="form-label fw-bold">
+    Visibility
+  </label>
+
+  <div className="upload-hover-box visibility-box">
+    Visibility controls let you decide whether your data is private
+    (restricted access) or publicly available.
+
+
+    This aligns with Section 6(1) (user-controlled, explicit consent)
+    and Section 4(1) (processing only for lawful, consented purposes).
+
+
+    If made public by you, it falls under Section 3(c)(ii), where
+    publicly shared data is no longer restricted under the Act.
+  </div>
+</div>
                   <select
                     className="form-select"
                     id="visibility"
@@ -408,7 +443,25 @@ const handleModalCancel = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="validityTime" className="form-label fw-bold">Validity Time</label>
+                  <div className="upload-hover-wrap validity-wrap">
+  <label htmlFor="validityTime" className="form-label fw-bold">
+    Validity Time
+  </label>
+
+  <div className="upload-hover-box validity-box">
+    Validity Time defines how long your consent remains active for
+    data sharing.
+
+
+    This aligns with Section 6(1) (consent must be specific and
+    purpose-bound) and Section 8(7) (data must be erased once the
+    purpose is no longer served).
+
+
+    It ensures data is not used indefinitely, enforcing time-bound,
+    purpose-limited processing.
+  </div>
+</div>
                   <input
                     type="date"
                     className="form-control"
@@ -421,71 +474,123 @@ const handleModalCancel = () => {
                 <div className="mt-3">
                   <label className="form-label fw-bold mb-2">Permissions</label>
                   <Grid container md={8} sm={8} xs={12} style={{ marginLeft: "3px" }}>
-                  <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="transfer"
-                        name="transfer"
-                        checked={permissions.transfer}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
-                        Transfer
-                      </label>
-                    </Grid>
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="subset"
-                        name="subset"
-                        checked={permissions.subset}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.subset ? "checked" : ""}`} htmlFor="subset">
-                        Subset
-                      </label>
-                    </Grid>
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="share"
-                        name="share"
-                        checked={permissions.share}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.share ? "checked" : ""}`} htmlFor="share">
-                        Reshare
-                      </label>
-                    </Grid>
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="confer"
-                        name="confer"
-                        checked={permissions.confer}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.confer ? "checked" : ""}`} htmlFor="confer">
-                        Confer
-                      </label>
-                    </Grid>
-                    <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="collateral"
-                        name="collateral"
-                        checked={permissions.collateral}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.collateral ? "checked" : ""}`} htmlFor="collateral">
-                        Collateral
-                      </label>
-                    </Grid>
+
+  {/* Transfer */}
+  <Grid item md={4} sm={4} xs={6} className="mb-2 permission-wrap">
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="transfer"
+      name="transfer"
+      checked={permissions.transfer}
+      onChange={handleChange}
+    />
+    <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
+      Transfer
+    </label>
+
+    <div className="perm-hover-box left-box top-box transfer-box">
+      <strong>Transfer</strong> permission allows your data to be shared with another entity only after your explicit approval.
+
+      This satisfies <strong>Section 4(1)</strong> (processing only for lawful purpose with consent) and <strong>Section 6(1)</strong> (free, specific, informed consent).
+
+      Each transfer is recorded as proof, ensuring accountability under <strong>Section 6(10)</strong>.
+    </div>
+  </Grid>
+
+  {/* Subset */}
+  <Grid item md={4} sm={4} xs={6} className="mb-2 permission-wrap">
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="subset"
+      name="subset"
+      checked={permissions.subset}
+      onChange={handleChange}
+    />
+    <label className={`custom-checkbox ${permissions.subset ? "checked" : ""}`} htmlFor="subset">
+      Subset
+    </label>
+
+    <div className="perm-hover-box top-box subset-box">
+      <strong>Subset</strong> permission allows sharing only a selected portion of your data instead of the entire dataset.
+
+      This aligns with <strong>Section 6(1)</strong>, which requires consent to be limited to only necessary data, and <strong>Section 5(1)</strong> for clearly specifying what data is used.
+
+      It enforces data minimization and purpose limitation, ensuring no excess data is shared.
+    </div>
+  </Grid>
+
+  {/* Reshare */}
+  <Grid item md={4} sm={4} xs={6} className="mb-2 permission-wrap">
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="share"
+      name="share"
+      checked={permissions.share}
+      onChange={handleChange}
+    />
+    <label className={`custom-checkbox ${permissions.share ? "checked" : ""}`} htmlFor="share">
+      Reshare
+    </label>
+
+    <div className="perm-hover-box top-box reshare-box">
+      <strong>Reshare</strong> permission allows a receiving entity to share your data further with another party, only with your explicit approval.
+
+      This aligns with <strong>Section 4(1)</strong> and <strong>Section 6(1)</strong> (specific, informed consent for each use).
+
+      Each reshare is tracked as a new consent instance, ensuring accountability under <strong>Section 6(10)</strong>.
+    </div>
+  </Grid>
+
+  {/* Confer */}
+  <Grid item md={4} sm={4} xs={6} className="mb-2 permission-wrap">
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="confer"
+      name="confer"
+      checked={permissions.confer}
+      onChange={handleChange}
+    />
+    <label className={`custom-checkbox ${permissions.confer ? "checked" : ""}`} htmlFor="confer">
+      Confer
+    </label>
+
+    <div className="perm-hover-box left-box bottom-box confer-box">
+      <strong>Confer</strong> permission allows an entity to grant or extend your data access rights to another party on your behalf, only with your explicit approval.
+
+      This aligns with <strong>Section 4(1)</strong> and <strong>Section 6(1)</strong> (specific, informed, unambiguous consent).
+
+      Each confer action is logged as proof, ensuring traceability and compliance under <strong>Section 6(10)</strong>.
+    </div>
+  </Grid>
+
+  {/* Collateral */}
+  <Grid item md={4} sm={4} xs={6} className="mb-2 permission-wrap">
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="collateral"
+      name="collateral"
+      checked={permissions.collateral}
+      onChange={handleChange}
+    />
+    <label className={`custom-checkbox ${permissions.collateral ? "checked" : ""}`} htmlFor="collateral">
+      Collateral
+    </label>
+
+    <div className="perm-hover-box left-box bottom-box collateral-box">
+      <strong>Collateral</strong> permission allows your data to be used as supporting proof (e.g., for loans/services) with your explicit approval.
+
+      This satisfies <strong>Section 4(1)</strong> and <strong>Section 6(1)</strong> (specific, informed consent).
+
+      The usage is purpose-bound and recorded, ensuring accountability under <strong>Section 6(10)</strong>.
+    </div>
+  </Grid>
+
+
                     {/* <Grid item md={4} sm={4} xs={6} className="mb-2">
                       <input
                         className="hidden-checkbox"

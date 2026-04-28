@@ -508,4 +508,33 @@ body {
         padding: 12px;
         font-size: 1rem; /* Default font size */
     }
+
+    .hover-info-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hover-info-box {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 48px;
+      left: 0;
+      width: 430px;
+      background: white;
+      color: #222;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      font-size: 14px;
+      line-height: 1.6;
+      z-index: 999;
+      transition: 0.25s ease;
+    }
+
+    .hover-info-wrapper:hover .hover-info-box {
+      visibility: visible;
+      opacity: 1;
+    }
+    
 }

@@ -9,6 +9,8 @@ import { frontend_host } from "../../config";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import {apiFetch} from '../../utils/api';
+import HoverMenu from "../HoverMenu";
+
 
 export const Home2 = () => {
   const navigate = useNavigate();
@@ -374,9 +376,21 @@ console.log("lockk",lockers)
               {/* Button and "My Lockers" text container */}
               <div className="button-container">
                 {/* Text Button */}
-                <span className="text-button" style={{ fontSize: `${28 * scale}px` }}> {/* Inline style for dynamic font size on PC */}
-                  My Lockers
-                </span>
+                <div className="locker-hover-wrapper">
+                  <span
+                    className="text-button"
+                    style={{ fontSize: `${28 * scale}px` }}
+                  >
+                    My Lockers
+                  </span>
+
+                  <div className="locker-hover-box">
+                    Create your Data Locker: Securely store and control access to your personal data.
+                    We use only necessary data for account creation, with your explicit consent
+                    <strong> (DPDP Sec. 5 & 6)</strong>.
+                    You can review, manage, or withdraw consent anytime through the Consent Manager.
+                  </div>
+                </div>
                 {/* Create Locker Button */}
                 <button
                   className="primary-button"

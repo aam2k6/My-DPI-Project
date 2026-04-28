@@ -25,6 +25,8 @@ import { Container, Grid, TextField, Button, Typography, Box } from "@mui/materi
 import Modal from "../Modal/Modal";
 import ViewerModal from "../Modal/IFrameModal.js";
 import "./page3.css";
+//import { useRef, useState } from "react";
+
 
 export const LockerView = () => {
     const navigate = useNavigate()
@@ -1601,13 +1603,30 @@ export const LockerView = () => {
                         </div>
                     </div>
                     <div className="consent-dashboard">
-                        <h3 className="consent-title">Consent Artefacts<span
-                            className="align-arrow"
-                        >
-                            <i
-                                className="bi bi-file-earmark-text px-2"
-                            >  </i>
-                        </span></h3>
+                        <div className="hover-info-wrapper">
+                                <h3 className="consent-title">
+                                    Consent Artefacts
+                                    <span className="align-arrow">
+                                    <i className="bi bi-file-earmark-text px-2"></i>
+                                    </span>
+                                </h3>
+
+                                <div className="hover-info-box right-popup">
+                                    A Consent Artifact is a digital record capturing what data is shared,
+                                    with whom, for what purpose, and duration.
+
+                                    
+
+                                    It satisfies <strong>DPDP Section 6(1)</strong> by ensuring consent is free,
+                                    specific, informed, and unambiguous, and <strong>Section 5(1)</strong> by
+                                    clearly stating purpose and data use.
+
+                                    
+
+                                    It also fulfills <strong>Section 6(10)</strong> by serving as verifiable proof
+                                    that valid consent was obtained and can be audited.
+                                </div>
+                                </div>
                         <div className="stat-grids-consent">
                             <StatBox label="Total Consent Artefacts" value={xnodes ? xnodes.length : 0} fullWidth />
                             {/* <StatBox label="Established" value={<><span className="main-value">1</span><sub className="sub-label"> connections</sub></>} /> */}
@@ -1980,14 +1999,32 @@ export const LockerView = () => {
                         <Tooltip id="tooltip" style={{ maxWidth: '150px', whiteSpace: 'normal', fontSize: "13px" }} />
                     </div> */}
                     <div className="tabs-container">
+
+  {/* Incoming */}
   <div
     className={`tab-item ${activeTab === "incoming" ? "active" : ""}`}
     onClick={() => setActiveTab("incoming")}
   >
     Incoming Connections
     <span className="tab-count">{otherConnections.length}</span>
+
+    <div className="tab-hover-box incoming-box">
+      Incoming Connections represent requests from external entities to access
+      your data, which require your explicit approval before any sharing.
+
+
+      This satisfies <strong>Section 4(1)</strong> (processing only for lawful
+      purpose with consent) and <strong>Section 6(1)</strong> (free, specific,
+      informed consent).
+
+
+      Each approved request becomes a traceable consent flow, ensuring
+      accountability and auditability under <strong>Section 6(10)</strong>.
+    </div>
   </div>
 
+
+  {/* Outgoing */}
   <div
     className={`tab-item ${activeTab === "outgoing" ? "active" : ""}`}
     onClick={() => setActiveTab("outgoing")}
@@ -1996,15 +2033,45 @@ export const LockerView = () => {
     <span className="tab-count">
       {connections.outgoing_connections.length}
     </span>
+
+    <div className="tab-hover-box outgoing-box">
+      Outgoing Connections represent your request to share data with another
+      entity for a specific purpose.
+
+
+      This satisfies <strong>Section 6(1)</strong> by ensuring your consent is
+      free, specific, informed, and explicit, and
+      <strong> Section 5(1)</strong> by clearly defining the purpose of sharing.
+
+      Each action is recorded as proof of consent, fulfilling
+      <strong> Section 6(10)</strong> for verifiable and auditable data sharing.
+    </div>
   </div>
 
+
+  {/* Archived */}
   <div
     className={`tab-item ${activeTab === "archived" ? "active" : ""}`}
     onClick={() => setActiveTab("archived")}
   >
     Archived Connections
     <span className="tab-count">{closedConnections.length}</span>
+
+    <div className="tab-hover-box archive-box">
+      Archived Connections store past data-sharing consents that are no longer
+      active but retained for record and audit purposes.
+
+
+      This aligns with <strong>Section 8(7)</strong>, which requires data to be
+      erased when no longer needed, while allowing retention if required for
+      legal compliance.
+
+
+      They also support <strong>Section 6(10)</strong> by maintaining
+      verifiable proof of past consent for accountability and audits.
+    </div>
   </div>
+
 </div>
 
                     <div className="tab-content">

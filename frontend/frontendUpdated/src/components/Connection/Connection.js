@@ -309,70 +309,144 @@ const response= apiFetch.get("/locker/get-user/")
                       </label>
                     </Grid> */}
                     <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="share"
-                        name="share"
-                        checked={permissions.share}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.share ? "checked" : ""}`} htmlFor="share">
-                        Reshare
-                      </label>
-                    </Grid>
+  <div className="permission-wrap">
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="share"
+      name="share"
+      checked={permissions.share}
+      onChange={handleChange}
+    />
+    <label className={`custom-checkbox ${permissions.share ? "checked" : ""}`} htmlFor="share">
+      Reshare
+    </label>
+
+    <div className="perm-hover-box reshare-left">
+      <strong>Reshare permission</strong> allows a receiving entity to share your data further with another party, only with your explicit approval.
+      
+      This aligns with <strong>Section 4(1)</strong> and <strong>Section 6(1)</strong>.
+      
+      Each reshare is tracked under <strong>Section 6(10)</strong>.
+    </div>
+  </div>
+</Grid>
                     <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="confer"
-                        name="confer"
-                        checked={permissions.confer}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.confer ? "checked" : ""}`} htmlFor="confer">
-                        Confer
-                      </label>
-                    </Grid>
+  <div className="permission-wrap">
+
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="confer"
+      name="confer"
+      checked={permissions.confer}
+      onChange={handleChange}
+    />
+
+    <label
+      className={`custom-checkbox ${permissions.confer ? "checked" : ""}`}
+      htmlFor="confer"
+    >
+      Confer
+    </label>
+
+    <div className="perm-hover-box confer-up">
+      <strong>Confer permission</strong> allows an entity to grant or extend your data access rights to another party on your behalf, only with your explicit approval.
+      
+      This aligns with <strong>Section 4(1)</strong> (lawful processing with consent) and <strong>Section 6(1)</strong> (specific, informed, unambiguous consent).
+      
+      Each confer action is logged as proof, ensuring traceability and compliance under <strong>Section 6(10)</strong>.
+    </div>
+
+  </div>
+</Grid>
                     <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="collateral"
-                        name="collateral"
-                        checked={permissions.collateral}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.collateral ? "checked" : ""}`} htmlFor="collateral">
-                        Collateral
-                      </label>
-                    </Grid>
+  <div className="permission-wrap">
+
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="collateral"
+      name="collateral"
+      checked={permissions.collateral}
+      onChange={handleChange}
+    />
+
+    <label
+      className={`custom-checkbox ${permissions.collateral ? "checked" : ""}`}
+      htmlFor="collateral"
+    >
+      Collateral
+    </label>
+
+    <div className="perm-hover-box collateral-right">
+      <strong>Collateral permission</strong> allows your data to be used as supporting proof (e.g., for loans/services) with your explicit approval.
+      
+      This satisfies <strong>Section 4(1)</strong> (processing only for lawful, consented purpose) and <strong>Section 6(1)</strong> (specific, informed consent).
+      
+      The usage is purpose-bound and recorded, ensuring accountability under <strong>Section 6(10)</strong>.
+    </div>
+
+  </div>
+</Grid>
                     <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="transfer"
-                        name="transfer"
-                        checked={permissions.transfer}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`} htmlFor="transfer">
-                        Transfer
-                      </label>
-                    </Grid>
+  <div className="permission-wrap">
+
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="transfer"
+      name="transfer"
+      checked={permissions.transfer}
+      onChange={handleChange}
+    />
+
+    <label
+      className={`custom-checkbox ${permissions.transfer ? "checked" : ""}`}
+      htmlFor="transfer"
+    >
+      Transfer
+    </label>
+
+    <div className="perm-hover-box transfer-left">
+      <strong>Transfer permission</strong> allows your data to be shared with another entity only after your explicit approval.
+      
+      This satisfies <strong>Section 4(1)</strong> (lawful processing with consent) and <strong>Section 6(1)</strong> (free, specific, informed consent).
+      
+      Each transfer is recorded as proof, ensuring accountability under <strong>Section 6(10)</strong>.
+    </div>
+
+  </div>
+</Grid>
                     <Grid item md={4} sm={4} xs={6} className="mb-2">
-                      <input
-                        className="hidden-checkbox"
-                        type="checkbox"
-                        id="subset"
-                        name="subset"
-                        checked={permissions.subset}
-                        onChange={handleChange}
-                      />
-                      <label className={`custom-checkbox ${permissions.subset ? "checked" : ""}`} htmlFor="subset">
-                        Subset
-                      </label>
-                    </Grid>
+  <div className="permission-wrap">
+
+    <input
+      className="hidden-checkbox"
+      type="checkbox"
+      id="subset"
+      name="subset"
+      checked={permissions.subset}
+      onChange={handleChange}
+    />
+
+    <label
+      className={`custom-checkbox ${permissions.subset ? "checked" : ""}`}
+      htmlFor="subset"
+    >
+      Subset
+    </label>
+
+    <div className="perm-hover-box subset-down">
+      <strong>Subset permission</strong> allows sharing only a selected portion of your data instead of the entire dataset.
+      
+      This aligns with <strong>Section 6(1)</strong> (limit to necessary data) and <strong>Section 5(1)</strong> (clearly defined usage).
+      
+      It enforces data minimization and purpose limitation, ensuring no excess data is shared.
+    </div>
+
+  </div>
+</Grid>
                   </Grid>
                 </Grid>
                 <button type="submit">Confirm & Proceed</button>

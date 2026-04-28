@@ -82,3 +82,103 @@
   .connection-lockerForms button:hover {
     background-color: #0056b3;
   }
+
+  /* =============================== */
+/* POST CONDITIONS TOOLTIP FIXED   */
+/* =============================== */
+
+.permission-wrap{
+  position: relative;
+  display: inline-block;
+}
+
+.perm-hover-box{
+  position: absolute;
+  width: 260px;
+  background:#5d9bd5;
+  color:#fff;
+  padding:12px 14px;
+  border-radius:4px;
+  font-size:12px;
+  line-height:1.45;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+  z-index:9999;
+
+  opacity:0;
+  visibility:hidden;
+  transition:.2s ease;
+  pointer-events:none;
+}
+
+.permission-wrap:hover .perm-hover-box{
+  opacity:1;
+  visibility:visible;
+}
+
+/* arrow */
+.perm-hover-box::after{
+  content:"";
+  position:absolute;
+  width:0;
+  height:0;
+}
+
+/* LEFT (Reshare + Transfer) */
+.reshare-left,
+.transfer-left{
+  right:300%;
+  top:-70px;
+}
+
+.reshare-left::after,
+.transfer-left::after{
+  top:55%;
+  right:-12px;
+  transform:translateY(-50%);
+  border-top:8px solid transparent;
+  border-bottom:8px solid transparent;
+  border-left:12px solid #5d9bd5;
+}
+
+/* UP (Confer) */
+.confer-up{
+  bottom:120%;
+  left:-40px;
+}
+
+.confer-up::after{
+  bottom:-10px;
+  left:80px;
+  border-left:8px solid transparent;
+  border-right:8px solid transparent;
+  border-top:10px solid #5d9bd5;
+}
+
+/* RIGHT (Collateral) */
+.collateral-right{
+  left:120%;
+  top:-70px;
+}
+
+.collateral-right::after{
+  top:50%;
+  left:-12px;
+  transform:translateY(-50%);
+  border-top:8px solid transparent;
+  border-bottom:8px solid transparent;
+  border-right:12px solid #5d9bd5;
+}
+
+/* DOWN (Subset) */
+.subset-down{
+  top:120%;
+  left:-40px;
+}
+
+.subset-down::after{
+  top:-10px;
+  left:80px;
+  border-left:8px solid transparent;
+  border-right:8px solid transparent;
+  border-bottom:10px solid #5d9bd5;
+}

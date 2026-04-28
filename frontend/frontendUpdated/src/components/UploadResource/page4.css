@@ -215,3 +215,238 @@
   }
 }
 
+/* ================================ */
+/* UPLOAD RESOURCE HOVER BOXES */
+/* ================================ */
+
+.upload-hover-wrap{
+  position:relative;
+  display:inline-block;
+}
+
+.upload-hover-box{
+  position:fixed;
+  width:300px;
+  background:#5d9bd5;
+  color:#fff;
+  padding:14px 16px;
+  border-radius:4px;
+  font-size:13px;
+  line-height:1.5;
+  z-index:99999;
+
+  opacity:0;
+  visibility:hidden;
+  transition:.2s ease;
+
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+  pointer-events:none;
+}
+
+.upload-hover-wrap:hover .upload-hover-box{
+  opacity:1;
+  visibility:visible;
+}
+
+/* arrow */
+.upload-hover-box::after{
+  content:"";
+  position:absolute;
+  width:0;
+  height:0;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-top:12px solid #5d9bd5;
+}
+
+/* RIGHT BOX */
+.file-wrap{
+  position: relative;
+  display: inline-block;
+}
+
+.file-box{
+  position: absolute;
+
+  top: 50%;
+  left: calc(100% + 18px);
+
+  transform: translateY(-50%);
+
+  width: 300px;
+}
+
+.file-box::after{
+  content:"";
+  position:absolute;
+
+  top:50%;
+  left:-16px;
+
+  transform: translateY(-50%) rotate(90deg);
+
+  width:0;
+  height:0;
+
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-top:12px solid #5d9bd5;
+}
+
+/* LEFT TOP */
+.visibility-wrap{
+  position: relative;
+  display:inline-block;
+}
+
+.visibility-box{
+  position:absolute;
+
+  top:-70%;
+  right: calc(100% + 18px);
+
+  transform: translateY(-50%);
+
+  width:300px;
+}
+
+.visibility-box::after{
+  top:70%;
+  right:-16px;
+  transform:translateY(-50%) rotate(-90deg);
+}
+
+
+/* LEFT BOTTOM */
+.validity-wrap{
+  position: relative;
+  display:inline-block;
+}
+
+.validity-box{
+  position:absolute;
+
+  top:50%;
+  right: calc(100% + 18px);
+
+  transform: translateY(-50%);
+
+  width:300px;
+}
+
+.validity-box::after{
+  top:50%;
+  right:-16px;
+  transform:translateY(-50%) rotate(-90deg);
+}
+
+
+/* =============================== */
+/* PERMISSION HOVER BOXES NO SCROLL */
+/* =============================== */
+
+html, body{
+  overflow-x:hidden !important;
+}
+
+/* permission item wrapper */
+.permission-wrap{
+  position: relative;
+  display: inline-block;
+}
+
+/* base tooltip */
+.perm-hover-box{
+  position: absolute;
+  width: 400px;
+  background:#5d9bd5;
+  color:#fff;
+  padding:14px 16px;
+  border-radius:4px;
+  font-size:13px;
+  line-height:1.5;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+  z-index:9999;
+
+  opacity:0;
+  visibility:hidden;
+  transition:.2s ease;
+  pointer-events:none;
+}
+
+.permission-wrap:hover .perm-hover-box{
+  opacity:1;
+  visibility:visible;
+}
+
+.perm-hover-box::after{
+  content:"";
+  position:absolute;
+  width:0;
+  height:0;
+}
+
+/* Transfer = left */
+.transfer-box{
+  right:110%;
+  top:-90px;
+}
+.transfer-box::after{
+  top:92px;
+  right:-14px;
+  border-top:10px solid transparent;
+  border-bottom:10px solid transparent;
+  border-left:14px solid #5d9bd5;
+}
+
+/* Subset = up */
+.subset-box{
+  left:-70px;
+  bottom:130%;
+}
+.subset-box::after{
+  left:110px;
+  bottom:-12px;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-top:12px solid #5d9bd5;
+}
+
+/* Reshare = right */
+.reshare-box{
+  left:60%;
+  top:-90px;
+}
+.reshare-box::after{
+  top:92px;
+  left:-14px;
+  border-top:10px solid transparent;
+  border-bottom:10px solid transparent;
+  border-right:14px solid #5d9bd5;
+}
+
+/* Confer = down */
+.confer-box{
+  left:-90px;
+  top:135%;
+}
+.confer-box::after{
+  top:-12px;
+  left:120px;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-bottom:12px solid #5d9bd5;
+}
+
+/* Collateral = down */
+.collateral-box{
+  left:-90px;
+  top:125%;
+}
+.collateral-box::after{
+  top:-12px;
+  left:120px;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-bottom:12px solid #5d9bd5;
+}

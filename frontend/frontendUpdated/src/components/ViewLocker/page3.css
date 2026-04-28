@@ -593,6 +593,153 @@ overflow-x: auto;
   }
 }
 
+.hover-info-wrapper{
+    display: inline-block;
+}
 
+.hover-info-box{
+  position: absolute;
 
+  top: -140px;
+  left: 55%;
 
+  transform: translateX(-70%);
+
+  width: min(500px, 88vw);
+
+  background:#5d9bd5;
+  color:#fff;
+
+  padding:12px 14px;
+  border-radius:6px;
+
+  font-size:13px;
+  line-height:1.42;
+
+  z-index:999999;
+
+  opacity:0;
+  visibility:hidden;
+  transition:.2s ease;
+
+  box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+
+.hover-info-wrapper:hover .hover-info-box {
+  visibility: visible;
+  opacity: 1;
+}
+
+.hover-info-box strong {
+  font-weight: 700;
+}
+
+.hover-info-box::after{
+  content:"";
+  position:absolute;
+
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+
+  border-left:12px solid transparent;
+  border-right:12px solid transparent;
+  border-top:12px solid #5d9bd5;
+}
+
+/* ============================= */
+/* CONNECTION TAB HOVER BOXES   */
+/* ============================= */
+
+.tabs-container{
+  overflow: visible !important;
+}
+
+.tab-item{
+  position: relative;
+  overflow: visible !important;
+}
+
+/* popup box */
+.tab-hover-box{
+  position:absolute;
+
+  width: 300px;
+  background:#5d9bd5;
+  color:#fff;
+
+  padding:16px 18px;
+  border-radius:4px;
+
+  font-size:13px;
+  line-height:1.55;
+
+  z-index:99999;
+
+  opacity:0;
+  visibility:hidden;
+  transition:.2s ease;
+
+  box-shadow:0 10px 22px rgba(0,0,0,.18);
+  pointer-events:none;
+}
+
+/* Arrow for all boxes */
+.tab-hover-box::after{
+  content:"";
+  position:absolute;
+  width:0;
+  height:0;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-top:12px solid #5d9bd5;
+}
+
+/* show */
+.tab-item:hover .tab-hover-box{
+  opacity:1;
+  visibility:visible;
+}
+
+/* LEFT BOX */
+.incoming-box{
+  top:-50px;
+  left:-340px;
+}
+
+/* MIDDLE BOX */
+.outgoing-box{
+  top:65px;
+  left:-25px;
+}
+
+/* RIGHT BOX */
+.archive-box{
+  top:-50px;
+  right:-340px;
+}
+
+.tab-hover-box strong{
+  font-weight:700;
+}
+
+/* Incoming arrow -> points to Incoming tab */
+.incoming-box::after{
+  top:60px;
+  right:-16px;
+  transform:rotate(-90deg);
+}
+
+/* Outgoing arrow -> points upward */
+.outgoing-box::after{
+  top:-12px;
+  left:140px;
+  transform:rotate(180deg);
+}
+
+/* Archive arrow -> points to Archive tab */
+.archive-box::after{
+  top:60px;
+  left:-16px;
+  transform:rotate(90deg);
+}
